@@ -128,9 +128,7 @@ export async function POST(req: Request) {
     const detail = err instanceof Error ? err.message : String(err);
     return NextResponse.json(
       {
-        error: detail.includes('database') || detail.includes('relation') || detail.includes('connect')
-          ? 'Koneksi database cloud belum siap. Pastikan DATABASE_URL sudah diatur di Vercel dan tabel sudah di-push (prisma db push).'
-          : (err as any)?.message || 'Gagal memulai proses.',
+        error: detail || 'Gagal memulai proses.',
         code: 'UNKNOWN',
       },
       { status: 500 },
