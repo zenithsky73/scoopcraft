@@ -70,15 +70,15 @@ export function MultiInputForm() {
       });
 
       let body: any = {};
+      const text = await res.text();
       try {
-        const text = await res.text();
         body = JSON.parse(text);
       } catch {
-        body = { error: `Server response (${res.status})` };
+        body = { error: `Server error (${res.status}): ${text ? text.slice(0, 200) : 'No response'}` };
       }
 
       if (!res.ok) {
-        setError(body.error || 'Gagal memulai proses.');
+        setError(body.error || `Error ${res.status}: Gagal memulai proses.`);
         setLoading(false);
         return;
       }

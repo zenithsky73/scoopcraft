@@ -26,7 +26,13 @@ const bodySchema = z.object({
 
 export async function POST(req: Request) {
   try {
-    let viewer = await getViewer();
+    let viewer: any = null;
+    try {
+      viewer = await getViewer();
+    } catch (e) {
+      console.warn('[generate] getViewer error', e);
+    }
+
     if (!viewer) {
       if (!GUEST.enabled) {
         return NextResponse.json({ error: 'Silakan masuk terlebih dahulu.' }, { status: 401 });
