@@ -80,13 +80,17 @@ export async function getOrCreateGuest(): Promise<Viewer> {
     },
   });
 
-  cookies().set(COOKIE, `${user.id}.${sign(user.id)}`, {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
-    path: '/',
-    maxAge: MAX_AGE,
-  });
+  try {
+    cookies().set(COOKIE, `${user.id}.${sign(user.id)}`, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      maxAge: MAX_AGE,
+    });
+  } catch (err) {
+    console.warn('[viewer] cookies().set failed (ignoring)', err);
+  }
 
   return { user, isGuest: true };
 }
