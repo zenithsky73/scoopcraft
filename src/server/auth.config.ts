@@ -5,13 +5,13 @@ import type { NextAuthConfig } from 'next-auth';
  * tanpa Prisma adapter dan tanpa bcrypt. Provider ditambahkan di auth.ts.
  */
 export const authConfig = {
+  trustHost: true,
+  secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET ?? 'rqdK59PJ5WWq/TvzTlFbgENX6EV/iLKkhK2YXa7pLYI=',
   pages: {
     signIn: '/login',
     newUser: '/dashboard',
   },
   session: {
-    // Credentials provider hanya mendukung strategi JWT di Auth.js v5.
-    // Adapter Prisma tetap dipakai untuk menyimpan User/Account.
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60,
   },

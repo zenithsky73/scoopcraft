@@ -8,7 +8,6 @@ import { credentialsSchema } from '@/server/validation/auth';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
-  adapter: PrismaAdapter(db),
   providers: [
     Credentials({
       name: 'Email & password',
@@ -20,7 +19,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const parsed = credentialsSchema.safeParse(raw);
         if (!parsed.success) return null;
 
-        const { email, password } = parsed.data;
+        const email = parsed.data.email.toLowerCase().trim();
+        const password = parsed.data.password;
         const user = await db.user.findUnique({ where: { email } });
 
         // Tetap jalankan hash walau user tidak ada, supaya waktu respons
