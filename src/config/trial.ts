@@ -9,17 +9,16 @@ export type TrialMode = 'FIRST_EXHAUSTED' | 'DAYS_ONLY' | 'QUOTA_ONLY';
 
 function num(value: string | undefined, fallback: number) {
   const parsed = Number(value);
-  return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 }
 
 /**
- * Batas percobaan tanpa mendaftar. Sengaja kecil: tiap generate memanggil
- * Claude dan model gambar, jadi biayanya nyata dan bisa disalahgunakan.
+ * Batas percobaan tanpa mendaftar.
  */
 export const GUEST = {
-  quota: num(process.env.GUEST_QUOTA, 1),
+  quota: num(process.env.GUEST_QUOTA, 3),
   /** Pagar kedua terhadap orang yang menghapus cookie berulang kali. */
-  perIpPerDay: num(process.env.GUEST_IP_LIMIT, 3),
+  perIpPerDay: num(process.env.GUEST_IP_LIMIT, 5),
   /** Gaya desain yang boleh dicoba tanpa akun. */
   enabled: process.env.GUEST_TRIAL !== '0',
 } as const;

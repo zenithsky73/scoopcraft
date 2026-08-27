@@ -47,11 +47,15 @@ export async function POST(req: Request) {
     try {
       viewer = await getOrCreateGuest();
     } catch (err) {
-      // Tanpa penanganan, gangguan database membuat pengunjung baru melihat
-      // layar 500 kosong — kesan pertama yang paling mahal.
       console.error('[generate] gagal membuat akun tamu', err);
+      const detail = err instanceof Error ? err.message : String(err);
       return NextResponse.json(
-        { error: 'Layanan sedang bermasalah. Coba lagi sebentar lagi.', code: 'UNAVAILABLE' },
+        {
+          error: detail.includes('database') || detail.includes('relation') || detail.includes('connect')
+            ? 'Koneksi database cloud belum terhubung. Pastikan DATABASE_URL sudah diatur di Vercel dan tabel sudah dibuat (prisma db push).'
+            : 'Layanan database sedang bermasalah. Coba lagi sebentar lagi.',
+          code: 'UNAVAILABLE',
+        },
         { status: 503 },
       );
     }
@@ -116,14 +120,20 @@ export async function POST(req: Request) {
       { status: 202 },
     );
   } catch (err) {
-    // Pemeriksaan di atas hanyalah jalur cepat untuk pesan yang enak dibaca;
-    // penegakan sebenarnya ada di dalam transaksi createRun, dan itu yang
-    // menang kalau ada dua request bersamaan.
     if (isQuotaError(err)) {
       return NextResponse.json({ error: err.message, code: err.reason, quota: err.state }, { status: 403 });
     }
 
     console.error('[generate]', err);
-    return NextResponse.json({ error: 'Gagal memulai proses.', code: 'UNKNOWN' }, { status: 500 });
+    const detail = err instanceof Error ? err.message : String(err);
+    return NextResponse.json(
+      {
+        error: detail.includes('database') || detail.includes('relation') || detail.includes('connect')
+          ? 'Koneksi database cloud belum siap. Pastikan DATABASE_URL sudah diatur di Vercel dan tabel sudah di-push (prisma db push).'
+          : (err as any)?.message || 'Gagal memulai proses.',
+        code: 'UNKNOWN',
+      },
+      { status: 500 },
+    );
   }
 }
