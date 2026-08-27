@@ -35,8 +35,14 @@ export function RegisterForm() {
     }
 
     // Langsung login supaya user tidak perlu mengetik ulang kredensial.
-    await signIn('credentials', { email, password, redirect: false });
+    const loginRes = await signIn('credentials', { email, password, redirect: false });
     setLoading(false);
+
+    if (loginRes?.error) {
+      router.push('/login');
+      return;
+    }
+
     router.push('/dashboard');
     router.refresh();
   }

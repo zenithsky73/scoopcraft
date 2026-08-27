@@ -1,6 +1,5 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import { PrismaAdapter } from '@auth/prisma-adapter';
 import bcrypt from 'bcryptjs';
 import { db } from '@/server/db';
 import { authConfig } from '@/server/auth.config';
@@ -10,26 +9,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   providers: [
     Credentials({
-      name: 'Email & password',
+      name: 'Credentials',
       credentials: {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
       },
       async authorize(raw) {
-        const parsed = credentialsSchema.safeParse(raw);
-        if (!parsed.success) return null;
+        try {
+          const parsed = credentialsSchema.safeParse(raw);
+          if (!parsed.success) return null;
 
-        const email = parsed.data.email.toLowerCase().trim();
-        const password = parsed.data.password;
-        const user = await db.user.findUnique({ where: { email } });
+          const email = parsed.data.email.toLowerCase().trim();
+          const password = parsed.data.password;
+          const user = await db.user.findUnique({ where: { email } });
 
-        // Tetap jalankan hash walau user tidak ada, supaya waktu respons
-        // tidak membocorkan apakah email terdaftar.
-        const hash = user?.passwordHash ?? '$2a$10$invalidinvalidinvalidinvalidinvalidinvalidinvalidinvalidiu';
-        const valid = await bcrypt.compare(password, hash);
-        if (!user || !user.passwordHash || !valid) return null;
+          const hash = user?.passwordHash ?? '$2a$10$invalidinvalidinvalidinvalidinvalidinvalidinvalidinvalidiu';
+          const valid = await bcrypt.compare(password, hash);
+          if (!user || !user.passwordHash || !valid) return null;
 
-        return { id: user.id, email: user.email, name: user.name, image: user.image };
+          return { id: user.id, email: user.email, name: user.name, image: user.image };
+        } catch (err) {
+          console.error('[auth] error in authorize', err);
+          return null;
+        }
       },
     }),
   ],

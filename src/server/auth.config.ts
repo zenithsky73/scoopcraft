@@ -6,10 +6,12 @@ import type { NextAuthConfig } from 'next-auth';
  */
 export const authConfig = {
   trustHost: true,
+  basePath: '/api/auth',
   secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET ?? 'rqdK59PJ5WWq/TvzTlFbgENX6EV/iLKkhK2YXa7pLYI=',
   pages: {
     signIn: '/login',
     newUser: '/dashboard',
+    error: '/login',
   },
   session: {
     strategy: 'jwt',
