@@ -2,7 +2,6 @@ import { SCRAPER } from '@/server/scraper/config';
 import { ScrapeError, isScrapeError } from '@/server/scraper/errors';
 import { fetchHtml } from '@/server/scraper/fetch-html';
 import { parseArticle, looksJsRendered, looksPaywalled, type ParsedArticle } from '@/server/scraper/readability';
-import { renderHtml } from '@/server/scraper/playwright';
 import { normalizeUrl } from '@/server/scraper/url-guard';
 import type { ExtractedArticle, ExtractRequest, ScrapeMethod } from '@/server/scraper/types';
 
@@ -64,6 +63,7 @@ export async function extractArticle({ url, forceBrowser = false }: ExtractReque
   // ── Jalur browser langsung (debug / dipaksa) ────────────────────────────
   if (forceBrowser) {
     if (!SCRAPER.browserFallbackEnabled) throw new ScrapeError('BROWSER_UNAVAILABLE', 'fallback dimatikan');
+    const { renderHtml } = await import('@/server/scraper/playwright');
     const rendered = await renderHtml(requested);
     const parsed = parseArticle(rendered.html, rendered.finalUrl);
     return finalize(parsed, rendered.finalUrl, url, 'playwright', startedAt, warnings);
@@ -78,13 +78,14 @@ export async function extractArticle({ url, forceBrowser = false }: ExtractReque
     return finalize(staticParsed, page.finalUrl, url, 'readability', startedAt, warnings);
   }
 
-  if (!SCRAPER.browserFallbackEnabled) {
+  if (!SCRAPER.browserFallbackEnabled || process.env.VERCEL) {
     warnings.push(`Fallback browser dimatikan (${reason}).`);
     return finalize(staticParsed, page.finalUrl, url, 'readability', startedAt, warnings);
   }
 
   // ── Fallback Playwright ─────────────────────────────────────────────────
   try {
+    const { renderHtml } = await import('@/server/scraper/playwright');
     const rendered = await renderHtml(page.finalUrl);
     const browserParsed = parseArticle(rendered.html, rendered.finalUrl);
 
