@@ -16,15 +16,15 @@ function num(value: string | undefined, fallback: number) {
  * Batas percobaan tanpa mendaftar.
  */
 export const GUEST = {
-  quota: num(process.env.GUEST_QUOTA, 3),
+  quota: num(process.env.GUEST_QUOTA, 10),
   /** Pagar kedua terhadap orang yang menghapus cookie berulang kali. */
-  perIpPerDay: num(process.env.GUEST_IP_LIMIT, 5),
+  perIpPerDay: num(process.env.GUEST_IP_LIMIT, 20),
   /** Gaya desain yang boleh dicoba tanpa akun. */
   enabled: process.env.GUEST_TRIAL !== '0',
 } as const;
 
 export const TRIAL = {
   durationDays: num(process.env.TRIAL_DURATION_DAYS, 14),
-  quota: num(process.env.TRIAL_QUOTA, 10),
+  quota: num(process.env.TRIAL_QUOTA, 20),
   mode: (process.env.TRIAL_MODE as TrialMode) || 'FIRST_EXHAUSTED',
 } as const;

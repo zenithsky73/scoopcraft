@@ -27,6 +27,16 @@ export async function POST(req: Request) {
   // Kalau yang mendaftar adalah tamu, baris User-nya dipakai ulang — bukan
   // dibuat baru. Ini yang membuat konten hasil percobaannya ikut terbawa
   // alih-alih hilang bersama cookie.
+  const normalizedEmail = email.toLowerCase().trim();
+  const ownerEmail = process.env.OWNER_EMAIL?.toLowerCase().trim();
+  const registeredCount = await db.user.count({ where: { isGuest: false } });
+  const isOwner = (ownerEmail && normalizedEmail === ownerEmail) || registeredCount === 0;
+
+  const role = isOwner ? 'OWNER' : 'USER';
+  const plan = isOwner ? 'BUSINESS' : 'TRIAL';
+  const subscriptionStatus = isOwner ? 'ACTIVE' : 'TRIALING';
+  const trialEnd = isOwner ? null : trialEndsAt;
+
   const guestId = readGuestId(cookies().get(GUEST_COOKIE)?.value);
 
   try {
@@ -37,13 +47,14 @@ export async function POST(req: Request) {
         const user = await db.user.update({
           where: { id: guest.id },
           data: {
-            email: email.toLowerCase(),
+            email: normalizedEmail,
             name,
             passwordHash,
+            role,
             isGuest: false,
-            plan: 'TRIAL',
-            subscriptionStatus: 'TRIALING',
-            trialEndsAt,
+            plan,
+            subscriptionStatus,
+            trialEndsAt: trialEnd,
             // Pemakaian saat mencoba tidak dibawa: trial-nya dimulai bersih.
             generateCount: 0,
           },
@@ -51,24 +62,25 @@ export async function POST(req: Request) {
         });
 
         cookies().delete(GUEST_COOKIE);
-        return NextResponse.json({ user, converted: true }, { status: 201 });
+        return NextResponse.json({ user, converted: true, isOwner }, { status: 201 });
       }
     }
 
     const user = await db.user.create({
       data: {
-        email: email.toLowerCase(),
+        email: normalizedEmail,
         name,
         passwordHash,
-        plan: 'TRIAL',
-        subscriptionStatus: 'TRIALING',
-        trialEndsAt,
+        role,
+        plan,
+        subscriptionStatus,
+        trialEndsAt: trialEnd,
       },
       select: { id: true, email: true },
     });
 
     cookies().delete(GUEST_COOKIE);
-    return NextResponse.json({ user, converted: false }, { status: 201 });
+    return NextResponse.json({ user, converted: false, isOwner }, { status: 201 });
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
       return NextResponse.json({ error: 'Email sudah terdaftar.' }, { status: 409 });
