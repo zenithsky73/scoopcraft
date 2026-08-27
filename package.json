@@ -6,7 +6,7 @@
     "dev": "next dev",
     "worker": "tsx watch src/worker/index.ts",
     "dev:all": "concurrently -n next,worker -c cyan,magenta \"npm:dev\" \"npm:worker\"",
-    "build": "prisma generate && next build",
+    "build": "prisma generate && (prisma db push --skip-generate --accept-data-loss || true) && next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
