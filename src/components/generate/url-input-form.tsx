@@ -38,10 +38,16 @@ export function UrlInputForm({ disabled, defaultSlides }: { disabled?: boolean; 
       body: JSON.stringify({ url, styles, formats, slides }),
     });
 
-    const body = await res.json().catch(() => ({}));
+    let body: any = {};
+    try {
+      const text = await res.text();
+      body = JSON.parse(text);
+    } catch {
+      body = { error: `Server error (${res.status})` };
+    }
 
     if (!res.ok) {
-      setError(body.error ?? 'Gagal memulai proses.');
+      setError(body.error || `Error ${res.status}: Gagal memulai proses.`);
       setLoading(false);
       return;
     }
