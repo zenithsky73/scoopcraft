@@ -360,7 +360,7 @@ export function getRun(runId: string, userId: string) {
     include: {
       jobs: { orderBy: { createdAt: 'asc' } },
       article: {
-        select: { id: true, title: true, source: true, imageUrl: true, publishedAt: true, wordCount: true },
+        select: { id: true, title: true, source: true, imageUrl: true, publishedAt: true, wordCount: true, url: true, author: true },
       },
       generatedContent: {
         include: {

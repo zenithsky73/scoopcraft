@@ -2,34 +2,30 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { DesignStyle, OutputFormat } from '@prisma/client';
 import { getViewer, getOrCreateGuest } from '@/server/viewer';
-import { db } from '@/server/db';
 import { rateLimit } from '@/server/rate-limit';
 import { getQuotaState, QUOTA_MESSAGES, isQuotaError } from '@/server/billing/quota';
 import { GUEST } from '@/config/trial';
-import { createRun } from '@/server/pipeline/run-service';
-import { normalizeUrl } from '@/server/scraper/url-guard';
-import { isScrapeError } from '@/server/scraper';
-import { AVAILABLE_STYLES, DEFAULT_STYLE } from '@/config/styles';
-import { DEFAULT_FORMATS } from '@/config/formats';
+import { generateDirect } from '@/server/ai/direct-generator';
 import { SLIDES } from '@/server/design/deck';
 
 export const runtime = 'nodejs';
 
 const bodySchema = z.object({
-  url: z.string().trim().min(1, 'URL wajib diisi').max(2048),
-  styles: z.array(z.nativeEnum(DesignStyle)).min(1).max(4).optional(),
-  formats: z.array(z.nativeEnum(OutputFormat)).min(1).max(3).optional(),
-  /** 1 = gambar tunggal, >1 = carousel (cover + poin + penutup). */
-  slides: z.number().int().min(SLIDES.min).max(SLIDES.max).optional(),
+  mode: z.enum(['url', 'text', 'prompt']).default('url'),
+  url: z.string().trim().max(2048).optional(),
+  rawText: z.string().trim().max(50000).optional(),
+  rawTitle: z.string().trim().max(500).optional(),
+  prompt: z.string().trim().max(5000).optional(),
+  tone: z.string().trim().max(100).optional(),
+  style: z.nativeEnum(DesignStyle).default('BREAKING_NEWS'),
+  format: z.nativeEnum(OutputFormat).default('FEED_PORTRAIT'),
+  styles: z.array(z.nativeEnum(DesignStyle)).optional(),
+  formats: z.array(z.nativeEnum(OutputFormat)).optional(),
+  slides: z.number().int().min(SLIDES.min).max(SLIDES.max).default(5),
 });
-
-const AVAILABLE = new Set(AVAILABLE_STYLES.map((style) => style.id));
 
 export async function POST(req: Request) {
   try {
-    // Pengunjung yang belum punya akun dibuatkan akun tamu di sini — bukan saat
-    // membuka halaman — supaya tidak ada baris User sampah dari orang yang cuma
-    // lewat. Kuotanya kecil dan dijaga pagar IP di bawah.
     let viewer = await getViewer();
     if (!viewer) {
       if (!GUEST.enabled) {
@@ -82,23 +78,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Data tidak valid.', code: 'BAD_REQUEST' }, { status: 400 });
     }
 
-    // Validasi URL lebih awal supaya kuota tidak terpakai untuk URL yang
-    // jelas-jelas tidak bisa diproses.
-    let url: string;
-    try {
-      url = normalizeUrl(parsed.data.url).href;
-    } catch (err) {
-      const message = isScrapeError(err) ? err.message : 'URL tidak valid.';
-      return NextResponse.json({ error: message, code: 'INVALID_URL' }, { status: 400 });
-    }
-
-    const styles = (parsed.data.styles ?? [DEFAULT_STYLE]).filter((style) => AVAILABLE.has(style));
-    if (styles.length === 0) {
-      return NextResponse.json({ error: 'Gaya desain yang dipilih belum tersedia.', code: 'STYLE_UNAVAILABLE' }, { status: 400 });
-    }
-    const formats = parsed.data.formats ?? DEFAULT_FORMATS;
-
+    const data = parsed.data;
     const user = viewer.user;
+
+    // Check Quota
     const quota = getQuotaState(user);
     if (!quota.allowed && quota.reason) {
       return NextResponse.json(
@@ -107,17 +90,34 @@ export async function POST(req: Request) {
       );
     }
 
-    const run = await createRun({
+    // Determine style & format
+    const chosenStyle = data.styles?.[0] || data.style || 'BREAKING_NEWS';
+    const chosenFormat = data.formats?.[0] || data.format || 'FEED_PORTRAIT';
+
+    // Direct synchronous generation
+    const result = await generateDirect({
       userId: user.id,
-      url,
-      styles,
-      formats,
-      slides: parsed.data.slides,
+      mode: data.mode,
+      url: data.url,
+      rawText: data.rawText,
+      rawTitle: data.rawTitle,
+      prompt: data.prompt,
+      tone: data.tone,
+      style: chosenStyle,
+      format: chosenFormat,
+      slides: data.slides,
     });
 
     return NextResponse.json(
-      { runId: run.id, status: run.status, stepsTotal: run.stepsTotal, slides: run.requestedSlides },
-      { status: 202 },
+      {
+        runId: result.runId,
+        status: 'COMPLETED',
+        article: result.article,
+        content: result.content,
+        style: result.style,
+        format: result.format,
+      },
+      { status: 200 },
     );
   } catch (err) {
     if (isQuotaError(err)) {

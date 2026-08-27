@@ -5,114 +5,151 @@ export type StyleTier = 'FREE' | 'PRO';
 export type StyleDef = {
   id: DesignStyle;
   label: string;
+  subLabel?: string;
   description: string;
   tier: StyleTier;
   available: boolean;
   accentColor: string;
+  bgColor: string;
+  textColor: string;
   badge?: string;
-  /** Butuh plan BUSINESS (brand kit). */
+  instagramRef?: string;
   requiresBrandKit?: boolean;
 };
 
 export const STYLES: StyleDef[] = [
-  // Free Tiers
-  {
-    id: 'MINIMAL',
-    label: 'Minimal',
-    description: 'Banyak ruang kosong, tipografi modern & tenang.',
-    tier: 'FREE',
-    available: true,
-    accentColor: '#4F46E5',
-  },
   {
     id: 'BREAKING_NEWS',
-    label: 'Breaking News',
-    description: 'Kontras tinggi, banner merah, urgensi berita utama.',
+    label: 'Breaking News Pro',
+    subLabel: 'ala @fakta.indo & @indozone.id',
+    description: 'Kontras tinggi, banner merah tegas, foto latar tajam, badge BREAKING.',
     tier: 'FREE',
     available: true,
-    accentColor: '#DC2626',
-    badge: 'BREAKING',
-  },
-  {
-    id: 'MODERN',
-    label: 'Modern Clean',
-    description: 'Layout geometris, aksen blok tegas ala media teknologi modern.',
-    tier: 'FREE',
-    available: true,
-    accentColor: '#0EA5E9',
-  },
-
-  // Pro Tiers
-  {
-    id: 'BOLD',
-    label: 'Bold Impact',
-    description: 'Tema gelap ultra-bold, aksen kuning kontras tinggi, foto per slide.',
-    tier: 'PRO',
-    available: true,
-    accentColor: '#FACC15',
-    badge: 'PRO',
-  },
-  {
-    id: 'EDITORIAL',
-    label: 'Editorial Serif',
-    description: 'Kemewahan majalah premium, tipografi serif klasik & garis koran mewah.',
-    tier: 'PRO',
-    available: true,
-    accentColor: '#B45309',
-    badge: 'PRO',
-  },
-  {
-    id: 'TECH',
-    label: 'Tech HUD',
-    description: 'Nuansa cyberpunk/terminal, font monospace, aksen neon emerald & cyan.',
-    tier: 'PRO',
-    available: true,
-    accentColor: '#10B981',
-    badge: 'PRO',
+    accentColor: '#EF4444',
+    bgColor: '#0B0F19',
+    textColor: '#FFFFFF',
+    badge: 'VIRAL',
+    instagramRef: '@fakta.indo / @indozone.id',
   },
   {
     id: 'FINANCE',
-    label: 'Finance & Stat',
-    description: 'Aura Bloomberg/FT, latar warm paper, metrik angka & grafik finansial.',
-    tier: 'PRO',
+    label: 'Finansial & Cuan',
+    subLabel: 'ala @ngomonginuang & @mikirduit',
+    description: 'Emerald green & deep navy, kartu data rapi, angka metrik tebal, sangat berwibawa.',
+    tier: 'FREE',
     available: true,
-    accentColor: '#047857',
-    badge: 'PRO',
+    accentColor: '#10B981',
+    bgColor: '#064E3B',
+    textColor: '#FFFFFF',
+    badge: 'POPULAR',
+    instagramRef: '@ngomonginuang / @mikirduit',
   },
   {
-    id: 'CORPORATE',
-    label: 'Corporate Pro',
-    description: 'Wibawa McKinsey/HBR, deep navy & clean white, penekanan poin eksekutif.',
+    id: 'TECH',
+    label: 'Saham & Trading Tech',
+    subLabel: 'ala @supercuansaham.id',
+    description: 'Tema gelap modern, aksen neon gold/cyan, kartu ticker & analisis poin padat.',
     tier: 'PRO',
     available: true,
-    accentColor: '#1E40AF',
+    accentColor: '#F59E0B',
+    bgColor: '#0F172A',
+    textColor: '#FFFFFF',
     badge: 'PRO',
+    instagramRef: '@supercuansaham.id',
+  },
+  {
+    id: 'EDITORIAL',
+    label: 'Editorial Nasional',
+    subLabel: 'ala @infonesiaku.id & @redaksinasional',
+    description: 'Jurnalisme elegan, tipografi serif modern, layout koran kontemporer berkelas.',
+    tier: 'PRO',
+    available: true,
+    accentColor: '#DC2626',
+    bgColor: '#18181B',
+    textColor: '#FFFFFF',
+    badge: 'PRO',
+    instagramRef: '@infonesiaku.id',
   },
   {
     id: 'LIFESTYLE',
-    label: 'Lifestyle Pastel',
-    description: 'Hangat, elegan, kartu rounded dengan gradasi lembut untuk travel & kuliner.',
+    label: 'Tentang Kampus & Edukasi',
+    subLabel: 'ala @tentangkampus_id',
+    description: 'Kartu pastel lembut ramah Gen-Z, font bulat bersahabat, ikon edukasi rapi.',
+    tier: 'FREE',
+    available: true,
+    accentColor: '#EC4899',
+    bgColor: '#FDF2F8',
+    textColor: '#1E293B',
+    badge: 'EDUKASI',
+    instagramRef: '@tentangkampus_id',
+  },
+  {
+    id: 'BOLD',
+    label: 'Sport & Dynamic Energy',
+    subLabel: 'ala @kepoball',
+    description: 'Tipografi miring ultra-bold, efek glow berenergi tinggi, aksen kuning kontras.',
     tier: 'PRO',
     available: true,
-    accentColor: '#F43F5E',
+    accentColor: '#FACC15',
+    bgColor: '#0A0A0A',
+    textColor: '#FFFFFF',
     badge: 'PRO',
+    instagramRef: '@kepoball',
+  },
+  {
+    id: 'CORPORATE',
+    label: 'Karier & Networking',
+    subLabel: 'ala @ilmu_networking & @official.indeed',
+    description: 'Desain korporat bersih, kartu tips bertingkat (1-2-3), layout profesional LinkedIn.',
+    tier: 'PRO',
+    available: true,
+    accentColor: '#2563EB',
+    bgColor: '#0F172A',
+    textColor: '#FFFFFF',
+    badge: 'PRO',
+    instagramRef: '@ilmu_networking',
   },
   {
     id: 'CUSTOM_BRAND',
-    label: 'Custom Brand',
-    description: 'Pakai logo, warna, dan font brand kit kustom Anda.',
+    label: 'Fakta Pop & Trivia',
+    subLabel: 'ala @voxpopular.id & @faktadanmitos',
+    description: 'Warna pop vibrant, kartu Fakta vs Mitos, badge Taukah Kamu, memancing rasa penasaran.',
     tier: 'PRO',
-    available: false,
+    available: true,
     accentColor: '#8B5CF6',
-    badge: 'BUSINESS',
-    requiresBrandKit: true,
+    bgColor: '#1E1B4B',
+    textColor: '#FFFFFF',
+    badge: 'POP TRIVIA',
+    instagramRef: '@voxpopular.id',
+  },
+  {
+    id: 'MODERN',
+    label: 'Modern Clean Media',
+    subLabel: 'ala Portal Berita Modern',
+    description: 'Layout geometris, aksen blok tegas, tipografi sans-serif modern dan presisi.',
+    tier: 'FREE',
+    available: true,
+    accentColor: '#0EA5E9',
+    bgColor: '#0F172A',
+    textColor: '#FFFFFF',
+  },
+  {
+    id: 'MINIMAL',
+    label: 'Minimalist Pure',
+    subLabel: 'ala Media Seni & Kreatif',
+    description: 'Banyak ruang bernapas, minimalis tanpa distraksi, sangat bersih dan estetis.',
+    tier: 'FREE',
+    available: true,
+    accentColor: '#6366F1',
+    bgColor: '#090D16',
+    textColor: '#FFFFFF',
   },
 ];
 
 export const AVAILABLE_STYLES = STYLES.filter((s) => s.available);
 export const FREE_STYLES = AVAILABLE_STYLES.filter((s) => s.tier === 'FREE');
 export const PRO_STYLES = AVAILABLE_STYLES.filter((s) => s.tier === 'PRO');
-export const DEFAULT_STYLE: DesignStyle = 'MINIMAL';
+export const DEFAULT_STYLE: DesignStyle = 'BREAKING_NEWS';
 
 export function isProStyle(style: DesignStyle): boolean {
   const def = STYLES.find((s) => s.id === style);

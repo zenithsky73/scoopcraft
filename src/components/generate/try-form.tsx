@@ -31,10 +31,15 @@ export function TryForm({ guestQuota }: { guestQuota: number }) {
     setLimitReached(false);
     setLoading(true);
 
+    const isUrl = url.trim().startsWith('http://') || url.trim().startsWith('https://');
+    const payload = isUrl
+      ? { mode: 'url', url: url.trim(), style: 'BREAKING_NEWS' }
+      : { mode: 'prompt', prompt: url.trim(), style: 'BREAKING_NEWS' };
+
     const res = await fetch('/api/generate', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ url }),
+      body: JSON.stringify(payload),
     });
 
     let body: any = {};
