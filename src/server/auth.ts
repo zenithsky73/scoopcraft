@@ -5,6 +5,10 @@ import { db } from '@/server/db';
 import { authConfig } from '@/server/auth.config';
 import { credentialsSchema } from '@/server/validation/auth';
 
+const FALLBACK_SECRET = 'rqdK59PJ5WWq/TvzTlFbgENX6EV/iLKkhK2YXa7pLYI=';
+if (!process.env.AUTH_SECRET) process.env.AUTH_SECRET = FALLBACK_SECRET;
+if (!process.env.NEXTAUTH_SECRET) process.env.NEXTAUTH_SECRET = FALLBACK_SECRET;
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   providers: [

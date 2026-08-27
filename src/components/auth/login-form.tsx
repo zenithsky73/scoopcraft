@@ -10,9 +10,18 @@ export function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
   const callbackUrl = params.get('callbackUrl') || '/dashboard';
+  const errorParam = params.get('error');
 
   const [error, setError] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    if (errorParam === 'CredentialsSignin') {
+      setError('Email atau password salah.');
+    } else if (errorParam) {
+      setError('Sesi berakhir atau terjadi kendala. Silakan coba masuk kembali.');
+    }
+  }, [errorParam]);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
