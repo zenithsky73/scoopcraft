@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Nilai HSL tanpa pembungkus hsl() — dipakai sebagai hsl(var(--x) / alpha). */
+    --bg: 0 0% 100%;
+    --surface: 0 0% 100%;
+    --surface-2: 220 14% 97%;
+    --border: 220 13% 91%;
+    --fg: 222 47% 11%;
+    --muted: 215 16% 47%;
+
+    --accent: 243 75% 59%; /* indigo #4F46E5 — warna brand Scoopcraft */
+    --accent-fg: 0 0% 100%;
+    --accent-soft: 243 75% 96%;
+
+    --success: 142 71% 40%;
+    --warning: 38 92% 50%;
+    --danger: 0 72% 51%;
+
+    /* Ganti ke next/font (Inter) kalau build punya akses jaringan;
+       stack sistem dipakai supaya build tidak bergantung fetch font. */
+    --font-sans: 'Inter', 'Segoe UI Variable', 'Segoe UI', system-ui, -apple-system,
+      'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .dark {
+    --bg: 222 47% 7%;
+    --surface: 222 40% 10%;
+    --surface-2: 222 35% 13%;
+    --border: 220 16% 21%;
+    --fg: 210 20% 96%;
+    --muted: 215 16% 62%;
+
+    --accent: 243 75% 68%;
+    --accent-fg: 222 47% 9%;
+    --accent-soft: 243 38% 18%;
+
+    --success: 142 60% 48%;
+    --warning: 38 88% 58%;
+    --danger: 0 72% 62%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-bg text-fg font-sans antialiased;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  /* Flat: fokus pakai ring tipis, bukan shadow tebal. */
+  :focus-visible {
+    @apply outline-none ring-2 ring-accent/60 ring-offset-2 ring-offset-bg;
+  }
+
+  ::selection {
+    @apply bg-accent/20;
+  }
+}
+
+@layer components {
+  .field {
+    @apply w-full rounded-md border border-border bg-surface px-3 py-2 text-sm
+           text-fg placeholder:text-muted/70 transition-colors
+           focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/25
+           disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .label {
+    @apply mb-1.5 block text-sm font-medium text-fg;
+  }
+
+  .hint {
+    @apply text-xs text-muted;
+  }
+}

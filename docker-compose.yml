@@ -1,0 +1,32 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: scoopcraft-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: scoopcraft
+      POSTGRES_PASSWORD: scoopcraft
+      POSTGRES_DB: scoopcraft
+    ports:
+      - '5432:5432'
+    volumes:
+      - scoopcraft-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U scoopcraft']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # Dipakai mulai modul 3 (BullMQ). Aman dinyalakan dari sekarang.
+  redis:
+    image: redis:7-alpine
+    container_name: scoopcraft-redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    volumes:
+      - scoopcraft-redisdata:/data
+
+volumes:
+  scoopcraft-pgdata:
+  scoopcraft-redisdata:

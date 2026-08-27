@@ -1,0 +1,378 @@
+// Scoopcraft — schema utama
+// Konvensi: enum SCREAMING_SNAKE, id cuid, semua relasi user-owned pakai onDelete: Cascade.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── ENUMS ────────────────────────────────────────────────────────────────
+
+/// OWNER = pemilik aplikasi: kuota tanpa batas, tidak terikat trial.
+/// Dipakai untuk akun internal, bukan untuk pelanggan berbayar.
+enum UserRole {
+  USER
+  OWNER
+}
+
+enum Plan {
+  TRIAL
+  BASIC
+  PRO
+  BUSINESS
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  EXPIRED
+}
+
+enum DesignStyle {
+  EDITORIAL
+  BREAKING_NEWS
+  MINIMAL
+  MODERN
+  BOLD
+  CORPORATE
+  TECH
+  FINANCE
+  LIFESTYLE
+  CUSTOM_BRAND
+}
+
+enum OutputFormat {
+  FEED_SQUARE
+  FEED_PORTRAIT
+  STORY
+}
+
+/// Peran satu slide di dalam carousel.
+enum SlideType {
+  COVER // slide 1: headline + visual utama
+  POINT // slide isi: satu poin penting per slide
+  OUTRO // slide penutup: CTA + akun
+}
+
+enum AssetStatus {
+  PENDING
+  RENDERING
+  READY
+  FAILED
+}
+
+enum ImageSource {
+  ARTICLE
+  AI_GENERATED
+  SOLID_FALLBACK
+}
+
+enum JobType {
+  SCRAPE
+  ANALYZE
+  GENERATE_CONTENT
+  GENERATE_IMAGE
+  RENDER_DESIGN
+}
+
+enum JobStatus {
+  QUEUED
+  PROCESSING
+  DONE
+  FAILED
+}
+
+enum RunStatus {
+  PENDING
+  PROCESSING
+  PARTIAL // teks selesai, sebagian render gagal — konten tetap bisa dipakai
+  DONE
+  FAILED
+}
+
+// ─── AUTH (Auth.js v5) ────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  passwordHash  String?
+  emailVerified DateTime?
+  image         String?
+
+  role               UserRole           @default(USER)
+  /// Pengunjung yang mencoba tanpa mendaftar. Barisnya tetap User biasa
+  /// supaya seluruh relasi (Article, GenerationRun) bekerja tanpa perubahan —
+  /// dan saat ia mendaftar, baris yang sama tinggal diberi password, sehingga
+  /// konten hasil percobaannya ikut terbawa.
+  isGuest            Boolean            @default(false)
+  plan               Plan               @default(TRIAL)
+  subscriptionStatus SubscriptionStatus @default(TRIALING)
+  trialEndsAt        DateTime?
+  generateCount      Int                @default(0)
+  quotaResetAt       DateTime?
+
+  accounts Account[]
+  sessions Session[]
+  articles Article[]
+  runs     GenerationRun[]
+  brandKit BrandKit?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isGuest, createdAt])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ─── PIPELINE KONTEN ──────────────────────────────────────────────────────
+
+model Article {
+  id          String    @id @default(cuid())
+  url         String
+  title       String
+  content     String    @db.Text
+  excerpt     String?   @db.Text
+  author      String?
+  publishedAt DateTime?
+  source      String?
+  imageUrl    String?
+  lang        String?
+  wordCount   Int?
+  scrapedVia  String?
+  rawHtml     String?   @db.Text
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  generatedContents GeneratedContent[]
+  runs              GenerationRun[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, url])
+  @@index([userId, createdAt])
+}
+
+model GeneratedContent {
+  id        String  @id @default(cuid())
+  articleId String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  headline String
+  feedCopy String   @db.Text
+  caption  String   @db.Text
+  hashtags String[]
+  cta      String
+  angle    String
+
+  // Output tahap analysis: { topic, keyPoints[], facts[], entities[], tone }
+  analysis Json?
+
+  // Ringkasan visual slide pertama. Detail per slide ada di ContentVisual;
+  // field ini dipertahankan untuk thumbnail dan kartu riwayat.
+  imageSource    ImageSource?
+  visualUrl      String?
+  visualPrompt   String?      @db.Text
+  relevanceScore Float?
+
+  /// Naskah slide carousel: [{ title, body }]. Selalu dibuat AI walau
+  /// user hanya minta 1 slide, supaya bisa diubah jadi carousel tanpa
+  /// memanggil AI lagi.
+  slides Json?
+
+  edited Boolean @default(false)
+
+  assets  DesignAsset[]
+  visuals ContentVisual[]
+  run     GenerationRun?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([articleId])
+}
+
+/// Satu gambar untuk satu slide carousel.
+///
+/// Dipisah dari GeneratedContent.slides (yang berupa Json) karena tiap gambar
+/// dibuat oleh job terpisah yang berjalan paralel — menulis ke satu kolom Json
+/// dari banyak job sekaligus akan saling menimpa.
+///
+/// Gambarnya dipakai bersama oleh semua gaya dan format: slide ke-2 di Feed
+/// dan di Story memakai visual yang sama, hanya tata letaknya berbeda.
+model ContentVisual {
+  id                 String           @id @default(cuid())
+  generatedContentId String
+  generatedContent   GeneratedContent @relation(fields: [generatedContentId], references: [id], onDelete: Cascade)
+
+  slideIndex     Int
+  source         ImageSource
+  imageUrl       String?
+  /// Prompt yang dipakai; null kalau gambar diambil dari artikel.
+  prompt         String?     @db.Text
+  provider       String?
+  relevanceScore Float?
+  error          String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([generatedContentId, slideIndex])
+  @@index([generatedContentId])
+}
+
+model DesignAsset {
+  id                 String           @id @default(cuid())
+  generatedContentId String
+  generatedContent   GeneratedContent @relation(fields: [generatedContentId], references: [id], onDelete: Cascade)
+
+  style  DesignStyle
+  format OutputFormat
+  width  Int
+  height Int
+
+  /// Urutan slide dalam carousel; 0 = cover.
+  slideIndex Int       @default(0)
+  slideType  SlideType @default(COVER)
+
+  imageUrl String?
+  status   AssetStatus @default(PENDING)
+  error    String?
+  version  Int         @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([generatedContentId, style, format, slideIndex])
+  @@index([generatedContentId, status])
+  @@index([generatedContentId, style, format, slideIndex])
+}
+
+// ─── ORKESTRASI ───────────────────────────────────────────────────────────
+
+/// Satu record per klik "Generate". Menaungi semua Job (lintas step) dan
+/// DesignAsset (lintas style x format) dari sekali proses, dengan status
+/// agregat sendiri supaya progress tracker di UI tidak perlu menggabungkan
+/// status banyak Job di frontend.
+model GenerationRun {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  sourceUrl String
+  status    RunStatus @default(PENDING)
+
+  requestedStyles  DesignStyle[]
+  requestedFormats OutputFormat[]
+  /// Jumlah slide per kombinasi gaya × format. 1 = gambar tunggal.
+  requestedSlides  Int            @default(1)
+
+  // Progress agregat, di-update worker tiap step selesai.
+  stepsTotal Int @default(0)
+  stepsDone  Int @default(0)
+
+  articleId String?
+  article   Article? @relation(fields: [articleId], references: [id])
+
+  generatedContentId String?           @unique
+  generatedContent   GeneratedContent? @relation(fields: [generatedContentId], references: [id])
+
+  error       String?
+  startedAt   DateTime?
+  completedAt DateTime?
+
+  jobs Job[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([status])
+}
+
+model Job {
+  id    String         @id @default(cuid())
+  runId String?
+  run   GenerationRun? @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  type      JobType
+  status    JobStatus @default(QUEUED)
+  payload   Json
+  result    Json?
+  error     String?
+  attempts  Int       @default(0)
+  bullJobId String?
+
+  startedAt  DateTime?
+  finishedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([runId, type])
+  @@index([status])
+}
+
+model BrandKit {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  logoUrl     String?
+  primary     String  @default("#4F46E5")
+  secondary   String  @default("#0F172A")
+  fontHead    String?
+  fontBody    String?
+  /// Nama akun yang dicetak di gambar, mis. "@redaksikita".
+  handle      String?
+  /// Nama tampilan opsional di sebelah handle.
+  displayName String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
