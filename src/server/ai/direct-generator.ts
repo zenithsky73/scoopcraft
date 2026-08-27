@@ -82,7 +82,7 @@ Tulis artikel berita/edukasi lengkap (minimal 3-5 paragraf) dengan judul menarik
     const ai = new GoogleGenAI({ apiKey: key });
     
     const generated = await ai.models.generateContent({
-      model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+      model: process.env.GEMINI_MODEL || 'gemini-3.6-flash',
       contents: [
         { role: 'user', parts: [{ text: `${promptSystem}\n\n${promptUser}` }] }
       ],

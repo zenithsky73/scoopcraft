@@ -20,7 +20,7 @@ export const AI = {
   },
   get model(): string {
     if (this.provider === 'gemini') {
-      return process.env.GEMINI_MODEL ?? 'gemini-2.5-flash';
+      return process.env.GEMINI_MODEL ?? 'gemini-3.6-flash';
     }
     if (this.provider === 'openai') {
       return process.env.OPENAI_MODEL ?? 'gpt-4o-mini';
