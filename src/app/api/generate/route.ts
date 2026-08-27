@@ -9,6 +9,8 @@ import { generateDirect } from '@/server/ai/direct-generator';
 import { SLIDES } from '@/server/design/deck';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
 
 const bodySchema = z.object({
   mode: z.enum(['url', 'text', 'prompt']).default('url'),

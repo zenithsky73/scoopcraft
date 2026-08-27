@@ -44,18 +44,35 @@ export type Viewer = { user: User; isGuest: boolean };
 
 /** Viewer saat ini, tanpa membuat tamu baru. */
 export async function getViewer(): Promise<Viewer | null> {
-  const session = await auth();
+  try {
+    let session = null;
+    try {
+      session = await auth();
+    } catch (e) {
+      console.warn('[viewer] auth() failed (ignoring):', e);
+    }
 
-  if (session?.user?.id) {
-    const user = await db.user.findUnique({ where: { id: session.user.id } });
-    if (user) return { user, isGuest: false };
+    if (session?.user?.id) {
+      const user = await db.user.findUnique({ where: { id: session.user.id } });
+      if (user) return { user, isGuest: false };
+    }
+
+    let cookieVal: string | undefined;
+    try {
+      cookieVal = cookies().get(COOKIE)?.value;
+    } catch {
+      cookieVal = undefined;
+    }
+
+    const guestId = parseCookie(cookieVal);
+    if (!guestId) return null;
+
+    const guest = await db.user.findFirst({ where: { id: guestId, isGuest: true } });
+    return guest ? { user: guest, isGuest: true } : null;
+  } catch (err) {
+    console.warn('[viewer] getViewer unexpected error:', err);
+    return null;
   }
-
-  const guestId = parseCookie(cookies().get(COOKIE)?.value);
-  if (!guestId) return null;
-
-  const guest = await db.user.findFirst({ where: { id: guestId, isGuest: true } });
-  return guest ? { user: guest, isGuest: true } : null;
 }
 
 /**
