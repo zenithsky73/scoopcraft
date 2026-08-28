@@ -30,6 +30,7 @@ import { Button } from '@/components/ui/button';
 import { Input, Label } from '@/components/ui/input';
 import { downloadSlideAsPng, exportSlidesToPdf } from '@/lib/export-client';
 import { UpgradeDialog } from '@/components/billing/upgrade-dialog';
+import { cn } from '@/lib/utils';
 
 export type CarouselStudioProps = {
   initialContent: {
@@ -63,6 +64,7 @@ export function CarouselStudio({
   const [currentFormat, setCurrentFormat] = React.useState<OutputFormat>(initialFormat);
   const [activeSlideIndex, setActiveSlideIndex] = React.useState(0);
   const [showPhoneFrame, setShowPhoneFrame] = React.useState(true);
+  const [mobileView, setMobileView] = React.useState<'preview' | 'edit'>('preview');
   const [showUpgradeModal, setShowUpgradeModal] = React.useState(false);
   const [upgradeReason, setUpgradeReason] = React.useState<'PRO_STYLE' | 'PDF_EXPORT'>('PRO_STYLE');
   const [upgradeTitle, setUpgradeTitle] = React.useState('Buka Template Eksklusif Pro');
@@ -269,9 +271,44 @@ export function CarouselStudio({
       </header>
 
       {/* ─── 2. SPLIT-SCREEN WORKSPACE ─── */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <main className="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-start">
+        {/* Mobile View Mode Switcher (Visible only on < lg screens) */}
+        <div className="col-span-1 lg:hidden w-full bg-slate-900/90 p-1 rounded-2xl border border-slate-800 flex gap-1 shadow-lg">
+          <button
+            type="button"
+            onClick={() => setMobileView('preview')}
+            className={cn(
+              'flex-1 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all',
+              mobileView === 'preview'
+                ? 'bg-primary text-white shadow-md'
+                : 'text-slate-400 hover:text-white'
+            )}
+          >
+            <Smartphone className="size-3.5" />
+            <span>Preview ({activeSlideIndex + 1}/{slides.length})</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileView('edit')}
+            className={cn(
+              'flex-1 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all',
+              mobileView === 'edit'
+                ? 'bg-primary text-white shadow-md'
+                : 'text-slate-400 hover:text-white'
+            )}
+          >
+            <Sliders className="size-3.5" />
+            <span>Edit Konten & Desain</span>
+          </button>
+        </div>
+
         {/* ─── LEFT/CENTER COLUMN: CANVAS PREVIEW & CONTROLS ─── */}
-        <div className="lg:col-span-7 flex flex-col items-center space-y-5 bg-slate-900/40 p-5 sm:p-8 rounded-3xl border border-slate-800/80 shadow-2xl backdrop-blur-sm">
+        <div
+          className={cn(
+            'lg:col-span-7 flex flex-col items-center space-y-5 bg-slate-900/40 p-3 sm:p-8 rounded-3xl border border-slate-800/80 shadow-2xl backdrop-blur-sm',
+            mobileView !== 'preview' && 'hidden lg:flex'
+          )}
+        >
           {/* Format & View Mode Toolbar */}
           <div className="flex flex-wrap items-center justify-between gap-3 w-full border-b border-slate-800/80 pb-4">
             {/* Format Pills */}
@@ -427,7 +464,12 @@ export function CarouselStudio({
         </div>
 
         {/* ─── RIGHT COLUMN: INSPECTOR DOCK (STYLES, LIVE EDIT, CAPTION) ─── */}
-        <div className="lg:col-span-5 space-y-6">
+        <div
+          className={cn(
+            'lg:col-span-5 space-y-6',
+            mobileView !== 'edit' && 'hidden lg:block'
+          )}
+        >
           {/* Tabs Navigation */}
           <div className="flex items-center bg-slate-900/80 p-1.5 rounded-2xl border border-slate-800 shadow-xl">
             <button
