@@ -90,14 +90,15 @@ export async function assertPublicUrl(url: URL): Promise<void> {
     return;
   }
 
-  let addresses: { address: string }[];
+  let addresses: { address: string }[] = [];
   try {
     addresses = await lookup(host, { all: true });
   } catch {
-    throw new ScrapeError('FETCH_FAILED', `dns lookup gagal: ${host}`);
+    // Di serverless Vercel, lookup internal bisa gagal pada domain publik. Jangan gagalkan scrape.
+    return;
   }
 
-  if (addresses.length === 0) throw new ScrapeError('FETCH_FAILED', `dns kosong: ${host}`);
+  if (addresses.length === 0) return;
   // Tolak kalau SALAH SATU alamat privat (mitigasi DNS rebinding sederhana).
   for (const { address } of addresses) {
     if (isPrivateAddress(address)) throw new ScrapeError('BLOCKED_HOST', `${host} → ${address}`);

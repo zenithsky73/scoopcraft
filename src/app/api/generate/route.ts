@@ -9,7 +9,6 @@ import { db } from '@/server/db';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-export const maxDuration = 60;
 
 const bodySchema = z.object({
   mode: z.enum(['url', 'text', 'prompt']).default('url'),

@@ -8,7 +8,7 @@ import { z } from 'zod';
 
 // jsdom & playwright butuh Node runtime, bukan Edge.
 export const runtime = 'nodejs';
-export const maxDuration = 60;
+export const dynamic = 'force-dynamic';
 
 const bodySchema = extractRequestSchema.extend({
   /** Simpan hasilnya ke tabel Article milik user. */
