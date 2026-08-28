@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
-import { notFound, redirect } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import { getViewer } from '@/server/viewer';
 import { db } from '@/server/db';
 import { getRun } from '@/server/pipeline/run-service';
 import { planSteps, STEP_LABELS } from '@/server/pipeline/steps';
 import { CarouselStudio } from '@/components/studio/carousel-studio';
 import { ResultView } from '@/components/result/result-view';
+import { ContentClientLoader } from '@/components/studio/content-client-loader';
 import type { RunStatusResponse } from '@/lib/run-status';
 
 export const dynamic = 'force-dynamic';
@@ -15,8 +16,17 @@ export default async function ContentDetailPage({ params }: { params: { id: stri
   const viewer = await getViewer();
   if (!viewer) redirect('/login');
 
-  const run = await getRun(params.id, viewer.user.id);
-  if (!run) notFound();
+  let run: any = null;
+  try {
+    run = await getRun(params.id, viewer.user.id);
+  } catch (err) {
+    console.warn('[ContentDetailPage] getRun failed:', err);
+  }
+
+  // Jika run tidak ditemukan di DB (misal saat DB cold-start / client-side instant generation)
+  if (!run) {
+    return <ContentClientLoader id={params.id} />;
+  }
 
   const user = await db.user.findUnique({
     where: { id: viewer.user.id },
@@ -63,12 +73,12 @@ export default async function ContentDetailPage({ params }: { params: { id: stri
   });
 
   const steps = plan.map((step) => {
-    const jobs = run.jobs.filter((job) => job.type === step.type);
-    const done = jobs.filter((job) => job.status === 'DONE').length;
-    const failed = jobs.filter((job) => job.status === 'FAILED').length;
+    const jobs = run.jobs.filter((job: any) => job.type === step.type);
+    const done = jobs.filter((job: any) => job.status === 'DONE').length;
+    const failed = jobs.filter((job: any) => job.status === 'FAILED').length;
 
     let status: RunStatusResponse['steps'][number]['status'] = 'QUEUED';
-    if (jobs.some((job) => job.status === 'PROCESSING')) status = 'PROCESSING';
+    if (jobs.some((job: any) => job.status === 'PROCESSING')) status = 'PROCESSING';
     else if (done === step.count) status = 'DONE';
     else if (done + failed === step.count) status = done > 0 ? 'PARTIAL' : 'FAILED';
 
@@ -78,7 +88,7 @@ export default async function ContentDetailPage({ params }: { params: { id: stri
       status,
       done,
       total: step.count,
-      error: jobs.find((job) => job.error)?.error ?? null,
+      error: jobs.find((job: any) => job.error)?.error ?? null,
       durationMs: null,
     };
   });

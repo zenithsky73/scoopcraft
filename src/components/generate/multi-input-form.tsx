@@ -126,6 +126,15 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
         return;
       }
 
+      // Save to sessionStorage for instant client-side fallback
+      if (body.runId) {
+        try {
+          sessionStorage.setItem(`run_${body.runId}`, JSON.stringify(body));
+        } catch (e) {
+          console.warn('sessionStorage error:', e);
+        }
+      }
+
       // Route immediately to Studio Editor
       router.push(`/content/${body.runId}`);
     } catch (err: any) {
