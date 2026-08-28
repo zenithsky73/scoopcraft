@@ -164,7 +164,6 @@ export function CarouselStudio({
       }
     };
     reader.readAsDataURL(file);
-    // Reset file input value
     e.target.value = '';
   };
 
@@ -232,7 +231,7 @@ export function CarouselStudio({
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col pb-24 lg:pb-12">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col pb-24 lg:pb-12 transition-colors duration-200">
       {/* Hidden File Input for Custom Image Upload */}
       <input
         type="file"
@@ -243,25 +242,25 @@ export function CarouselStudio({
       />
 
       {/* ─── 1. TOP APP BAR ─── */}
-      <header className="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-xl border-b border-slate-800/80 px-4 sm:px-6 py-3">
+      <header className="sticky top-0 z-40 bg-white/90 dark:bg-slate-950/90 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800/80 px-4 sm:px-6 py-3 transition-colors duration-200">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <Button asChild variant="ghost" size="sm" className="text-slate-400 hover:text-white shrink-0">
+            <Button asChild variant="ghost" size="sm" className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white shrink-0">
               <Link href="/dashboard" className="flex items-center gap-1.5 text-xs font-semibold">
                 <ArrowLeft className="size-4" /> Kembali
               </Link>
             </Button>
-            <div className="h-5 w-px bg-slate-800 shrink-0" />
+            <div className="h-5 w-px bg-slate-200 dark:bg-slate-800 shrink-0" />
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-primary/20 text-primary border border-primary/30 uppercase tracking-wider">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-primary/10 dark:bg-primary/20 text-primary border border-primary/20 uppercase tracking-wider">
                   Studio Editor
                 </span>
-                <span className="text-xs text-slate-400 truncate hidden sm:inline">
+                <span className="text-xs text-slate-500 dark:text-slate-400 truncate hidden sm:inline">
                   {article.source || 'Newsly AI'}
                 </span>
               </div>
-              <h1 className="text-sm sm:text-base font-bold text-white truncate max-w-md lg:max-w-xl">
+              <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate max-w-md lg:max-w-xl">
                 {initialContent.headline || article.title}
               </h1>
             </div>
@@ -275,9 +274,9 @@ export function CarouselStudio({
               variant="secondary"
               size="sm"
               onClick={handleCopyCaption}
-              className="flex items-center gap-1.5 text-xs font-bold bg-slate-900 border-slate-800 text-slate-200 hover:bg-slate-800"
+              className="flex items-center gap-1.5 text-xs font-bold bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800"
             >
-              {copiedCaption ? <Check className="size-3.5 text-emerald-400" /> : <Copy className="size-3.5" />}
+              {copiedCaption ? <Check className="size-3.5 text-emerald-500" /> : <Copy className="size-3.5" />}
               {copiedCaption ? 'Tersalin!' : 'Salin Caption'}
             </Button>
 
@@ -286,9 +285,9 @@ export function CarouselStudio({
               size="sm"
               disabled={isExportingPng}
               onClick={handleDownloadCurrentPng}
-              className="flex items-center gap-1.5 text-xs font-bold bg-slate-900 border-slate-800 text-slate-200 hover:bg-slate-800"
+              className="flex items-center gap-1.5 text-xs font-bold bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-cyan-700 dark:text-cyan-400 hover:bg-slate-200 dark:hover:bg-slate-800"
             >
-              <Download className="size-3.5 text-cyan-400" />
+              <Download className="size-3.5 text-cyan-600 dark:text-cyan-400" />
               PNG Slide {activeSlideIndex + 1}
             </Button>
 
@@ -308,7 +307,7 @@ export function CarouselStudio({
       {/* ─── 2. SPLIT-SCREEN WORKSPACE ─── */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-start">
         {/* Mobile View Mode Switcher */}
-        <div className="col-span-1 lg:hidden w-full bg-slate-900/90 p-1 rounded-2xl border border-slate-800 flex gap-1 shadow-lg">
+        <div className="col-span-1 lg:hidden w-full bg-white dark:bg-slate-900/90 p-1 rounded-2xl border border-slate-200 dark:border-slate-800 flex gap-1 shadow-lg">
           <button
             type="button"
             onClick={() => setMobileView('preview')}
@@ -316,7 +315,7 @@ export function CarouselStudio({
               'flex-1 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all',
               mobileView === 'preview'
                 ? 'bg-primary text-white shadow-md'
-                : 'text-slate-400 hover:text-white'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             )}
           >
             <Smartphone className="size-3.5" />
@@ -329,7 +328,7 @@ export function CarouselStudio({
               'flex-1 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all',
               mobileView === 'edit'
                 ? 'bg-primary text-white shadow-md'
-                : 'text-slate-400 hover:text-white'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             )}
           >
             <Sliders className="size-3.5" />
@@ -340,21 +339,21 @@ export function CarouselStudio({
         {/* ─── LEFT/CENTER COLUMN: CANVAS PREVIEW & CONTROLS ─── */}
         <div
           className={cn(
-            'lg:col-span-7 flex flex-col items-center space-y-5 bg-slate-900/40 p-3 sm:p-8 rounded-3xl border border-slate-800/80 shadow-2xl backdrop-blur-sm',
+            'lg:col-span-7 flex flex-col items-center space-y-5 bg-white/80 dark:bg-slate-900/40 p-3 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800/80 shadow-xl backdrop-blur-sm transition-colors duration-200',
             mobileView !== 'preview' && 'hidden lg:flex'
           )}
         >
           {/* Format & View Mode Toolbar */}
-          <div className="flex flex-wrap items-center justify-between gap-3 w-full border-b border-slate-800/80 pb-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 w-full border-b border-slate-200 dark:border-slate-800/80 pb-4">
             {/* Format Pills */}
-            <div className="flex items-center gap-1 p-1 bg-slate-950 rounded-2xl border border-slate-800">
+            <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800">
               <button
                 type="button"
                 onClick={() => setCurrentFormat('FEED_PORTRAIT')}
                 className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all ${
                   currentFormat === 'FEED_PORTRAIT'
                     ? 'bg-primary text-white shadow-md'
-                    : 'text-slate-400 hover:text-white'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 Feed 4:5 (IG)
@@ -365,7 +364,7 @@ export function CarouselStudio({
                 className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all ${
                   currentFormat === 'FEED_SQUARE'
                     ? 'bg-primary text-white shadow-md'
-                    : 'text-slate-400 hover:text-white'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 Square 1:1
@@ -376,7 +375,7 @@ export function CarouselStudio({
                 className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all ${
                   currentFormat === 'STORY'
                     ? 'bg-primary text-white shadow-md'
-                    : 'text-slate-400 hover:text-white'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 Story 9:16
@@ -388,7 +387,7 @@ export function CarouselStudio({
               variant="secondary"
               size="sm"
               onClick={() => fileInputRef.current?.click()}
-              className="h-8 px-3 text-xs font-bold bg-slate-900 border-slate-800 text-cyan-300 hover:bg-slate-800 hover:text-white flex items-center gap-1.5 shadow-sm"
+              className="h-8 px-3 text-xs font-bold bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-cyan-700 dark:text-cyan-300 hover:bg-slate-200 dark:hover:bg-slate-800 flex items-center gap-1.5 shadow-sm"
             >
               <Upload className="size-3.5" />
               <span>Ganti Foto Slide Ini</span>
@@ -418,12 +417,12 @@ export function CarouselStudio({
                 size="sm"
                 disabled={activeSlideIndex === 0}
                 onClick={() => setActiveSlideIndex((prev) => Math.max(0, prev - 1))}
-                className="h-8 px-3 text-xs bg-slate-900 border-slate-800 text-slate-300 hover:text-white disabled:opacity-30"
+                className="h-8 px-3 text-xs bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:text-white disabled:opacity-30"
               >
                 <ChevronLeft className="size-4 mr-1" /> Prev
               </Button>
 
-              <span className="text-xs font-mono font-bold text-slate-400">
+              <span className="text-xs font-mono font-bold text-slate-500 dark:text-slate-400">
                 Poin {activeSlideIndex + 1} dari {slides.length}
               </span>
 
@@ -432,7 +431,7 @@ export function CarouselStudio({
                 size="sm"
                 disabled={activeSlideIndex === slides.length - 1}
                 onClick={() => setActiveSlideIndex((prev) => Math.min(slides.length - 1, prev + 1))}
-                className="h-8 px-3 text-xs bg-slate-900 border-slate-800 text-slate-300 hover:text-white disabled:opacity-30"
+                className="h-8 px-3 text-xs bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:text-white disabled:opacity-30"
               >
                 Next <ChevronRight className="size-4 ml-1" />
               </Button>
@@ -446,8 +445,8 @@ export function CarouselStudio({
                   onClick={() => setActiveSlideIndex(idx)}
                   className={`size-12 rounded-xl border flex flex-col items-center justify-center cursor-pointer transition-all shrink-0 ${
                     activeSlideIndex === idx
-                      ? 'border-primary bg-primary/20 text-white shadow-lg ring-2 ring-primary/40'
-                      : 'border-slate-800 bg-slate-950/60 text-slate-400 hover:border-slate-700 hover:text-white'
+                      ? 'border-primary bg-primary/10 dark:bg-primary/20 text-primary dark:text-white shadow-lg ring-2 ring-primary/40'
+                      : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950/60 text-slate-500 dark:text-slate-400 hover:border-slate-400 dark:hover:border-slate-700'
                   }`}
                 >
                   <span className="text-[10px] font-mono font-bold">#{idx + 1}</span>
@@ -461,7 +460,7 @@ export function CarouselStudio({
                 <button
                   type="button"
                   onClick={handleAddSlide}
-                  className="size-12 rounded-xl border border-dashed border-slate-800 bg-slate-950/40 text-slate-400 hover:border-primary hover:text-primary flex items-center justify-center transition-colors shrink-0"
+                  className="size-12 rounded-xl border border-dashed border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950/40 text-slate-400 hover:border-primary hover:text-primary flex items-center justify-center transition-colors shrink-0"
                   title="Tambah Slide Baru"
                 >
                   <Plus className="size-4" />
@@ -479,14 +478,14 @@ export function CarouselStudio({
           )}
         >
           {/* Tabs Navigation */}
-          <div className="flex items-center bg-slate-900/80 p-1.5 rounded-2xl border border-slate-800 shadow-xl">
+          <div className="flex items-center bg-white dark:bg-slate-900/80 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md">
             <button
               type="button"
               onClick={() => setActiveTab('styles')}
               className={`flex-1 py-2.5 px-3 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all ${
                 activeTab === 'styles'
                   ? 'bg-primary text-white shadow-lg shadow-primary/25'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/40'
               }`}
             >
               <Palette className="size-3.5" /> 20 Template
@@ -498,7 +497,7 @@ export function CarouselStudio({
               className={`flex-1 py-2.5 px-3 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all ${
                 activeTab === 'editor'
                   ? 'bg-primary text-white shadow-lg shadow-primary/25'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/40'
               }`}
             >
               <Sliders className="size-3.5" /> Edit Teks & Foto
@@ -510,7 +509,7 @@ export function CarouselStudio({
               className={`flex-1 py-2.5 px-3 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all ${
                 activeTab === 'caption'
                   ? 'bg-primary text-white shadow-lg shadow-primary/25'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/40'
               }`}
             >
               <FileText className="size-3.5" /> Caption
@@ -521,7 +520,7 @@ export function CarouselStudio({
           {activeTab === 'styles' && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <p className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                <p className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
                   <Layers className="size-4 text-primary" /> 20 Preset Desain Kelas Dunia:
                 </p>
                 <span className="text-[11px] font-mono text-primary font-bold">1-Klik Ganti</span>
@@ -548,8 +547,8 @@ export function CarouselStudio({
                         isSelected
                           ? 'bg-primary/10 border-primary shadow-xl ring-2 ring-primary/40'
                           : isLocked
-                          ? 'bg-slate-950/40 border-slate-800/60 opacity-80 hover:opacity-100 hover:border-amber-500/40'
-                          : 'bg-slate-900/70 border-slate-800 hover:border-slate-700 hover:bg-slate-900'
+                          ? 'bg-slate-100/60 dark:bg-slate-950/40 border-slate-200 dark:border-slate-800/60 opacity-80 hover:opacity-100 hover:border-amber-500/40'
+                          : 'bg-white dark:bg-slate-900/70 border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-700 shadow-sm'
                       }`}
                     >
                       <div>
@@ -559,7 +558,7 @@ export function CarouselStudio({
                               className="size-3 rounded-full shrink-0"
                               style={{ backgroundColor: style.accentColor }}
                             />
-                            <span className="font-bold text-xs text-white truncate">
+                            <span className="font-bold text-xs text-slate-900 dark:text-white truncate">
                               {style.label}
                             </span>
                           </div>
@@ -572,7 +571,7 @@ export function CarouselStudio({
                                 e.stopPropagation();
                                 setSelectedPreviewStyle(style);
                               }}
-                              className="p-1 rounded-md text-slate-400 hover:text-cyan-300 hover:bg-slate-800 transition-colors"
+                              className="p-1 rounded-md text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                               title="Lihat Pratinjau 5 Slide"
                             >
                               <Eye className="size-3.5" />
@@ -583,11 +582,11 @@ export function CarouselStudio({
                                 <Check className="size-2.5 stroke-[3]" />
                               </div>
                             ) : isLocked ? (
-                              <span className="inline-flex items-center gap-0.5 text-[9px] font-black px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0">
+                              <span className="inline-flex items-center gap-0.5 text-[9px] font-black px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-300 border border-amber-500/30 shrink-0">
                                 <Lock className="size-2.5" /> PRO
                               </span>
                             ) : style.badge ? (
-                              <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shrink-0">
+                              <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30 shrink-0">
                                 {style.badge}
                               </span>
                             ) : null}
@@ -600,7 +599,7 @@ export function CarouselStudio({
                           </p>
                         )}
 
-                        <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
                           {style.description}
                         </p>
                       </div>
@@ -610,31 +609,31 @@ export function CarouselStudio({
               </div>
 
               {/* Watermark & Branding Customizer */}
-              <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
-                <p className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+              <div className="p-4 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                <p className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                   Watermark & Identitas Media:
                 </p>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label className="text-[11px] text-slate-400 font-semibold mb-1 block">
+                    <Label className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold mb-1 block">
                       Instagram Handle
                     </Label>
                     <Input
                       value={handle}
                       onChange={(e) => setHandle(e.target.value)}
                       placeholder="@namamedia"
-                      className="h-9 text-xs bg-slate-950 border-slate-800"
+                      className="h-9 text-xs bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800"
                     />
                   </div>
                   <div>
-                    <Label className="text-[11px] text-slate-400 font-semibold mb-1 block">
+                    <Label className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold mb-1 block">
                       Nama Brand / Redaksi
                     </Label>
                     <Input
                       value={brandName}
                       onChange={(e) => setBrandName(e.target.value)}
                       placeholder="MEDIA UPDATE"
-                      className="h-9 text-xs bg-slate-950 border-slate-800"
+                      className="h-9 text-xs bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800"
                     />
                   </div>
                 </div>
@@ -644,8 +643,8 @@ export function CarouselStudio({
 
           {/* TAB 2: Live Slide Text & Custom Photo Editor */}
           {activeTab === 'editor' && (
-            <div className="space-y-4 bg-slate-900/60 p-5 rounded-2xl border border-slate-800">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div className="space-y-4 bg-white dark:bg-slate-900/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+              <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
                 <span className="text-xs font-bold text-primary uppercase">
                   Mengedit Slide #{activeSlideIndex + 1} ({currentSlide.type})
                 </span>
@@ -655,7 +654,7 @@ export function CarouselStudio({
                     variant="ghost"
                     size="sm"
                     onClick={() => handleRemoveSlide(activeSlideIndex)}
-                    className="h-7 px-2 text-xs text-red-400 hover:text-red-300 hover:bg-red-950/40"
+                    className="h-7 px-2 text-xs text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40"
                   >
                     <Trash2 className="size-3.5 mr-1" /> Hapus Slide
                   </Button>
@@ -663,19 +662,19 @@ export function CarouselStudio({
               </div>
 
               {/* Photo Replacement Button */}
-              <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-3">
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2 min-w-0">
-                  <ImageIcon className="size-4 text-cyan-400 shrink-0" />
+                  <ImageIcon className="size-4 text-cyan-600 dark:text-cyan-400 shrink-0" />
                   <div className="min-w-0">
-                    <p className="text-xs font-bold text-white truncate">Foto Latar Slide #{activeSlideIndex + 1}</p>
-                    <p className="text-[10px] text-slate-400 truncate">Unggah gambar dari perangkat Anda</p>
+                    <p className="text-xs font-bold text-slate-900 dark:text-white truncate">Foto Latar Slide #{activeSlideIndex + 1}</p>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">Unggah gambar dari perangkat Anda</p>
                   </div>
                 </div>
                 <Button
                   size="sm"
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="h-8 px-3 text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white shrink-0"
+                  className="h-8 px-3 text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white shrink-0 shadow-sm"
                 >
                   <Upload className="size-3.5 mr-1" /> Unggah Foto
                 </Button>
@@ -683,14 +682,14 @@ export function CarouselStudio({
 
               {/* Tag / Category Badge */}
               <div>
-                <Label className="text-xs text-slate-400 font-semibold mb-1 block">
+                <Label className="text-xs text-slate-500 dark:text-slate-400 font-semibold mb-1 block">
                   Kategori Badge Slide (Opsional)
                 </Label>
                 <Input
                   value={currentSlide.tag || ''}
                   onChange={(e) => updateActiveSlide({ tag: e.target.value })}
                   placeholder="Contoh: BREAKING, TIPS, INSIGHT..."
-                  className="h-9 text-xs bg-slate-950 border-slate-800"
+                  className="h-9 text-xs bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800"
                 />
               </div>
 
@@ -698,25 +697,25 @@ export function CarouselStudio({
               {currentSlide.type === 'COVER' && (
                 <>
                   <div>
-                    <Label className="text-xs text-slate-400 font-semibold mb-1 block">
+                    <Label className="text-xs text-slate-500 dark:text-slate-400 font-semibold mb-1 block">
                       Headline Cover
                     </Label>
                     <Input
                       value={currentSlide.headline || ''}
                       onChange={(e) => updateActiveSlide({ headline: e.target.value })}
                       placeholder="Headline yang memikat..."
-                      className="text-sm font-bold bg-slate-950 border-slate-800"
+                      className="text-sm font-bold bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
                     />
                   </div>
                   <div>
-                    <Label className="text-xs text-slate-400 font-semibold mb-1 block">
+                    <Label className="text-xs text-slate-500 dark:text-slate-400 font-semibold mb-1 block">
                       Sub-headline / Lead Text
                     </Label>
                     <textarea
                       value={currentSlide.lead || ''}
                       onChange={(e) => updateActiveSlide({ lead: e.target.value })}
                       rows={3}
-                      className="w-full rounded-xl bg-slate-950 border border-slate-800 p-3 text-xs text-slate-200 focus:ring-2 focus:ring-primary outline-none"
+                      className="w-full rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-3 text-xs text-slate-900 dark:text-slate-200 focus:ring-2 focus:ring-primary outline-none"
                     />
                   </div>
                 </>
@@ -726,47 +725,47 @@ export function CarouselStudio({
               {currentSlide.type === 'POINT' && (
                 <>
                   <div>
-                    <Label className="text-xs text-slate-400 font-semibold mb-1 block">
+                    <Label className="text-xs text-slate-500 dark:text-slate-400 font-semibold mb-1 block">
                       Header Poin Manfaat (Takeaway)
                     </Label>
                     <Input
                       value={currentSlide.takeaway || ''}
                       onChange={(e) => updateActiveSlide({ takeaway: e.target.value })}
                       placeholder="Judul poin manfaat spesifik..."
-                      className="text-sm font-bold bg-slate-950 border-slate-800"
+                      className="text-sm font-bold bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
                     />
                   </div>
                   <div>
-                    <Label className="text-xs text-slate-400 font-semibold mb-1 block">
+                    <Label className="text-xs text-slate-500 dark:text-slate-400 font-semibold mb-1 block">
                       Penjelasan Mendalam
                     </Label>
                     <textarea
                       value={currentSlide.supportingText || ''}
                       onChange={(e) => updateActiveSlide({ supportingText: e.target.value })}
                       rows={3}
-                      className="w-full rounded-xl bg-slate-950 border border-slate-800 p-3 text-xs text-slate-200 focus:ring-2 focus:ring-primary outline-none"
+                      className="w-full rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-3 text-xs text-slate-900 dark:text-slate-200 focus:ring-2 focus:ring-primary outline-none"
                     />
                   </div>
                   <div>
-                    <Label className="text-xs text-slate-400 font-semibold mb-1 block">
+                    <Label className="text-xs text-slate-500 dark:text-slate-400 font-semibold mb-1 block">
                       Highlight Data / Angka Kunci (Opsional)
                     </Label>
                     <Input
                       value={currentSlide.statHighlight || ''}
                       onChange={(e) => updateActiveSlide({ statHighlight: e.target.value })}
                       placeholder="Contoh: Pertumbuhan: +24% atau Nilai: Rp 15 Triliun..."
-                      className="h-9 text-xs bg-slate-950 border-slate-800"
+                      className="h-9 text-xs bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800"
                     />
                   </div>
                   <div>
-                    <Label className="text-xs text-slate-400 font-semibold mb-1 block">
+                    <Label className="text-xs text-slate-500 dark:text-slate-400 font-semibold mb-1 block">
                       Kutipan Narasumber (Opsional)
                     </Label>
                     <Input
                       value={currentSlide.sourceQuote || ''}
                       onChange={(e) => updateActiveSlide({ sourceQuote: e.target.value })}
                       placeholder="Kutipan..."
-                      className="h-9 text-xs bg-slate-950 border-slate-800"
+                      className="h-9 text-xs bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800"
                     />
                   </div>
                 </>
@@ -776,25 +775,25 @@ export function CarouselStudio({
               {currentSlide.type === 'OUTRO' && (
                 <>
                   <div>
-                    <Label className="text-xs text-slate-400 font-semibold mb-1 block">
+                    <Label className="text-xs text-slate-500 dark:text-slate-400 font-semibold mb-1 block">
                       Judul Kesimpulan
                     </Label>
                     <Input
                       value={currentSlide.takeaway || ''}
                       onChange={(e) => updateActiveSlide({ takeaway: e.target.value })}
                       placeholder="Kesimpulan..."
-                      className="text-sm font-bold bg-slate-950 border-slate-800"
+                      className="text-sm font-bold bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
                     />
                   </div>
                   <div>
-                    <Label className="text-xs text-slate-400 font-semibold mb-1 block">
+                    <Label className="text-xs text-slate-500 dark:text-slate-400 font-semibold mb-1 block">
                       Teks Ajakan (Call to Action)
                     </Label>
                     <Input
                       value={currentSlide.ctaText || ''}
                       onChange={(e) => updateActiveSlide({ ctaText: e.target.value })}
                       placeholder="Simpan postingan ini & bagikan ke tim Anda!"
-                      className="text-xs bg-slate-950 border-slate-800"
+                      className="text-xs bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800"
                     />
                   </div>
                 </>
@@ -804,18 +803,18 @@ export function CarouselStudio({
 
           {/* TAB 3: Auto-Generated Instagram Caption */}
           {activeTab === 'caption' && (
-            <div className="space-y-4 bg-slate-900/60 p-5 rounded-2xl border border-slate-800">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                <span className="text-xs font-bold text-slate-300">
+            <div className="space-y-4 bg-white dark:bg-slate-900/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+              <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
                   Naskah Caption Instagram & LinkedIn
                 </span>
                 <Button
                   size="sm"
                   variant="secondary"
                   onClick={handleCopyCaption}
-                  className="h-7 text-xs bg-slate-900 border-slate-700 text-slate-200"
+                  className="h-7 text-xs bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200"
                 >
-                  {copiedCaption ? <Check className="size-3.5 text-emerald-400 mr-1" /> : <Copy className="size-3.5 mr-1" />}
+                  {copiedCaption ? <Check className="size-3.5 text-emerald-500 mr-1" /> : <Copy className="size-3.5 mr-1" />}
                   {copiedCaption ? 'Tersalin!' : 'Salin Semua'}
                 </Button>
               </div>
@@ -824,7 +823,7 @@ export function CarouselStudio({
                 readOnly
                 value={`${initialContent.caption}\n\n${(initialContent.hashtags || []).join(' ')}`}
                 rows={12}
-                className="w-full rounded-xl bg-slate-950 border border-slate-800 p-3.5 text-xs text-slate-300 leading-relaxed font-sans focus:ring-1 focus:ring-primary outline-none"
+                className="w-full rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-3.5 text-xs text-slate-800 dark:text-slate-300 leading-relaxed font-sans focus:ring-1 focus:ring-primary outline-none"
               />
             </div>
           )}
