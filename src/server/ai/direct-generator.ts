@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import type { DesignStyle, OutputFormat } from '@prisma/client';
 import { db } from '@/server/db';
-import { extractArticle } from '@/server/scraper';
+import { scrapeArticleFast } from '@/server/scraper/fast-scraper';
 import { runStructured } from '@/server/ai/client';
 import { SLIDES } from '@/server/design/deck';
 import { consumeQuota } from '@/server/billing/quota';
@@ -126,7 +126,7 @@ export async function generateDirect(input: GenerateDirectInput) {
   // 1. Resolve Content based on Mode
   if (input.mode === 'url' && input.url) {
     try {
-      const scraped = await extractArticle({ url: input.url });
+      const scraped = await scrapeArticleFast(input.url);
       articleTitle = scraped.title;
       articleContent = scraped.content;
       articleSource = scraped.source || 'Portal Berita';
