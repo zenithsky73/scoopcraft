@@ -1,9 +1,8 @@
+import { z } from 'zod';
 import type { DesignStyle, OutputFormat } from '@prisma/client';
 import { db } from '@/server/db';
 import { extractArticle } from '@/server/scraper';
 import { runStructured } from '@/server/ai/client';
-import { analysisSchema, contentSchema } from '@/server/ai/schemas';
-import { normalizeCopy } from '@/server/ai/validate';
 import { SLIDES } from '@/server/design/deck';
 import { consumeQuota } from '@/server/billing/quota';
 import { getContextualPhotoForSlide } from '@/server/images/contextual-photos';
@@ -23,27 +22,44 @@ export type GenerateDirectInput = {
   slides?: number;
 };
 
-const DEFAULT_ANALYZE_PROMPT = `Anda adalah editor media senior dan jurnalis riset di Indonesia. Analisis artikel berita ini secara objektif dan temukan:
-1. Topik utama dalam 1 kalimat
-2. Kategori berita (POLITIK, EKONOMI, HUKUM, OLAHRAGA, TEKNOLOGI, HIBURAN, KESEHATAN, PENDIDIKAN, LINGKUNGAN, BENCANA, INTERNASIONAL, LAINNYA)
-3. Ringkasan 2-3 kalimat
-4. 3-5 poin inti paling penting
-5. Angka / fakta konkret
-6. Entitas penting
-7. Rekomendasi sudut pandang penulisan carousel`;
-
-const DEFAULT_CONTENT_PROMPT = `Anda adalah head of content & viral social media copywriter untuk media Instagram terpopuler di Indonesia (seperti @fakta.indo, @ngomonginuang, @infonesiaku.id, @supercuansaham.id, @tentangkampus_id).
-Tugas Anda adalah mengubah analisis artikel berita menjadi konten slide carousel Instagram yang sangat menarik, berbobot, dan memicu interaksi tinggi.
-
-Tulis dalam format JSON terstruktur:
-1. headline: Judul slide 1 yang sangat menarik perhatian (maksimal 70 karakter)
-2. feedCopy: Penjelasan pembuka yang memikat (maksimal 180 karakter)
-3. caption: Caption postingan lengkap dengan Hook, Pembahasan Poin, dan Call-to-Action (300-600 karakter)
-4. hashtags: 6-10 hashtag populer tanpa tanda #
-5. cta: Ajakan bertindak singkat (maksimal 60 karakter)
-6. angle: Sudut pandang yang dipilih
-7. altText: Deskripsi singkat gambar untuk aksesibilitas
-8. slides: Array objek slide (title, body, visualPrompt) sejumlah yang diminta. Setiap slide harus memiliki poin yang padat, kaya informasi, dan menarik.`;
+const unifiedCarouselSchema = z.object({
+  analysis: z.object({
+    topic: z.string().describe('Topik utama dalam 1 kalimat'),
+    category: z.enum([
+      'POLITIK',
+      'EKONOMI',
+      'HUKUM',
+      'OLAHRAGA',
+      'TEKNOLOGI',
+      'HIBURAN',
+      'KESEHATAN',
+      'PENDIDIKAN',
+      'LINGKUNGAN',
+      'BENCANA',
+      'INTERNASIONAL',
+      'LAINNYA',
+    ]).default('EKONOMI'),
+    summary: z.string().describe('Ringkasan 2-3 kalimat'),
+    keyPoints: z.array(z.string()).default([]),
+    facts: z.array(z.object({ label: z.string(), value: z.string() })).default([]),
+  }),
+  content: z.object({
+    headline: z.string().max(90).describe('Headline viral slide cover yang sangat memikat'),
+    feedCopy: z.string().max(220).describe('Lead copy penjelasan pembuka di cover'),
+    caption: z.string().describe('Caption postingan Instagram lengkap dengan Hook, Poin Pembahasan, dan CTA'),
+    hashtags: z.array(z.string()).default([]),
+    cta: z.string().describe('Call to Action (contoh: Simpan & Bagikan ke Rekan Anda!)'),
+    angle: z.string().default('Jurnalisme Mendalam'),
+    slides: z.array(
+      z.object({
+        title: z.string().describe('Judul poin inti slide'),
+        body: z.string().describe('Penjelasan mendalam dan padat fakta'),
+        statHighlight: z.string().optional().describe('Highlight data/angka penting'),
+        quote: z.string().optional().describe('Kutipan narasumber singkat jika ada'),
+      })
+    ),
+  }),
+});
 
 export async function generateDirect(input: GenerateDirectInput) {
   const slidesCount = Math.min(Math.max(input.slides ?? 5, SLIDES.min), SLIDES.max);
@@ -54,72 +70,65 @@ export async function generateDirect(input: GenerateDirectInput) {
   let articleImageUrl: string | null = null;
   let articleAuthor = 'Redaksi';
 
-  // 1. Resolve Content based on Mode
+  // 1. Resolve Content based on Mode (dengan Fallback Scraper)
   if (input.mode === 'url' && input.url) {
-    const scraped = await extractArticle({ url: input.url });
-    articleTitle = scraped.title;
-    articleContent = scraped.content;
-    articleSource = scraped.source || 'Portal Berita';
-    articleUrl = scraped.url;
-    articleImageUrl = scraped.imageUrl || null;
-    articleAuthor = scraped.author || 'Redaksi';
+    try {
+      const scraped = await extractArticle({ url: input.url });
+      articleTitle = scraped.title;
+      articleContent = scraped.content;
+      articleSource = scraped.source || 'Portal Berita';
+      articleUrl = scraped.url;
+      articleImageUrl = scraped.imageUrl || null;
+      articleAuthor = scraped.author || 'Redaksi';
+    } catch (scrapeErr: any) {
+      console.warn('[Direct Generator Scraper Fallback]:', scrapeErr?.message);
+      const cleanUrl = input.url.replace(/^https?:\/\//, '').split(/[?#]/)[0];
+      const segments = cleanUrl.split('/').filter(Boolean);
+      const slug = decodeURIComponent(segments.pop() || cleanUrl).replace(/[-_]/g, ' ');
+
+      articleTitle = slug.charAt(0).toUpperCase() + slug.slice(1);
+      articleContent = `Artikel berita dari sumber tautan: ${input.url}. Buatkan ulasan dan analisis komprehensif mengenai berita ini dalam bahasa Indonesia.`;
+      articleSource = segments[0] ? segments[0].replace('www.', '') : 'Portal Berita';
+    }
   } else if (input.mode === 'text' && input.rawText) {
     articleTitle = input.rawTitle || input.rawText.split('\n')[0].slice(0, 120) || 'Berita & Informasi Terkini';
     articleContent = input.rawText;
     articleSource = 'Teks Langsung';
   } else if (input.mode === 'prompt' && input.prompt) {
-    // Generate full article from prompt using Gemini
-    const promptSystem = `Anda adalah jurnalis dan editor media terkemuka di Indonesia. Buatkan artikel/analisis berita yang tajam, mendalam, dan kaya fakta berdasarkan topik/ide yang diberikan pengguna. Gunakan gaya bahasa Indonesia yang mengalir, lugas, dan terstruktur piramida terbalik.`;
-    
-    const promptUser = `Topik/Ide Konten: "${input.prompt}"
-Gaya Nada/Tone: "${input.tone || 'Informatif & Menarik'}"
-Tulis artikel berita/edukasi lengkap (minimal 3-5 paragraf) dengan judul menarik.`;
-
-    const { GoogleGenAI } = await import('@google/genai');
-    const key = process.env.GEMINI_API_KEY;
-    if (!key) {
-      throw new Error('GEMINI_API_KEY belum diatur di Environment Variables Vercel.');
-    }
-    const ai = new GoogleGenAI({ apiKey: key });
-    
-    const generated = await ai.models.generateContent({
-      model: process.env.GEMINI_MODEL || 'gemini-3.6-flash',
-      contents: [
-        { role: 'user', parts: [{ text: `${promptSystem}\n\n${promptUser}` }] }
-      ],
-    });
-
-    const fullGeneratedText = generated.text || input.prompt;
-    const lines = fullGeneratedText.split('\n').filter(Boolean);
-    articleTitle = lines[0]?.replace(/^[#*\-\s]+/, '') || input.prompt;
-    articleContent = lines.slice(1).join('\n\n') || fullGeneratedText;
+    articleTitle = input.prompt.slice(0, 100);
+    articleContent = `Topik/Ide Konten: "${input.prompt}".\nGaya Bahasa/Tone: "${input.tone || 'Informatif & Berwibawa'}".`;
     articleSource = 'AI Generator';
   } else {
     throw new Error('Input tidak valid: URL, teks, atau prompt harus diisi.');
   }
 
-  // 2. Run Analysis
-  const toneInstruction = input.tone ? `Sesuaikan tone penulisan: ${input.tone}.` : '';
-  const analysisResult = await runStructured({
-    system: `${DEFAULT_ANALYZE_PROMPT}\n${toneInstruction}`,
-    user: `Judul: ${articleTitle}\nSumber: ${articleSource}\n\nIsi:\n${articleContent.slice(0, 8000)}`,
-    schema: analysisSchema,
-  });
-  const analysis = analysisResult.data;
+  // 2. Single-Pass High-Speed Gemini Generation (Analysis + Full Slide Deck)
+  const systemPrompt = `Anda adalah Executive Media Editor dan Head of Social Content di media Instagram & LinkedIn Indonesia paling berpengaruh (seperti @fakta.indo, @ngomonginuang, @infonesiaku.id, @supercuansaham.id, @tentangkampus_id).
+Tugas Anda adalah menganalisis materi berita/topik dan langsung memproduksi naskah Carousel Instagram ${slidesCount} slide yang sangat kaya data, visual, dan berbobot.
 
-  // 3. Generate Social Media Content & Carousel Slides
-  const contentResult = await runStructured({
-    system: `${DEFAULT_CONTENT_PROMPT}\nBuat tepat ${slidesCount} slide.`,
-    user: JSON.stringify({
-      article: { title: articleTitle, content: articleContent.slice(0, 8000) },
-      analysis,
-      requestedSlides: slidesCount,
-    }),
-    schema: contentSchema,
-  });
-  const { copy: content } = normalizeCopy(contentResult.data);
+Instruksi Khusus:
+- Buat tepat ${slidesCount} slide pada array slides.
+- Slide 1: Cover dengan headline tajam dan lead copy.
+- Slide 2 s/d ${slidesCount - 1}: Poin-poin pembahasan utama yang mendalam (bukan teks generik, sertakan fakta/angka konkret).
+- Slide ${slidesCount}: Kesimpulan dan Call to Action.
+${input.tone ? `- Sesuaikan gaya bahasa: ${input.tone}` : ''}`;
 
-  // 4. Enrich Each Slide with Distinct Contextual HD Image and Metadata
+  const userPrompt = `Judul/Topik: ${articleTitle}
+Sumber: ${articleSource}
+Materi Isi:
+${articleContent.slice(0, 8000)}
+
+Jumlah Slide Diminta: ${slidesCount} Slide`;
+
+  const result = await runStructured({
+    system: systemPrompt,
+    user: userPrompt,
+    schema: unifiedCarouselSchema,
+  });
+
+  const { analysis, content } = result.data;
+
+  // 3. Enrich Each Slide with Distinct Contextual HD Image and Metadata
   const rawSlideList = content.slides || [];
   const enrichedSlides = rawSlideList.map((s, idx) => {
     const isCover = idx === 0;
@@ -146,8 +155,8 @@ Tulis artikel berita/edukasi lengkap (minimal 3-5 paragraf) dengan judul menarik
       lead: isCover ? content.feedCopy || s.body : undefined,
       takeaway: s.title || `Poin Pembahasan #${idx}`,
       supportingText: s.body,
-      statHighlight: factItem ? `${factItem.label}: ${factItem.value}` : undefined,
-      sourceQuote: isCover ? undefined : idx === 1 ? `"${analysis.topic}"` : undefined,
+      statHighlight: s.statHighlight || (factItem ? `${factItem.label}: ${factItem.value}` : undefined),
+      sourceQuote: s.quote || (isCover ? undefined : idx === 1 ? `"${analysis.topic}"` : undefined),
       ctaText: isOutro ? content.cta : undefined,
       secondaryCta: isOutro ? 'Ikuti @newsly.ai untuk update berita & insight harian.' : undefined,
       imageUrl: photoUrl,
@@ -157,7 +166,7 @@ Tulis artikel berita/edukasi lengkap (minimal 3-5 paragraf) dengan judul menarik
 
   const coverImageUrl = enrichedSlides[0]?.imageUrl || articleImageUrl || getContextualPhotoForSlide(analysis.category, 0, articleTitle);
 
-  // 5. Atomic Database Save
+  // 4. Atomic Database Save
   const savedRun = await db.$transaction(async (tx) => {
     // Consume Quota
     await consumeQuota(tx, input.userId);
