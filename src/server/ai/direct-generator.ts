@@ -171,7 +171,7 @@ Kembalikan HANYA format JSON valid berikut (tanpa markdown blok lain):
     const photoUrl = getContextualPhotoForSlide(
       detectedCategory,
       idx,
-      `${s.title || ''} ${articleTitle}`,
+      `${s.title || ''} ${s.body || ''} ${articleTitle}`,
       isCover ? articleImageUrl : null
     );
 
