@@ -16,7 +16,7 @@ export const AI = {
     if (process.env.GEMINI_API_KEY) return 'gemini';
     if (process.env.OPENAI_API_KEY) return 'openai';
     if (process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_AUTH_TOKEN) return 'anthropic';
-    return 'anthropic';
+    return 'gemini';
   },
   get model(): string {
     if (this.provider === 'gemini') {
