@@ -12,9 +12,10 @@ export function ContentClientLoader({ id }: { id: string }) {
 
   React.useEffect(() => {
     try {
-      const saved = sessionStorage.getItem(`run_${id}`);
+      const saved = sessionStorage.getItem(`content_${id}`) || sessionStorage.getItem(`run_${id}`);
       if (saved) {
-        setData(JSON.parse(saved));
+        const parsed = JSON.parse(saved);
+        setData(parsed);
         setLoading(false);
         return;
       }
