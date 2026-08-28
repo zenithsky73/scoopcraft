@@ -23,6 +23,9 @@ import {
   Layers,
   Lock,
   Crown,
+  Upload,
+  Image as ImageIcon,
+  Eye,
 } from 'lucide-react';
 import { STYLES, isProStyle, type StyleDef } from '@/config/styles';
 import { CanvasRenderer, type SlideData } from '@/components/studio/canvas-renderer';
@@ -30,6 +33,8 @@ import { Button } from '@/components/ui/button';
 import { Input, Label } from '@/components/ui/input';
 import { downloadSlideAsPng, exportSlidesToPdf } from '@/lib/export-client';
 import { UpgradeDialog } from '@/components/billing/upgrade-dialog';
+import { TemplatePreviewModal } from '@/components/generate/template-preview-modal';
+import { ThemeToggle } from '@/components/layout/theme-toggle';
 import { cn } from '@/lib/utils';
 
 export type CarouselStudioProps = {
@@ -68,12 +73,15 @@ export function CarouselStudio({
   const [showUpgradeModal, setShowUpgradeModal] = React.useState(false);
   const [upgradeReason, setUpgradeReason] = React.useState<'PRO_STYLE' | 'PDF_EXPORT'>('PRO_STYLE');
   const [upgradeTitle, setUpgradeTitle] = React.useState('Buka Template Eksklusif Pro');
+  const [selectedPreviewStyle, setSelectedPreviewStyle] = React.useState<StyleDef | null>(null);
   const [handle, setHandle] = React.useState('@newsly.ai');
   const [brandName, setBrandName] = React.useState('NEWSLY AI');
   const [copiedCaption, setCopiedCaption] = React.useState(false);
   const [isExportingPdf, setIsExportingPdf] = React.useState(false);
   const [isExportingPng, setIsExportingPng] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState<'styles' | 'editor' | 'caption'>('styles');
+
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Parse slides
   const [slides, setSlides] = React.useState<SlideData[]>(() => {
@@ -96,7 +104,6 @@ export function CarouselStudio({
       }));
     }
 
-    // Default Fallback 5 Slides
     return [
       {
         index: 0,
@@ -109,7 +116,6 @@ export function CarouselStudio({
       {
         index: 1,
         type: 'POINT',
-        pointNumber: 1,
         takeaway: 'Latar Belakang & Kejadian Utama',
         supportingText: 'Pihak terkait telah mengonfirmasi langkah-langkah strategis yang sedang diambil untuk menangani situasi terkini.',
         source: article.source,
@@ -117,7 +123,6 @@ export function CarouselStudio({
       {
         index: 2,
         type: 'POINT',
-        pointNumber: 2,
         takeaway: 'Dampak & Fakta Kunci',
         supportingText: 'Analisis menunjukkan adanya pengaruh langsung terhadap sektor terkait serta masyarakat luas.',
         source: article.source,
@@ -125,7 +130,6 @@ export function CarouselStudio({
       {
         index: 3,
         type: 'POINT',
-        pointNumber: 3,
         takeaway: 'Rencana Tindak Lanjut',
         supportingText: 'Evaluasi menyeluruh sedang dilakukan bersama para ahli guna memastikan solusi jangka panjang.',
         source: article.source,
@@ -142,58 +146,78 @@ export function CarouselStudio({
 
   const currentSlide = slides[activeSlideIndex] || slides[0];
 
-  function updateActiveSlide(updates: Partial<SlideData>) {
+  const updateActiveSlide = (patch: Partial<SlideData>) => {
     setSlides((prev) =>
-      prev.map((s, idx) => (idx === activeSlideIndex ? { ...s, ...updates } : s))
+      prev.map((s, idx) => (idx === activeSlideIndex ? { ...s, ...patch } : s))
     );
-  }
+  };
 
-  function handleAddSlide() {
-    const newIndex = slides.length;
-    const newSlide: SlideData = {
-      index: newIndex,
-      type: 'POINT',
-      pointNumber: newIndex,
-      takeaway: `Poin Informasi Tambahan #${newIndex}`,
-      supportingText: 'Tulis penjelasan rinci untuk poin slide ini...',
-      source: article.source,
+  const handleCustomPhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      if (dataUrl) {
+        updateActiveSlide({ imageUrl: dataUrl });
+      }
     };
-    setSlides((prev) => [...prev, newSlide]);
-    setActiveSlideIndex(newIndex);
-  }
+    reader.readAsDataURL(file);
+    // Reset file input value
+    e.target.value = '';
+  };
 
-  function handleRemoveSlide(indexToRemove: number) {
-    if (slides.length <= 2) {
-      alert('Carousel minimal membutuhkan 2 slide (Cover & Poin/Outro).');
-      return;
+  const handleAddSlide = () => {
+    if (slides.length >= 10) return;
+    const newIdx = slides.length;
+    const newSlide: SlideData = {
+      index: newIdx,
+      type: 'POINT',
+      takeaway: `Poin Pembahasan Baru #${newIdx}`,
+      supportingText: 'Tuliskan rincian penjelasan dan fakta penting untuk slide ini di sini.',
+      source: article.source,
+      imageUrl: currentSlide.imageUrl || article.imageUrl,
+    };
+    setSlides([...slides, newSlide]);
+    setActiveSlideIndex(newIdx);
+  };
+
+  const handleRemoveSlide = (indexToRemove: number) => {
+    if (slides.length <= 2) return;
+    const filtered = slides.filter((_, idx) => idx !== indexToRemove);
+    const reindexed = filtered.map((s, idx) => ({
+      ...s,
+      index: idx,
+      type: (idx === 0 ? 'COVER' : idx === filtered.length - 1 ? 'OUTRO' : 'POINT') as any,
+    }));
+    setSlides(reindexed);
+    setActiveSlideIndex(Math.max(0, Math.min(activeSlideIndex, reindexed.length - 1)));
+  };
+
+  const handleCopyCaption = async () => {
+    const fullCaption = `${initialContent.caption}\n\n${(initialContent.hashtags || []).join(' ')}`;
+    try {
+      await navigator.clipboard.writeText(fullCaption);
+      setCopiedCaption(true);
+      setTimeout(() => setCopiedCaption(false), 2000);
+    } catch {
+      setCopiedCaption(false);
     }
-    const updated = slides
-      .filter((_, idx) => idx !== indexToRemove)
-      .map((s, idx) => ({ ...s, index: idx, pointNumber: s.type === 'POINT' ? idx : s.pointNumber }));
-    setSlides(updated);
-    setActiveSlideIndex((prev) => Math.min(prev, updated.length - 1));
-  }
+  };
 
-  function handleCopyCaption() {
-    const hashtagsFormatted = initialContent.hashtags.map((h) => (h.startsWith('#') ? h : `#${h}`)).join(' ');
-    const fullText = `${initialContent.headline}\n\n${initialContent.caption}\n\n👉 ${initialContent.cta}\n\n${hashtagsFormatted}`;
-    navigator.clipboard.writeText(fullText);
-    setCopiedCaption(true);
-    setTimeout(() => setCopiedCaption(false), 2000);
-  }
-
-  async function handleDownloadCurrentPng() {
+  const handleDownloadCurrentPng = async () => {
     setIsExportingPng(true);
     try {
-      await downloadSlideAsPng(activeSlideIndex, initialContent.headline || 'scoopcraft');
+      await downloadSlideAsPng(activeSlideIndex, initialContent.headline || 'slide');
     } finally {
       setIsExportingPng(false);
     }
-  }
+  };
 
-  async function handleExportPdf() {
-    if (!isProUser) {
-      setUpgradeTitle('Ekspor Carousel LinkedIn PDF Terkunci 🔒');
+  const handleExportPdf = async () => {
+    if (!isProUser && isProStyle(currentStyle)) {
+      setUpgradeTitle('Ekspor PDF Carousel Berkualitas Tinggi 📄');
       setUpgradeReason('PDF_EXPORT');
       setShowUpgradeModal(true);
       return;
@@ -201,14 +225,23 @@ export function CarouselStudio({
 
     setIsExportingPdf(true);
     try {
-      await exportSlidesToPdf(slides.length, initialContent.headline || 'newsly-carousel');
+      await exportSlidesToPdf(slides.length, initialContent.headline || 'carousel');
     } finally {
       setIsExportingPdf(false);
     }
-  }
+  };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col pb-24 lg:pb-12">
+      {/* Hidden File Input for Custom Image Upload */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleCustomPhotoUpload}
+        accept="image/*"
+        className="hidden"
+      />
+
       {/* ─── 1. TOP APP BAR ─── */}
       <header className="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-xl border-b border-slate-800/80 px-4 sm:px-6 py-3">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
@@ -225,7 +258,7 @@ export function CarouselStudio({
                   Studio Editor
                 </span>
                 <span className="text-xs text-slate-400 truncate hidden sm:inline">
-                  {article.source || 'Scoopcraft AI'}
+                  {article.source || 'Newsly AI'}
                 </span>
               </div>
               <h1 className="text-sm sm:text-base font-bold text-white truncate max-w-md lg:max-w-xl">
@@ -234,8 +267,10 @@ export function CarouselStudio({
             </div>
           </div>
 
-          {/* Quick Actions */}
+          {/* Quick Actions & Theme Switcher */}
           <div className="flex items-center gap-2 shrink-0 self-end md:self-auto">
+            <ThemeToggle />
+
             <Button
               variant="secondary"
               size="sm"
@@ -272,7 +307,7 @@ export function CarouselStudio({
 
       {/* ─── 2. SPLIT-SCREEN WORKSPACE ─── */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-start">
-        {/* Mobile View Mode Switcher (Visible only on < lg screens) */}
+        {/* Mobile View Mode Switcher */}
         <div className="col-span-1 lg:hidden w-full bg-slate-900/90 p-1 rounded-2xl border border-slate-800 flex gap-1 shadow-lg">
           <button
             type="button"
@@ -348,122 +383,95 @@ export function CarouselStudio({
               </button>
             </div>
 
-            {/* Smartphone Frame Toggle */}
-            <button
-              type="button"
-              onClick={() => setShowPhoneFrame((v) => !v)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all ${
-                showPhoneFrame
-                  ? 'bg-primary/10 border-primary/40 text-primary'
-                  : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-white'
-              }`}
-            >
-              <Smartphone className="size-3.5" />
-              <span>{showPhoneFrame ? 'Bingkai HP Aktif' : 'Tampilan Bersih'}</span>
-            </button>
-          </div>
-
-          {/* Active Canvas Viewport */}
-          <div className="w-full flex justify-center py-2 transition-all duration-300">
-            <CanvasRenderer
-              slide={currentSlide}
-              style={currentStyle}
-              format={currentFormat}
-              handle={handle}
-              brandName={brandName}
-              totalSlides={slides.length}
-              showPhoneFrame={showPhoneFrame}
-            />
-          </div>
-
-          {/* Carousel Slide Navigator */}
-          <div className="flex items-center justify-between w-full max-w-md pt-2">
+            {/* Quick Upload Photo Button */}
             <Button
               variant="secondary"
               size="sm"
-              disabled={activeSlideIndex === 0}
-              onClick={() => setActiveSlideIndex((prev) => Math.max(0, prev - 1))}
-              className="flex items-center gap-1.5 text-xs font-bold bg-slate-900 border-slate-800 hover:bg-slate-800"
+              onClick={() => fileInputRef.current?.click()}
+              className="h-8 px-3 text-xs font-bold bg-slate-900 border-slate-800 text-cyan-300 hover:bg-slate-800 hover:text-white flex items-center gap-1.5 shadow-sm"
             >
-              <ChevronLeft className="size-4" /> Sebelumnya
+              <Upload className="size-3.5" />
+              <span>Ganti Foto Slide Ini</span>
             </Button>
+          </div>
 
-            {/* Slide Pagination Dots */}
-            <div className="flex items-center gap-1.5">
-              {slides.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setActiveSlideIndex(idx)}
-                  className={`h-2.5 rounded-full transition-all ${
-                    idx === activeSlideIndex
-                      ? 'bg-primary w-6'
-                      : 'bg-slate-700 hover:bg-slate-500 w-2.5'
-                  }`}
-                  aria-label={`Pindah ke slide ${idx + 1}`}
-                />
-              ))}
+          {/* Canvas Render Area */}
+          <div className="w-full flex items-center justify-center py-2 sm:py-4">
+            <div className="w-full max-w-[340px] sm:max-w-[440px] relative">
+              <CanvasRenderer
+                slide={currentSlide}
+                style={currentStyle}
+                format={currentFormat}
+                handle={handle}
+                brandName={brandName}
+                totalSlides={slides.length}
+                showPhoneFrame={showPhoneFrame}
+              />
             </div>
-
-            <Button
-              variant="secondary"
-              size="sm"
-              disabled={activeSlideIndex === slides.length - 1}
-              onClick={() => setActiveSlideIndex((prev) => Math.min(slides.length - 1, prev + 1))}
-              className="flex items-center gap-1.5 text-xs font-bold bg-slate-900 border-slate-800 hover:bg-slate-800"
-            >
-              Lanjut <ChevronRight className="size-4" />
-            </Button>
           </div>
 
-          {/* Slide Thumbnail Strip */}
-          <div className="w-full pt-4 border-t border-slate-800/80">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                Daftar Slide ({slides.length}):
-              </span>
+          {/* Slide Navigation Strip */}
+          <div className="w-full flex flex-col items-center space-y-3 pt-2">
+            <div className="flex items-center justify-between w-full max-w-sm px-2">
               <Button
-                type="button"
-                variant="ghost"
+                variant="secondary"
                 size="sm"
-                onClick={handleAddSlide}
-                className="h-7 px-2 text-[11px] font-bold text-primary hover:bg-primary/10"
+                disabled={activeSlideIndex === 0}
+                onClick={() => setActiveSlideIndex((prev) => Math.max(0, prev - 1))}
+                className="h-8 px-3 text-xs bg-slate-900 border-slate-800 text-slate-300 hover:text-white disabled:opacity-30"
               >
-                <Plus className="size-3 mr-1" /> Tambah Slide
+                <ChevronLeft className="size-4 mr-1" /> Prev
+              </Button>
+
+              <span className="text-xs font-mono font-bold text-slate-400">
+                Poin {activeSlideIndex + 1} dari {slides.length}
+              </span>
+
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={activeSlideIndex === slides.length - 1}
+                onClick={() => setActiveSlideIndex((prev) => Math.min(slides.length - 1, prev + 1))}
+                className="h-8 px-3 text-xs bg-slate-900 border-slate-800 text-slate-300 hover:text-white disabled:opacity-30"
+              >
+                Next <ChevronRight className="size-4 ml-1" />
               </Button>
             </div>
 
-            <div className="flex items-center gap-2.5 overflow-x-auto pb-2 scrollbar-thin">
-              {slides.map((s, idx) => {
-                const isActive = idx === activeSlideIndex;
-                return (
-                  <div
-                    key={idx}
-                    onClick={() => setActiveSlideIndex(idx)}
-                    className={`relative p-2.5 rounded-xl cursor-pointer border transition-all shrink-0 w-24 text-left ${
-                      isActive
-                        ? 'bg-primary/15 border-primary ring-2 ring-primary/40 shadow-lg'
-                        : 'bg-slate-950 border-slate-800 hover:border-slate-700'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-[10px] font-mono font-bold text-slate-400">
-                        #{idx + 1}
-                      </span>
-                      <span className="text-[9px] font-black uppercase text-primary">
-                        {s.type}
-                      </span>
-                    </div>
-                    <p className="text-[10px] text-slate-300 font-medium line-clamp-2 leading-tight">
-                      {s.headline || s.takeaway || s.ctaText || `Slide ${idx + 1}`}
-                    </p>
-                  </div>
-                );
-              })}
+            {/* Thumbnail Strip */}
+            <div className="flex items-center gap-2 overflow-x-auto w-full p-2 max-w-lg justify-start sm:justify-center">
+              {slides.map((s, idx) => (
+                <div
+                  key={idx}
+                  onClick={() => setActiveSlideIndex(idx)}
+                  className={`size-12 rounded-xl border flex flex-col items-center justify-center cursor-pointer transition-all shrink-0 ${
+                    activeSlideIndex === idx
+                      ? 'border-primary bg-primary/20 text-white shadow-lg ring-2 ring-primary/40'
+                      : 'border-slate-800 bg-slate-950/60 text-slate-400 hover:border-slate-700 hover:text-white'
+                  }`}
+                >
+                  <span className="text-[10px] font-mono font-bold">#{idx + 1}</span>
+                  <span className="text-[8px] uppercase font-semibold text-slate-400 truncate max-w-[40px]">
+                    {s.type === 'COVER' ? 'Cover' : s.type === 'OUTRO' ? 'CTA' : `P${idx}`}
+                  </span>
+                </div>
+              ))}
+
+              {slides.length < 10 && (
+                <button
+                  type="button"
+                  onClick={handleAddSlide}
+                  className="size-12 rounded-xl border border-dashed border-slate-800 bg-slate-950/40 text-slate-400 hover:border-primary hover:text-primary flex items-center justify-center transition-colors shrink-0"
+                  title="Tambah Slide Baru"
+                >
+                  <Plus className="size-4" />
+                </button>
+              )}
             </div>
           </div>
         </div>
 
-        {/* ─── RIGHT COLUMN: INSPECTOR DOCK (STYLES, LIVE EDIT, CAPTION) ─── */}
+        {/* ─── RIGHT COLUMN: INSPECTOR DOCK (20 STYLES, LIVE EDIT, CAPTION) ─── */}
         <div
           className={cn(
             'lg:col-span-5 space-y-6',
@@ -481,7 +489,7 @@ export function CarouselStudio({
                   : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
               }`}
             >
-              <Palette className="size-3.5" /> 1-Klik Gaya ({STYLES.length})
+              <Palette className="size-3.5" /> 20 Template
             </button>
 
             <button
@@ -493,7 +501,7 @@ export function CarouselStudio({
                   : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
               }`}
             >
-              <Sliders className="size-3.5" /> Edit Slide {activeSlideIndex + 1}
+              <Sliders className="size-3.5" /> Edit Teks & Foto
             </button>
 
             <button
@@ -509,12 +517,12 @@ export function CarouselStudio({
             </button>
           </div>
 
-          {/* TAB 1: 1-Click Multi-Template Switcher */}
+          {/* TAB 1: 20 Multi-Template Switcher with Preview Button */}
           {activeTab === 'styles' && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                  <Layers className="size-4 text-primary" /> 10 Preset Desain Media Indonesia:
+                  <Layers className="size-4 text-primary" /> 20 Preset Desain Kelas Dunia:
                 </p>
                 <span className="text-[11px] font-mono text-primary font-bold">1-Klik Ganti</span>
               </div>
@@ -555,23 +563,39 @@ export function CarouselStudio({
                               {style.label}
                             </span>
                           </div>
-                          {isSelected ? (
-                            <div className="size-4 rounded-full bg-primary flex items-center justify-center text-white shrink-0">
-                              <Check className="size-2.5 stroke-[3]" />
-                            </div>
-                          ) : isLocked ? (
-                            <span className="inline-flex items-center gap-0.5 text-[9px] font-black px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0">
-                              <Lock className="size-2.5" /> PRO
-                            </span>
-                          ) : style.badge ? (
-                            <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shrink-0">
-                              GRATIS
-                            </span>
-                          ) : null}
+
+                          <div className="flex items-center gap-1">
+                            {/* Preview Eye Button */}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedPreviewStyle(style);
+                              }}
+                              className="p-1 rounded-md text-slate-400 hover:text-cyan-300 hover:bg-slate-800 transition-colors"
+                              title="Lihat Pratinjau 5 Slide"
+                            >
+                              <Eye className="size-3.5" />
+                            </button>
+
+                            {isSelected ? (
+                              <div className="size-4 rounded-full bg-primary flex items-center justify-center text-white shrink-0">
+                                <Check className="size-2.5 stroke-[3]" />
+                              </div>
+                            ) : isLocked ? (
+                              <span className="inline-flex items-center gap-0.5 text-[9px] font-black px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0">
+                                <Lock className="size-2.5" /> PRO
+                              </span>
+                            ) : style.badge ? (
+                              <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shrink-0">
+                                {style.badge}
+                              </span>
+                            ) : null}
+                          </div>
                         </div>
 
                         {style.subLabel && (
-                          <p className="text-[11px] font-semibold text-primary/90 mb-1">
+                          <p className="text-[11px] font-semibold text-primary/90 mb-1 truncate">
                             {style.subLabel}
                           </p>
                         )}
@@ -618,7 +642,7 @@ export function CarouselStudio({
             </div>
           )}
 
-          {/* TAB 2: Live Slide Text & Visual Editor */}
+          {/* TAB 2: Live Slide Text & Custom Photo Editor */}
           {activeTab === 'editor' && (
             <div className="space-y-4 bg-slate-900/60 p-5 rounded-2xl border border-slate-800">
               <div className="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -638,6 +662,25 @@ export function CarouselStudio({
                 )}
               </div>
 
+              {/* Photo Replacement Button */}
+              <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2 min-w-0">
+                  <ImageIcon className="size-4 text-cyan-400 shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold text-white truncate">Foto Latar Slide #{activeSlideIndex + 1}</p>
+                    <p className="text-[10px] text-slate-400 truncate">Unggah gambar dari perangkat Anda</p>
+                  </div>
+                </div>
+                <Button
+                  size="sm"
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="h-8 px-3 text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white shrink-0"
+                >
+                  <Upload className="size-3.5 mr-1" /> Unggah Foto
+                </Button>
+              </div>
+
               {/* Tag / Category Badge */}
               <div>
                 <Label className="text-xs text-slate-400 font-semibold mb-1 block">
@@ -646,7 +689,7 @@ export function CarouselStudio({
                 <Input
                   value={currentSlide.tag || ''}
                   onChange={(e) => updateActiveSlide({ tag: e.target.value })}
-                  placeholder="Contoh: BREAKING, TIPS, POIN 1..."
+                  placeholder="Contoh: BREAKING, TIPS, INSIGHT..."
                   className="h-9 text-xs bg-slate-950 border-slate-800"
                 />
               </div>
@@ -676,17 +719,6 @@ export function CarouselStudio({
                       className="w-full rounded-xl bg-slate-950 border border-slate-800 p-3 text-xs text-slate-200 focus:ring-2 focus:ring-primary outline-none"
                     />
                   </div>
-                  <div>
-                    <Label className="text-xs text-slate-400 font-semibold mb-1 block">
-                      URL Gambar Latar Cover (Opsional)
-                    </Label>
-                    <Input
-                      value={currentSlide.imageUrl || ''}
-                      onChange={(e) => updateActiveSlide({ imageUrl: e.target.value })}
-                      placeholder="https://..."
-                      className="h-9 text-xs bg-slate-950 border-slate-800"
-                    />
-                  </div>
                 </>
               )}
 
@@ -695,35 +727,24 @@ export function CarouselStudio({
                 <>
                   <div>
                     <Label className="text-xs text-slate-400 font-semibold mb-1 block">
-                      Inti Poin (Takeaway)
+                      Header Poin Manfaat (Takeaway)
                     </Label>
                     <Input
                       value={currentSlide.takeaway || ''}
                       onChange={(e) => updateActiveSlide({ takeaway: e.target.value })}
-                      placeholder="Poin utama..."
+                      placeholder="Judul poin manfaat spesifik..."
                       className="text-sm font-bold bg-slate-950 border-slate-800"
                     />
                   </div>
                   <div>
                     <Label className="text-xs text-slate-400 font-semibold mb-1 block">
-                      Penjelasan Lengkap
+                      Penjelasan Mendalam
                     </Label>
                     <textarea
                       value={currentSlide.supportingText || ''}
                       onChange={(e) => updateActiveSlide({ supportingText: e.target.value })}
                       rows={3}
                       className="w-full rounded-xl bg-slate-950 border border-slate-800 p-3 text-xs text-slate-200 focus:ring-2 focus:ring-primary outline-none"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs text-slate-400 font-semibold mb-1 block">
-                      URL Foto Ilustrasi Slide Ini
-                    </Label>
-                    <Input
-                      value={currentSlide.imageUrl || ''}
-                      onChange={(e) => updateActiveSlide({ imageUrl: e.target.value })}
-                      placeholder="https://images.unsplash.com/..."
-                      className="h-9 text-xs bg-slate-950 border-slate-800"
                     />
                   </div>
                   <div>
@@ -756,85 +777,80 @@ export function CarouselStudio({
                 <>
                   <div>
                     <Label className="text-xs text-slate-400 font-semibold mb-1 block">
-                      Kalimat CTA Utama
+                      Judul Kesimpulan
                     </Label>
                     <Input
-                      value={currentSlide.ctaText || ''}
-                      onChange={(e) => updateActiveSlide({ ctaText: e.target.value })}
-                      placeholder="Bagikan sekarang..."
+                      value={currentSlide.takeaway || ''}
+                      onChange={(e) => updateActiveSlide({ takeaway: e.target.value })}
+                      placeholder="Kesimpulan..."
                       className="text-sm font-bold bg-slate-950 border-slate-800"
                     />
                   </div>
                   <div>
                     <Label className="text-xs text-slate-400 font-semibold mb-1 block">
-                      Pesan Ajakan Lanjutan
+                      Teks Ajakan (Call to Action)
                     </Label>
                     <Input
-                      value={currentSlide.secondaryCta || ''}
-                      onChange={(e) => updateActiveSlide({ secondaryCta: e.target.value })}
-                      placeholder="Follow @namamedia kami..."
-                      className="h-9 text-xs bg-slate-950 border-slate-800"
+                      value={currentSlide.ctaText || ''}
+                      onChange={(e) => updateActiveSlide({ ctaText: e.target.value })}
+                      placeholder="Simpan postingan ini & bagikan ke tim Anda!"
+                      className="text-xs bg-slate-950 border-slate-800"
                     />
                   </div>
                 </>
               )}
-
-              {/* Source Attribution */}
-              <div>
-                <Label className="text-xs text-slate-400 font-semibold mb-1 block">
-                  Label Sumber (Footer)
-                </Label>
-                <Input
-                  value={currentSlide.source || ''}
-                  onChange={(e) => updateActiveSlide({ source: e.target.value })}
-                  placeholder="Sumber: Detik / Kompas..."
-                  className="h-9 text-xs bg-slate-950 border-slate-800"
-                />
-              </div>
             </div>
           )}
 
-          {/* TAB 3: Caption & Viral Hashtags */}
+          {/* TAB 3: Auto-Generated Instagram Caption */}
           {activeTab === 'caption' && (
             <div className="space-y-4 bg-slate-900/60 p-5 rounded-2xl border border-slate-800">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-                  Caption Postingan Instagram:
+              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                <span className="text-xs font-bold text-slate-300">
+                  Naskah Caption Instagram & LinkedIn
                 </span>
                 <Button
                   size="sm"
                   variant="secondary"
                   onClick={handleCopyCaption}
-                  className="text-xs font-bold bg-slate-800 text-slate-200 hover:bg-slate-700"
+                  className="h-7 text-xs bg-slate-900 border-slate-700 text-slate-200"
                 >
                   {copiedCaption ? <Check className="size-3.5 text-emerald-400 mr-1" /> : <Copy className="size-3.5 mr-1" />}
                   {copiedCaption ? 'Tersalin!' : 'Salin Semua'}
                 </Button>
               </div>
 
-              <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-xs text-slate-300 leading-relaxed font-sans space-y-3 max-h-[380px] overflow-y-auto">
-                <p className="font-bold text-white text-sm">{initialContent.headline}</p>
-                <p className="whitespace-pre-line">{initialContent.caption}</p>
-                <p className="font-semibold text-primary">👉 {initialContent.cta}</p>
-                <div className="flex flex-wrap gap-1.5 pt-3 border-t border-slate-800">
-                  {initialContent.hashtags.map((tag, i) => (
-                    <span key={i} className="text-cyan-400 font-mono text-[11px] bg-cyan-950/40 px-2 py-0.5 rounded-md border border-cyan-800/40">
-                      {tag.startsWith('#') ? tag : `#${tag}`}
-                    </span>
-                  ))}
-                </div>
-              </div>
+              <textarea
+                readOnly
+                value={`${initialContent.caption}\n\n${(initialContent.hashtags || []).join(' ')}`}
+                rows={12}
+                className="w-full rounded-xl bg-slate-950 border border-slate-800 p-3.5 text-xs text-slate-300 leading-relaxed font-sans focus:ring-1 focus:ring-primary outline-none"
+              />
             </div>
           )}
         </div>
       </main>
 
-      {/* Modal Upgrade Pop-up when clicking locked Pro templates / features */}
+      {/* ─── UPGRADE PRO MODAL ─── */}
       <UpgradeDialog
         open={showUpgradeModal}
         onClose={() => setShowUpgradeModal(false)}
         title={upgradeTitle}
         reason={upgradeReason}
+      />
+
+      {/* ─── 5-SLIDE PREVIEW MODAL ─── */}
+      <TemplatePreviewModal
+        isOpen={!!selectedPreviewStyle}
+        onClose={() => setSelectedPreviewStyle(null)}
+        styleDef={selectedPreviewStyle}
+        onSelectStyle={(styleId) => {
+          if (isProStyle(styleId) && !isProUser) {
+            setShowUpgradeModal(true);
+            return;
+          }
+          setCurrentStyle(styleId);
+        }}
       />
     </div>
   );

@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { Lock, Sparkles, Zap, ArrowRight } from 'lucide-react';
+import { Lock, Sparkles } from 'lucide-react';
 import { getViewer } from '@/server/viewer';
 import { db } from '@/server/db';
 import { getQuotaState, QUOTA_MESSAGES } from '@/server/billing/quota';
 import { Button } from '@/components/ui/button';
 import { MultiInputForm } from '@/components/generate/multi-input-form';
-import { APP } from '@/config/app';
+import { CyberpunkOwnerDashboard } from '@/components/dashboard/cyberpunk-owner-dashboard';
 
 export const metadata: Metadata = { title: 'Dashboard — Pembuat Konten & Carousel AI' };
 
@@ -20,11 +20,19 @@ export default async function DashboardPage() {
     include: { brandKit: true },
   });
 
+  const isOwner = user.role === 'OWNER' || user.email === '91venture@gmail.com';
+
+  // ─── 1. JIKA OWNER / PEMILIK LOGIN: TAMPILKAN CYBERPUNK VIP GOD-MODE DASHBOARD ───
+  if (isOwner) {
+    return <CyberpunkOwnerDashboard user={user} />;
+  }
+
+  // ─── 2. DASHBOARD REGULER / PENGGUNA BERLANGGANAN ───
   const quota = getQuotaState(user);
   const locked = !quota.allowed;
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8">
+    <div className="mx-auto max-w-5xl space-y-8 pb-20">
       {/* ─── HERO HEADER BANNER WITH 3D MASCOT ─── */}
       <div className="relative overflow-hidden rounded-3xl border border-slate-800 bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-slate-950 p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
         {/* Glow ambient */}
@@ -35,7 +43,7 @@ export default async function DashboardPage() {
           <div className="space-y-3 text-center md:text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-950/80 border border-slate-800 text-xs font-semibold text-slate-300">
               <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>AI Engine: <strong>Gemini 3.6 Flash</strong></span>
+              <span>AI Engine: <strong>Gemini 3.5 Flash Turbo</strong></span>
             </div>
 
             <div>

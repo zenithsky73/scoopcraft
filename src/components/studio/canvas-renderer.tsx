@@ -15,6 +15,13 @@ import {
   Quote,
   Flame,
   ArrowRight,
+  Terminal,
+  Compass,
+  FileText,
+  Star,
+  Mic,
+  Utensils,
+  Share2,
 } from 'lucide-react';
 
 export type SlideData = {
@@ -61,8 +68,6 @@ export function CanvasRenderer({
   const styleDef = STYLES.find((s) => s.id === style) || STYLES[0];
   const accent = styleDef.accentColor;
 
-  // Aspect ratio dimensions based on standard Instagram sizes
-  // Feed 4:5 (1080x1350), Square 1:1 (1080x1080), Story 9:16 (1080x1920)
   const aspectClass =
     format === 'FEED_PORTRAIT'
       ? 'aspect-[4/5] max-w-[440px]'
@@ -73,6 +78,11 @@ export function CanvasRenderer({
   const isCover = slide.type === 'COVER' || slide.index === 0;
   const isOutro = slide.type === 'OUTRO' || slide.index === totalSlides - 1;
   const isPoint = !isCover && !isOutro;
+
+  // Bersihkan penomoran kaku 1,2,3 dari takeaway
+  const cleanTakeaway = (slide.takeaway || '')
+    .replace(/^(?:\d+[\.\)\-:]\s*|Poin\s*\d+[\.\)\-:]\s*|Fakta\s*\d+[\.\)\-:]\s*|Langkah\s*\d+[\.\)\-:]\s*)/i, '')
+    .trim();
 
   const canvasContent = (
     <div
@@ -129,49 +139,44 @@ export function CanvasRenderer({
         </>
       )}
 
-      {style === 'CORPORATE' && (
-        <>
-          <div className="absolute top-0 right-0 w-60 h-60 bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-60 h-60 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
-        </>
+      {style === 'TERMINAL' && (
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#06b6d408_1px,transparent_1px),linear-gradient(to_bottom,#06b6d408_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none" />
       )}
 
-      {style === 'CUSTOM_BRAND' && (
-        <>
-          <div className="absolute top-0 right-0 w-72 h-72 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-60 h-60 bg-fuchsia-600/15 rounded-full blur-3xl pointer-events-none" />
-        </>
+      {style === 'ATHLETIC' && (
+        <div className="absolute top-0 right-0 w-48 h-12 bg-yellow-400/20 -skew-x-12 pointer-events-none" />
       )}
 
-      {style === 'MODERN' && (
-        <>
-          <div className="absolute top-0 right-0 w-48 h-48 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
-        </>
+      {style === 'COSMIC' && (
+        <div className="absolute top-1/4 right-1/4 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+      )}
+
+      {style === 'SPOTLIGHT' && (
+        <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-fuchsia-600/20 to-transparent pointer-events-none" />
       )}
 
       {/* ─── 2. HEADER BAR ─── */}
-      <div className="relative z-20 px-6 pt-4 pb-2.5 flex items-center justify-between border-b border-white/10 shrink-0">
-        <div className="flex items-center gap-2.5 min-w-0">
-          <span
-            className="px-2.5 py-0.5 text-[10px] font-black tracking-wider uppercase rounded-md shadow-sm shrink-0"
-            style={{
-              backgroundColor: accent,
-              color: '#FFFFFF',
-            }}
-          >
-            {slide.tag ||
-              (isCover
-                ? style === 'BREAKING_NEWS'
-                  ? 'BREAKING'
-                  : style === 'CUSTOM_BRAND'
-                  ? 'TAUKAH KAMU?'
-                  : style === 'TECH'
-                  ? 'TECH UPDATE'
-                  : 'HEADLINE'
-                : isOutro
-                ? 'KESIMPULAN'
-                : `FAKTA 0${slide.pointNumber || slide.index}`)}
-          </span>
+      <div className="relative z-20 px-5 sm:px-6 pt-4 pb-2.5 flex items-center justify-between border-b border-white/10 shrink-0">
+        <div className="flex items-center gap-2 min-w-0">
+          {/* Custom Terminal Header for TERMINAL */}
+          {style === 'TERMINAL' ? (
+            <div className="flex items-center gap-1.5 bg-slate-900/90 px-2 py-0.5 rounded-lg border border-slate-700">
+              <span className="size-2 rounded-full bg-red-500 inline-block" />
+              <span className="size-2 rounded-full bg-yellow-500 inline-block" />
+              <span className="size-2 rounded-full bg-emerald-500 inline-block" />
+              <span className="font-mono text-[9px] text-cyan-400 ml-1 font-bold">insights.ts</span>
+            </div>
+          ) : (
+            <span
+              className="px-2.5 py-0.5 text-[10px] font-black tracking-wider uppercase rounded-md shadow-sm shrink-0"
+              style={{
+                backgroundColor: accent,
+                color: style === 'STREETWEAR' || style === 'PODCAST' ? '#000000' : '#FFFFFF',
+              }}
+            >
+              {slide.tag || (isCover ? 'HEADLINE' : isOutro ? 'KESIMPULAN' : 'POIN UTAMA')}
+            </span>
+          )}
 
           <span
             className="text-[11px] font-bold tracking-wider uppercase truncate"
@@ -197,291 +202,245 @@ export function CanvasRenderer({
 
       {/* ─── A. COVER SLIDE ─── */}
       {isCover && (
-        <div className="relative z-10 flex-1 flex flex-col justify-end p-6 sm:p-7 overflow-hidden">
+        <div className="relative z-10 flex-1 flex flex-col justify-end p-5 sm:p-7 overflow-hidden">
           {/* Background Photo for Cover */}
           {slide.imageUrl && (
             <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
               <img
                 src={slide.imageUrl}
                 alt="Cover Background"
-                className="w-full h-full object-cover opacity-45 filter contrast-125 brightness-90 scale-105"
+                className="w-full h-full object-cover opacity-50 filter contrast-115 brightness-90 scale-105"
               />
               <div
                 className="absolute inset-0"
                 style={{
-                  background: `linear-gradient(to top, ${styleDef.bgColor} 20%, ${styleDef.bgColor}d9 55%, transparent 85%, ${styleDef.bgColor}e6 100%)`,
+                  background: `linear-gradient(to top, ${styleDef.bgColor} 18%, ${styleDef.bgColor}d9 55%, transparent 85%, ${styleDef.bgColor}e6 100%)`,
                 }}
               />
             </div>
           )}
 
-          <div className="relative z-10 space-y-3.5">
-            {/* Tech / Trading Ticker for TECH */}
-            {style === 'TECH' && (
-              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 font-mono text-[10px] font-bold">
-                <span>📈 $ANALYSIS</span>
-                <span>•</span>
-                <span>MARKET PULSE</span>
+          <div className="relative z-10 space-y-3">
+            {/* Live Ticker for BLOOMBERG */}
+            {style === 'BLOOMBERG' && (
+              <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 font-mono text-[9px] font-bold">
+                <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>▲ IHSG +1.4% • BTC $94.2K</span>
               </div>
             )}
 
-            {/* Fakta vs Mitos Badge for CUSTOM_BRAND */}
-            {style === 'CUSTOM_BRAND' && (
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/20 border border-purple-400/40 text-purple-300 text-[10px] font-black uppercase tracking-wider">
-                <Sparkles className="size-3" /> FAKTA POP & TRIVIA
+            {/* Spotlight Tag for SPOTLIGHT */}
+            {style === 'SPOTLIGHT' && (
+              <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-fuchsia-600/30 border border-fuchsia-400/40 text-fuchsia-200 text-[10px] font-black uppercase">
+                <Star className="size-3 text-amber-400 fill-amber-400" /> TOP TRENDING #1
               </div>
             )}
 
             <h1
               className={`font-black tracking-tight leading-[1.2] ${
-                style === 'EDITORIAL'
-                  ? 'font-serif text-2xl sm:text-3xl lg:text-[30px]'
-                  : style === 'BOLD'
-                  ? 'italic font-black text-2xl sm:text-3xl uppercase tracking-tighter'
+                style === 'EDITORIAL' || style === 'POLICY'
+                  ? 'font-serif text-2xl sm:text-3xl'
+                  : style === 'BOLD' || style === 'ATHLETIC'
+                  ? 'italic font-black text-2xl sm:text-3xl uppercase'
                   : style === 'LIFESTYLE'
                   ? 'font-sans text-2xl sm:text-3xl font-extrabold text-slate-800'
-                  : 'font-sans text-2xl sm:text-3xl lg:text-[28px]'
+                  : 'font-sans text-2xl sm:text-3xl'
               }`}
               style={{
                 color:
                   style === 'LIFESTYLE'
                     ? '#0F172A'
-                    : style === 'BOLD'
+                    : style === 'BOLD' || style === 'ATHLETIC'
                     ? '#FACC15'
                     : '#FFFFFF',
               }}
             >
-              {slide.headline || 'Headline Utama Berita'}
+              {slide.headline || cleanTakeaway || 'Informasi & Wawasan Terkini'}
             </h1>
 
             {slide.lead && (
               <p
-                className={`text-xs sm:text-sm leading-relaxed font-medium line-clamp-3 ${
-                  style === 'LIFESTYLE' ? 'text-slate-600' : 'text-slate-200/90'
-                }`}
+                className="text-xs sm:text-sm font-medium line-clamp-3 leading-relaxed"
+                style={{
+                  color: style === 'LIFESTYLE' ? '#475569' : '#CBD5E1',
+                }}
               >
                 {slide.lead}
               </p>
             )}
 
-            {/* Swipe Callout Indicator */}
-            <div
-              className="pt-2 flex items-center gap-2 text-[11px] font-bold tracking-wider uppercase"
-              style={{ color: accent }}
-            >
-              <span className="w-7 h-0.5 rounded-full" style={{ backgroundColor: accent }} />
-              <span>Geser untuk info lengkap ➔</span>
+            <div className="pt-2 flex items-center gap-2">
+              <span
+                className="text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1"
+                style={{ color: accent }}
+              >
+                Geser untuk info lengkap <ArrowRight className="size-3 inline" />
+              </span>
             </div>
           </div>
         </div>
       )}
 
-      {/* ─── B. POINT SLIDE (DYNAMIC SPLIT PHOTO & RICH CARD LAYOUT) ─── */}
+      {/* ─── B. POINT SLIDE (FAKTA & PEMBAHASAN) ─── */}
       {isPoint && (
-        <div className="relative z-10 flex-1 flex flex-col p-4 sm:p-5 gap-3.5 overflow-hidden">
-          {/* Top Half: Contextual Photo Frame with Caption & Badge */}
+        <div className="relative z-10 flex-1 flex flex-col justify-between p-5 sm:p-6 space-y-4 overflow-hidden">
+          {/* Main Visual Photo Container */}
           {slide.imageUrl && (
-            <div className="relative w-full h-[38%] min-h-[120px] rounded-xl overflow-hidden shadow-lg border border-white/10 shrink-0 group">
+            <div className="relative w-full h-36 sm:h-44 rounded-xl overflow-hidden shadow-lg border border-white/10 shrink-0">
               <img
                 src={slide.imageUrl}
-                alt={slide.takeaway || 'Foto Berita'}
-                className="w-full h-full object-cover filter contrast-110 brightness-95"
+                alt={`Visual Slide ${slide.index + 1}`}
+                className="w-full h-full object-cover filter contrast-110"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-              
-              {/* Photo Corner Label */}
-              <div className="absolute bottom-2 left-2.5 right-2.5 flex items-center justify-between text-[10px] text-white/90 font-medium">
-                <span className="bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-md border border-white/15 truncate max-w-[200px]">
-                  📷 {slide.takeaway || 'Ilustrasi Berita'}
+              <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between">
+                <span className="text-[10px] font-bold text-white/90 drop-shadow truncate max-w-[200px]">
+                  {cleanTakeaway || slide.headline}
                 </span>
-                <span className="bg-black/60 backdrop-blur-md px-1.5 py-0.5 rounded-md font-mono text-[9px]">
-                  #{slide.pointNumber || slide.index}
+                <span className="text-[9px] font-mono font-bold bg-black/60 px-2 py-0.5 rounded text-white/80 border border-white/20 backdrop-blur-md">
+                  #{slide.index + 1}
                 </span>
               </div>
             </div>
           )}
 
-          {/* Bottom Half: High-Impact Structured Content Card */}
-          <div
-            className={`flex-1 rounded-2xl p-4 sm:p-4.5 border backdrop-blur-md flex flex-col justify-between space-y-2.5 overflow-y-auto ${
-              style === 'FINANCE'
-                ? 'bg-emerald-950/40 border-emerald-500/30 text-emerald-100 shadow-lg'
-                : style === 'TECH'
-                ? 'bg-slate-900/80 border-slate-700/80 text-slate-200 shadow-lg'
-                : style === 'LIFESTYLE'
-                ? 'bg-white/90 border-pink-200 text-slate-700 shadow-md'
-                : style === 'CORPORATE'
-                ? 'bg-blue-950/40 border-blue-500/25 text-blue-100 shadow-lg'
-                : style === 'CUSTOM_BRAND'
-                ? 'bg-purple-950/40 border-purple-500/30 text-purple-100 shadow-lg'
-                : style === 'BOLD'
-                ? 'bg-neutral-900/90 border-yellow-500/30 text-slate-100 shadow-lg'
-                : 'bg-white/5 border-white/10 text-slate-200'
-            }`}
-          >
-            <div>
-              {/* Header Number & Takeaway Headline */}
-              <div className="flex items-start gap-2.5 mb-2">
-                <span
-                  className={`font-black italic tracking-tighter text-2xl shrink-0 leading-none ${
-                    style === 'BOLD' ? 'text-yellow-400' : ''
-                  }`}
-                  style={{ color: style === 'BOLD' ? '#FACC15' : accent }}
-                >
-                  0{slide.pointNumber || slide.index}
-                </span>
-                <h2
-                  className={`font-bold leading-snug ${
-                    style === 'EDITORIAL'
-                      ? 'font-serif text-base sm:text-lg'
-                      : style === 'BOLD'
-                      ? 'italic font-black text-base sm:text-lg uppercase'
-                      : 'text-sm sm:text-base'
-                  }`}
-                  style={{ color: style === 'LIFESTYLE' ? '#0F172A' : '#FFFFFF' }}
-                >
-                  {slide.takeaway || 'Inti Poin Informasi'}
-                </h2>
+          {/* Text Content Block */}
+          <div className="space-y-2.5 flex-1 flex flex-col justify-center">
+            {/* Header Poin Manfaat Bersih (Tanpa Angka Kaku 1,2,3) */}
+            <div className="flex items-start gap-2">
+              <h2
+                className={`font-bold tracking-tight text-base sm:text-lg leading-snug ${
+                  style === 'EDITORIAL' || style === 'POLICY' ? 'font-serif' : 'font-sans'
+                }`}
+                style={{
+                  color: style === 'LIFESTYLE' ? '#0F172A' : '#FFFFFF',
+                }}
+              >
+                {cleanTakeaway || `Poin Pembahasan`}
+              </h2>
+            </div>
+
+            {/* Penjelasan Mendalam */}
+            {slide.supportingText && (
+              <p
+                className="text-xs sm:text-sm font-normal leading-relaxed"
+                style={{
+                  color: style === 'LIFESTYLE' ? '#475569' : '#CBD5E1',
+                }}
+              >
+                {slide.supportingText}
+              </p>
+            )}
+
+            {/* Stat Highlight Badge */}
+            {slide.statHighlight && (
+              <div
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl border backdrop-blur-sm self-start text-[10px] font-bold shadow-sm"
+                style={{
+                  backgroundColor: `${accent}15`,
+                  borderColor: `${accent}40`,
+                  color: style === 'LIFESTYLE' ? accent : '#FFFFFF',
+                }}
+              >
+                <TrendingUp className="size-3" style={{ color: accent }} />
+                <span>{slide.statHighlight}</span>
               </div>
+            )}
 
-              {/* Explanatory Body */}
-              {slide.supportingText && (
-                <p className="text-xs sm:text-[13px] leading-relaxed opacity-90 font-normal">
-                  {slide.supportingText}
-                </p>
-              )}
-            </div>
-
-            {/* Supporting Widget Assets (Stat Highlight / Quote Badge) */}
-            <div className="pt-1.5 space-y-1.5 border-t border-white/10">
-              {slide.statHighlight && (
-                <div
-                  className="flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-lg border"
-                  style={{
-                    backgroundColor: style === 'LIFESTYLE' ? '#FDF2F8' : 'rgba(255,255,255,0.06)',
-                    borderColor: accent,
-                    color: style === 'LIFESTYLE' ? '#831843' : '#FFFFFF',
-                  }}
-                >
-                  <span className="size-1.5 rounded-full" style={{ backgroundColor: accent }} />
-                  <span className="truncate">{slide.statHighlight}</span>
-                </div>
-              )}
-
-              {slide.sourceQuote && (
-                <blockquote
-                  className="border-l-2 pl-2.5 py-0.5 italic text-[11px] opacity-85 truncate"
-                  style={{
-                    borderColor: accent,
-                    color: style === 'LIFESTYLE' ? '#475569' : '#E2E8F0',
-                  }}
-                >
-                  &ldquo;{slide.sourceQuote}&rdquo;
-                </blockquote>
-              )}
-            </div>
+            {/* Quote Box */}
+            {slide.sourceQuote && (
+              <div className="relative pl-3 py-1 border-l-2 text-[10px] sm:text-xs italic leading-relaxed text-slate-300/90" style={{ borderColor: accent }}>
+                "{slide.sourceQuote.replace(/^["']|["']$/g, '')}"
+              </div>
+            )}
           </div>
         </div>
       )}
 
-      {/* ─── C. OUTRO SLIDE (VIRAL CALL TO ACTION) ─── */}
+      {/* ─── C. OUTRO / CTA SLIDE ─── */}
       {isOutro && (
-        <div className="relative z-10 flex-1 flex flex-col justify-center p-6 sm:p-8 text-center space-y-4">
-          {/* Background image overlay with strong dark blur */}
-          {slide.imageUrl && (
-            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-              <img
-                src={slide.imageUrl}
-                alt="Outro Background"
-                className="w-full h-full object-cover opacity-20 filter blur-sm scale-110"
-              />
-              <div
-                className="absolute inset-0"
-                style={{
-                  background: `linear-gradient(to top, ${styleDef.bgColor} 10%, ${styleDef.bgColor}e6 90%)`,
-                }}
-              />
-            </div>
-          )}
+        <div className="relative z-10 flex-1 flex flex-col justify-center items-center p-6 sm:p-8 text-center space-y-5">
+          {/* Outro Graphic Indicator */}
+          <div
+            className="size-16 rounded-3xl flex items-center justify-center shadow-xl border border-white/20"
+            style={{
+              backgroundColor: `${accent}25`,
+              color: accent,
+            }}
+          >
+            <CheckCircle2 className="size-8" />
+          </div>
 
-          <div className="relative z-10 space-y-4">
-            <div
-              className="inline-flex p-3 rounded-2xl mx-auto shadow-xl"
+          <div className="space-y-2 max-w-xs">
+            <h2
+              className={`font-black text-xl sm:text-2xl tracking-tight ${
+                style === 'EDITORIAL' || style === 'POLICY' ? 'font-serif' : 'font-sans'
+              }`}
               style={{
-                backgroundColor: style === 'LIFESTYLE' ? '#FCE7F3' : 'rgba(255,255,255,0.08)',
-                color: accent,
-              }}
-            >
-              <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-
-            <div className="space-y-1.5 max-w-sm mx-auto">
-              <h2
-                className={`text-xl sm:text-2xl font-black tracking-tight ${
-                  style === 'EDITORIAL' ? 'font-serif' : 'font-sans'
-                }`}
-                style={{ color: style === 'LIFESTYLE' ? '#0F172A' : '#FFFFFF' }}
-              >
-                {slide.ctaText || 'Bagikan Informasi Ini!'}
-              </h2>
-              <p
-                className={`text-xs sm:text-sm leading-relaxed ${
-                  style === 'LIFESTYLE' ? 'text-slate-600' : 'text-slate-300'
-                }`}
-              >
-                {slide.secondaryCta || 'Follow kami untuk update berita & analisis harian terpercaya.'}
-              </p>
-            </div>
-
-            <div
-              className="inline-block px-5 py-2.5 rounded-2xl font-mono font-bold text-xs tracking-wider border shadow-xl"
-              style={{
-                backgroundColor: style === 'LIFESTYLE' ? '#FFFFFF' : 'rgba(255,255,255,0.1)',
-                borderColor: accent,
                 color: style === 'LIFESTYLE' ? '#0F172A' : '#FFFFFF',
               }}
             >
-              {handle}
-            </div>
+              {cleanTakeaway || 'Rangkuman & Insight'}
+            </h2>
+            <p
+              className="text-xs sm:text-sm font-medium leading-relaxed"
+              style={{ color: style === 'LIFESTYLE' ? '#64748B' : '#94A3B8' }}
+            >
+              {slide.supportingText || 'Semoga ringkasan informasi ini bermanfaat untuk wawasan dan strategi Anda.'}
+            </p>
+          </div>
 
-            <div className="pt-2 flex items-center justify-center gap-4 text-[11px] opacity-75 font-semibold">
-              <span>🔖 Simpan</span>
-              <span>•</span>
-              <span>💬 Komentar</span>
-              <span>•</span>
-              <span>↗️ Bagikan</span>
+          {/* Social Action Grid */}
+          <div className="w-full max-w-xs grid grid-cols-2 gap-2 pt-2 text-[10px] font-bold">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-2 flex items-center justify-center gap-1.5 text-slate-200">
+              <span>📌 Simpan Postingan</span>
             </div>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-2 flex items-center justify-center gap-1.5 text-slate-200">
+              <span>🚀 Bagikan ke Tim</span>
+            </div>
+          </div>
+
+          {/* CTA Button Badge */}
+          <div
+            className="w-full max-w-xs py-2.5 px-4 rounded-xl font-bold text-xs shadow-lg flex items-center justify-center gap-2"
+            style={{
+              backgroundColor: accent,
+              color: style === 'STREETWEAR' || style === 'PODCAST' ? '#000000' : '#FFFFFF',
+            }}
+          >
+            <span>{slide.ctaText || 'Ikuti untuk update harian'}</span>
+            <ArrowRight className="size-3.5" />
           </div>
         </div>
       )}
 
       {/* ─── 4. FOOTER BAR ─── */}
-      <div
-        className={`relative z-20 px-6 py-3 flex items-center justify-between border-t text-[10px] font-semibold shrink-0 ${
-          style === 'LIFESTYLE' ? 'border-pink-200/60 text-slate-500' : 'border-white/10 text-slate-400'
-        }`}
-      >
-        <div className="flex items-center gap-1.5 truncate">
-          <span className="font-bold">{handle}</span>
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <span className="truncate max-w-[160px]">{slide.source || 'Sumber: Portal Berita'}</span>
-        </div>
+      <div className="relative z-20 px-5 sm:px-6 py-3 flex items-center justify-between border-t border-white/10 text-[10px] font-semibold shrink-0">
+        <span
+          className="font-medium tracking-wide"
+          style={{ color: style === 'LIFESTYLE' ? '#64748B' : '#94A3B8' }}
+        >
+          {handle}
+        </span>
+
+        <span
+          className="uppercase tracking-widest text-[9px]"
+          style={{ color: style === 'LIFESTYLE' ? '#94A3B8' : '#64748B' }}
+        >
+          {slide.source || 'Newsly AI'}
+        </span>
       </div>
     </div>
   );
 
   if (showPhoneFrame) {
     return (
-      <div className="p-3 bg-slate-900 rounded-[36px] border-4 border-slate-800 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)]">
-        {/* Dynamic Island / Speaker notch */}
-        <div className="w-24 h-4 bg-slate-950 rounded-full mx-auto mb-2 border border-slate-800 flex items-center justify-center gap-1.5">
-          <div className="size-1.5 rounded-full bg-slate-800" />
-          <div className="size-1 rounded-full bg-slate-700" />
-        </div>
+      <div className="relative p-2.5 sm:p-4 rounded-[40px] bg-slate-900 border-4 border-slate-700/80 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] flex flex-col items-center">
+        {/* Phone Notch */}
+        <div className="w-24 h-4 bg-slate-950 rounded-full mb-3 border border-slate-800 shadow-inner shrink-0" />
         {canvasContent}
+        {/* Phone Bottom Pill */}
+        <div className="w-28 h-1 bg-slate-600 rounded-full mt-3.5 shrink-0" />
       </div>
     );
   }

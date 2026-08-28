@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Crown, Sparkles } from 'lucide-react';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { ThemeToggle } from '@/components/layout/theme-toggle';
 import { UserMenu } from '@/components/layout/user-menu';
 import type { QuotaState } from '@/server/billing/quota';
 
@@ -35,8 +35,10 @@ export function Topbar({
         <h1 className="text-sm font-bold tracking-tight text-white">{title}</h1>
       </div>
 
-      {/* Right Controls: Role Badge & User Profile Menu */}
+      {/* Right Controls: Theme Switcher, Role Badge & User Profile Menu */}
       <div className="flex items-center gap-2.5">
+        <ThemeToggle />
+
         {quota?.isOwner ? (
           <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/20 to-yellow-500/20 text-amber-300 border border-amber-500/40 text-xs font-black uppercase tracking-wider shadow-sm">
             <Crown className="size-3.5 text-amber-400" />
@@ -53,7 +55,7 @@ export function Topbar({
           </div>
         )}
 
-        <div className="h-5 w-px bg-slate-800 mx-1" />
+        <div className="h-5 w-px bg-slate-800 mx-0.5" />
         <UserMenu email={email} isOwner={quota?.isOwner} isGuest={quota?.isGuest} />
       </div>
     </header>
