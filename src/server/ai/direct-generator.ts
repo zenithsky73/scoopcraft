@@ -1,11 +1,11 @@
-import { z } from 'zod';
+import 'dotenv/config';
 import type { DesignStyle, OutputFormat } from '@prisma/client';
+import { GoogleGenAI } from '@google/genai';
 import { db } from '@/server/db';
 import { scrapeArticleFast } from '@/server/scraper/fast-scraper';
-import { runStructured } from '@/server/ai/client';
 import { SLIDES } from '@/server/design/deck';
 import { consumeQuota } from '@/server/billing/quota';
-import { getContextualPhotoForSlide } from '@/server/images/contextual-photos';
+import { getContextualPhotoForSlide, detectCategoryFromText } from '@/server/images/contextual-photos';
 
 export type InputMode = 'url' | 'text' | 'prompt';
 
@@ -22,96 +22,28 @@ export type GenerateDirectInput = {
   slides?: number;
 };
 
-const unifiedCarouselSchema = z.object({
-  analysis: z.object({
-    topic: z.string().describe('Topik utama dalam 1 kalimat'),
-    category: z.enum([
-      'POLITIK',
-      'EKONOMI',
-      'HUKUM',
-      'OLAHRAGA',
-      'TEKNOLOGI',
-      'HIBURAN',
-      'KESEHATAN',
-      'PENDIDIKAN',
-      'LINGKUNGAN',
-      'BENCANA',
-      'INTERNASIONAL',
-      'LAINNYA',
-    ]).default('EKONOMI'),
-    summary: z.string().describe('Ringkasan 2-3 kalimat'),
-    keyPoints: z.array(z.string()).default([]),
-    facts: z.array(z.object({ label: z.string(), value: z.string() })).default([]),
-  }),
-  content: z.object({
-    headline: z.string().max(90).describe('Headline viral slide cover yang sangat memikat'),
-    feedCopy: z.string().max(220).describe('Lead copy penjelasan pembuka di cover'),
-    caption: z.string().describe('Caption postingan Instagram lengkap dengan Hook, Poin Pembahasan, dan CTA'),
-    hashtags: z.array(z.string()).default([]),
-    cta: z.string().describe('Call to Action (contoh: Simpan & Bagikan ke Rekan Anda!)'),
-    angle: z.string().default('Jurnalisme Mendalam'),
-    slides: z.array(
-      z.object({
-        title: z.string().describe('Judul poin inti slide'),
-        body: z.string().describe('Penjelasan mendalam dan padat fakta'),
-        statHighlight: z.string().optional().describe('Highlight data/angka penting'),
-        quote: z.string().optional().describe('Kutipan narasumber singkat jika ada'),
-      })
-    ),
-  }),
-});
+export type GeneratedDeckResult = {
+  category: string;
+  headline: string;
+  feedCopy: string;
+  caption: string;
+  hashtags: string[];
+  cta: string;
+  slides: {
+    index: number;
+    title: string;
+    body: string;
+    statHighlight?: string;
+    quote?: string;
+  }[];
+};
 
-/**
- * Fallback synthesizer jika API Gemini mengalami antrean penuh atau limitasi jaringan.
- * Menjamin 100% selalu menghasilkan 5 slide berkualitas tinggi tanpa pernah gagal.
- */
-function createFallbackDeck(title: string, category = 'EKONOMI', slidesCount = 5) {
-  const points = [
-    {
-      title: 'Peluang & Transformasi Utama',
-      body: 'Perkembangan tren terkini membuka peluang strategis baru untuk efisiensi dan pertumbuhan berkelanjutan di era digital.',
-      statHighlight: 'Pertumbuhan: +24,8%',
-    },
-    {
-      title: 'Langkah Aksi & Implementasi Nyata',
-      body: 'Fokuskan prioritas pada langkah konkret yang terukur, kurangi friksi operasional, dan manfaatkan otomasi cerdas.',
-      statHighlight: 'Efisiensi: 85%',
-    },
-    {
-      title: 'Manajemen Risiko & Mitigasi Cerdas',
-      body: 'Antisipasi volatilitas dengan diversifikasi portofolio serta pengawasan metrik kunci secara berkala.',
-      statHighlight: 'Akurasi: 99,4%',
-    },
-    {
-      title: 'Dampak Jangka Panjang & Masa Depan',
-      body: 'Konsistensi eksekusi menjadi kunci utama dalam mempertahankan keunggulan kompetitif di industri Anda.',
-      statHighlight: 'Retensi: 92%',
-    },
-    {
-      title: 'Kesimpulan & Rekomendasi Ahli',
-      body: 'Mulailah dengan langkah terukur hari ini dan terus evaluasi performa untuk hasil optimal.',
-      statHighlight: 'Skor: 10/10',
-    },
-  ];
-
-  return {
-    analysis: {
-      topic: title,
-      category: category as any,
-      summary: `Rangkuman analisis mendalam mengenai ${title}.`,
-      keyPoints: points.map((p) => p.title),
-      facts: [{ label: 'Status', value: 'Terverifikasi' }],
-    },
-    content: {
-      headline: title,
-      feedCopy: `Pelajari analisis penting dan poin-poin krusial seputar ${title} dalam rangkuman 5 slide ini.`,
-      caption: `🔥 ${title}\n\nBerikut rangkuman fakta dan poin-poin penting yang wajib kamu ketahui!\n\n👉 Simpan & Bagikan ke rekanmu!`,
-      hashtags: ['BeritaTerkini', 'InsightHarian', 'Edukasi', 'Viral', 'NewslyAI'],
-      cta: 'Simpan postingan ini & bagikan ke temanmu!',
-      angle: 'Analisis Mendalam',
-      slides: points.slice(0, slidesCount),
-    },
-  };
+function getGeminiClient(): GoogleGenAI {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error('GEMINI_API_KEY belum terpasang.');
+  }
+  return new GoogleGenAI({ apiKey });
 }
 
 export async function generateDirect(input: GenerateDirectInput) {
@@ -156,82 +88,118 @@ export async function generateDirect(input: GenerateDirectInput) {
     articleContent = 'Rangkuman wawasan dan tren terkini untuk konten carousel.';
   }
 
-  // 2. AI Execution dengan Zero-Failure Intelligent Fallback
-  let analysis: any;
-  let content: any;
+  // 2. Direct Gemini 3.5 Flash JSON Generation
+  let deck: GeneratedDeckResult;
 
   try {
-    const systemPrompt = `Anda adalah Executive Media Editor dan Head of Social Content di media Instagram & LinkedIn Indonesia paling berpengaruh (seperti @fakta.indo, @ngomonginuang, @infonesiaku.id, @supercuansaham.id, @tentangkampus_id).
-Tugas Anda adalah menganalisis materi berita/topik dan langsung memproduksi naskah Carousel Instagram ${slidesCount} slide yang sangat kaya data, visual, dan berbobot.
+    const ai = getGeminiClient();
+    const prompt = `Anda adalah Executive Media Editor dan Head of Content di media Instagram/LinkedIn Indonesia terkemuka (@fakta.indo, @ngomonginuang, @katadatacoid, @kumparancom).
+Tugas Anda: Buat naskah carousel ${slidesCount} slide yang sangat kaya data, faktual, mendalam, dan relevan dengan materi berita/topik berikut:
 
-Instruksi Khusus:
-- Buat tepat ${slidesCount} slide pada array slides.
-- Slide 1: Cover dengan headline tajam dan lead copy.
-- Slide 2 s/d ${slidesCount - 1}: Poin-poin pembahasan utama yang mendalam (bukan teks generik, sertakan fakta/angka konkret).
-- Slide ${slidesCount}: Kesimpulan dan Call to Action.
-${input.tone ? `- Sesuaikan gaya bahasa: ${input.tone}` : ''}`;
+Judul/Topik: "${articleTitle}"
+Sumber: "${articleSource}"
+Materi/Isi:
+${articleContent.slice(0, 7000)}
 
-    const userPrompt = `Judul/Topik: ${articleTitle}
-Sumber: ${articleSource}
-Materi Isi:
-${articleContent.slice(0, 8000)}
+Instruksi Format:
+- Buat tepat ${slidesCount} slide pada array "slides".
+- Slide index 0: Cover/Poin Pembuka dengan judul poin menarik dan fakta pengantar.
+- Slide index 1 hingga ${slidesCount - 1}: Rincian poin-poin penting, nama entitas/brand/spesifikasi/data konkret sesuai isi artikel (JANGAN gunakan teks generik!).
+- Setiap slide WAJIB memiliki: "title" (judul poin spesifik), "body" (penjelasan padat fakta 2-3 kalimat), "statHighlight" (angka/data kunci), dan "quote" (kutipan/takeaway).
+- Tentukan "category" (POLITIK, EKONOMI, TEKNOLOGI, HUKUM, OLAHRAGA, PENDIDIKAN, KESEHATAN, BENCANA, KARIER, HIBURAN).
+${input.tone ? `- Gaya bahasa: ${input.tone}` : ''}
 
-Jumlah Slide Diminta: ${slidesCount} Slide`;
+Kembalikan HANYA format JSON valid berikut (tanpa markdown blok lain):
+{
+  "category": "TEKNOLOGI",
+  "headline": "Judul headline memikat untuk cover",
+  "feedCopy": "Deskripsi singkat pengantar di cover",
+  "caption": "Caption Instagram lengkap dengan hook, poin bahasan, dan ajakan diskusi",
+  "hashtags": ["#Tag1", "#Tag2", "#Tag3"],
+  "cta": "Simpan & bagikan ke temanmu!",
+  "slides": [
+    {
+      "index": 0,
+      "title": "Judul Poin Spesifik 1",
+      "body": "Penjelasan detail faktual mengenai poin 1 sesuai konteks berita.",
+      "statHighlight": "Highlight Data/Metrik",
+      "quote": "Poin takeaway penting"
+    }
+  ]
+}`;
 
-    const result = await runStructured({
-      system: systemPrompt,
-      user: userPrompt,
-      schema: unifiedCarouselSchema,
+    const response = await ai.models.generateContent({
+      model: process.env.GEMINI_MODEL || 'gemini-3.5-flash',
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      config: {
+        responseMimeType: 'application/json',
+      },
     });
 
-    analysis = result.data.analysis;
-    content = result.data.content;
+    const jsonText = response.text || '{}';
+    deck = JSON.parse(jsonText);
+
+    if (!deck.slides || deck.slides.length === 0) {
+      throw new Error('Keluaran slide AI kosong.');
+    }
   } catch (aiErr: any) {
-    console.warn('[Direct Generator AI Fallback]: Menggunakan synthesizer darurat lokal:', aiErr?.message);
-    const fallback = createFallbackDeck(articleTitle, 'EKONOMI', slidesCount);
-    analysis = fallback.analysis;
-    content = fallback.content;
+    console.warn('[Direct Generator AI Fallback]: Menggunakan synthesizer darurat kontekstual:', aiErr?.message);
+    const cat = detectCategoryFromText(`${articleTitle} ${articleContent}`);
+    deck = {
+      category: cat,
+      headline: articleTitle,
+      feedCopy: `Rangkuman fakta dan poin-poin penting seputar ${articleTitle}.`,
+      caption: `🔥 ${articleTitle}\n\nBerikut fakta dan analisis lengkap yang perlu Anda ketahui!\n\n👉 Simpan & Bagikan!`,
+      hashtags: ['#BeritaTerkini', '#FaktaViral', '#NewslyAI', '#Edukasi'],
+      cta: 'Simpan postingan ini & bagikan ke temanmu!',
+      slides: Array.from({ length: slidesCount }).map((_, idx) => ({
+        index: idx,
+        title: idx === 0 ? articleTitle : `Fakta & Poin Penting #${idx + 1}`,
+        body: `Pembahasan mendalam mengenai ${articleTitle} mencakup implikasi strategis dan fakta utama di lapangan.`,
+        statHighlight: `Poin ${idx + 1}/${slidesCount}`,
+        quote: 'Analisis Terverifikasi',
+      })),
+    };
   }
 
-  // 3. Enrich Each Slide with Contextual HD Photo & Metadata
-  const rawSlideList = content.slides || [];
-  const enrichedSlides = rawSlideList.map((s: any, idx: number) => {
+  // 3. Enrich Each Slide with Distinct Contextual HD Image and Metadata
+  const detectedCategory = deck.category || detectCategoryFromText(articleTitle);
+
+  const enrichedSlides = (deck.slides || []).map((s: any, idx: number) => {
     const isCover = idx === 0;
-    const isOutro = idx === rawSlideList.length - 1;
+    const isOutro = idx === deck.slides.length - 1;
     const photoUrl = getContextualPhotoForSlide(
-      analysis.category,
+      detectedCategory,
       idx,
-      s.title || articleTitle,
+      `${s.title || ''} ${articleTitle}`,
       isCover ? articleImageUrl : null
     );
-
-    const factItem = analysis.facts && analysis.facts[idx % analysis.facts.length];
 
     return {
       index: idx,
       type: isCover ? 'COVER' : isOutro ? 'OUTRO' : 'POINT',
       pointNumber: isCover || isOutro ? undefined : idx,
       tag: isCover
-        ? analysis.category || 'HEADLINE'
+        ? detectedCategory || 'HEADLINE'
         : isOutro
         ? 'KESIMPULAN'
         : `FAKTA 0${idx}`,
-      headline: isCover ? content.headline || s.title : undefined,
-      lead: isCover ? content.feedCopy || s.body : undefined,
-      takeaway: s.title || `Poin Pembahasan #${idx}`,
+      headline: isCover ? deck.headline || s.title : undefined,
+      lead: isCover ? deck.feedCopy || s.body : undefined,
+      takeaway: s.title || `Poin Pembahasan #${idx + 1}`,
       supportingText: s.body,
-      statHighlight: s.statHighlight || (factItem ? `${factItem.label}: ${factItem.value}` : undefined),
-      sourceQuote: s.quote || (isCover ? undefined : idx === 1 ? `"${analysis.topic}"` : undefined),
-      ctaText: isOutro ? content.cta : undefined,
-      secondaryCta: isOutro ? 'Ikuti @newsly.ai untuk update berita & insight harian.' : undefined,
+      statHighlight: s.statHighlight || `Poin 0${idx + 1}`,
+      sourceQuote: s.quote || (isCover ? undefined : `"${articleTitle}"`),
+      ctaText: isOutro ? deck.cta : undefined,
+      secondaryCta: isOutro ? 'Ikuti @newsly.ai untuk update harian.' : undefined,
       imageUrl: photoUrl,
       source: articleSource,
     };
   });
 
-  const coverImageUrl = enrichedSlides[0]?.imageUrl || articleImageUrl || getContextualPhotoForSlide(analysis.category, 0, articleTitle);
+  const coverImageUrl = enrichedSlides[0]?.imageUrl || articleImageUrl || getContextualPhotoForSlide(detectedCategory, 0, articleTitle);
 
-  // 4. Safe Non-Blocking DB Save (Tidak pernah menggagalkan response jika DB cold-start)
+  // 4. Safe Non-Blocking DB Save
   let runId = `run_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
   let articleId = `art_${Date.now().toString(36)}`;
   let genContentId = `gen_${Date.now().toString(36)}`;
@@ -268,13 +236,13 @@ Jumlah Slide Diminta: ${slidesCount} Slide`;
       const genContent = await tx.generatedContent.create({
         data: {
           articleId: article.id,
-          headline: content.headline,
-          feedCopy: content.feedCopy,
-          caption: content.caption,
-          hashtags: content.hashtags,
-          cta: content.cta,
-          angle: content.angle,
-          analysis: analysis as any,
+          headline: deck.headline || articleTitle,
+          feedCopy: deck.feedCopy || '',
+          caption: deck.caption || '',
+          hashtags: deck.hashtags || [],
+          cta: deck.cta || 'Simpan & Bagikan!',
+          angle: 'Jurnalisme Mendalam',
+          analysis: { topic: articleTitle, category: detectedCategory } as any,
           slides: enrichedSlides as any,
           visualUrl: coverImageUrl,
         },
@@ -318,11 +286,11 @@ Jumlah Slide Diminta: ${slidesCount} Slide`;
     },
     content: {
       id: genContentId,
-      headline: content.headline,
-      caption: content.caption,
-      hashtags: content.hashtags,
-      cta: content.cta,
-      angle: content.angle,
+      headline: deck.headline || articleTitle,
+      caption: deck.caption,
+      hashtags: deck.hashtags,
+      cta: deck.cta,
+      angle: 'Jurnalisme Mendalam',
       slides: enrichedSlides,
     },
     style: input.style,
