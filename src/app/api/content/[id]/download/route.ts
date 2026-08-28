@@ -67,7 +67,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     ? content.hashtags.map((h: string) => (h.startsWith('#') ? h : `#${h}`)).join(' ')
     : '';
 
-  const captionText = `${content.headline}\n\n${content.caption}\n\n${hashtagsFormatted}\n\nGenerated with Scoopcraft (https://scoopcraft.app)`;
+  const captionText = `${content.headline}\n\n${content.caption}\n\n${hashtagsFormatted}\n\nGenerated with Newsly AI (https://newsly.ai)`;
   zip.file('caption.txt', captionText);
 
   const buffer = await zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE', compressionOptions: { level: 6 } });

@@ -1,7 +1,7 @@
 export const APP = {
-  name: 'Scoopcraft',
-  tagline: 'Ubah URL berita jadi konten siap posting.',
+  name: 'Newsly AI',
+  tagline: 'From News to Stunning Content',
   description:
-    'Tempel link artikel, Scoopcraft menuliskan caption, hashtag, dan visual editorial dalam format Feed & Story.',
-  handle: '@scoopcraft',
+    'Platform AI Pembuat Carousel & Feed Media Sosial Kelas Dunia. Ubah link berita, naskah teks, atau prompt ide menjadi konten slide carousel visual memukau dalam hitungan detik.',
+  handle: '@newsly.ai',
 } as const;

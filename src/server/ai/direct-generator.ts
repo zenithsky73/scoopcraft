@@ -6,6 +6,7 @@ import { analysisSchema, contentSchema } from '@/server/ai/schemas';
 import { normalizeCopy } from '@/server/ai/validate';
 import { SLIDES } from '@/server/design/deck';
 import { consumeQuota } from '@/server/billing/quota';
+import { getContextualPhotoForSlide } from '@/server/images/contextual-photos';
 
 export type InputMode = 'url' | 'text' | 'prompt';
 
@@ -24,14 +25,14 @@ export type GenerateDirectInput = {
 
 const DEFAULT_ANALYZE_PROMPT = `Anda adalah editor media senior dan jurnalis riset di Indonesia. Analisis artikel berita ini secara objektif dan temukan:
 1. Topik utama dalam 1 kalimat
-2. Kategori berita
+2. Kategori berita (POLITIK, EKONOMI, HUKUM, OLAHRAGA, TEKNOLOGI, HIBURAN, KESEHATAN, PENDIDIKAN, LINGKUNGAN, BENCANA, INTERNASIONAL, LAINNYA)
 3. Ringkasan 2-3 kalimat
 4. 3-5 poin inti paling penting
 5. Angka / fakta konkret
 6. Entitas penting
 7. Rekomendasi sudut pandang penulisan carousel`;
 
-const DEFAULT_CONTENT_PROMPT = `Anda adalah head of content & viral social media copywriter untuk media Instagram terpopuler di Indonesia (seperti @fakta.indo, @ngomonginuang, @infonesiaku.id).
+const DEFAULT_CONTENT_PROMPT = `Anda adalah head of content & viral social media copywriter untuk media Instagram terpopuler di Indonesia (seperti @fakta.indo, @ngomonginuang, @infonesiaku.id, @supercuansaham.id, @tentangkampus_id).
 Tugas Anda adalah mengubah analisis artikel berita menjadi konten slide carousel Instagram yang sangat menarik, berbobot, dan memicu interaksi tinggi.
 
 Tulis dalam format JSON terstruktur:
@@ -42,14 +43,14 @@ Tulis dalam format JSON terstruktur:
 5. cta: Ajakan bertindak singkat (maksimal 60 karakter)
 6. angle: Sudut pandang yang dipilih
 7. altText: Deskripsi singkat gambar untuk aksesibilitas
-8. slides: Array objek slide (title, body, visualPrompt) sejumlah yang diminta.`;
+8. slides: Array objek slide (title, body, visualPrompt) sejumlah yang diminta. Setiap slide harus memiliki poin yang padat, kaya informasi, dan menarik.`;
 
 export async function generateDirect(input: GenerateDirectInput) {
   const slidesCount = Math.min(Math.max(input.slides ?? 5, SLIDES.min), SLIDES.max);
   let articleTitle = '';
   let articleContent = '';
-  let articleSource = 'Scoopcraft AI';
-  let articleUrl = input.url || `https://scoopcraft.ai/generated/${Date.now()}`;
+  let articleSource = 'Newsly AI';
+  let articleUrl = input.url || `https://newsly.ai/generated/${Date.now()}`;
   let articleImageUrl: string | null = null;
   let articleAuthor = 'Redaksi';
 
@@ -67,7 +68,7 @@ export async function generateDirect(input: GenerateDirectInput) {
     articleContent = input.rawText;
     articleSource = 'Teks Langsung';
   } else if (input.mode === 'prompt' && input.prompt) {
-    // Generate full article from prompt using Gemini/OpenAI/Anthropic
+    // Generate full article from prompt using Gemini
     const promptSystem = `Anda adalah jurnalis dan editor media terkemuka di Indonesia. Buatkan artikel/analisis berita yang tajam, mendalam, dan kaya fakta berdasarkan topik/ide yang diberikan pengguna. Gunakan gaya bahasa Indonesia yang mengalir, lugas, dan terstruktur piramida terbalik.`;
     
     const promptUser = `Topik/Ide Konten: "${input.prompt}"
@@ -118,7 +119,45 @@ Tulis artikel berita/edukasi lengkap (minimal 3-5 paragraf) dengan judul menarik
   });
   const { copy: content } = normalizeCopy(contentResult.data);
 
-  // 4. Atomic Database Save
+  // 4. Enrich Each Slide with Distinct Contextual HD Image and Metadata
+  const rawSlideList = content.slides || [];
+  const enrichedSlides = rawSlideList.map((s, idx) => {
+    const isCover = idx === 0;
+    const isOutro = idx === rawSlideList.length - 1;
+    const photoUrl = getContextualPhotoForSlide(
+      analysis.category,
+      idx,
+      s.title || articleTitle,
+      isCover ? articleImageUrl : null
+    );
+
+    const factItem = analysis.facts && analysis.facts[idx % analysis.facts.length];
+
+    return {
+      index: idx,
+      type: isCover ? 'COVER' : isOutro ? 'OUTRO' : 'POINT',
+      pointNumber: isCover || isOutro ? undefined : idx,
+      tag: isCover
+        ? analysis.category || 'HEADLINE'
+        : isOutro
+        ? 'KESIMPULAN'
+        : `FAKTA 0${idx}`,
+      headline: isCover ? content.headline || s.title : undefined,
+      lead: isCover ? content.feedCopy || s.body : undefined,
+      takeaway: s.title || `Poin Pembahasan #${idx}`,
+      supportingText: s.body,
+      statHighlight: factItem ? `${factItem.label}: ${factItem.value}` : undefined,
+      sourceQuote: isCover ? undefined : idx === 1 ? `"${analysis.topic}"` : undefined,
+      ctaText: isOutro ? content.cta : undefined,
+      secondaryCta: isOutro ? 'Ikuti @newsly.ai untuk update berita & insight harian.' : undefined,
+      imageUrl: photoUrl,
+      source: articleSource,
+    };
+  });
+
+  const coverImageUrl = enrichedSlides[0]?.imageUrl || articleImageUrl || getContextualPhotoForSlide(analysis.category, 0, articleTitle);
+
+  // 5. Atomic Database Save
   const savedRun = await db.$transaction(async (tx) => {
     // Consume Quota
     await consumeQuota(tx, input.userId);
@@ -132,7 +171,7 @@ Tulis artikel berita/edukasi lengkap (minimal 3-5 paragraf) dengan judul menarik
         title: articleTitle,
         content: articleContent,
         source: articleSource,
-        imageUrl: articleImageUrl,
+        imageUrl: coverImageUrl,
         author: articleAuthor,
         lang: 'id',
         scrapedVia: input.mode,
@@ -140,7 +179,7 @@ Tulis artikel berita/edukasi lengkap (minimal 3-5 paragraf) dengan judul menarik
       update: {
         title: articleTitle,
         content: articleContent,
-        imageUrl: articleImageUrl,
+        imageUrl: coverImageUrl,
       },
     });
 
@@ -155,8 +194,8 @@ Tulis artikel berita/edukasi lengkap (minimal 3-5 paragraf) dengan judul menarik
         cta: content.cta,
         angle: content.angle,
         analysis: analysis as any,
-        slides: content.slides as any,
-        visualUrl: articleImageUrl,
+        slides: enrichedSlides as any,
+        visualUrl: coverImageUrl,
       },
     });
 
@@ -186,7 +225,7 @@ Tulis artikel berita/edukasi lengkap (minimal 3-5 paragraf) dengan judul menarik
       id: savedRun.article.id,
       title: articleTitle,
       source: articleSource,
-      imageUrl: articleImageUrl,
+      imageUrl: coverImageUrl,
       author: articleAuthor,
       url: articleUrl,
     },
@@ -197,7 +236,7 @@ Tulis artikel berita/edukasi lengkap (minimal 3-5 paragraf) dengan judul menarik
       hashtags: content.hashtags,
       cta: content.cta,
       angle: content.angle,
-      slides: content.slides,
+      slides: enrichedSlides,
     },
     style: input.style,
     format: input.format || 'FEED_PORTRAIT',

@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
+import { Sparkles, Crown } from 'lucide-react';
 import { getViewer } from '@/server/viewer';
-import { db } from '@/server/db';
 import { getQuotaState } from '@/server/billing/quota';
 import { PlanGrid } from '@/components/billing/plan-grid';
 import { QuotaMeter } from '@/components/billing/quota-meter';
 import { formatDate } from '@/lib/utils';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'Upgrade' };
+export const metadata: Metadata = { title: 'Pilihan Paket & Kuota — Newsly AI' };
 
 export default async function UpgradePage() {
   const viewer = await getViewer();
@@ -18,36 +18,57 @@ export default async function UpgradePage() {
   const quota = getQuotaState(user);
 
   return (
-    <div className="mx-auto max-w-5xl space-y-5">
-      <div>
-        <h2 className="text-lg font-semibold tracking-tight">Paket &amp; kuota</h2>
-        <p className="mt-1 text-sm text-muted">
-          Konten lama tetap bisa dilihat dan diunduh walau kuota habis.
+    <div className="mx-auto max-w-5xl space-y-8 pb-12">
+      {/* Header Section */}
+      <div className="text-center sm:text-left space-y-2">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-xs font-bold text-primary">
+          <Sparkles className="size-3.5" />
+          <span>Investasi Terbaik untuk Konten Media Sosial Anda</span>
+        </div>
+        <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white">
+          Pilihan Paket &amp; Kuota Langganan
+        </h1>
+        <p className="text-sm text-slate-400 max-w-2xl">
+          Tingkatkan produktivitas konten media sosial dengan template visual media papan atas, ekspor carousel LinkedIn PDF, dan kuota melimpah.
         </p>
       </div>
 
+      {/* Status Cards */}
       <div className="grid gap-4 sm:grid-cols-2">
-        <QuotaMeter quota={quota} />
+        <div className="rounded-3xl border border-slate-800 bg-slate-900/60 p-5 backdrop-blur-xl shadow-lg">
+          <QuotaMeter quota={quota} />
+        </div>
 
-        <div className="rounded-md border border-border bg-surface-2 p-3">
-          <p className="text-2xs font-medium uppercase tracking-wide text-muted">Status</p>
-          <p className="mt-1 text-sm font-medium">
-            {quota.isOwner ? 'Pemilik aplikasi' : `${user.plan} · ${user.subscriptionStatus}`}
-          </p>
-          <p className="hint mt-2">
+        <div className="rounded-3xl border border-slate-800 bg-slate-900/60 p-5 backdrop-blur-xl shadow-lg flex flex-col justify-between">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              Status Akun Saat Ini
+            </p>
+            <div className="mt-1 flex items-center gap-2">
+              <span className="text-base font-black text-white">
+                {quota.isOwner ? '👑 Pemilik Aplikasi (OWNER)' : `Paket ${user.plan}`}
+              </span>
+              <span className="px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700 text-[10px] font-bold text-slate-300">
+                {user.subscriptionStatus}
+              </span>
+            </div>
+          </div>
+
+          <p className="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-800/80">
             {quota.isOwner
-              ? 'Tanpa batas kuota dan tanpa masa berlaku.'
+              ? 'Tanpa batas kuota dan tanpa masa berlaku selamanya.'
               : quota.isTrial
-                ? user.trialEndsAt
-                  ? `Trial berakhir ${formatDate(user.trialEndsAt)}.`
-                  : 'Masa trial berjalan.'
-                : quota.resetsAt
-                  ? `Kuota direset ${formatDate(quota.resetsAt)}.`
-                  : 'Belum ada jadwal reset kuota.'}
+              ? user.trialEndsAt
+                ? `Masa uji coba gratis aktif hingga ${formatDate(user.trialEndsAt)}.`
+                : 'Masa uji coba berjalan.'
+              : quota.resetsAt
+              ? `Kuota bulanan berikutnya akan direset pada ${formatDate(quota.resetsAt)}.`
+              : 'Aktif.'}
           </p>
         </div>
       </div>
 
+      {/* Plan Grid */}
       <PlanGrid currentPlan={user.plan} isOwner={quota.isOwner} />
     </div>
   );

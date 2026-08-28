@@ -13,18 +13,18 @@ function num(value: string | undefined, fallback: number) {
 }
 
 /**
- * Batas percobaan tanpa mendaftar.
+ * Batas percobaan gratis untuk pengunjung / user baru (Cukup 5x generate).
  */
 export const GUEST = {
-  quota: num(process.env.GUEST_QUOTA, 10),
+  quota: num(process.env.GUEST_QUOTA, 5),
   /** Pagar kedua terhadap orang yang menghapus cookie berulang kali. */
-  perIpPerDay: num(process.env.GUEST_IP_LIMIT, 20),
+  perIpPerDay: num(process.env.GUEST_IP_LIMIT, 10),
   /** Gaya desain yang boleh dicoba tanpa akun. */
   enabled: process.env.GUEST_TRIAL !== '0',
 } as const;
 
 export const TRIAL = {
-  durationDays: num(process.env.TRIAL_DURATION_DAYS, 14),
-  quota: num(process.env.TRIAL_QUOTA, 20),
+  durationDays: num(process.env.TRIAL_DURATION_DAYS, 7),
+  quota: num(process.env.TRIAL_QUOTA, 5),
   mode: (process.env.TRIAL_MODE as TrialMode) || 'FIRST_EXHAUSTED',
 } as const;

@@ -2,13 +2,27 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Check, Crown, Info } from 'lucide-react';
+import { Check, Crown, Sparkles, Zap, ShieldCheck, ArrowRight } from 'lucide-react';
 import type { Plan } from '@prisma/client';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { PLAN_LIST, formatIDR, type PaidPlan } from '@/config/plans';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+
+declare global {
+  interface Window {
+    snap?: {
+      pay: (
+        token: string,
+        options: {
+          onSuccess?: (result: any) => void;
+          onPending?: (result: any) => void;
+          onError?: (result: any) => void;
+          onClose?: () => void;
+        }
+      ) => void;
+    };
+  }
+}
 
 export function PlanGrid({
   currentPlan,
@@ -17,115 +31,267 @@ export function PlanGrid({
 }: {
   currentPlan: Plan;
   isOwner: boolean;
-  /**
-   * Mematikan pemanggilan API — dipakai halaman pratinjau UI. Berupa boolean,
-   * bukan callback: server component tidak bisa mengoper fungsi ke client
-   * component, dan pratinjaunya memang tidak perlu bereaksi apa pun.
-   */
   preview?: boolean;
 }) {
   const router = useRouter();
   const [pending, setPending] = React.useState<Plan | null>(null);
   const [error, setError] = React.useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = React.useState<string | null>(null);
 
-  async function subscribe(plan: PaidPlan) {
+  // Load Midtrans Snap JS Script dynamically
+  React.useEffect(() => {
+    const snapScriptUrl = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true'
+      ? 'https://app.midtrans.com/snap/snap.js'
+      : 'https://app.sandbox.midtrans.com/snap/snap.js';
+
+    const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || 'SB-Mid-client-sample';
+
+    if (!document.querySelector(`script[src="${snapScriptUrl}"]`)) {
+      const script = document.createElement('script');
+      script.src = snapScriptUrl;
+      script.setAttribute('data-client-key', clientKey);
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }, []);
+
+  async function handleCheckout(plan: PaidPlan) {
     setError(null);
+    setSuccessMessage(null);
 
     if (preview) return;
 
     setPending(plan);
 
-    const res = await fetch('/api/billing/activate', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ plan }),
-    });
+    try {
+      const res = await fetch('/api/billing/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan }),
+      });
 
-    const body = await res.json().catch(() => ({}));
-    setPending(null);
+      const data = await res.json();
+      setPending(null);
 
-    if (!res.ok) {
-      setError(body.error ?? 'Gagal mengaktifkan langganan.');
-      return;
+      if (!res.ok) {
+        setError(data.error || 'Gagal memulai proses pembayaran.');
+        return;
+      }
+
+      // Mode 1: Midtrans Snap Popup Aktif
+      if (data.mode === 'MIDTRANS_SNAP' && data.token) {
+        if (typeof window !== 'undefined' && window.snap) {
+          window.snap.pay(data.token, {
+            onSuccess: () => {
+              setSuccessMessage('Pembayaran berhasil dikonfirmasi! Paket Anda telah aktif.');
+              setTimeout(() => {
+                router.refresh();
+              }, 1500);
+            },
+            onPending: () => {
+              setSuccessMessage('Menunggu pembayaran Anda (QRIS / Virtual Account)...');
+            },
+            onError: () => {
+              setError('Terjadi kendala pada pembayaran. Silakan coba kembali.');
+            },
+            onClose: () => {
+              // User menutup popup
+            },
+          });
+        } else if (data.redirectUrl) {
+          window.location.href = data.redirectUrl;
+        }
+        return;
+      }
+
+      // Mode 2: Test Instant Mode (Ketika MIDTRANS_SERVER_KEY belum diisi di .env)
+      if (data.mode === 'TEST_INSTANT') {
+        setSuccessMessage(`✓ ${data.message}`);
+        setTimeout(() => {
+          router.refresh();
+        }, 1200);
+      }
+    } catch (err: any) {
+      setPending(null);
+      setError(err.message || 'Terjadi kesalahan saat memproses.');
     }
-
-    router.refresh();
   }
 
   if (isOwner) {
     return (
-      <Card className="border-accent">
-        <CardContent className="flex flex-wrap items-center gap-3 py-5">
-          <Crown className="size-5 shrink-0 text-accent" aria-hidden />
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold">Akun pemilik</p>
-            <p className="mt-0.5 text-sm text-muted">
-              Generate tanpa batas, tanpa masa trial. Tidak perlu berlangganan.
-            </p>
+      <div className="rounded-3xl border border-amber-500/40 bg-gradient-to-r from-amber-500/15 via-yellow-500/10 to-amber-600/15 p-6 shadow-xl backdrop-blur-xl">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="flex size-12 items-center justify-center rounded-2xl bg-amber-500 text-slate-950 font-black shadow-lg shadow-amber-500/30">
+              <Crown className="size-6 text-slate-950" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <p className="text-base font-black text-white">Akun Pemilik (OWNER)</p>
+                <span className="px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 text-[10px] font-black uppercase">
+                  UNLIMITED ACTIVE
+                </span>
+              </div>
+              <p className="text-xs text-slate-300 mt-0.5">
+                Anda memiliki akses penuh untuk generate konten tanpa batas kuota dan tanpa masa kedaluwarsa.
+              </p>
+            </div>
           </div>
-          <Badge variant="accent">Unlimited</Badge>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-start gap-2.5 rounded-md border border-border bg-surface-2 p-3">
-        <Info className="mt-0.5 size-4 shrink-0 text-muted" aria-hidden />
-        <p className="text-sm text-muted">
-          Pembayaran belum tersambung. Menekan Subscribe langsung mengaktifkan paket untuk pengujian.
-        </p>
-      </div>
-
+    <div className="space-y-8">
       {error && (
-        <p className="rounded-md border border-danger/25 bg-danger/10 px-3 py-2 text-sm text-danger">{error}</p>
+        <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-xs font-bold text-red-300">
+          {error}
+        </div>
       )}
 
-      <div className="grid gap-4 md:grid-cols-3">
+      {successMessage && (
+        <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-xs font-bold text-emerald-300 animate-in fade-in">
+          {successMessage}
+        </div>
+      )}
+
+      <div className="grid gap-6 md:grid-cols-3 items-stretch">
         {PLAN_LIST.map((plan) => {
           const active = currentPlan === plan.id;
+          const isLite = plan.id === 'BASIC';
+          const isPro = plan.id === 'PRO';
+          const isBusiness = plan.id === 'BUSINESS';
 
           return (
-            <Card key={plan.id} className={cn(plan.highlight && !active && 'border-accent', active && 'border-success')}>
-              <CardContent className="flex h-full flex-col gap-4 py-5">
-                <div className="flex items-center justify-between gap-2">
-                  <h3 className="text-sm font-semibold">{plan.name}</h3>
-                  {active ? (
-                    <Badge variant="success">Paket aktif</Badge>
-                  ) : (
-                    plan.highlight && <Badge variant="accent">Populer</Badge>
-                  )}
+            <div
+              key={plan.id}
+              className={cn(
+                'relative flex flex-col justify-between rounded-3xl p-6 transition-all duration-300 backdrop-blur-xl border',
+                active
+                  ? 'bg-slate-900/90 border-emerald-500 shadow-2xl ring-2 ring-emerald-500/30'
+                  : isPro
+                  ? 'bg-gradient-to-b from-indigo-950/80 via-slate-900/90 to-slate-950 border-primary shadow-2xl shadow-primary/20 scale-[1.03] ring-1 ring-primary/50'
+                  : isBusiness
+                  ? 'bg-gradient-to-b from-purple-950/70 via-slate-900/90 to-slate-950 border-purple-500/40 shadow-xl'
+                  : 'bg-slate-900/60 border-slate-800 hover:border-slate-700 shadow-lg'
+              )}
+            >
+              {/* Badge Ribbons */}
+              {plan.badge && !active && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span
+                    className={cn(
+                      'px-3.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-lg text-white',
+                      isPro
+                        ? 'bg-gradient-to-r from-primary to-indigo-600 border border-indigo-400'
+                        : isBusiness
+                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 border border-purple-400'
+                        : 'bg-slate-800 border border-slate-700 text-slate-300'
+                    )}
+                  >
+                    {plan.badge}
+                  </span>
+                </div>
+              )}
+
+              {active && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span className="px-3.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-lg bg-emerald-600 text-white border border-emerald-400">
+                    ✓ Sedang Aktif
+                  </span>
+                </div>
+              )}
+
+              <div>
+                {/* Header */}
+                <div className="space-y-1 mb-4 pt-1">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-black text-white">{plan.name}</h3>
+                    {isBusiness && <Zap className="size-4 text-purple-400 fill-current" />}
+                    {isPro && <Sparkles className="size-4 text-primary" />}
+                  </div>
+                  <p className="text-xs text-slate-400">{plan.subName}</p>
                 </div>
 
-                <p className="text-2xl font-semibold tabular-nums">
-                  {formatIDR(plan.price)}
-                  <span className="text-sm font-normal text-muted"> /bulan</span>
-                </p>
+                {/* Pricing Display */}
+                <div className="pb-5 border-b border-slate-800/80 mb-5">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-3xl font-black text-white tracking-tight">
+                      {formatIDR(plan.price)}
+                    </span>
+                    <span className="text-xs text-slate-400 font-medium">/bulan</span>
+                  </div>
+                  <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-bold text-slate-200">
+                    <span className="size-1.5 rounded-full bg-primary" />
+                    <span>{plan.quotaLabel}</span>
+                  </div>
+                </div>
 
-                <ul className="space-y-2">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2 text-sm text-muted">
-                      <Check className="mt-0.5 size-4 shrink-0 text-accent" aria-hidden />
-                      {feature}
+                {/* Features List */}
+                <ul className="space-y-2.5 mb-6 text-xs text-slate-300">
+                  {plan.features.map((feature, idx) => (
+                    <li key={idx} className="flex items-start gap-2.5">
+                      <div
+                        className={cn(
+                          'size-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-white',
+                          isPro ? 'bg-primary' : isBusiness ? 'bg-purple-600' : 'bg-slate-800 text-slate-300'
+                        )}
+                      >
+                        <Check className="size-2.5 stroke-[3]" />
+                      </div>
+                      <span className={cn(idx === 0 && 'font-bold text-white')}>{feature}</span>
                     </li>
                   ))}
                 </ul>
+              </div>
 
+              {/* Action Button */}
+              <div className="pt-2">
                 <Button
                   block
-                  className="mt-auto"
-                  variant={active ? 'secondary' : plan.highlight ? 'primary' : 'secondary'}
+                  size="lg"
                   disabled={active}
                   loading={pending === plan.id}
-                  onClick={() => subscribe(plan.id)}
+                  onClick={() => handleCheckout(plan.id)}
+                  className={cn(
+                    'h-11 rounded-2xl text-xs font-black transition-all shadow-md',
+                    active
+                      ? 'bg-slate-800 text-slate-400 border border-slate-700'
+                      : isPro
+                      ? 'bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-500 text-white shadow-primary/25'
+                      : isBusiness
+                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-95 text-white shadow-purple-600/25'
+                      : 'bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700'
+                  )}
                 >
-                  {active ? 'Sedang dipakai' : 'Subscribe'}
+                  {active ? (
+                    'Paket Anda Saat Ini'
+                  ) : (
+                    <span className="flex items-center justify-center gap-1.5">
+                      Langganan Sekarang <ArrowRight className="size-3.5" />
+                    </span>
+                  )}
                 </Button>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           );
         })}
+      </div>
+
+      {/* Trust & Guarantee Box */}
+      <div className="p-5 rounded-3xl border border-slate-800 bg-slate-900/40 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+        <div className="flex items-center gap-3">
+          <ShieldCheck className="size-5 text-emerald-400 shrink-0" />
+          <span>
+            Didukung oleh <strong>Midtrans Payment Gateway</strong> (QRIS, GoPay, ShopeePay, Virtual Account BCA/Mandiri/BRI/BNI).
+          </span>
+        </div>
+        <div className="flex items-center gap-2 shrink-0 font-bold text-slate-300">
+          <span>⚡ Aktivasi Otomatis</span>
+          <span>•</span>
+          <span>🔒 Enkripsi Bank 256-bit</span>
+        </div>
       </div>
     </div>
   );

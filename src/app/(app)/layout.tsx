@@ -15,7 +15,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const quota = getQuotaState(user);
 
   return (
-    <AppShell title="Scoopcraft" email={isGuest ? null : user.email} quota={quota}>
+    <AppShell title="Newsly AI" email={isGuest ? null : user.email} quota={quota}>
       {children}
     </AppShell>
   );

@@ -3,7 +3,6 @@ import { betaZodOutputFormat } from '@anthropic-ai/sdk/helpers/beta/zod';
 import { GoogleGenAI } from '@google/genai';
 import OpenAI from 'openai';
 import { zodResponseFormat } from 'openai/helpers/zod';
-import { zodToJsonSchema } from 'zod-to-json-schema';
 import type { z } from 'zod';
 import { AI } from '@/config/ai';
 import { AiError } from '@/server/ai/errors';
@@ -50,7 +49,7 @@ export type StructuredResult<T> = {
 };
 
 /**
- * Titik masuk utama eksekusi AI terstruktur multi-provider (Anthropic Claude, Google Gemini, OpenAI).
+ * Titik masuk utama eksekusi AI terstruktur multi-provider (Google Gemini, Anthropic Claude, OpenAI).
  */
 export async function runStructured<S extends z.ZodType>({
   system,
@@ -76,7 +75,79 @@ export async function runStructured<S extends z.ZodType>({
   return runAnthropicStructured({ system, user, schema, effort });
 }
 
-/** 1. Eksekusi Structured Output via Anthropic Claude */
+/** 1. Eksekusi Structured Output via Google Gemini (Direct, Fast, dengan Smart Retry) */
+async function runGeminiStructured<S extends z.ZodType>({
+  system,
+  user,
+  schema,
+}: {
+  system: string;
+  user: string;
+  schema: S;
+}): Promise<StructuredResult<z.infer<S>>> {
+  const client = getGeminiClient();
+  const primaryModel = process.env.GEMINI_MODEL || 'gemini-3.5-flash';
+  const modelsToTry = [primaryModel, 'gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-3.6-flash'];
+
+  let lastError: any = null;
+
+  for (const model of modelsToTry) {
+    try {
+      const formatHelper = zodResponseFormat(schema, 'result');
+      const responseSchema = (formatHelper as any).json_schema.schema;
+
+      const response = await client.models.generateContent({
+        model,
+        contents: [
+          { role: 'user', parts: [{ text: `System Instructions:\n${system}\n\nTask Input:\n${user}` }] },
+        ],
+        config: {
+          responseMimeType: 'application/json',
+          responseSchema,
+        },
+      });
+
+      const text = response.text;
+      if (!text) throw new AiError('INVALID_OUTPUT', 'Keluaran Gemini kosong.');
+
+      let rawJson: unknown;
+      try {
+        rawJson = JSON.parse(text);
+      } catch {
+        throw new AiError('INVALID_OUTPUT', 'Gagal mem-parsing keluaran JSON dari Gemini.');
+      }
+
+      const parsed = schema.parse(rawJson);
+      return {
+        data: parsed as z.infer<S>,
+        usage: {
+          inputTokens: response.usageMetadata?.promptTokenCount ?? 0,
+          outputTokens: response.usageMetadata?.candidatesTokenCount ?? 0,
+          model,
+        },
+      };
+    } catch (err: any) {
+      lastError = err;
+      const isRateLimit = err.status === 429 || String(err.message).includes('RESOURCE_EXHAUSTED');
+      if (isRateLimit) {
+        // Beri jeda 1 detik lalu coba fallback model berikutnya
+        await new Promise((res) => setTimeout(res, 1000));
+        continue;
+      }
+      if (err instanceof AiError) throw err;
+      if (err.name === 'ZodError') return Promise.reject(new AiError('INVALID_OUTPUT', err.message));
+      throw new AiError('UNKNOWN', err.message || String(err));
+    }
+  }
+
+  if (lastError?.status === 429 || String(lastError?.message).includes('RESOURCE_EXHAUSTED')) {
+    throw new AiError('RATE_LIMITED', 'Batas kuota Gemini tercapai. Silakan coba kembali dalam beberapa detik.');
+  }
+
+  throw new AiError('UNKNOWN', lastError?.message || String(lastError));
+}
+
+/** 2. Eksekusi Structured Output via Anthropic Claude */
 async function runAnthropicStructured<S extends z.ZodType>({
   system,
   user,
@@ -124,89 +195,6 @@ async function runAnthropicStructured<S extends z.ZodType>({
     };
   } catch (err) {
     throw toAnthropicError(err);
-  }
-}
-
-function dereferenceJsonSchema(raw: any): any {
-  if (!raw || typeof raw !== 'object') return raw;
-  const defs = raw.$defs || raw.definitions || {};
-
-  function resolve(node: any): any {
-    if (!node || typeof node !== 'object') return node;
-    if (Array.isArray(node)) return node.map(resolve);
-
-    if (node.$ref && typeof node.$ref === 'string') {
-      const refKey = node.$ref.replace(/^#\/(\$defs|definitions)\//, '');
-      if (defs[refKey]) {
-        return resolve(defs[refKey]);
-      }
-    }
-
-    const copy: any = {};
-    for (const [k, v] of Object.entries(node)) {
-      if (k === '$defs' || k === 'definitions' || k === '$schema' || k === 'default') continue;
-      copy[k] = resolve(v);
-    }
-    return copy;
-  }
-
-  return resolve(raw);
-}
-
-/** 2. Eksekusi Structured Output via Google Gemini */
-async function runGeminiStructured<S extends z.ZodType>({
-  system,
-  user,
-  schema,
-}: {
-  system: string;
-  user: string;
-  schema: S;
-}): Promise<StructuredResult<z.infer<S>>> {
-  const client = getGeminiClient();
-  const model = AI.model;
-
-  try {
-    const outputFormat = betaZodOutputFormat(schema);
-    const inlinedSchema = dereferenceJsonSchema((outputFormat as any).schema);
-
-    const response = await client.models.generateContent({
-      model,
-      contents: [
-        { role: 'user', parts: [{ text: `System Instructions:\n${system}\n\nTask Input:\n${user}` }] },
-      ],
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: inlinedSchema,
-      },
-    });
-
-    const text = response.text;
-    if (!text) throw new AiError('INVALID_OUTPUT', 'Keluaran Gemini kosong.');
-
-    let rawJson: unknown;
-    try {
-      rawJson = JSON.parse(text);
-    } catch {
-      throw new AiError('INVALID_OUTPUT', 'Gagal mem-parsing keluaran JSON dari Gemini.');
-    }
-
-    const parsed = schema.parse(rawJson);
-    return {
-      data: parsed as z.infer<S>,
-      usage: {
-        inputTokens: response.usageMetadata?.promptTokenCount ?? 0,
-        outputTokens: response.usageMetadata?.candidatesTokenCount ?? 0,
-        model,
-      },
-    };
-  } catch (err: any) {
-    if (err instanceof AiError) throw err;
-    if (err.name === 'ZodError') return Promise.reject(new AiError('INVALID_OUTPUT', err.message));
-    if (err.status === 429 || String(err.message).includes('RESOURCE_EXHAUSTED')) {
-      throw new AiError('RATE_LIMITED', 'Batas kuota Gemini terlampaui.');
-    }
-    throw new AiError('UNKNOWN', err.message || String(err));
   }
 }
 

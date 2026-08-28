@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import { getViewer } from '@/server/viewer';
+import { db } from '@/server/db';
 import { getRun } from '@/server/pipeline/run-service';
 import { planSteps, STEP_LABELS } from '@/server/pipeline/steps';
-import { slidesFromJson } from '@/server/design/slides-json';
 import { CarouselStudio } from '@/components/studio/carousel-studio';
 import { ResultView } from '@/components/result/result-view';
 import type { RunStatusResponse } from '@/lib/run-status';
@@ -17,6 +17,12 @@ export default async function ContentDetailPage({ params }: { params: { id: stri
 
   const run = await getRun(params.id, viewer.user.id);
   if (!run) notFound();
+
+  const user = await db.user.findUnique({
+    where: { id: viewer.user.id },
+    select: { role: true, plan: true },
+  });
+  const isProUser = user?.role === 'OWNER' || user?.plan === 'PRO' || user?.plan === 'BUSINESS';
 
   if (run.generatedContent) {
     const rawSlides = run.generatedContent.slides as any;
@@ -38,13 +44,14 @@ export default async function ContentDetailPage({ params }: { params: { id: stri
         }}
         article={{
           title: run.article?.title || run.generatedContent.headline,
-          source: run.article?.source || 'Scoopcraft',
+          source: run.article?.source || 'Newsly AI',
           url: run.article?.url,
           imageUrl: run.generatedContent.visualUrl || run.article?.imageUrl,
           author: run.article?.author || 'Redaksi',
         }}
         initialStyle={run.requestedStyles[0] || 'BREAKING_NEWS'}
         initialFormat={run.requestedFormats[0] || 'FEED_PORTRAIT'}
+        isProUser={isProUser}
       />
     );
   }

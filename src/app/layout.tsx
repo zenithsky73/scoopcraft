@@ -7,6 +7,10 @@ import './globals.css';
 export const metadata: Metadata = {
   title: { default: `${APP.name} — ${APP.tagline}`, template: `%s · ${APP.name}` },
   description: APP.description,
+  icons: {
+    icon: '/favicon.png',
+    apple: '/app-icon-dark.png',
+  },
 };
 
 export const viewport: Viewport = {
@@ -20,8 +24,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="id" suppressHydrationWarning>
       <head>
-        {/* Inter di-host sendiri (public/fonts) supaya render PNG identik
-            di semua mesin dan tidak bergantung jaringan saat build. */}
+        <link rel="icon" href="/favicon.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/app-icon-dark.png" />
         <link rel="stylesheet" href="/fonts/inter.css" />
       </head>
       <body>

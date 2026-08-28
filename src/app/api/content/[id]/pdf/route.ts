@@ -57,7 +57,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   try {
     const pdfDoc = await PDFDocument.create();
     pdfDoc.setTitle(content.headline);
-    pdfDoc.setAuthor('Scoopcraft');
+    pdfDoc.setAuthor('Newsly AI');
     pdfDoc.setSubject(content.caption.slice(0, 150));
 
     let addedPages = 0;
