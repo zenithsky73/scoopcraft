@@ -115,25 +115,27 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
         throw new Error(data.message || data.error || 'Gagal membuat konten.');
       }
 
+      const targetContent = data.content || data.generatedContent;
+      const targetId = targetContent?.id || data.runId || data.run?.id;
+
       // Cache result locally in sessionStorage
       try {
-        if (data.article && data.generatedContent) {
-          sessionStorage.setItem(`content_${data.generatedContent.id}`, JSON.stringify({
+        if (targetId && data.article) {
+          sessionStorage.setItem(`content_${targetId}`, JSON.stringify({
             article: data.article,
-            generatedContent: data.generatedContent,
-            run: data.run,
+            generatedContent: targetContent,
+            run: data.run || { id: targetId },
           }));
         }
       } catch (cacheErr) {
         console.warn('[SessionStorage Cache Warning]:', cacheErr);
       }
 
-      if (data.generatedContent?.id) {
-        router.push(`/content/${data.generatedContent.id}`);
-      } else if (data.run?.id) {
-        router.push(`/runs/${data.run.id}`);
+      if (targetId) {
+        window.location.href = `/content/${targetId}`;
       } else {
         router.push('/dashboard');
+        setLoading(false);
       }
     } catch (err: any) {
       setError(err.message || 'Terjadi kesalahan sistem.');

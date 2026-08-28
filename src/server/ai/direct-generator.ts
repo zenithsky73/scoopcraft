@@ -129,7 +129,7 @@ Kembalikan HANYA format JSON valid berikut (tanpa markdown blok lain):
 }`;
 
     const response = await ai.models.generateContent({
-      model: process.env.GEMINI_MODEL || 'gemini-3.5-flash',
+      model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
       config: {
         responseMimeType: 'application/json',

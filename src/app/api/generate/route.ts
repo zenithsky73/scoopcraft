@@ -117,6 +117,8 @@ export async function POST(req: Request) {
       status: 'COMPLETED',
       article: result.article,
       content: result.content,
+      generatedContent: result.content,
+      run: { id: result.runId },
       style: result.style,
       format: result.format,
     });
