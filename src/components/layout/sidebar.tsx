@@ -1,24 +1,22 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Sparkles, Crown } from 'lucide-react';
 import { NAV_ITEMS, isActive } from '@/components/layout/nav-items';
 import { QuotaMeter } from '@/components/billing/quota-meter';
 import type { QuotaState } from '@/server/billing/quota';
-import { APP } from '@/config/app';
 import { cn } from '@/lib/utils';
 
 export function Sidebar({ quota }: { quota: QuotaState }) {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden w-64 shrink-0 flex-col border-r border-slate-800 bg-slate-950/80 backdrop-blur-xl lg:flex text-slate-200">
+    <aside className="hidden w-64 shrink-0 flex-col border-r border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl lg:flex text-slate-800 dark:text-slate-200 transition-colors duration-200">
       {/* Brand Header */}
-      <div className="flex h-18 items-center justify-between border-b border-slate-800/80 px-4 py-3">
+      <div className="flex h-18 items-center justify-between border-b border-slate-200 dark:border-slate-800/80 px-4 py-3">
         <Link href="/dashboard" className="flex items-center gap-2.5 group min-w-0">
-          <div className="relative size-9 rounded-xl overflow-hidden shadow-md shadow-primary/20 shrink-0 group-hover:scale-105 transition-transform bg-slate-900 border border-slate-800 flex items-center justify-center">
+          <div className="relative size-9 rounded-xl overflow-hidden shadow-md shadow-primary/20 shrink-0 group-hover:scale-105 transition-transform bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center">
             <img
               src="/logo-icon.png"
               alt="Newsly AI Icon"
@@ -27,22 +25,22 @@ export function Sidebar({ quota }: { quota: QuotaState }) {
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
-              <span className="text-sm font-black tracking-tight text-white block leading-tight">
-                Newsly<span className="bg-gradient-to-r from-cyan-400 via-pink-500 to-amber-400 bg-clip-text text-transparent">AI</span>
+              <span className="text-sm font-black tracking-tight text-slate-900 dark:text-white block leading-tight">
+                Newsly<span className="bg-gradient-to-r from-cyan-500 via-pink-500 to-amber-500 bg-clip-text text-transparent">AI</span>
               </span>
             </div>
-            <span className="text-[10px] text-slate-400 font-medium truncate block">
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate block">
               From News to Content
             </span>
           </div>
         </Link>
 
         {quota.isOwner ? (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[9px] font-black uppercase tracking-wider shadow-sm shrink-0">
-            <Crown className="size-2.5 text-amber-400" /> OWNER
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/15 dark:bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/30 text-[9px] font-black uppercase tracking-wider shadow-sm shrink-0">
+            <Crown className="size-2.5 text-amber-500 dark:text-amber-400" /> OWNER
           </span>
         ) : (
-          <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/30 text-[9px] font-black uppercase tracking-wider shrink-0">
+          <span className="px-2 py-0.5 rounded-full bg-primary/10 dark:bg-primary/20 text-primary border border-primary/20 text-[9px] font-black uppercase tracking-wider shrink-0">
             PRO
           </span>
         )}
@@ -50,7 +48,7 @@ export function Sidebar({ quota }: { quota: QuotaState }) {
 
       {/* Navigation List */}
       <nav className="flex-1 space-y-1 p-3.5">
-        <div className="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+        <div className="px-3 py-1.5 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
           Menu Utama
         </div>
         {NAV_ITEMS.map((item) => {
@@ -64,7 +62,7 @@ export function Sidebar({ quota }: { quota: QuotaState }) {
                 'flex items-center justify-between rounded-xl px-3 py-2.5 text-xs font-bold transition-all duration-200',
                 active
                   ? 'bg-gradient-to-r from-primary to-indigo-600 text-white shadow-lg shadow-primary/25 scale-[1.02]'
-                  : 'text-slate-400 hover:bg-slate-900/80 hover:text-white',
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900/80 hover:text-slate-900 dark:hover:text-white',
               )}
             >
               <div className="flex items-center gap-3">
@@ -75,7 +73,7 @@ export function Sidebar({ quota }: { quota: QuotaState }) {
                 <span
                   className={cn(
                     'text-[10px] font-black px-2 py-0.5 rounded-full',
-                    active ? 'bg-white/20 text-white' : 'bg-primary/20 text-primary border border-primary/30'
+                    active ? 'bg-white/20 text-white' : 'bg-primary/10 dark:bg-primary/20 text-primary border border-primary/20'
                   )}
                 >
                   {item.badge}
@@ -87,7 +85,7 @@ export function Sidebar({ quota }: { quota: QuotaState }) {
       </nav>
 
       {/* Footer Quota Meter */}
-      <div className="border-t border-slate-800/80 p-3.5 bg-slate-900/40">
+      <div className="border-t border-slate-200 dark:border-slate-800/80 p-3.5 bg-slate-50 dark:bg-slate-900/40">
         <QuotaMeter quota={quota} />
       </div>
     </aside>
