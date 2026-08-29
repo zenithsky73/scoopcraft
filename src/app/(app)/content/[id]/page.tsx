@@ -14,7 +14,18 @@ export default async function ContentDetailPage({ params }: { params: { id: stri
 
   const user = await db.user.findUnique({
     where: { id: viewer.user.id },
-    select: { role: true, plan: true },
+    select: {
+      role: true,
+      plan: true,
+      brandKit: {
+        select: {
+          handle: true,
+          displayName: true,
+          logoUrl: true,
+          hideNewslyWatermark: true,
+        },
+      },
+    },
   });
   const isProUser = user?.role === 'OWNER' || user?.plan === 'PRO' || user?.plan === 'BUSINESS';
 
@@ -80,6 +91,12 @@ export default async function ContentDetailPage({ params }: { params: { id: stri
         initialStyle={requestedStyle}
         initialFormat={requestedFormat}
         isProUser={isProUser}
+        initialBrandKit={{
+          handle: user?.brandKit?.handle ?? '@newsly.ai',
+          brandName: user?.brandKit?.displayName ?? 'NEWSLY AI',
+          logoUrl: user?.brandKit?.logoUrl ?? null,
+          hideNewslyWatermark: isProUser ? (user?.brandKit?.hideNewslyWatermark ?? false) : false,
+        }}
       />
     );
   }

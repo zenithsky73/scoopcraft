@@ -64,6 +64,7 @@ export type CanvasRendererProps = {
   handle?: string;
   brandName?: string;
   logoUrl?: string | null;
+  hideNewslyWatermark?: boolean;
   totalSlides?: number;
   scale?: number;
   showPhoneFrame?: boolean;
@@ -77,6 +78,7 @@ export function CanvasRenderer({
   handle = '@newsly.ai',
   brandName = 'NEWSLY AI',
   logoUrl = null,
+  hideNewslyWatermark = false,
   totalSlides = 5,
   scale = 1,
   showPhoneFrame = false,
@@ -626,9 +628,11 @@ export function CanvasRenderer({
           </span>
         </div>
 
-        <span className="uppercase tracking-widest text-[9px] font-bold shrink-0 ml-2" style={{ color: textMuted }}>
-          {slide.source || 'Newsly AI'}
-        </span>
+        {!hideNewslyWatermark && (
+          <span className="uppercase tracking-widest text-[9px] font-bold shrink-0 ml-2" style={{ color: textMuted }}>
+            {slide.source || 'Newsly AI'}
+          </span>
+        )}
       </div>
     </div>
   );

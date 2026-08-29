@@ -382,6 +382,10 @@ model BrandKit {
   handle      String?
   /// Nama tampilan opsional di sebelah handle.
   displayName String?
+  /// Sembunyikan watermark Newsly AI (Fitur Eksklusif PRO)
+  hideNewslyWatermark Boolean @default(false)
+  /// Tagline / CTA Slogan penutup
+  tagline String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

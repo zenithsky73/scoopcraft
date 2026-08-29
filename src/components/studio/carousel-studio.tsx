@@ -56,6 +56,12 @@ export type CarouselStudioProps = {
   initialStyle?: DesignStyle;
   initialFormat?: OutputFormat;
   isProUser?: boolean;
+  initialBrandKit?: {
+    handle?: string | null;
+    brandName?: string | null;
+    logoUrl?: string | null;
+    hideNewslyWatermark?: boolean;
+  };
 };
 
 export function CarouselStudio({
@@ -64,6 +70,7 @@ export function CarouselStudio({
   initialStyle = 'BREAKING_NEWS',
   initialFormat = 'FEED_PORTRAIT',
   isProUser = false,
+  initialBrandKit,
 }: CarouselStudioProps) {
   const [currentStyle, setCurrentStyle] = React.useState<DesignStyle>(initialStyle);
   const [currentFormat, setCurrentFormat] = React.useState<OutputFormat>(initialFormat);
@@ -74,8 +81,12 @@ export function CarouselStudio({
   const [upgradeReason, setUpgradeReason] = React.useState<'PRO_STYLE' | 'PDF_EXPORT'>('PRO_STYLE');
   const [upgradeTitle, setUpgradeTitle] = React.useState('Buka Template Eksklusif Pro');
   const [selectedPreviewStyle, setSelectedPreviewStyle] = React.useState<StyleDef | null>(null);
-  const [handle, setHandle] = React.useState('@newsly.ai');
-  const [brandName, setBrandName] = React.useState('NEWSLY AI');
+  const [handle, setHandle] = React.useState(initialBrandKit?.handle || '@newsly.ai');
+  const [brandName, setBrandName] = React.useState(initialBrandKit?.brandName || 'NEWSLY AI');
+  const [logoUrl, setLogoUrl] = React.useState<string | null>(initialBrandKit?.logoUrl || null);
+  const [hideNewslyWatermark, setHideNewslyWatermark] = React.useState<boolean>(
+    initialBrandKit?.hideNewslyWatermark ?? false
+  );
   const [copiedCaption, setCopiedCaption] = React.useState(false);
   const [isExportingPdf, setIsExportingPdf] = React.useState(false);
   const [isExportingPng, setIsExportingPng] = React.useState(false);
@@ -430,6 +441,8 @@ export function CarouselStudio({
                 format={currentFormat}
                 handle={handle}
                 brandName={brandName}
+                logoUrl={logoUrl}
+                hideNewslyWatermark={hideNewslyWatermark}
                 totalSlides={slides.length}
                 showPhoneFrame={showPhoneFrame}
               />

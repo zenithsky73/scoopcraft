@@ -21,7 +21,7 @@ export const NAV_ITEMS: NavItem[] = [
   { href: '/templates', label: 'Template Explorer', icon: Palette, badge: '20 Gaya' },
   { href: '/content', label: 'Riwayat Carousel', icon: History, matchPrefix: true },
   { href: '/upgrade', label: 'Paket & Kuota', icon: Sparkles },
-  { href: '/settings', label: 'Watermark & Setelan', icon: Settings },
+  { href: '/settings', label: 'Pengaturan & Brand Kit', icon: Settings },
 ];
 
 export function isActive(pathname: string, item: NavItem) {
