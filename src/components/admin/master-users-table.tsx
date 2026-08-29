@@ -15,6 +15,7 @@ import {
   ShieldCheck,
   RefreshCw,
   KeyRound,
+  RotateCcw,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -122,6 +123,40 @@ export function MasterUsersTable() {
 
       setToastMessage(`🔑 Sukses! Password untuk ${user.email} diubah menjadi: "${confirmPrompt}".`);
       setTimeout(() => setToastMessage(null), 6000);
+    } catch (err: any) {
+      alert(err.message || 'Terjadi kesalahan.');
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
+  const handleCancelPlan = async (user: UserItem) => {
+    const confirmCancel = window.confirm(
+      `Yakin ingin membatalkan paket ${user.plan} untuk ${user.email} dan mengembalikannya ke status Free Trial?`
+    );
+    if (!confirmCancel) return;
+
+    setActionLoadingId(`${user.id}-cancel`);
+    try {
+      const res = await fetch('/api/admin/inject-quota', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          targetEmail: user.email,
+          plan: 'TRIAL',
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Gagal membatalkan paket.');
+
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.id === user.id ? { ...u, plan: 'TRIAL', subscriptionStatus: 'CANCELED' } : u
+        )
+      );
+
+      setToastMessage(`✓ Paket untuk ${user.email} berhasil dibatalkan (dikembalikan ke Free Trial).`);
+      setTimeout(() => setToastMessage(null), 5000);
     } catch (err: any) {
       alert(err.message || 'Terjadi kesalahan.');
     } finally {
@@ -406,6 +441,20 @@ export function MasterUsersTable() {
                           <KeyRound className="size-3.5 mr-1" />
                           <span>{actionLoadingId === `${user.id}-reset` ? '...' : 'Reset Sandi'}</span>
                         </Button>
+
+                        {user.plan !== 'TRIAL' && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            disabled={actionLoadingId === `${user.id}-cancel`}
+                            onClick={() => handleCancelPlan(user)}
+                            className="h-8 px-2 text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl"
+                            title="Batalkan paket berbayar & kembalikan ke Free Trial"
+                          >
+                            <RotateCcw className="size-3.5 mr-1" />
+                            <span>{actionLoadingId === `${user.id}-cancel` ? '...' : 'Batalkan Paket'}</span>
+                          </Button>
+                        )}
                       </>
                     )}
 

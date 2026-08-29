@@ -47,14 +47,38 @@ export async function POST(req: Request) {
       );
     }
 
+    // ─── KASUS 1: BATALKAN PAKET / RESET KE TRIAL ───
+    if (plan === 'TRIAL' || plan === 'CANCEL') {
+      await db.user.update({
+        where: { id: targetUser.id },
+        data: {
+          plan: 'TRIAL',
+          subscriptionStatus: 'CANCELED',
+          trialEndsAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 hari trial
+        },
+      });
+
+      return NextResponse.json({
+        success: true,
+        message: `Paket untuk ${cleanEmail} berhasil dibatalkan dan dikembalikan ke status Free Trial.`,
+        user: {
+          id: targetUser.id,
+          email: cleanEmail,
+          plan: 'TRIAL',
+          status: 'CANCELED',
+        },
+      });
+    }
+
+    // ─── KASUS 2: SUNTIK PAKET BERBAYAR ───
     const parsedQuota = Number(quotaAmount) || 100;
     const now = new Date();
     const nextMonth = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
     const targetPlan =
-      plan === 'AGENCY'
+      plan === 'AGENCY' || plan === 'BUSINESS'
         ? 'BUSINESS'
-        : plan === 'STARTER'
+        : plan === 'STARTER' || plan === 'BASIC'
         ? 'BASIC'
         : 'PRO';
 
