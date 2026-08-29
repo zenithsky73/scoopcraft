@@ -7,22 +7,7 @@ import type { Plan } from '@prisma/client';
 import { PLAN_LIST, formatIDR, type PaidPlan } from '@/config/plans';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-
-declare global {
-  interface Window {
-    snap?: {
-      pay: (
-        token: string,
-        options: {
-          onSuccess?: (result: any) => void;
-          onPending?: (result: any) => void;
-          onError?: (result: any) => void;
-          onClose?: () => void;
-        }
-      ) => void;
-    };
-  }
-}
+import { NativePaymentModal } from '@/components/billing/native-payment-modal';
 
 export function PlanGrid({
   currentPlan,
@@ -34,87 +19,22 @@ export function PlanGrid({
   preview?: boolean;
 }) {
   const router = useRouter();
-  const [pending, setPending] = React.useState<Plan | null>(null);
+  const [selectedPlanForModal, setSelectedPlanForModal] = React.useState<PaidPlan | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   const [successMessage, setSuccessMessage] = React.useState<string | null>(null);
 
-  // Load Midtrans Snap JS Script dynamically
-  React.useEffect(() => {
-    const snapScriptUrl = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true'
-      ? 'https://app.midtrans.com/snap/snap.js'
-      : 'https://app.sandbox.midtrans.com/snap/snap.js';
-
-    const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || 'SB-Mid-client-sample';
-
-    if (!document.querySelector(`script[src="${snapScriptUrl}"]`)) {
-      const script = document.createElement('script');
-      script.src = snapScriptUrl;
-      script.setAttribute('data-client-key', clientKey);
-      script.async = true;
-      document.body.appendChild(script);
-    }
-  }, []);
-
-  async function handleCheckout(plan: PaidPlan) {
+  function handleOpenCheckout(plan: PaidPlan) {
     setError(null);
     setSuccessMessage(null);
-
     if (preview) return;
+    setSelectedPlanForModal(plan);
+  }
 
-    setPending(plan);
-
-    try {
-      const res = await fetch('/api/billing/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan }),
-      });
-
-      const data = await res.json();
-      setPending(null);
-
-      if (!res.ok) {
-        setError(data.error || 'Gagal memulai proses pembayaran.');
-        return;
-      }
-
-      // Mode 1: Midtrans Snap Popup Aktif
-      if (data.mode === 'MIDTRANS_SNAP' && data.token) {
-        if (typeof window !== 'undefined' && window.snap) {
-          window.snap.pay(data.token, {
-            onSuccess: () => {
-              setSuccessMessage('Pembayaran berhasil dikonfirmasi! Paket Anda telah aktif.');
-              setTimeout(() => {
-                router.refresh();
-              }, 1500);
-            },
-            onPending: () => {
-              setSuccessMessage('Menunggu pembayaran Anda (QRIS / Virtual Account)...');
-            },
-            onError: () => {
-              setError('Terjadi kendala pada pembayaran. Silakan coba kembali.');
-            },
-            onClose: () => {
-              // User menutup popup
-            },
-          });
-        } else if (data.redirectUrl) {
-          window.location.href = data.redirectUrl;
-        }
-        return;
-      }
-
-      // Mode 2: Test Instant Mode (Ketika MIDTRANS_SERVER_KEY belum diisi di .env)
-      if (data.mode === 'TEST_INSTANT') {
-        setSuccessMessage(`✓ ${data.message}`);
-        setTimeout(() => {
-          router.refresh();
-        }, 1200);
-      }
-    } catch (err: any) {
-      setPending(null);
-      setError(err.message || 'Terjadi kesalahan saat memproses.');
-    }
+  function handlePaymentSuccess(planName: string) {
+    setSuccessMessage(`✓ Pembayaran berhasil! Akun Anda kini aktif di ${planName}. Kuota telah ditambahkan.`);
+    setTimeout(() => {
+      router.refresh();
+    }, 1500);
   }
 
   return (
@@ -251,8 +171,7 @@ export function PlanGrid({
                   block
                   size="lg"
                   disabled={active || isOwner}
-                  loading={pending === plan.id}
-                  onClick={() => !isOwner && handleCheckout(plan.id)}
+                  onClick={() => !isOwner && handleOpenCheckout(plan.id)}
                   className={cn(
                     'h-11 rounded-2xl text-xs font-black transition-all shadow-md',
                     isOwner
@@ -287,15 +206,23 @@ export function PlanGrid({
         <div className="flex items-center gap-3">
           <ShieldCheck className="size-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
           <span>
-            Didukung oleh <strong>Midtrans Payment Gateway</strong> (QRIS, GoPay, ShopeePay, Virtual Account BCA/Mandiri/BRI/BNI).
+            Didukung oleh <strong>Payment Gateway Instan</strong> (QRIS, GoPay, ShopeePay, Transfer Bank BCA/Mandiri/BRI/BNI).
           </span>
         </div>
         <div className="flex items-center gap-2 shrink-0 font-bold text-slate-700 dark:text-slate-300">
           <span>⚡ Aktivasi Otomatis</span>
           <span>•</span>
-          <span>🔒 Enkripsi Bank 256-bit</span>
+          <span>🔒 Enkripsi 256-bit</span>
         </div>
       </div>
+
+      {/* Native Payment Modal Checkout */}
+      <NativePaymentModal
+        isOpen={!!selectedPlanForModal}
+        onClose={() => setSelectedPlanForModal(null)}
+        planId={selectedPlanForModal}
+        onSuccess={handlePaymentSuccess}
+      />
     </div>
   );
 }
