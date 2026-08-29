@@ -3,7 +3,8 @@
 import * as React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
-import { Input, Label, FieldError } from '@/components/ui/input';
+import { Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle } from 'lucide-react';
+import { Input, Label } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
 export function LoginForm() {
@@ -12,12 +13,15 @@ export function LoginForm() {
   const callbackUrl = params.get('callbackUrl') || '/dashboard';
   const errorParam = params.get('error');
 
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [showPassword, setShowPassword] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
     if (errorParam === 'CredentialsSignin') {
-      setError('Email atau password salah.');
+      setError('Email atau password salah. Silakan periksa kembali.');
     } else if (errorParam) {
       setError('Sesi berakhir atau terjadi kendala. Silakan coba masuk kembali.');
     }
@@ -26,20 +30,24 @@ export function LoginForm() {
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+
+    if (!email || !password) {
+      setError('Email dan password wajib diisi.');
+      return;
+    }
+
     setLoading(true);
 
-    const data = new FormData(e.currentTarget);
     const res = await signIn('credentials', {
-      email: String(data.get('email') || '').trim().toLowerCase(),
-      password: String(data.get('password') || ''),
+      email: email.trim().toLowerCase(),
+      password,
       redirect: false,
     });
 
     setLoading(false);
 
     if (res?.error) {
-      // Pesan sengaja generik: jangan bocorkan email mana yang terdaftar.
-      setError('Email atau password salah.');
+      setError('Email atau password tidak sesuai.');
       return;
     }
 
@@ -49,25 +57,78 @@ export function LoginForm() {
 
   return (
     <form onSubmit={onSubmit} className="space-y-4" noValidate>
+      {/* Email Field */}
       <div>
-        <Label htmlFor="email">Email</Label>
-        <Input id="email" name="email" type="email" autoComplete="email" required placeholder="nama@email.com" />
+        <Label htmlFor="email" className="text-xs font-bold text-slate-800 dark:text-slate-200">
+          Email Akun
+        </Label>
+        <div className="relative mt-1">
+          <Mail className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="nama@email.com"
+            className="pl-10 h-11 text-xs bg-slate-50 dark:bg-slate-950/80 border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900 dark:text-white"
+          />
+        </div>
       </div>
 
+      {/* Password Field */}
       <div>
-        <Label htmlFor="password">Password</Label>
-        <Input id="password" name="password" type="password" autoComplete="current-password" required placeholder="••••••••" />
+        <div className="flex items-center justify-between">
+          <Label htmlFor="password" className="text-xs font-bold text-slate-800 dark:text-slate-200">
+            Password
+          </Label>
+        </div>
+        <div className="relative mt-1">
+          <Lock className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
+          <Input
+            id="password"
+            name="password"
+            type={showPassword ? 'text' : 'password'}
+            autoComplete="current-password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Masukkan kata sandi..."
+            className="pl-10 pr-10 h-11 text-xs bg-slate-50 dark:bg-slate-950/80 border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900 dark:text-white"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"
+          >
+            {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+          </button>
+        </div>
       </div>
 
+      {/* Error Banner */}
       {error && (
-        <div className="rounded-md border border-danger/25 bg-danger/10 px-3 py-2">
-          <FieldError>{error}</FieldError>
+        <div className="p-3 rounded-xl border border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-xs font-bold flex items-center gap-2 animate-fade-in">
+          <AlertCircle className="size-4 shrink-0 text-red-600" />
+          <span>{error}</span>
         </div>
       )}
 
-      <Button type="submit" block loading={loading}>
-        Masuk
-      </Button>
+      {/* Submit Button */}
+      <div className="pt-2">
+        <Button
+          type="submit"
+          block
+          loading={loading}
+          className="h-11 rounded-xl bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-primary/25 transition-all"
+        >
+          <span className="flex items-center justify-center gap-1.5">
+            Masuk ke Studio AI <ArrowRight className="size-4" />
+          </span>
+        </Button>
+      </div>
     </form>
   );
 }
