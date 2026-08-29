@@ -11,6 +11,7 @@ export default function ForgotPasswordPage() {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [resetUrl, setResetUrl] = React.useState<string | null>(null);
+  const [registeredEmail, setRegisteredEmail] = React.useState<string>('');
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -34,14 +35,13 @@ export default function ForgotPasswordPage() {
       setLoading(false);
 
       if (!res.ok) {
-        setError(data.error || 'Gagal memproses permintaan.');
+        setError(data.error || 'Email tidak ditemukan.');
         return;
       }
 
       if (data.resetUrl) {
         setResetUrl(data.resetUrl);
-      } else {
-        setResetUrl('SUCCESS_GENERIC');
+        setRegisteredEmail(data.email || email);
       }
     } catch (err: any) {
       setLoading(false);
@@ -98,7 +98,7 @@ export default function ForgotPasswordPage() {
             className="h-11 rounded-xl bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-primary/25 transition-all"
           >
             <span className="flex items-center justify-center gap-1.5">
-              Kirim Tautan Reset <ArrowRight className="size-4" />
+              Verifikasi &amp; Buat Sandi Baru <ArrowRight className="size-4" />
             </span>
           </Button>
         </form>
@@ -107,25 +107,23 @@ export default function ForgotPasswordPage() {
           <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs space-y-2">
             <div className="flex items-center gap-2 font-bold text-sm">
               <CheckCircle2 className="size-5 text-emerald-600 shrink-0" />
-              <span>Tautan Reset Siap!</span>
+              <span>Akun Ditemukan &amp; Terverifikasi!</span>
             </div>
             <p className="text-[11px] text-emerald-700 dark:text-emerald-400">
-              Permintaan reset sandi untuk <strong>{email}</strong> telah diverifikasi. Klik tombol di bawah untuk langsung membuat kata sandi baru.
+              Akun untuk <strong>{registeredEmail}</strong> siap direset. Klik tombol di bawah ini untuk membuat kata sandi baru Anda.
             </p>
           </div>
 
-          {resetUrl !== 'SUCCESS_GENERIC' && (
-            <Button
-              asChild
-              block
-              className="h-11 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md shadow-emerald-600/20"
-            >
-              <Link href={resetUrl} className="flex items-center justify-center gap-1.5">
-                <span>🔑 Buat Kata Sandi Baru Sekarang</span>
-                <ArrowRight className="size-4" />
-              </Link>
-            </Button>
-          )}
+          <Button
+            asChild
+            block
+            className="h-11 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-md shadow-emerald-600/25"
+          >
+            <Link href={resetUrl} className="flex items-center justify-center gap-1.5">
+              <span>🔑 Buat Kata Sandi Baru Sekarang</span>
+              <ArrowRight className="size-4" />
+            </Link>
+          </Button>
         </div>
       )}
 

@@ -19,11 +19,12 @@ export async function POST(req: Request) {
     });
 
     if (!user || user.isGuest) {
-      // Demi keamanan, tetap beri respons sukses agar tidak bisa menebak email terdaftar
-      return NextResponse.json({
-        success: true,
-        message: 'Jika email Anda terdaftar, tautan reset kata sandi telah disiapkan.',
-      });
+      return NextResponse.json(
+        {
+          error: `Email "${cleanEmail}" belum terdaftar di Newsly AI. Silakan daftar akun baru terlebih dahulu.`,
+        },
+        { status: 404 }
+      );
     }
 
     // Buat token acak 32 bytes (64 hex characters)
@@ -51,8 +52,9 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      message: 'Tautan reset kata sandi berhasil dibuat.',
+      message: 'Tautan reset kata sandi berhasil disiapkan.',
       resetUrl,
+      email: cleanEmail,
     });
   } catch (error: any) {
     console.error('[Forgot Password Error]:', error);
