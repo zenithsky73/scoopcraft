@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Sparkles, Crown } from 'lucide-react';
+import { Sparkles, Crown, Users } from 'lucide-react';
 import { NAV_ITEMS, isActive } from '@/components/layout/nav-items';
 import { QuotaMeter } from '@/components/billing/quota-meter';
 import type { QuotaState } from '@/server/billing/quota';
@@ -84,6 +84,30 @@ export function Sidebar({ quota }: { quota: QuotaState }) {
             </Link>
           );
         })}
+
+        {/* Master Users Command for Owner */}
+        {quota.isOwner && (
+          <div className="pt-2">
+            <Link
+              href="/admin/users"
+              aria-current={pathname === '/admin/users' ? 'page' : undefined}
+              className={cn(
+                'flex items-center justify-between rounded-xl px-3 py-2.5 text-xs font-bold transition-all duration-200',
+                pathname === '/admin/users'
+                  ? 'bg-amber-500 text-white shadow-md shadow-amber-500/30 scale-[1.01]'
+                  : 'text-amber-800 dark:text-amber-300 bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/40 hover:bg-amber-100 dark:hover:bg-amber-900/50'
+              )}
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <Users className={cn('size-4 shrink-0', pathname === '/admin/users' ? 'text-white' : 'text-amber-600 dark:text-amber-400')} />
+                <span className="truncate">Master Pengguna</span>
+              </div>
+              <span className="text-[9px] font-mono font-black px-2 py-0.5 rounded-full bg-amber-200/70 dark:bg-amber-500/20 text-amber-900 dark:text-amber-300 border border-amber-300/80 dark:border-amber-500/30">
+                OWNER
+              </span>
+            </Link>
+          </div>
+        )}
       </nav>
 
       {/* Footer Quota Meter */}

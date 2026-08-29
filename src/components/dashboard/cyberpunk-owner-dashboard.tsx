@@ -16,7 +16,9 @@ import {
   Sliders,
   ExternalLink,
   Plus,
+  Users,
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { MultiInputForm } from '@/components/generate/multi-input-form';
 import { MasterQuotaInjector } from '@/components/dashboard/master-quota-injector';
 import { STYLES, type StyleDef } from '@/config/styles';
@@ -110,9 +112,30 @@ export function CyberpunkOwnerDashboard({ user, totalGenerations = 128 }: Cyberp
           </div>
         </header>
 
-        {/* ─── 1.5 MASTER OWNER INJECTOR TOOL ─── */}
-        <section>
-          <MasterQuotaInjector />
+        {/* ─── 1.5 MASTER OWNER USERS QUICK ACCESS BANNER ─── */}
+        <section className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-indigo-500/10 to-cyan-500/10 border border-amber-300/60 dark:border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-amber-500 text-white shadow-md shadow-amber-500/25 shrink-0">
+              <Users className="size-5" />
+            </div>
+            <div>
+              <h3 className="font-black text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                Master Kelola Pengguna Platform
+                <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-500/20 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-500/30 font-bold">
+                  GOD-MODE
+                </span>
+              </h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400">
+                Lihat semua user yang mendaftar lengkap dengan email & nama, serta suntik kuota langganan 1-klik.
+              </p>
+            </div>
+          </div>
+
+          <Button asChild size="sm" className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs rounded-xl shadow-md shadow-amber-500/25 shrink-0">
+            <Link href="/admin/users" className="flex items-center gap-1.5">
+              <Crown className="size-3.5" /> Buka Master Pengguna ➔
+            </Link>
+          </Button>
         </section>
 
         {/* ─── 2. MAIN WORKSPACE: AI GENERATOR ENGINE ─── */}
