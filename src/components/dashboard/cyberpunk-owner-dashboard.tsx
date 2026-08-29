@@ -104,7 +104,7 @@ export function CyberpunkOwnerDashboard({ user, totalGenerations = 128 }: Cyberp
               <span className="text-[10px] font-mono uppercase text-emerald-700 dark:text-emerald-400 font-bold flex items-center gap-1">
                 <Cpu className="size-3" /> AI Engine
               </span>
-              <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300">Gemini 3.5 Flash</span>
+              <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300">Gemini 2.5 Flash Turbo</span>
             </div>
           </div>
         </header>
