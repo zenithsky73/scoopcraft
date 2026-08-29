@@ -19,6 +19,7 @@ import { STYLES, isProStyle } from '@/config/styles';
 import { Input, Label } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { UpgradeDialog } from '@/components/billing/upgrade-dialog';
+import { VisualTemplatePicker } from '@/components/generate/visual-template-picker';
 
 export type InputMode = 'url' | 'text' | 'prompt';
 
@@ -338,73 +339,18 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
           </div>
         </div>
 
-        {/* ─── 3. 20 VISUAL PRESET CARDS ─── */}
-        <div className="space-y-3 sm:space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm sm:text-base font-black text-slate-900 dark:text-white flex items-center gap-1.5">
-              <Layers className="size-4 text-primary" /> Pilih Gaya Desain Visual:
-            </h2>
-            <span className="text-[10px] font-mono text-primary font-bold bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20">
-              {STYLES.length} Preset
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3.5">
-            {STYLES.map((style) => {
-              const isSelected = selectedStyle === style.id;
-              const isLocked = isProStyle(style.id) && !isProUser;
-
-              return (
-                <div
-                  key={style.id}
-                  onClick={() => handleSelectStyle(style.id)}
-                  className={`relative p-3.5 sm:p-4 rounded-2xl cursor-pointer border transition-all duration-200 flex flex-col justify-between ${
-                    isSelected
-                      ? 'bg-primary/10 dark:bg-primary/15 border-primary shadow-xl ring-2 ring-primary/50 scale-[1.01]'
-                      : isLocked
-                      ? 'bg-slate-100/60 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800/60 opacity-80 hover:opacity-100 hover:border-amber-500/40'
-                      : 'bg-white dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-700 shadow-sm'
-                  }`}
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <span
-                          className="size-3 rounded-full shrink-0 shadow-sm"
-                          style={{ backgroundColor: style.accentColor }}
-                        />
-                        <span className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate">{style.label}</span>
-                      </div>
-                      {isSelected ? (
-                        <div className="size-5 rounded-full bg-primary flex items-center justify-center text-white shrink-0">
-                          <Check className="size-3 stroke-[3]" />
-                        </div>
-                      ) : isLocked ? (
-                        <span className="inline-flex items-center gap-0.5 text-[9px] font-black px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-300 border border-amber-500/30 shrink-0">
-                          <Lock className="size-2.5" /> PRO
-                        </span>
-                      ) : style.badge ? (
-                        <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30 shrink-0">
-                          {style.badge}
-                        </span>
-                      ) : null}
-                    </div>
-
-                    {style.subLabel && (
-                      <p className="text-[11px] font-semibold text-primary/90 mb-1 truncate">
-                        {style.subLabel}
-                      </p>
-                    )}
-
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
-                      {style.description}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        {/* ─── 2. PILIHAN TEMPLATE DESAIN VISUAL (5-COLUMN MODERN MOCKUP PICKER) ─── */}
+        <VisualTemplatePicker
+          selectedStyle={selectedStyle}
+          onSelectStyle={handleSelectStyle}
+          selectedFormat={selectedFormat}
+          onSelectFormat={setSelectedFormat}
+          isProUser={isProUser}
+          onRequireUpgrade={(style) => {
+            setUpgradeModalTitle(`Template ${style.label} Terkunci 🔒`);
+            setShowUpgradeModal(true);
+          }}
+        />
 
         {/* Error Notification */}
         {error && (
