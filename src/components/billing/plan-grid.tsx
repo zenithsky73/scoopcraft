@@ -170,13 +170,11 @@ export function PlanGrid({
                 <Button
                   block
                   size="lg"
-                  disabled={active || isOwner}
-                  onClick={() => !isOwner && handleOpenCheckout(plan.id)}
+                  disabled={active && !isOwner}
+                  onClick={() => handleOpenCheckout(plan.id)}
                   className={cn(
                     'h-11 rounded-2xl text-xs font-black transition-all shadow-md',
-                    isOwner
-                      ? 'bg-slate-100 dark:bg-slate-800/80 text-amber-600 dark:text-amber-400 border border-amber-300/40 dark:border-amber-700/40 cursor-default'
-                      : active
+                    active && !isOwner
                       ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700'
                       : isPro
                       ? 'bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-500 text-white shadow-primary/25'
@@ -186,7 +184,9 @@ export function PlanGrid({
                   )}
                 >
                   {isOwner ? (
-                    '👑 Termasuk di Akses Owner'
+                    <span className="flex items-center justify-center gap-1.5 text-amber-300">
+                      👑 Tes Checkout Modal <ArrowRight className="size-3.5" />
+                    </span>
                   ) : active ? (
                     'Paket Anda Saat Ini'
                   ) : (
