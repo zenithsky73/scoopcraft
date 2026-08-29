@@ -1,8 +1,9 @@
+import { toPng } from 'html-to-image';
 import { PDFDocument } from 'pdf-lib';
 import JSZip from 'jszip';
 
 /**
- * Mengonversi elemen DOM slide canvas menjadi data URL PNG dengan resolusi tinggi.
+ * Mengonversi elemen DOM slide canvas menjadi data URL PNG dengan resolusi tinggi (100% presisi menggunakan html-to-image).
  */
 export async function renderElementToPngDataUrl(elementId: string): Promise<string> {
   const element = document.getElementById(elementId);
@@ -10,56 +11,10 @@ export async function renderElementToPngDataUrl(elementId: string): Promise<stri
     throw new Error(`Element #${elementId} tidak ditemukan.`);
   }
 
-  // Gunakan SVG foreignObject untuk menangkap rendering DOM secara presisi
-  const rect = element.getBoundingClientRect();
-  const width = Math.max(rect.width, 360);
-  const height = Math.max(rect.height, 450);
-
-  // Skala resolusi tinggi (2.5x untuk hasil tajam 1080px)
-  const scale = 2.5;
-  const targetWidth = Math.round(width * scale);
-  const targetHeight = Math.round(height * scale);
-
-  const clone = element.cloneNode(true) as HTMLElement;
-  clone.style.transform = 'none';
-  clone.style.margin = '0';
-  clone.style.width = `${width}px`;
-  clone.style.height = `${height}px`;
-
-  const serialized = new XMLSerializer().serializeToString(clone);
-  const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="${targetWidth}" height="${targetHeight}" viewBox="0 0 ${width} ${height}">
-      <foreignObject width="100%" height="100%">
-        <div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;">
-          ${serialized}
-        </div>
-      </foreignObject>
-    </svg>
-  `;
-
-  const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = targetWidth;
-      canvas.height = targetHeight;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        URL.revokeObjectURL(url);
-        return reject(new Error('Canvas 2D context tidak didukung.'));
-      }
-      ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
-      URL.revokeObjectURL(url);
-      resolve(canvas.toDataURL('image/png'));
-    };
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      resolve(url);
-    };
-    img.src = url;
+  return toPng(element, {
+    quality: 0.95,
+    pixelRatio: 2,
+    cacheBust: true,
   });
 }
 
@@ -77,7 +32,7 @@ export async function downloadSlideAsPng(slideIndex: number, title: string = 'sl
     document.body.removeChild(a);
   } catch (error) {
     console.error('Download PNG error:', error);
-    alert('Gambar slide siap. Anda juga dapat klik kanan pada preview lalu pilih "Simpan gambar sebagai..."');
+    alert('Gagal mengunduh gambar slide. Silakan coba lagi.');
   }
 }
 

@@ -1,5 +1,6 @@
 'use client';
 
+import { toPng } from 'html-to-image';
 import type { DesignStyle } from '@prisma/client';
 
 export type TransitionEffect = 'AUTO' | 'KEN_BURNS' | 'SLIDE_PUSH' | 'SOFT_FADE' | 'GLITCH_PUNCH';
@@ -65,7 +66,7 @@ export async function exportSlidesToMotionVideo(
 
   onProgress?.(5, 'Menyiapkan canvas rendering video...');
 
-  // 1. Ambil data URL gambar tiap slide
+  // 1. Ambil data URL gambar tiap slide menggunakan html-to-image
   const slideImages: HTMLImageElement[] = [];
 
   for (let i = 0; i < totalSlides; i++) {
@@ -75,15 +76,32 @@ export async function exportSlidesToMotionVideo(
     );
 
     const canvasElem = document.getElementById(`slide-canvas-${i}`);
-    if (!canvasElem) continue;
+    if (!canvasElem) {
+      console.warn(`Slide canvas #${i} tidak ditemukan di DOM.`);
+      continue;
+    }
 
-    // Render snapshot slide
-    const img = await captureElementAsImage(canvasElem);
-    slideImages.push(img);
+    try {
+      const dataUrl = await toPng(canvasElem, {
+        quality: 0.95,
+        pixelRatio: 2,
+        cacheBust: true,
+      });
+
+      const img = new Image();
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = reject;
+        img.src = dataUrl;
+      });
+      slideImages.push(img);
+    } catch (err) {
+      console.error(`Gagal merender slide #${i}:`, err);
+    }
   }
 
   if (slideImages.length === 0) {
-    throw new Error('Tidak ada slide yang siap untuk diekspor ke video.');
+    throw new Error('Tidak ada slide yang siap untuk diekspor ke video. Silakan coba kembali.');
   }
 
   onProgress?.(45, 'Menginisialisasi engine video MP4/WebM...');
@@ -271,45 +289,6 @@ export async function exportSlidesToMotionVideo(
 }
 
 // ─── HELPER FUNCTIONS ───
-
-async function captureElementAsImage(element: HTMLElement): Promise<HTMLImageElement> {
-  const rect = element.getBoundingClientRect();
-  const width = Math.max(rect.width, 360);
-  const height = Math.max(rect.height, 450);
-
-  const clone = element.cloneNode(true) as HTMLElement;
-  clone.style.transform = 'none';
-  clone.style.margin = '0';
-  clone.style.width = `${width}px`;
-  clone.style.height = `${height}px`;
-
-  const serialized = new XMLSerializer().serializeToString(clone);
-  const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="${width * 2}" height="${height * 2}" viewBox="0 0 ${width} ${height}">
-      <foreignObject width="100%" height="100%">
-        <div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;">
-          ${serialized}
-        </div>
-      </foreignObject>
-    </svg>
-  `;
-
-  const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      resolve(img);
-    };
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      resolve(img);
-    };
-    img.src = url;
-  });
-}
 
 function drawSlideWithMotion(
   ctx: CanvasRenderingContext2D,

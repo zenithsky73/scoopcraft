@@ -952,6 +952,36 @@ export function CarouselStudio({
         style={currentStyle}
         title={initialContent.headline || article.title || 'newsly-carousel'}
       />
+
+      {/* ─── HIDDEN OFFSCREEN RENDER CONTAINER FOR 100% RELIABLE EXPORTS ─── */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'fixed',
+          left: '-9999px',
+          top: 0,
+          width: '440px',
+          opacity: 1,
+          pointerEvents: 'none',
+          zIndex: -9999,
+        }}
+      >
+        {slides.map((s, idx) => (
+          <div key={idx} style={{ width: '440px', marginBottom: '24px' }}>
+            <CanvasRenderer
+              slide={s}
+              style={currentStyle}
+              format={currentFormat}
+              handle={handle}
+              brandName={brandName}
+              logoUrl={logoUrl}
+              hideNewslyWatermark={hideNewslyWatermark}
+              totalSlides={slides.length}
+              showPhoneFrame={false}
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
