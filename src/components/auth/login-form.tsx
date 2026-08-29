@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle } from 'lucide-react';
@@ -84,6 +85,12 @@ export function LoginForm() {
           <Label htmlFor="password" className="text-xs font-bold text-slate-800 dark:text-slate-200">
             Password
           </Label>
+          <Link
+            href="/forgot-password"
+            className="text-[11px] font-semibold text-primary hover:underline"
+          >
+            Lupa kata sandi?
+          </Link>
         </div>
         <div className="relative mt-1">
           <Lock className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400" />

@@ -14,6 +14,7 @@ import {
   TrendingUp,
   ShieldCheck,
   RefreshCw,
+  KeyRound,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -91,6 +92,36 @@ export function MasterUsersTable() {
 
       setToastMessage(`Sukses! ${user.email} kini aktif di paket ${targetPlan} (${quotaAmount} kuota).`);
       setTimeout(() => setToastMessage(null), 4000);
+    } catch (err: any) {
+      alert(err.message || 'Terjadi kesalahan.');
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
+  const handleAdminResetPassword = async (user: UserItem) => {
+    const defaultNewPass = 'Newsly12345';
+    const confirmPrompt = window.prompt(
+      `Masukkan kata sandi baru untuk ${user.email} (atau gunakan default):`,
+      defaultNewPass
+    );
+    if (!confirmPrompt) return;
+
+    setActionLoadingId(`${user.id}-reset`);
+    try {
+      const res = await fetch('/api/admin/reset-user-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          targetUserId: user.id,
+          newPassword: confirmPrompt,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Gagal mereset password.');
+
+      setToastMessage(`🔑 Sukses! Password untuk ${user.email} diubah menjadi: "${confirmPrompt}".`);
+      setTimeout(() => setToastMessage(null), 6000);
     } catch (err: any) {
       alert(err.message || 'Terjadi kesalahan.');
     } finally {
@@ -362,6 +393,18 @@ export function MasterUsersTable() {
                           className="h-8 px-2.5 text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl"
                         >
                           <span>50x</span>
+                        </Button>
+
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          disabled={actionLoadingId === `${user.id}-reset`}
+                          onClick={() => handleAdminResetPassword(user)}
+                          className="h-8 px-2 text-xs font-bold text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40 rounded-xl"
+                          title="Reset kata sandi pengguna ini"
+                        >
+                          <KeyRound className="size-3.5 mr-1" />
+                          <span>{actionLoadingId === `${user.id}-reset` ? '...' : 'Reset Sandi'}</span>
                         </Button>
                       </>
                     )}
