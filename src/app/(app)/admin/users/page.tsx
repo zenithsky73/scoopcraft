@@ -7,6 +7,7 @@ import { APP } from '@/config/app';
 import { MasterUsersTable } from '@/components/admin/master-users-table';
 import { Button } from '@/components/ui/button';
 
+export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'Master Pengguna & Injector Kuota',
   description: 'Pusat kendali dan manajemen pengguna terdaftar Newsly AI.',

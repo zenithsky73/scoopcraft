@@ -3,11 +3,11 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Lock, Eye, EyeOff, CheckCircle2, AlertCircle, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Lock, Eye, EyeOff, CheckCircle2, AlertCircle, ArrowRight, ShieldCheck, RefreshCw } from 'lucide-react';
 import { Input, Label } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
@@ -183,5 +183,20 @@ export default function ResetPasswordPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <React.Suspense
+      fallback={
+        <div className="p-8 text-center text-xs text-slate-500 flex flex-col items-center gap-2">
+          <RefreshCw className="size-5 animate-spin text-primary" />
+          <span>Memuat halaman reset sandi...</span>
+        </div>
+      }
+    >
+      <ResetPasswordForm />
+    </React.Suspense>
   );
 }
