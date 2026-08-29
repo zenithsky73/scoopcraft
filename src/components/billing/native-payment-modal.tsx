@@ -230,19 +230,19 @@ export function NativePaymentModal({
             <div className="space-y-2.5 animate-fade-in">
               <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-4 space-y-3">
                 <p className="text-[11px] font-semibold text-slate-400">
-                  Transfer tepat sesuai nominal ke salah satu rekening di bawah:
+                  Transfer tepat sesuai nominal ke salah satu rekening resmi di bawah:
                 </p>
 
                 {/* Bank BCA */}
                 <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between gap-3">
                   <div>
                     <span className="text-[10px] font-black text-blue-400 tracking-wider">BANK BCA</span>
-                    <p className="text-sm font-mono font-black text-white">8735 0891 2234</p>
-                    <p className="text-[10px] text-slate-400">A/N: Newsly AI Official</p>
+                    <p className="text-sm font-mono font-black text-white">0601 188 154</p>
+                    <p className="text-[10px] text-slate-400">A/N: Muhammad Zeno</p>
                   </div>
                   <button
                     type="button"
-                    onClick={() => handleCopy('873508912234', 'BCA')}
+                    onClick={() => handleCopy('0601188154', 'BCA')}
                     className="h-8 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 flex items-center gap-1.5 transition-colors"
                   >
                     {copiedKey === 'BCA' ? <Check className="size-3.5 text-emerald-400" /> : <Copy className="size-3.5" />}
@@ -250,20 +250,20 @@ export function NativePaymentModal({
                   </button>
                 </div>
 
-                {/* Bank Mandiri */}
+                {/* SeaBank */}
                 <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between gap-3">
                   <div>
-                    <span className="text-[10px] font-black text-amber-400 tracking-wider">BANK MANDIRI</span>
-                    <p className="text-sm font-mono font-black text-white">1370 0214 5590</p>
-                    <p className="text-[10px] text-slate-400">A/N: Newsly AI Official</p>
+                    <span className="text-[10px] font-black text-orange-400 tracking-wider">SEABANK</span>
+                    <p className="text-sm font-mono font-black text-white">9011 3209 9830</p>
+                    <p className="text-[10px] text-slate-400">A/N: Muhammad Zeno</p>
                   </div>
                   <button
                     type="button"
-                    onClick={() => handleCopy('137002145590', 'MANDIRI')}
+                    onClick={() => handleCopy('901132099830', 'SEABANK')}
                     className="h-8 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 flex items-center gap-1.5 transition-colors"
                   >
-                    {copiedKey === 'MANDIRI' ? <Check className="size-3.5 text-emerald-400" /> : <Copy className="size-3.5" />}
-                    <span>{copiedKey === 'MANDIRI' ? 'Tersalin' : 'Salin'}</span>
+                    {copiedKey === 'SEABANK' ? <Check className="size-3.5 text-emerald-400" /> : <Copy className="size-3.5" />}
+                    <span>{copiedKey === 'SEABANK' ? 'Tersalin' : 'Salin'}</span>
                   </button>
                 </div>
               </div>
@@ -274,16 +274,16 @@ export function NativePaymentModal({
           {activeTab === 'EWALLET' && (
             <div className="space-y-3 animate-fade-in">
               <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-4 space-y-3">
-                {/* DANA / GoPay Number */}
+                {/* ShopeePay / GoPay / DANA */}
                 <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between gap-3">
                   <div>
-                    <span className="text-[10px] font-black text-emerald-400 tracking-wider">DANA / GOPAY / SHOPEEPAY</span>
-                    <p className="text-sm font-mono font-black text-white">0895 3214 5678</p>
-                    <p className="text-[10px] text-slate-400">A/N: Newsly AI Finance</p>
+                    <span className="text-[10px] font-black text-emerald-400 tracking-wider">SHOPEEPAY / GOPAY / DANA</span>
+                    <p className="text-sm font-mono font-black text-white">0838 3701 7301</p>
+                    <p className="text-[10px] text-slate-400">A/N: Muhammad Zeno</p>
                   </div>
                   <button
                     type="button"
-                    onClick={() => handleCopy('089532145678', 'EWALLET')}
+                    onClick={() => handleCopy('083837017301', 'EWALLET')}
                     className="h-8 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 flex items-center gap-1.5 transition-colors"
                   >
                     {copiedKey === 'EWALLET' ? <Check className="size-3.5 text-emerald-400" /> : <Copy className="size-3.5" />}
@@ -293,12 +293,12 @@ export function NativePaymentModal({
 
                 {/* Direct WhatsApp Confirmation Button */}
                 <a
-                  href={`https://wa.me/6289532145678?text=Halo%20Admin%20Newsly%20AI%2C%20saya%20sudah%20transfer%20untuk%20aktivasi%20paket%20${plan.name}%20dengan%20Order%20ID%3A%20${orderId}`}
+                  href={`https://wa.me/6283837017301?text=Halo%20Admin%20Newsly%20AI%2C%20saya%20sudah%20transfer%20untuk%20aktivasi%20paket%20${plan.name}%20dengan%20Order%20ID%3A%20${orderId}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full h-10 rounded-xl bg-emerald-600/20 border border-emerald-500/40 hover:bg-emerald-600/30 text-emerald-300 font-bold text-xs flex items-center justify-center gap-2 transition-colors"
                 >
-                  <span>💬 Konfirmasi Cepat ke WhatsApp Admin</span>
+                  <span>💬 Konfirmasi Cepat ke WhatsApp Admin (083837017301)</span>
                   <ExternalLink className="size-3.5" />
                 </a>
               </div>
