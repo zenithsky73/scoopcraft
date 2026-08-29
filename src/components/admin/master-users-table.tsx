@@ -35,7 +35,7 @@ export function MasterUsersTable() {
   const [users, setUsers] = React.useState<UserItem[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [search, setSearch] = React.useState('');
-  const [filter, setFilter] = React.useState<'ALL' | 'PRO' | 'FREE' | 'OWNER'>('ALL');
+  const [filter, setFilter] = React.useState<'ALL' | 'REGISTERED' | 'PRO' | 'GUEST' | 'OWNER'>('REGISTERED');
   const [actionLoadingId, setActionLoadingId] = React.useState<string | null>(null);
   const [toastMessage, setToastMessage] = React.useState<string | null>(null);
 
@@ -105,6 +105,11 @@ export function MasterUsersTable() {
   const totalGenerationsCount = users.reduce((acc, u) => acc + (u.generateCount || 0), 0);
 
   // Filtered users
+  const isRealUser = (u: UserItem) => !u.isGuest && !u.email.includes('@guest.');
+
+  const registeredUsersCount = users.filter(isRealUser).length;
+  const guestUsersCount = users.filter((u) => !isRealUser(u)).length;
+
   const filteredUsers = users.filter((user) => {
     const query = search.toLowerCase();
     const matchQuery =
@@ -113,8 +118,9 @@ export function MasterUsersTable() {
 
     if (!matchQuery) return false;
 
+    if (filter === 'REGISTERED') return isRealUser(user);
     if (filter === 'PRO') return user.plan === 'PRO' || user.plan === 'BUSINESS';
-    if (filter === 'FREE') return user.plan === 'TRIAL' || user.plan === 'BASIC';
+    if (filter === 'GUEST') return !isRealUser(user);
     if (filter === 'OWNER') return user.role === 'OWNER';
     return true;
   });
@@ -125,10 +131,10 @@ export function MasterUsersTable() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="p-4 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
           <span className="text-[11px] font-mono uppercase font-black text-slate-700 dark:text-slate-400 flex items-center gap-1.5">
-            <Users className="size-3.5 text-indigo-600 dark:text-indigo-400" /> Total Pengguna
+            <Users className="size-3.5 text-indigo-600 dark:text-indigo-400" /> Pengguna Asli
           </span>
           <span className="text-2xl font-black text-slate-900 dark:text-white mt-1">
-            {totalUsersCount}
+            {registeredUsersCount} <span className="text-xs font-normal text-slate-400 font-mono">({totalUsersCount} total)</span>
           </span>
         </div>
 
@@ -175,12 +181,23 @@ export function MasterUsersTable() {
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Cari nama atau email pengguna..."
+            placeholder="Cari nama atau email terdaftar..."
             className="pl-10 h-10 text-xs bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-xl"
           />
         </div>
 
         <div className="flex items-center gap-1.5 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+          <button
+            type="button"
+            onClick={() => setFilter('REGISTERED')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              filter === 'REGISTERED'
+                ? 'bg-indigo-600 text-white shadow-sm'
+                : 'bg-slate-100 dark:bg-slate-950 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+            }`}
+          >
+            ⭐ Akun Terdaftar ({registeredUsersCount})
+          </button>
           <button
             type="button"
             onClick={() => setFilter('ALL')}
@@ -205,14 +222,14 @@ export function MasterUsersTable() {
           </button>
           <button
             type="button"
-            onClick={() => setFilter('FREE')}
+            onClick={() => setFilter('GUEST')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-              filter === 'FREE'
+              filter === 'GUEST'
                 ? 'bg-indigo-600 text-white shadow-sm'
                 : 'bg-slate-100 dark:bg-slate-950 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            Free / Trial ({freeUsersCount})
+            Tamu Anonim ({guestUsersCount})
           </button>
           <button
             type="button"
@@ -242,6 +259,7 @@ export function MasterUsersTable() {
             {filteredUsers.map((user) => {
               const isOwnerUser = user.role === 'OWNER';
               const isPro = user.plan === 'PRO' || user.plan === 'BUSINESS';
+              const isReal = isRealUser(user);
               const initial = (user.name || user.email).charAt(0).toUpperCase();
 
               return (
@@ -266,7 +284,7 @@ export function MasterUsersTable() {
                     <div className="min-w-0 space-y-0.5">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-bold text-sm text-slate-900 dark:text-white truncate">
-                          {user.name || 'Pengguna'}
+                          {user.name || (isReal ? 'Pengguna Terdaftar' : 'Pengunjung Tamu')}
                         </span>
 
                         {isOwnerUser ? (
@@ -289,7 +307,7 @@ export function MasterUsersTable() {
                       </div>
 
                       <p className="text-xs text-slate-500 dark:text-slate-400 truncate font-mono">
-                        {user.email}
+                        {isReal ? user.email : 'Belum memasukkan email asli'}
                       </p>
                     </div>
                   </div>
@@ -309,7 +327,7 @@ export function MasterUsersTable() {
 
                   {/* 1-Click Action Buttons */}
                   <div className="flex items-center gap-1.5 flex-wrap shrink-0">
-                    {!isOwnerUser && (
+                    {!isOwnerUser && isReal && (
                       <>
                         <Button
                           size="sm"
@@ -346,6 +364,12 @@ export function MasterUsersTable() {
                           <span>50x</span>
                         </Button>
                       </>
+                    )}
+
+                    {!isOwnerUser && !isReal && (
+                      <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-900 px-3 py-1 rounded-xl border border-slate-200 dark:border-slate-800">
+                        👤 Belum Daftar Email Asli
+                      </span>
                     )}
 
                     {isOwnerUser && (

@@ -117,33 +117,32 @@ export function PlanGrid({
     }
   }
 
-  if (isOwner) {
-    return (
-      <div className="rounded-3xl border border-amber-500/40 bg-gradient-to-r from-amber-500/10 via-yellow-500/5 to-amber-600/10 dark:from-amber-500/15 dark:via-yellow-500/10 dark:to-amber-600/15 p-6 shadow-xl backdrop-blur-xl transition-colors duration-200">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="flex size-12 items-center justify-center rounded-2xl bg-amber-500 text-slate-950 font-black shadow-lg shadow-amber-500/30">
-              <Crown className="size-6 text-slate-950" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <p className="text-base font-black text-slate-900 dark:text-white">Akun Pemilik (OWNER)</p>
-                <span className="px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-700 dark:text-amber-300 border border-amber-400/40 text-[10px] font-black uppercase">
-                  UNLIMITED ACTIVE
-                </span>
+  return (
+    <div className="space-y-8">
+      {/* Owner VIP Status Banner */}
+      {isOwner && (
+        <div className="rounded-3xl border border-amber-500/40 bg-gradient-to-r from-amber-500/15 via-yellow-500/10 to-amber-600/15 p-6 shadow-xl backdrop-blur-xl transition-colors duration-200">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="flex size-12 items-center justify-center rounded-2xl bg-amber-500 text-slate-950 font-black shadow-lg shadow-amber-500/30 shrink-0">
+                <Crown className="size-6 text-slate-950" />
               </div>
-              <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5">
-                Anda memiliki akses penuh untuk generate konten tanpa batas kuota dan tanpa masa kedaluwarsa.
-              </p>
+              <div>
+                <div className="flex items-center gap-2">
+                  <p className="text-base font-black text-slate-900 dark:text-white">Akun Pemilik (OWNER GOD-MODE)</p>
+                  <span className="px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-800 dark:text-amber-300 border border-amber-400/40 text-[10px] font-black uppercase">
+                    UNLIMITED ACTIVE
+                  </span>
+                </div>
+                <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5">
+                  Anda memiliki akses penuh tanpa batas kuota ke seluruh 20 template desain dan AI engine. Daftar paket di bawah ini adalah acuan katalog untuk pengguna platform Anda.
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    );
-  }
+      )}
 
-  return (
-    <div className="space-y-8">
       {error && (
         <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-xs font-bold text-red-700 dark:text-red-300">
           {error}
@@ -251,12 +250,14 @@ export function PlanGrid({
                 <Button
                   block
                   size="lg"
-                  disabled={active}
+                  disabled={active || isOwner}
                   loading={pending === plan.id}
-                  onClick={() => handleCheckout(plan.id)}
+                  onClick={() => !isOwner && handleCheckout(plan.id)}
                   className={cn(
                     'h-11 rounded-2xl text-xs font-black transition-all shadow-md',
-                    active
+                    isOwner
+                      ? 'bg-slate-100 dark:bg-slate-800/80 text-amber-600 dark:text-amber-400 border border-amber-300/40 dark:border-amber-700/40 cursor-default'
+                      : active
                       ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700'
                       : isPro
                       ? 'bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-500 text-white shadow-primary/25'
@@ -265,7 +266,9 @@ export function PlanGrid({
                       : 'bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700'
                   )}
                 >
-                  {active ? (
+                  {isOwner ? (
+                    '👑 Termasuk di Akses Owner'
+                  ) : active ? (
                     'Paket Anda Saat Ini'
                   ) : (
                     <span className="flex items-center justify-center gap-1.5">
