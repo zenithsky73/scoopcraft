@@ -93,8 +93,26 @@ export function CarouselStudio({
   const [isExportingZip, setIsExportingZip] = React.useState(false);
   const [viralHooks, setViralHooks] = React.useState<string[]>([]);
   const [activeTab, setActiveTab] = React.useState<'styles' | 'editor' | 'caption'>('styles');
+  const [styleCategory, setStyleCategory] = React.useState<'ALL' | 'FREE' | 'PRO' | 'NEWS' | 'BIZ' | 'MODERN'>('ALL');
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const filteredStudioStyles = React.useMemo(() => {
+    return STYLES.filter((style) => {
+      if (styleCategory === 'FREE') return style.tier === 'FREE';
+      if (styleCategory === 'PRO') return style.tier === 'PRO';
+      if (styleCategory === 'NEWS') {
+        return ['EDITORIAL', 'BOLD', 'CORPORATE', 'POLICY', 'SPOTLIGHT', 'RED_COLLAGE'].includes(style.id);
+      }
+      if (styleCategory === 'BIZ') {
+        return ['FINANCE', 'BLOOMBERG', 'CORPORATE', 'MINIMAL'].includes(style.id);
+      }
+      if (styleCategory === 'MODERN') {
+        return ['STREETWEAR', 'ATHLETIC', 'TERMINAL', 'TECH', 'COSMIC', 'PODCAST', 'CULINARY', 'LIFESTYLE', 'MODERN'].includes(style.id);
+      }
+      return true;
+    });
+  }, [styleCategory]);
 
   // Parse slides
   const [slides, setSlides] = React.useState<SlideData[]>(() => {
@@ -558,16 +576,42 @@ export function CarouselStudio({
 
           {/* TAB 1: 20 Multi-Template Switcher with Preview Button */}
           {activeTab === 'styles' && (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                  <Layers className="size-4 text-primary" /> 20 Preset Desain Kelas Dunia:
+                  <Layers className="size-4 text-primary" /> 20 Preset Desain:
                 </p>
                 <span className="text-[11px] font-mono text-primary font-bold">1-Klik Ganti</span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[480px] overflow-y-auto pr-1">
-                {STYLES.map((style) => {
+              {/* Horizontal Category Filter Pills */}
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5 -mx-1 px-1">
+                {[
+                  { id: 'ALL', label: '⭐ Semua' },
+                  { id: 'FREE', label: '🆓 Gratis' },
+                  { id: 'PRO', label: '👑 PRO' },
+                  { id: 'NEWS', label: '📰 Berita' },
+                  { id: 'BIZ', label: '💼 Bisnis' },
+                  { id: 'MODERN', label: '⚡ Gen-Z' },
+                ].map((cat) => (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => setStyleCategory(cat.id as any)}
+                    className={`shrink-0 px-2.5 py-1 rounded-xl text-[11px] font-bold transition-all ${
+                      styleCategory === cat.id
+                        ? 'bg-primary text-white shadow-sm'
+                        : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'
+                    }`}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Compact 2-Column Responsive Grid (No Long Vertical Scroll on Mobile) */}
+              <div className="grid grid-cols-2 gap-2 sm:gap-3 max-h-[360px] sm:max-h-[460px] overflow-y-auto pr-1">
+                {filteredStudioStyles.map((style) => {
                   const isSelected = currentStyle === style.id;
                   const isLocked = isProStyle(style.id) && !isProUser;
 
@@ -583,27 +627,27 @@ export function CarouselStudio({
                         }
                         setCurrentStyle(style.id);
                       }}
-                      className={`p-3.5 rounded-2xl cursor-pointer border transition-all duration-200 flex flex-col justify-between ${
+                      className={`p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl cursor-pointer border transition-all duration-200 flex flex-col justify-between ${
                         isSelected
-                          ? 'bg-primary/10 border-primary shadow-xl ring-2 ring-primary/40'
+                          ? 'bg-primary/10 border-primary shadow-lg ring-2 ring-primary/40'
                           : isLocked
                           ? 'bg-slate-100/60 dark:bg-slate-950/40 border-slate-200 dark:border-slate-800/60 opacity-80 hover:opacity-100 hover:border-amber-500/40'
                           : 'bg-white dark:bg-slate-900/70 border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-700 shadow-sm'
                       }`}
                     >
                       <div>
-                        <div className="flex items-center justify-between mb-1.5">
-                          <div className="flex items-center gap-2">
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="flex items-center gap-1.5 min-w-0">
                             <span
-                              className="size-3 rounded-full shrink-0"
+                              className="size-2.5 sm:size-3 rounded-full shrink-0"
                               style={{ backgroundColor: style.accentColor }}
                             />
-                            <span className="font-bold text-xs text-slate-900 dark:text-white truncate">
+                            <span className="font-bold text-[11px] sm:text-xs text-slate-900 dark:text-white truncate">
                               {style.label}
                             </span>
                           </div>
 
-                          <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-1 shrink-0">
                             {/* Preview Eye Button */}
                             <button
                               type="button"
@@ -614,32 +658,28 @@ export function CarouselStudio({
                               className="p-1 rounded-md text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                               title="Lihat Pratinjau 5 Slide"
                             >
-                              <Eye className="size-3.5" />
+                              <Eye className="size-3 sm:size-3.5" />
                             </button>
 
                             {isSelected ? (
-                              <div className="size-4 rounded-full bg-primary flex items-center justify-center text-white shrink-0">
-                                <Check className="size-2.5 stroke-[3]" />
+                              <div className="size-3.5 sm:size-4 rounded-full bg-primary flex items-center justify-center text-white shrink-0">
+                                <Check className="size-2 sm:size-2.5 stroke-[3]" />
                               </div>
                             ) : isLocked ? (
-                              <span className="inline-flex items-center gap-0.5 text-[9px] font-black px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-300 border border-amber-500/30 shrink-0">
-                                <Lock className="size-2.5" /> PRO
-                              </span>
-                            ) : style.badge ? (
-                              <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30 shrink-0">
-                                {style.badge}
+                              <span className="inline-flex items-center gap-0.5 text-[8px] sm:text-[9px] font-black px-1.5 py-0.2 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-300 border border-amber-500/30 shrink-0">
+                                <Lock className="size-2" /> PRO
                               </span>
                             ) : null}
                           </div>
                         </div>
 
                         {style.subLabel && (
-                          <p className="text-[11px] font-semibold text-primary/90 mb-1 truncate">
+                          <p className="text-[10px] sm:text-[11px] font-semibold text-primary/90 mb-1 truncate">
                             {style.subLabel}
                           </p>
                         )}
 
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                        <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1 sm:line-clamp-2 leading-tight">
                           {style.description}
                         </p>
                       </div>
