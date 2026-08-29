@@ -15,7 +15,7 @@ export async function renderElementToPngDataUrl(elementId: string): Promise<stri
   const width = Math.max(rect.width, 360);
   const height = Math.max(rect.height, 450);
 
-  // Skala resolusi tinggi (2x / 3x untuk hasil tajam 1080px)
+  // Skala resolusi tinggi (2.5x untuk hasil tajam 1080px)
   const scale = 2.5;
   const targetWidth = Math.round(width * scale);
   const targetHeight = Math.round(height * scale);
@@ -26,7 +26,6 @@ export async function renderElementToPngDataUrl(elementId: string): Promise<stri
   clone.style.width = `${width}px`;
   clone.style.height = `${height}px`;
 
-  // Inline computed styles jika perlu
   const serialized = new XMLSerializer().serializeToString(clone);
   const svg = `
     <svg xmlns="http://www.w3.org/2000/svg" width="${targetWidth}" height="${targetHeight}" viewBox="0 0 ${width} ${height}">
@@ -58,7 +57,6 @@ export async function renderElementToPngDataUrl(elementId: string): Promise<stri
     };
     img.onerror = () => {
       URL.revokeObjectURL(url);
-      // Fallback: draw basic canvas
       resolve(url);
     };
     img.src = url;
@@ -79,15 +77,45 @@ export async function downloadSlideAsPng(slideIndex: number, title: string = 'sl
     document.body.removeChild(a);
   } catch (error) {
     console.error('Download PNG error:', error);
-    // Fallback info
     alert('Gambar slide siap. Anda juga dapat klik kanan pada preview lalu pilih "Simpan gambar sebagai..."');
+  }
+}
+
+/**
+ * Unduh seluruh slide sekaligus dalam satu file .ZIP (PNG High-Res)
+ */
+export async function exportSlidesToZip(totalSlides: number, title: string = 'newsly-carousel') {
+  try {
+    const zip = new JSZip();
+    const folder = zip.folder('slides') || zip;
+
+    for (let i = 0; i < totalSlides; i++) {
+      const dataUrl = await renderElementToPngDataUrl(`slide-canvas-${i}`).catch(() => null);
+      if (dataUrl && dataUrl.startsWith('data:image/png;base64,')) {
+        const base64Data = dataUrl.split(',')[1];
+        folder.file(`${title.toLowerCase().replace(/[^a-z0-9]/g, '-')}-slide-${i + 1}.png`, base64Data, { base64: true });
+      }
+    }
+
+    const zipBlob = await zip.generateAsync({ type: 'blob' });
+    const url = URL.createObjectURL(zipBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${title.toLowerCase().replace(/[^a-z0-9]/g, '-')}-all-slides.zip`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Export ZIP error:', error);
+    alert('Gagal membuat file ZIP secara otomatis. Silakan unduh per slide.');
   }
 }
 
 /**
  * Ekspor seluruh slide menjadi dokumen LinkedIn PDF multi-halaman
  */
-export async function exportSlidesToPdf(totalSlides: number, title: string = 'scoopcraft-carousel') {
+export async function exportSlidesToPdf(totalSlides: number, title: string = 'newsly-carousel') {
   try {
     const pdfDoc = await PDFDocument.create();
     pdfDoc.setTitle(title);

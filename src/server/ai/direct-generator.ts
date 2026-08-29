@@ -53,6 +53,7 @@ export async function generateDirect(input: GenerateDirectInput) {
   let articleSource = 'Newsly AI';
   let articleUrl = input.url || `https://newsly.ai/generated/${Date.now()}`;
   let articleImageUrl: string | null = null;
+  let articleImages: string[] = [];
   let articleAuthor = 'Redaksi';
 
   // 1. Resolve Content based on Mode
@@ -64,6 +65,7 @@ export async function generateDirect(input: GenerateDirectInput) {
       articleSource = scraped.source || 'Portal Berita';
       articleUrl = scraped.url;
       articleImageUrl = scraped.imageUrl || null;
+      articleImages = scraped.images || (scraped.imageUrl ? [scraped.imageUrl] : []);
       articleAuthor = scraped.author || 'Redaksi';
     } catch (scrapeErr: any) {
       console.warn('[Direct Generator Scraper Fallback]:', scrapeErr?.message);
@@ -88,42 +90,72 @@ export async function generateDirect(input: GenerateDirectInput) {
     articleContent = 'Rangkuman wawasan dan tren terkini untuk konten carousel.';
   }
 
-  // 2. Direct Gemini 3.5 Flash JSON Generation
+  // 2. Direct Gemini 2.5 Flash Turbo JSON Generation with Dynamic Slide Roles
   let deck: GeneratedDeckResult;
 
   try {
     const ai = getGeminiClient();
-    const prompt = `Anda adalah Executive Media Editor dan Head of Content di media Instagram/LinkedIn Indonesia terkemuka (@fakta.indo, @ngomonginuang, @katadatacoid, @kumparancom).
-Tugas Anda: Buat naskah carousel ${slidesCount} slide yang sangat kaya data, faktual, mendalam, dan relevan dengan materi berita/topik berikut:
+    const prompt = `Anda adalah Executive Creative Director di media carousel Instagram & LinkedIn Indonesia terkemuka (@fakta.indo, @ngomonginuang, @katadatacoid, @kumparancom).
+Tugas Anda: Buat naskah carousel ${slidesCount} slide dengan ritme visual bertingkat (Dynamic Visual Rhythm) berdasarkan materi berikut:
 
 Judul/Topik: "${articleTitle}"
 Sumber: "${articleSource}"
 Materi/Isi:
 ${articleContent.slice(0, 7000)}
 
-Instruksi Format:
-- Buat tepat ${slidesCount} slide pada array "slides".
-- Slide index 0: Cover/Poin Pembuka dengan judul poin menarik dan fakta pengantar.
-- Slide index 1 hingga ${slidesCount - 1}: Rincian poin-poin penting, nama entitas/brand/spesifikasi/data konkret sesuai isi artikel (JANGAN gunakan teks generik!).
-- Setiap slide WAJIB memiliki: "title" (judul poin spesifik), "body" (penjelasan padat fakta 2-3 kalimat), "statHighlight" (angka/data kunci), dan "quote" (kutipan/takeaway).
-- Tentukan "category" (POLITIK, EKONOMI, TEKNOLOGI, HUKUM, OLAHRAGA, PENDIDIKAN, KESEHATAN, BENCANA, KARIER, HIBURAN).
+ATURAN STRUKTUR 5 SLIDE DINAMIS (PENTING):
+1. Slide 0 (COVER): Headline hook memikat, mengundang rasa penasaran, relevan dengan fakta utama.
+2. Slide 1 (BIG METRIC / KEY PROBLEM): Sorot 1 angka/metrik/fakta terpenting (contoh: "6.000 mAh", "+40% Efisiensi", "Rp 15 Juta", "Poin Kritis 01") pada "statHighlight" dengan penjelasan padat.
+3. Slide 2 (DEEP DIVE / DETAIL): Penjelasan mendalam mengenai mekanisme, spesifikasi, atau langkah implementasi nyata.
+4. Slide 3 (GOLDEN QUOTE / INSIGHT): Kutipan tokoh/analisis berbobot ("quote") atau aturan emas (Golden Rule) yang berwibawa.
+5. Slide 4 (OUTRO / KESIMPULAN): Rangkuman 1 kalimat padat dan ajakan bertindak (CTA).
+
+- JANGAN gunakan penomoran kaku "1, 2, 3" di awal title. Gunakan judul topik yang bermakna!
 ${input.tone ? `- Gaya bahasa: ${input.tone}` : ''}
 
-Kembalikan HANYA format JSON valid berikut (tanpa markdown blok lain):
+Kembalikan HANYA format JSON valid berikut:
 {
   "category": "TEKNOLOGI",
   "headline": "Judul headline memikat untuk cover",
   "feedCopy": "Deskripsi singkat pengantar di cover",
-  "caption": "Caption Instagram lengkap dengan hook, poin bahasan, dan ajakan diskusi",
-  "hashtags": ["#Tag1", "#Tag2", "#Tag3"],
-  "cta": "Simpan & bagikan ke temanmu!",
+  "caption": "Caption Instagram lengkap dengan hook, poin bahasan emoji rapi, dan ajakan diskusi",
+  "hashtags": ["#Tag1", "#Tag2", "#Tag3", "#Tag4", "#Tag5"],
+  "cta": "Simpan postingan ini & bagikan ke tim Anda!",
   "slides": [
     {
       "index": 0,
-      "title": "Judul Poin Spesifik 1",
-      "body": "Penjelasan detail faktual mengenai poin 1 sesuai konteks berita.",
-      "statHighlight": "Highlight Data/Metrik",
-      "quote": "Poin takeaway penting"
+      "title": "Judul Cover",
+      "body": "Pengantar ringkas fakta utama.",
+      "statHighlight": "Fakta Utama",
+      "quote": "Highlight awal"
+    },
+    {
+      "index": 1,
+      "title": "Judul Fakta Metrik",
+      "body": "Penjelasan angka dan dampak pentingnya.",
+      "statHighlight": "Angka/Metrik Kunci",
+      "quote": "Insight data"
+    },
+    {
+      "index": 2,
+      "title": "Judul Pembahasan Mendalam",
+      "body": "Rincian spesifikasi atau langkah konkret.",
+      "statHighlight": "Poin Inti",
+      "quote": "Poin penting"
+    },
+    {
+      "index": 3,
+      "title": "Judul Wawasan Pakar",
+      "body": "Analisis dampak jangka panjang.",
+      "statHighlight": "Pro-Tip",
+      "quote": "Kutipan pernyataan tokoh/analis"
+    },
+    {
+      "index": 4,
+      "title": "Kesimpulan & Catatan Akhir",
+      "body": "Rangkuman kesimpulan 1 kalimat.",
+      "statHighlight": "Rangkuman",
+      "quote": "Takeaway"
     }
   ]
 }`;
@@ -150,30 +182,65 @@ Kembalikan HANYA format JSON valid berikut (tanpa markdown blok lain):
       headline: articleTitle,
       feedCopy: `Rangkuman fakta dan poin-poin penting seputar ${articleTitle}.`,
       caption: `🔥 ${articleTitle}\n\nBerikut fakta dan analisis lengkap yang perlu Anda ketahui!\n\n👉 Simpan & Bagikan!`,
-      hashtags: ['#BeritaTerkini', '#FaktaViral', '#NewslyAI', '#Edukasi'],
+      hashtags: ['#BeritaTerkini', '#FaktaViral', '#NewslyAI', '#Edukasi', '#Wawasan'],
       cta: 'Simpan postingan ini & bagikan ke temanmu!',
-      slides: Array.from({ length: slidesCount }).map((_, idx) => ({
-        index: idx,
-        title: idx === 0 ? articleTitle : `Fakta & Poin Penting #${idx + 1}`,
-        body: `Pembahasan mendalam mengenai ${articleTitle} mencakup implikasi strategis dan fakta utama di lapangan.`,
-        statHighlight: `Poin ${idx + 1}/${slidesCount}`,
-        quote: 'Analisis Terverifikasi',
-      })),
+      slides: [
+        {
+          index: 0,
+          title: articleTitle,
+          body: `Rangkuman fakta penting mengenai ${articleTitle}.`,
+          statHighlight: 'Edisi Khusus',
+          quote: 'Terverifikasi',
+        },
+        {
+          index: 1,
+          title: 'Metrik & Fakta Kunci',
+          body: 'Analisis data primer menunjukkan pergeseran signifikan dalam topik ini.',
+          statHighlight: 'Metrik Utama',
+          quote: 'Data Terverifikasi',
+        },
+        {
+          index: 2,
+          title: 'Implikasi & Pembahasan',
+          body: 'Faktor-faktor pendukung yang mempengaruhi perkembangan di lapangan secara langsung.',
+          statHighlight: 'Fokus Utama',
+          quote: 'Analisis Mendalam',
+        },
+        {
+          index: 3,
+          title: 'Wawasan Pakar & Rekomendasi',
+          body: 'Langkah strategis yang disarankan para analis untuk mengantisipasi tren ini.',
+          statHighlight: 'Insight',
+          quote: `“Inovasi ini membawa standar baru dalam industri.”`,
+        },
+        {
+          index: 4,
+          title: 'Rangkuman & Kesimpulan',
+          body: 'Kombinasi faktor di atas menjadikannya topik penting yang layak dipantau perkembangannya.',
+          statHighlight: 'Kesimpulan',
+          quote: 'Siap Eksekusi',
+        },
+      ],
     };
   }
 
-  // 3. Enrich Each Slide with Distinct Contextual HD Image and Metadata
+  // 3. Enrich Each Slide with Multi-Photo or Clean Contextual HD Images
   const detectedCategory = deck.category || detectCategoryFromText(articleTitle);
 
   const enrichedSlides = (deck.slides || []).map((s: any, idx: number) => {
     const isCover = idx === 0;
     const isOutro = idx === deck.slides.length - 1;
-    const photoUrl = getContextualPhotoForSlide(
-      detectedCategory,
-      idx,
-      `${s.title || ''} ${s.body || ''} ${articleTitle}`,
-      isCover ? articleImageUrl : null
-    );
+    const isSlide3 = idx === 2; // Slide 3 gets secondary photo if available
+
+    let photoUrl: string | null = null;
+
+    if (isCover) {
+      photoUrl = articleImages[0] || articleImageUrl || getContextualPhotoForSlide(detectedCategory, 0, articleTitle);
+    } else if (isSlide3 && articleImages.length > 1) {
+      photoUrl = articleImages[1];
+    } else if (articleImages.length > idx) {
+      photoUrl = articleImages[idx];
+    }
 
     return {
       index: idx,
@@ -181,17 +248,21 @@ Kembalikan HANYA format JSON valid berikut (tanpa markdown blok lain):
       pointNumber: isCover || isOutro ? undefined : idx,
       tag: isCover
         ? detectedCategory || 'HEADLINE'
-        : isOutro
-        ? 'KESIMPULAN'
-        : `FAKTA 0${idx}`,
+        : idx === 1
+        ? 'METRIK UTAMA'
+        : idx === 2
+        ? 'PEMBAHASAN'
+        : idx === 3
+        ? 'INSIGHT PAKAR'
+        : 'KESIMPULAN',
       headline: isCover ? deck.headline || s.title : undefined,
       lead: isCover ? deck.feedCopy || s.body : undefined,
       takeaway: s.title || `Poin Pembahasan #${idx + 1}`,
       supportingText: s.body,
-      statHighlight: s.statHighlight || `Poin 0${idx + 1}`,
-      sourceQuote: s.quote || (isCover ? undefined : `"${articleTitle}"`),
+      statHighlight: s.statHighlight || (idx === 1 ? 'Data Kunci' : undefined),
+      sourceQuote: s.quote || (idx === 3 ? `"${articleTitle}"` : undefined),
       ctaText: isOutro ? deck.cta : undefined,
-      secondaryCta: isOutro ? 'Ikuti @newsly.ai untuk update harian.' : undefined,
+      secondaryCta: isOutro ? 'Ikuti @newsly.ai untuk wawasan harian.' : undefined,
       imageUrl: photoUrl,
       source: articleSource,
     };
@@ -199,14 +270,13 @@ Kembalikan HANYA format JSON valid berikut (tanpa markdown blok lain):
 
   const coverImageUrl = enrichedSlides[0]?.imageUrl || articleImageUrl || getContextualPhotoForSlide(detectedCategory, 0, articleTitle);
 
-  // 4. Safe Non-Blocking DB Save
+  // 4. Safe DB Save
   let runId = `run_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
   let articleId = `art_${Date.now().toString(36)}`;
   let genContentId = `gen_${Date.now().toString(36)}`;
 
   try {
     const saved = await db.$transaction(async (tx) => {
-      // Consume Quota safely
       try {
         await consumeQuota(tx, input.userId);
       } catch (quotaErr) {

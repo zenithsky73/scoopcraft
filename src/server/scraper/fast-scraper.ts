@@ -1,6 +1,6 @@
 /**
  * Fast Native Article & Video Scraper (Zero-Dependency & 100% Vercel Serverless Compatible).
- * Mengekstrak judul, deskripsi, gambar utama, dan isi teks artikel berita atau video YouTube
+ * Mengekstrak judul, deskripsi, gambar utama, gambar sekunder (multi-photo), dan isi teks artikel berita atau video YouTube
  * tanpa membebani server dengan jsdom atau playwright.
  */
 
@@ -10,6 +10,7 @@ export type FastScrapedArticle = {
   content: string;
   source: string;
   imageUrl: string | null;
+  images: string[];
   author: string;
 };
 
@@ -94,6 +95,7 @@ Buatkan ringkasan edukatif, poin-poin penting, wawasan kunci, dan kesimpulan men
         content,
         source: `YouTube (${authorName})`,
         imageUrl: videoThumbnail,
+        images: [videoThumbnail],
         author: authorName,
       };
     }
@@ -126,6 +128,7 @@ Buatkan ringkasan edukatif, poin-poin penting, wawasan kunci, dan kesimpulan men
 
   const ogImageMatch = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i)
     || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
+  const twitterImageMatch = html.match(/<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i);
 
   const ogDescMatch = html.match(/<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i)
     || html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i);
@@ -145,20 +148,44 @@ Buatkan ringkasan edukatif, poin-poin penting, wawasan kunci, dan kesimpulan men
     title = title.charAt(0).toUpperCase() + title.slice(1);
   }
 
-  // 3. Resolve Foto
-  let imageUrl = ogImageMatch?.[1] || null;
-  if (imageUrl && !imageUrl.startsWith('http')) {
+  // 3. Resolve Semua Foto (Multi-Photo Scraper)
+  const images: string[] = [];
+  const primaryImg = ogImageMatch?.[1] || twitterImageMatch?.[1] || null;
+  if (primaryImg) {
     try {
-      imageUrl = new URL(imageUrl, urlObj.origin).href;
-    } catch {
-      imageUrl = null;
+      const resolved = new URL(primaryImg, urlObj.origin).href;
+      images.push(resolved);
+    } catch {}
+  }
+
+  // Ekstrak tag <img> di dalam body artikel
+  if (html) {
+    const imgMatches = html.matchAll(/<img[^>]+src=["']([^"']+)["'][^>]*>/gi);
+    for (const match of imgMatches) {
+      const src = match[1];
+      if (
+        src &&
+        !src.includes('avatar') &&
+        !src.includes('logo') &&
+        !src.includes('icon') &&
+        !src.includes('tracker') &&
+        (src.endsWith('.jpg') || src.endsWith('.jpeg') || src.endsWith('.png') || src.endsWith('.webp') || src.includes('image'))
+      ) {
+        try {
+          const resolved = new URL(src, urlObj.origin).href;
+          if (!images.includes(resolved) && images.length < 4) {
+            images.push(resolved);
+          }
+        } catch {}
+      }
     }
   }
+
+  const imageUrl = images[0] || null;
 
   // 4. Resolve Teks Isi Artikel
   let paragraphs: string[] = [];
   if (html) {
-    // Buang script, style, nav, footer, header
     const cleanHtml = html
       .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
       .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
@@ -192,6 +219,7 @@ Buatkan ringkasan edukatif, poin-poin penting, wawasan kunci, dan kesimpulan men
     content,
     source,
     imageUrl,
+    images,
     author: 'Redaksi',
   };
 }

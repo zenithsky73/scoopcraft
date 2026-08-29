@@ -31,7 +31,7 @@ import { STYLES, isProStyle, type StyleDef } from '@/config/styles';
 import { CanvasRenderer, type SlideData } from '@/components/studio/canvas-renderer';
 import { Button } from '@/components/ui/button';
 import { Input, Label } from '@/components/ui/input';
-import { downloadSlideAsPng, exportSlidesToPdf } from '@/lib/export-client';
+import { downloadSlideAsPng, exportSlidesToPdf, exportSlidesToZip } from '@/lib/export-client';
 import { UpgradeDialog } from '@/components/billing/upgrade-dialog';
 import { TemplatePreviewModal } from '@/components/generate/template-preview-modal';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
@@ -79,6 +79,7 @@ export function CarouselStudio({
   const [copiedCaption, setCopiedCaption] = React.useState(false);
   const [isExportingPdf, setIsExportingPdf] = React.useState(false);
   const [isExportingPng, setIsExportingPng] = React.useState(false);
+  const [isExportingZip, setIsExportingZip] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState<'styles' | 'editor' | 'caption'>('styles');
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -214,6 +215,15 @@ export function CarouselStudio({
     }
   };
 
+  const handleDownloadZip = async () => {
+    setIsExportingZip(true);
+    try {
+      await exportSlidesToZip(slides.length, initialContent.headline || 'newsly-carousel');
+    } finally {
+      setIsExportingZip(false);
+    }
+  };
+
   const handleExportPdf = async () => {
     if (!isProUser && isProStyle(currentStyle)) {
       setUpgradeTitle('Ekspor PDF Carousel Berkualitas Tinggi 📄');
@@ -287,21 +297,33 @@ export function CarouselStudio({
                 size="sm"
                 disabled={isExportingPng}
                 onClick={handleDownloadCurrentPng}
-                className="flex items-center gap-1 text-xs font-bold bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-cyan-700 dark:text-cyan-400 hover:bg-slate-200 dark:hover:bg-slate-800"
+                className="flex items-center gap-1 text-xs font-bold bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800"
               >
-                <Download className="size-3.5 text-cyan-600 dark:text-cyan-400" />
+                <Download className="size-3.5 text-slate-600 dark:text-slate-400" />
                 <span className="hidden sm:inline">PNG Slide {activeSlideIndex + 1}</span>
-                <span className="sm:hidden">PNG</span>
+                <span className="sm:hidden">Slide {activeSlideIndex + 1}</span>
+              </Button>
+
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={isExportingZip}
+                onClick={handleDownloadZip}
+                className="flex items-center gap-1 text-xs font-bold bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 shadow-sm"
+              >
+                <Download className="size-3.5 text-indigo-600 dark:text-indigo-400" />
+                <span className="hidden sm:inline">{isExportingZip ? 'Mengemas...' : 'Semua PNG (.ZIP)'}</span>
+                <span className="sm:hidden">{isExportingZip ? 'ZIP...' : '.ZIP'}</span>
               </Button>
 
               <Button
                 size="sm"
                 disabled={isExportingPdf}
                 onClick={handleExportPdf}
-                className="flex items-center gap-1.5 text-xs font-bold bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-500 text-white shadow-lg shadow-primary/25"
+                className="flex items-center gap-1.5 text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/25"
               >
                 <FileDown className="size-3.5" />
-                <span>{isExportingPdf ? 'Ekspor...' : 'PDF'}</span>
+                <span>{isExportingPdf ? 'PDF...' : 'PDF'}</span>
               </Button>
             </div>
           </div>
