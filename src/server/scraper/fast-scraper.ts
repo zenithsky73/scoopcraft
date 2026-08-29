@@ -1,6 +1,6 @@
 /**
- * Fast Native Article Scraper (Zero-Dependency & 100% Vercel Serverless Compatible).
- * Mengekstrak judul, deskripsi, gambar utama, dan isi teks artikel berita
+ * Fast Native Article & Video Scraper (Zero-Dependency & 100% Vercel Serverless Compatible).
+ * Mengekstrak judul, deskripsi, gambar utama, dan isi teks artikel berita atau video YouTube
  * tanpa membebani server dengan jsdom atau playwright.
  */
 
@@ -18,6 +18,88 @@ export async function scrapeArticleFast(targetUrl: string): Promise<FastScrapedA
   const urlObj = new URL(cleanUrl.startsWith('http') ? cleanUrl : `https://${cleanUrl}`);
   const domain = urlObj.hostname.replace(/^www\./, '');
 
+  // ─── A. KHUSUS LINK YOUTUBE (WATCH, SHORTS, YOUTU.BE) ───
+  if (domain.includes('youtube.com') || domain.includes('youtu.be')) {
+    let videoId = '';
+    if (domain.includes('youtu.be')) {
+      videoId = urlObj.pathname.replace(/^\//, '').split('/')[0];
+    } else if (urlObj.pathname.includes('/shorts/')) {
+      videoId = urlObj.pathname.split('/shorts/')[1]?.split('/')[0] || '';
+    } else {
+      videoId = urlObj.searchParams.get('v') || '';
+    }
+
+    if (videoId) {
+      let videoTitle = '';
+      let authorName = 'Kreator YouTube';
+      let videoThumbnail = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+      let videoDesc = '';
+
+      // 1. Ambil Judul & Channel dari YouTube oEmbed API Resmi
+      try {
+        const oembedRes = await fetch(
+          `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`,
+          { signal: AbortSignal.timeout(4000) }
+        );
+        if (oembedRes.ok) {
+          const oembed = await oembedRes.json();
+          videoTitle = (oembed.title || '').trim();
+          authorName = (oembed.author_name || 'Kreator YouTube').trim();
+        }
+      } catch (oembedErr) {
+        console.warn('[FastScraper YouTube oEmbed]:', oembedErr);
+      }
+
+      // 2. Ambil Deskripsi Meta Tag dari Halaman Video
+      try {
+        const pageRes = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
+          headers: {
+            'User-Agent':
+              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept-Language': 'id-ID,id;q=0.9,en;q=0.8',
+          },
+          signal: AbortSignal.timeout(4000),
+        });
+        if (pageRes.ok) {
+          const html = await pageRes.text();
+          const descMatch = html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i)
+            || html.match(/<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i);
+          if (descMatch?.[1]) {
+            videoDesc = descMatch[1].trim();
+          }
+          if (!videoTitle) {
+            const ogTitle = html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i);
+            if (ogTitle?.[1]) videoTitle = ogTitle[1].replace(/ - YouTube$/, '').trim();
+          }
+        }
+      } catch (pageErr) {
+        console.warn('[FastScraper YouTube HTML Fetch]:', pageErr);
+      }
+
+      if (!videoTitle) {
+        videoTitle = `Ulasan Video YouTube (${videoId})`;
+      }
+
+      const content = `Judul Video: "${videoTitle}"
+Saluran/Kreator: ${authorName}
+Deskripsi & Topik Bahasan:
+${videoDesc || videoTitle}
+
+Instruksi Analisis AI:
+Buatkan ringkasan edukatif, poin-poin penting, wawasan kunci, dan kesimpulan mendalam dari video YouTube ini ke dalam format carousel slide berbahasa Indonesia.`;
+
+      return {
+        url: urlObj.href,
+        title: videoTitle,
+        content,
+        source: `YouTube (${authorName})`,
+        imageUrl: videoThumbnail,
+        author: authorName,
+      };
+    }
+  }
+
+  // ─── B. ARTIKEL BERITA WEB STANDAR (DETIK, KOMPAS, CNN, DSB) ───
   let html = '';
   try {
     const res = await fetch(urlObj.href, {

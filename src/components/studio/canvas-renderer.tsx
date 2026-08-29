@@ -25,6 +25,15 @@ import {
   Bookmark,
   ChevronRight,
   TrendingDown,
+  Activity,
+  ShieldAlert,
+  Globe,
+  Radio,
+  MapPin,
+  HeartPulse,
+  Gamepad2,
+  Leaf,
+  Layers,
 } from 'lucide-react';
 
 export type SlideData = {
@@ -88,11 +97,10 @@ export function CanvasRenderer({
     .replace(/^(?:\d+[\.\)\-:]\s*|Poin\s*\d+[\.\)\-:]\s*|Fakta\s*\d+[\.\)\-:]\s*|Langkah\s*\d+[\.\)\-:]\s*)/i, '')
     .trim();
 
-  // Warna teks dinamis berbasis tema terang / gelap template
+  // Warna teks dinamis dengan kontras tajam
   const textPrimary = isLight ? '#0F172A' : '#FFFFFF';
-  const textSecondary = isLight ? '#475569' : '#CBD5E1';
+  const textSecondary = isLight ? '#334155' : '#E2E8F0';
   const textMuted = isLight ? '#64748B' : '#94A3B8';
-  const cardBg = isLight ? 'bg-white/90 shadow-lg border border-slate-200/80' : 'bg-slate-900/80 border border-white/10';
 
   const canvasContent = (
     <div
@@ -106,48 +114,57 @@ export function CanvasRenderer({
         transformOrigin: 'top center',
       }}
     >
-      {/* ─── 1. THEME BACKGROUND OVERLAYS & DISTINCT VISUAL DNA ─── */}
+      {/* ─── 1. THEME BACKGROUND ACCENTS & GRAPHIC DNA ─── */}
       {style === 'BREAKING_NEWS' && (
         <>
-          <div className="absolute top-0 left-0 right-0 h-2.5 bg-red-600 z-30 shadow-[0_0_15px_rgba(239,68,68,0.8)]" />
-          <div className="absolute -top-24 -right-24 w-64 h-64 bg-red-600/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-0 left-0 right-0 h-3 bg-red-600 z-30 shadow-[0_0_20px_rgba(239,68,68,0.9)]" />
+          <div className="absolute -top-24 -right-24 w-72 h-72 bg-red-600/15 rounded-full blur-3xl pointer-events-none" />
         </>
       )}
 
       {style === 'EDITORIAL' && (
-        <div className="absolute inset-0 bg-[radial-gradient(#0000000a_1px,transparent_1px)] [background-size:14px_14px] pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(#0000000d_1px,transparent_1px)] [background-size:12px_12px] pointer-events-none" />
       )}
 
       {style === 'FINANCE' && (
         <>
           <div className="absolute top-0 right-0 w-72 h-72 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98108_1px,transparent_1px),linear-gradient(to_bottom,#10b98108_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
         </>
       )}
 
       {style === 'TECH' && (
         <>
           <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,#38bdf80f_1px,transparent_1px),linear-gradient(to_bottom,#38bdf80f_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
-          <div className="absolute top-0 right-0 w-56 h-56 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
         </>
       )}
 
       {style === 'LIFESTYLE' && (
         <>
-          <div className="absolute top-0 right-0 w-64 h-64 bg-pink-300/30 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-200/30 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-rose-200/40 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-100/50 rounded-full blur-3xl pointer-events-none" />
         </>
       )}
 
       {style === 'BOLD' && (
-        <>
-          <div className="absolute top-0 left-0 right-0 h-2 bg-yellow-400 z-30 shadow-[0_0_20px_rgba(250,204,21,0.8)]" />
-          <div className="absolute -bottom-10 -right-10 w-60 h-60 bg-yellow-400/10 rounded-full blur-3xl pointer-events-none" />
-        </>
+        <div className="absolute top-0 left-0 right-0 h-3 bg-black z-30" />
       )}
 
       {style === 'MINIMAL' && (
-        <div className="absolute inset-4 border border-black/15 pointer-events-none rounded-xl" />
+        <div className="absolute inset-3 border-2 border-slate-900 pointer-events-none rounded-xl" />
+      )}
+
+      {style === 'STREETWEAR' && (
+        <div className="absolute inset-0 bg-[radial-gradient(#00000010_1px,transparent_1px)] [background-size:10px_10px] pointer-events-none" />
+      )}
+
+      {style === 'BLOOMBERG' && (
+        <>
+          <div className="absolute top-0 right-0 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+        </>
       )}
 
       {style === 'TERMINAL' && (
@@ -155,48 +172,83 @@ export function CanvasRenderer({
       )}
 
       {style === 'ATHLETIC' && (
-        <div className="absolute top-0 right-0 w-48 h-12 bg-yellow-400/20 -skew-x-12 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-64 h-16 bg-yellow-400/20 -skew-x-12 pointer-events-none" />
       )}
 
       {style === 'COSMIC' && (
-        <div className="absolute top-1/4 right-1/4 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+        <>
+          <div className="absolute top-1/4 right-1/4 w-80 h-80 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
+        </>
       )}
 
       {style === 'SPOTLIGHT' && (
-        <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-fuchsia-600/20 to-transparent pointer-events-none" />
+        <div className="absolute top-0 left-0 right-0 h-48 bg-gradient-to-b from-fuchsia-600/25 to-transparent pointer-events-none" />
       )}
 
-      {/* ─── 2. HEADER BAR (ADAPTIF MENURUT TEMA) ─── */}
+      {style === 'RED_COLLAGE' && (
+        <div className="absolute -top-10 -right-10 w-48 h-12 bg-red-600 -rotate-12 shadow-lg pointer-events-none" />
+      )}
+
+      {style === 'PODCAST' && (
+        <div className="absolute top-0 right-0 w-72 h-72 bg-indigo-600/15 rounded-full blur-3xl pointer-events-none" />
+      )}
+
+      {style === 'CULINARY' && (
+        <div className="absolute bottom-0 left-0 right-0 h-44 bg-gradient-to-t from-orange-600/25 to-transparent pointer-events-none" />
+      )}
+
+      {/* ─── 2. HEADER BAR (CUSTOM UNIK PER TEMPLATE) ─── */}
       <div
         className={`relative z-20 px-5 sm:px-6 pt-4 pb-3 flex items-center justify-between shrink-0 ${
-          isLight ? 'border-b border-slate-200/80' : 'border-b border-white/10'
+          isLight ? 'border-b border-slate-300' : 'border-b border-white/10'
         }`}
       >
         <div className="flex items-center gap-2 min-w-0">
-          {/* Custom Terminal Header for TERMINAL */}
+          {/* Custom Header: TERMINAL macOS Window */}
           {style === 'TERMINAL' ? (
-            <div className="flex items-center gap-1.5 bg-slate-900/90 px-2 py-0.5 rounded-lg border border-slate-700">
+            <div className="flex items-center gap-1.5 bg-slate-900 px-2 py-1 rounded-lg border border-slate-700">
               <span className="size-2 rounded-full bg-red-500 inline-block" />
               <span className="size-2 rounded-full bg-yellow-500 inline-block" />
               <span className="size-2 rounded-full bg-emerald-500 inline-block" />
-              <span className="font-mono text-[9px] text-cyan-400 ml-1 font-bold">insights.ts</span>
+              <span className="font-mono text-[9px] text-cyan-400 ml-1.5 font-bold">newsly.sh</span>
             </div>
           ) : style === 'EDITORIAL' || style === 'POLICY' ? (
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-serif font-black uppercase tracking-widest text-red-900 border-b border-red-900">
-                {slide.tag || (isCover ? 'EDISI UTAMA' : isOutro ? 'RINGKASAN' : 'CATATAN')}
+              <span className="text-[10px] font-serif font-black uppercase tracking-widest text-red-800 dark:text-red-400 border-b-2 border-red-800">
+                {slide.tag || (isCover ? 'EDISI UTAMA' : isOutro ? 'KESIMPULAN' : 'CATATAN')}
               </span>
             </div>
           ) : style === 'MINIMAL' ? (
-            <span className="px-2 py-0.5 text-[9px] font-mono font-bold tracking-widest uppercase border border-black bg-black text-white">
+            <span className="px-2 py-0.5 text-[9px] font-mono font-black tracking-widest uppercase border-2 border-black bg-black text-white">
               {slide.tag || (isCover ? 'OVERVIEW' : isOutro ? 'SUMMARY' : `POINT 0${slide.index}`)}
+            </span>
+          ) : style === 'STREETWEAR' ? (
+            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase bg-black text-white shadow-[3px_3px_0px_0px_#FFF] border border-black">
+              {slide.tag || 'URBAN DISPATCH'}
+            </span>
+          ) : style === 'PODCAST' ? (
+            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase bg-indigo-600 text-white rounded-md flex items-center gap-1">
+              <Mic className="size-3" /> {slide.tag || 'INTERVIEW'}
+            </span>
+          ) : style === 'CULINARY' ? (
+            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase bg-orange-600 text-white rounded-md flex items-center gap-1 shadow-sm">
+              <Utensils className="size-3" /> {slide.tag || 'KULINER VIRAL'}
+            </span>
+          ) : style === 'ATHLETIC' ? (
+            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase italic bg-yellow-400 text-black -skew-x-12 shadow-md">
+              ⚡ {slide.tag || 'SPEED REPORT'}
+            </span>
+          ) : style === 'BLOOMBERG' ? (
+            <span className="px-2.5 py-0.5 text-[10px] font-mono font-black uppercase bg-blue-600 text-white rounded">
+              MARKETS LIVE
             </span>
           ) : (
             <span
               className="px-2.5 py-0.5 text-[10px] font-black tracking-wider uppercase rounded-md shadow-sm shrink-0"
               style={{
                 backgroundColor: accent,
-                color: style === 'STREETWEAR' ? '#000000' : '#FFFFFF',
+                color: '#FFFFFF',
               }}
             >
               {slide.tag || (isCover ? 'HEADLINE' : isOutro ? 'KESIMPULAN' : 'POIN UTAMA')}
@@ -213,10 +265,10 @@ export function CanvasRenderer({
 
         {/* Slide Counter */}
         <div
-          className={`text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border shrink-0 ${
+          className={`text-[10px] font-mono font-black px-2.5 py-0.5 rounded-full border shrink-0 ${
             isLight
-              ? 'bg-slate-100 border-slate-300 text-slate-700'
-              : 'bg-white/10 border-white/15 text-slate-200 backdrop-blur-md'
+              ? 'bg-white border-slate-300 text-slate-800 shadow-sm'
+              : 'bg-white/10 border-white/20 text-slate-100 backdrop-blur-md'
           }`}
         >
           {slide.index + 1} / {totalSlides}
@@ -228,30 +280,31 @@ export function CanvasRenderer({
       {/* ─── A. COVER SLIDE ─── */}
       {isCover && (
         <div className="relative z-10 flex-1 flex flex-col justify-end p-5 sm:p-7 overflow-hidden">
-          {/* Background Photo for Cover */}
+          {/* Background Photo for Cover - Selalu Berwarna Tajam & Nyata */}
           {slide.imageUrl && (
             <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
               <img
                 src={slide.imageUrl}
                 alt="Cover Background"
-                className={`w-full h-full object-cover ${
-                  isLight ? 'opacity-30 filter contrast-110 brightness-105' : 'opacity-50 filter contrast-115 brightness-90 scale-105'
+                className={`w-full h-full object-cover filter ${
+                  isLight ? 'opacity-85 brightness-100 contrast-105' : 'opacity-65 brightness-95 contrast-110'
                 }`}
               />
+              {/* Soft Vignette Overlay agar foto tetap jernih dan teks terbaca sempurna */}
               <div
                 className="absolute inset-0"
                 style={{
                   background: isLight
-                    ? `linear-gradient(to top, ${styleDef.bgColor} 35%, ${styleDef.bgColor}e6 65%, transparent 100%)`
-                    : `linear-gradient(to top, ${styleDef.bgColor} 20%, ${styleDef.bgColor}d9 55%, transparent 85%, ${styleDef.bgColor}e6 100%)`,
+                    ? `linear-gradient(to top, #FFFFFF 25%, rgba(255,255,255,0.92) 55%, rgba(255,255,255,0.4) 85%, transparent 100%)`
+                    : `linear-gradient(to top, ${styleDef.bgColor} 30%, ${styleDef.bgColor}d9 65%, rgba(0,0,0,0.3) 90%, ${styleDef.bgColor}99 100%)`,
                 }}
               />
             </div>
           )}
 
-          {/* STREETWEAR SPECIAL FLOATING WHITE CARD */}
+          {/* STREETWEAR SPECIAL: NEO-BRUTALIST OFFSET HARD CARD */}
           {style === 'STREETWEAR' ? (
-            <div className="relative z-10 p-5 rounded-2xl bg-white border-2 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-black space-y-3">
+            <div className="relative z-10 p-5 rounded-2xl bg-white border-2 border-black shadow-[6px_6px_0px_0px_#000] text-black space-y-3">
               <div className="inline-block px-2.5 py-0.5 bg-black text-white text-[10px] font-black uppercase tracking-wider">
                 {slide.tag || 'URBAN DISPATCH'}
               </div>
@@ -259,20 +312,24 @@ export function CanvasRenderer({
                 {slide.headline || cleanTakeaway || 'Informasi & Tren Terkini'}
               </h1>
               {slide.lead && (
-                <p className="text-xs font-semibold text-slate-700 leading-relaxed">
+                <p className="text-xs font-semibold text-slate-800 leading-relaxed">
                   {slide.lead}
                 </p>
               )}
               <div className="pt-1 flex items-center justify-between text-[10px] font-bold text-black border-t border-black/20">
-                <span>GESER KE KANAN ➔</span>
+                <span>GESER ➔</span>
                 <span className="font-mono">#NEWSLY</span>
               </div>
             </div>
           ) : (
-            <div className="relative z-10 space-y-3">
+            <div
+              className={`relative z-10 space-y-3 ${
+                isLight ? 'p-4 rounded-2xl bg-white/95 border border-slate-200 shadow-xl' : ''
+              }`}
+            >
               {/* Live Ticker for BLOOMBERG */}
               {style === 'BLOOMBERG' && (
-                <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 font-mono text-[9px] font-bold">
+                <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-950/90 border border-emerald-500/50 text-emerald-300 font-mono text-[9px] font-bold shadow-sm">
                   <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   <span>▲ IHSG +1.4% • BTC $94.2K</span>
                 </div>
@@ -280,7 +337,7 @@ export function CanvasRenderer({
 
               {/* Spotlight Tag for SPOTLIGHT */}
               {style === 'SPOTLIGHT' && (
-                <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-fuchsia-600/30 border border-fuchsia-400/40 text-fuchsia-200 text-[10px] font-black uppercase">
+                <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-fuchsia-600/40 border border-fuchsia-400/50 text-fuchsia-100 text-[10px] font-black uppercase shadow-sm">
                   <Star className="size-3 text-amber-400 fill-amber-400" /> TOP TRENDING #1
                 </div>
               )}
@@ -316,12 +373,12 @@ export function CanvasRenderer({
                 </p>
               )}
 
-              <div className="pt-2 flex items-center gap-2">
+              <div className="pt-1 flex items-center gap-2">
                 <span
-                  className="text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1"
-                  style={{ color: isLight ? accent : accent }}
+                  className="text-[10px] font-black uppercase tracking-wider flex items-center gap-1"
+                  style={{ color: accent }}
                 >
-                  Geser untuk info lengkap <ArrowRight className="size-3 inline" />
+                  Geser untuk ulasan lengkap <ArrowRight className="size-3 inline" />
                 </span>
               </div>
             </div>
@@ -331,12 +388,12 @@ export function CanvasRenderer({
 
       {/* ─── B. POINT SLIDE (FAKTA & PEMBAHASAN) ─── */}
       {isPoint && (
-        <div className="relative z-10 flex-1 flex flex-col justify-between p-5 sm:p-6 space-y-4 overflow-hidden">
-          {/* Main Visual Photo Container */}
+        <div className="relative z-10 flex-1 flex flex-col justify-between p-4 sm:p-6 space-y-3.5 overflow-hidden">
+          {/* Main Visual Photo Container - Jernih, Tajam, & Terbingkai Rapi */}
           {slide.imageUrl && (
             <div
-              className={`relative w-full h-36 sm:h-44 rounded-xl overflow-hidden shadow-md shrink-0 ${
-                isLight ? 'border border-slate-300' : 'border border-white/10'
+              className={`relative w-full h-36 sm:h-44 rounded-2xl overflow-hidden shadow-md shrink-0 ${
+                isLight ? 'border-2 border-slate-200 shadow-lg' : 'border border-white/15'
               }`}
             >
               <img
@@ -344,12 +401,12 @@ export function CanvasRenderer({
                 alt={`Visual Slide ${slide.index + 1}`}
                 className="w-full h-full object-cover filter contrast-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-              <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between">
-                <span className="text-[10px] font-bold text-white drop-shadow truncate max-w-[200px]">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+              <div className="absolute bottom-2.5 left-3.5 right-3.5 flex items-center justify-between">
+                <span className="text-[10px] font-bold text-white drop-shadow truncate max-w-[220px]">
                   {cleanTakeaway || slide.headline}
                 </span>
-                <span className="text-[9px] font-mono font-bold bg-black/70 px-2 py-0.5 rounded text-white border border-white/20">
+                <span className="text-[9px] font-mono font-black bg-black/80 px-2.5 py-0.5 rounded-lg text-white border border-white/20">
                   #{slide.index + 1}
                 </span>
               </div>
@@ -358,20 +415,24 @@ export function CanvasRenderer({
 
           {/* Text Content Block */}
           <div
-            className={`space-y-3 flex-1 flex flex-col justify-center ${
-              isLight ? 'p-4 rounded-xl bg-white/90 border border-slate-200/80 shadow-sm' : ''
+            className={`space-y-2.5 flex-1 flex flex-col justify-center ${
+              isLight ? 'p-4 rounded-2xl bg-white border border-slate-200 shadow-md' : 'p-3 rounded-2xl bg-slate-900/60 border border-white/10'
             }`}
           >
-            {/* Header Poin Manfaat Bersih (Tanpa Angka Kaku 1,2,3) */}
+            {/* Header Poin Manfaat */}
             <div className="flex items-start gap-2">
               {style === 'EDITORIAL' || style === 'POLICY' ? (
-                <div className="w-1 self-stretch bg-red-800 rounded-full shrink-0" />
+                <div className="w-1.5 self-stretch bg-red-800 rounded-full shrink-0" />
               ) : style === 'MINIMAL' ? (
-                <div className="w-1 self-stretch bg-black rounded-full shrink-0" />
-              ) : null}
+                <div className="w-1.5 self-stretch bg-black rounded-full shrink-0" />
+              ) : style === 'FINANCE' ? (
+                <div className="w-1.5 self-stretch bg-emerald-500 rounded-full shrink-0" />
+              ) : (
+                <div className="w-1.5 self-stretch rounded-full shrink-0" style={{ backgroundColor: accent }} />
+              )}
 
               <h2
-                className={`font-bold tracking-tight text-base sm:text-lg leading-snug ${
+                className={`font-black tracking-tight text-base sm:text-lg leading-snug ${
                   style === 'EDITORIAL' || style === 'POLICY' ? 'font-serif' : 'font-sans'
                 }`}
                 style={{ color: textPrimary }}
@@ -383,7 +444,7 @@ export function CanvasRenderer({
             {/* Penjelasan Mendalam */}
             {slide.supportingText && (
               <p
-                className="text-xs sm:text-sm font-normal leading-relaxed"
+                className="text-xs sm:text-sm font-medium leading-relaxed"
                 style={{ color: textSecondary }}
               >
                 {slide.supportingText}
@@ -393,10 +454,10 @@ export function CanvasRenderer({
             {/* Stat Highlight Badge */}
             {slide.statHighlight && (
               <div
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl border self-start text-[10px] font-bold shadow-sm"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl border self-start text-[10px] font-black shadow-sm"
                 style={{
-                  backgroundColor: isLight ? `${accent}15` : `${accent}20`,
-                  borderColor: isLight ? `${accent}40` : `${accent}40`,
+                  backgroundColor: isLight ? `${accent}15` : `${accent}25`,
+                  borderColor: isLight ? `${accent}40` : `${accent}50`,
                   color: isLight ? accent : '#FFFFFF',
                 }}
               >
@@ -408,7 +469,7 @@ export function CanvasRenderer({
             {/* Quote Box */}
             {slide.sourceQuote && (
               <div
-                className="relative pl-3 py-1 border-l-2 text-[10px] sm:text-xs italic leading-relaxed"
+                className="relative pl-3 py-1 border-l-2 text-[10px] sm:text-xs italic leading-relaxed font-serif"
                 style={{
                   borderColor: accent,
                   color: isLight ? '#475569' : '#CBD5E1',
@@ -427,7 +488,7 @@ export function CanvasRenderer({
           {/* Outro Graphic Indicator */}
           <div
             className={`size-16 rounded-3xl flex items-center justify-center shadow-xl border ${
-              isLight ? 'bg-slate-100 border-slate-300' : 'border-white/20'
+              isLight ? 'bg-white border-slate-200 shadow-md' : 'border-white/20'
             }`}
             style={{
               backgroundColor: isLight ? `${accent}15` : `${accent}25`,
@@ -444,7 +505,7 @@ export function CanvasRenderer({
               }`}
               style={{ color: textPrimary }}
             >
-              {cleanTakeaway || 'Rangkuman & Insight'}
+              {cleanTakeaway || 'Rangkuman & Wawasan'}
             </h2>
             <p
               className="text-xs sm:text-sm font-medium leading-relaxed"
@@ -457,15 +518,15 @@ export function CanvasRenderer({
           {/* Social Action Grid */}
           <div className="w-full max-w-xs grid grid-cols-2 gap-2 pt-2 text-[10px] font-bold">
             <div
-              className={`rounded-xl p-2 flex items-center justify-center gap-1.5 border ${
-                isLight ? 'bg-slate-100 border-slate-300 text-slate-800' : 'bg-white/5 border-white/10 text-slate-200'
+              className={`rounded-xl p-2.5 flex items-center justify-center gap-1.5 border shadow-sm ${
+                isLight ? 'bg-white border-slate-200 text-slate-900 font-bold' : 'bg-white/5 border-white/10 text-slate-100'
               }`}
             >
               <span>📌 Simpan Postingan</span>
             </div>
             <div
-              className={`rounded-xl p-2 flex items-center justify-center gap-1.5 border ${
-                isLight ? 'bg-slate-100 border-slate-300 text-slate-800' : 'bg-white/5 border-white/10 text-slate-200'
+              className={`rounded-xl p-2.5 flex items-center justify-center gap-1.5 border shadow-sm ${
+                isLight ? 'bg-white border-slate-200 text-slate-900 font-bold' : 'bg-white/5 border-white/10 text-slate-100'
               }`}
             >
               <span>🚀 Bagikan ke Tim</span>
@@ -474,29 +535,29 @@ export function CanvasRenderer({
 
           {/* CTA Button Badge */}
           <div
-            className="w-full max-w-xs py-2.5 px-4 rounded-xl font-bold text-xs shadow-lg flex items-center justify-center gap-2"
+            className="w-full max-w-xs py-3 px-4 rounded-2xl font-black text-xs shadow-xl flex items-center justify-center gap-2"
             style={{
               backgroundColor: accent,
-              color: style === 'STREETWEAR' || style === 'MINIMAL' ? '#000000' : '#FFFFFF',
+              color: style === 'STREETWEAR' || style === 'MINIMAL' || style === 'BOLD' ? '#000000' : '#FFFFFF',
             }}
           >
-            <span>{slide.ctaText || 'Ikuti untuk update harian'}</span>
+            <span>{slide.ctaText || 'Ikuti untuk analisis harian'}</span>
             <ArrowRight className="size-3.5" />
           </div>
         </div>
       )}
 
-      {/* ─── 4. FOOTER BAR (ADAPTIF MENURUT TEMA) ─── */}
+      {/* ─── 4. FOOTER BAR ─── */}
       <div
         className={`relative z-20 px-5 sm:px-6 py-3 flex items-center justify-between text-[10px] font-semibold shrink-0 ${
-          isLight ? 'border-t border-slate-200/80' : 'border-t border-white/10'
+          isLight ? 'border-t border-slate-200 bg-white/40' : 'border-t border-white/10'
         }`}
       >
-        <span className="font-medium tracking-wide" style={{ color: textMuted }}>
+        <span className="font-bold tracking-wide" style={{ color: textMuted }}>
           {handle}
         </span>
 
-        <span className="uppercase tracking-widest text-[9px]" style={{ color: textMuted }}>
+        <span className="uppercase tracking-widest text-[9px] font-bold" style={{ color: textMuted }}>
           {slide.source || 'Newsly AI'}
         </span>
       </div>
@@ -506,7 +567,7 @@ export function CanvasRenderer({
   if (showPhoneFrame) {
     return (
       <div
-        className={`relative p-2.5 sm:p-4 rounded-[40px] border-4 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] flex flex-col items-center ${
+        className={`relative p-2.5 sm:p-4 rounded-[40px] border-4 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] flex flex-col items-center transition-colors duration-200 ${
           isLight ? 'bg-slate-200 border-slate-300' : 'bg-slate-900 border-slate-700/80'
         }`}
       >
