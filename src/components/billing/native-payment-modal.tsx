@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { createPortal } from 'react-dom';
 import {
   X,
   QrCode,
@@ -34,11 +35,28 @@ export function NativePaymentModal({
   planId,
   onSuccess,
 }: NativePaymentModalProps) {
+  const [mounted, setMounted] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState<'QRIS' | 'VA' | 'EWALLET'>('QRIS');
   const [copiedKey, setCopiedKey] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [successState, setSuccessState] = React.useState(false);
   const [orderId, setOrderId] = React.useState('');
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Lock body scroll when modal is open
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   // Generate unique Order ID whenever modal opens
   React.useEffect(() => {
@@ -51,7 +69,7 @@ export function NativePaymentModal({
     }
   }, [isOpen, planId]);
 
-  if (!isOpen || !planId) return null;
+  if (!mounted || !isOpen || !planId) return null;
 
   const plan = PLANS[planId];
 
@@ -90,14 +108,18 @@ export function NativePaymentModal({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-slate-950/80 backdrop-blur-md animate-fade-in">
+  const modalContent = (
+    <div
+      className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-slate-950/85 backdrop-blur-md animate-fade-in"
+      style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
+      onClick={onClose}
+    >
       <div
-        className="relative w-full max-w-lg rounded-[28px] bg-slate-900 border border-slate-800 text-slate-100 shadow-2xl shadow-black/80 overflow-hidden"
+        className="relative w-full max-w-lg rounded-[28px] bg-slate-900 border border-slate-800 text-slate-100 shadow-2xl shadow-black/90 overflow-hidden my-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Header Bar */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800/80 bg-slate-950/40">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800/80 bg-slate-950/50">
           <div className="flex items-center gap-3">
             <div className="size-9 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary shadow-sm">
               <CreditCard className="size-4.5" />
@@ -113,6 +135,7 @@ export function NativePaymentModal({
           </div>
 
           <button
+            type="button"
             onClick={onClose}
             className="size-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition-colors"
           >
@@ -352,4 +375,6 @@ export function NativePaymentModal({
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }
