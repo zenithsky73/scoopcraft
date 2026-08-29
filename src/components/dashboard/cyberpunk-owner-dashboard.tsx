@@ -18,6 +18,7 @@ import {
   Plus,
 } from 'lucide-react';
 import { MultiInputForm } from '@/components/generate/multi-input-form';
+import { MasterQuotaInjector } from '@/components/dashboard/master-quota-injector';
 import { STYLES, type StyleDef } from '@/config/styles';
 import { TemplatePreviewModal } from '@/components/generate/template-preview-modal';
 
@@ -108,6 +109,11 @@ export function CyberpunkOwnerDashboard({ user, totalGenerations = 128 }: Cyberp
             </div>
           </div>
         </header>
+
+        {/* ─── 1.5 MASTER OWNER INJECTOR TOOL ─── */}
+        <section>
+          <MasterQuotaInjector />
+        </section>
 
         {/* ─── 2. MAIN WORKSPACE: AI GENERATOR ENGINE ─── */}
         <section className="space-y-4">

@@ -272,11 +272,37 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
               <textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
-                rows={4}
+                rows={3}
                 placeholder="Contoh: 5 strategi cerdas mengelola keuangan untuk fresh graduate di tahun 2026."
                 className="w-full rounded-2xl bg-slate-50 dark:bg-slate-950/90 border border-slate-200 dark:border-slate-800 p-3.5 text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                 required
               />
+
+              {/* Quick Trending Prompt Chips */}
+              <div className="space-y-1.5 pt-1">
+                <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
+                  ⚡ Ide Topik Tren Cepat (Klik untuk Coba):
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    '💡 5 Kesalahan Finansial Fatal di Usia 20-an & Solusinya',
+                    '🤖 7 AI Tools Produktivitas Paling Mengubah Kerja 2026',
+                    '📱 Review Flagship Smartphone: Inovasi Kamera & Baterai',
+                    '🚀 4 Strategi Bisnis Modal Kecil Menjadi Viral di Medsos',
+                    '💼 Seni Negosiasi Gaji & Karier untuk Profesional Muda',
+                    '☕ Rahasia Memulai Bisnis F&B dengan Pelanggan Loyal',
+                  ].map((trendingTopic, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setPrompt(trendingTopic)}
+                      className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-slate-100 dark:bg-slate-900 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-600 dark:hover:text-indigo-400 border border-slate-200 dark:border-slate-800 transition-all text-slate-700 dark:text-slate-300"
+                    >
+                      {trendingTopic}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
 

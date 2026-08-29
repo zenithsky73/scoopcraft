@@ -6,9 +6,7 @@ import { db } from '@/server/db';
 export const runtime = 'nodejs';
 
 /**
- * Identitas akun yang dicetak di setiap gambar. Disimpan per user supaya
- * siapa pun yang memakai Scoopcraft tampil dengan akunnya sendiri, bukan
- * akun bawaan aplikasi.
+ * Identitas akun & logo yang dicetak di setiap gambar.
  */
 const bodySchema = z.object({
   handle: z
@@ -18,6 +16,7 @@ const bodySchema = z.object({
     .regex(/^@?[A-Za-z0-9._]*$/, 'Hanya huruf, angka, titik, dan garis bawah')
     .optional(),
   displayName: z.string().trim().max(48, 'Nama tampilan maksimal 48 karakter').optional(),
+  logoUrl: z.string().optional().nullable(),
 });
 
 export async function PUT(req: Request) {
@@ -42,12 +41,13 @@ export async function PUT(req: Request) {
   const rawHandle = parsed.data.handle?.replace(/^@+/, '') ?? '';
   const handle = rawHandle ? `@${rawHandle}` : null;
   const displayName = parsed.data.displayName || null;
+  const logoUrl = parsed.data.logoUrl || null;
 
   const brand = await db.brandKit.upsert({
     where: { userId: session.user.id },
-    update: { handle, displayName },
-    create: { userId: session.user.id, handle, displayName },
-    select: { handle: true, displayName: true },
+    update: { handle, displayName, logoUrl },
+    create: { userId: session.user.id, handle, displayName, logoUrl },
+    select: { handle: true, displayName: true, logoUrl: true },
   });
 
   return NextResponse.json({ brand });

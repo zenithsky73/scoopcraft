@@ -63,6 +63,7 @@ export type CanvasRendererProps = {
   format: OutputFormat;
   handle?: string;
   brandName?: string;
+  logoUrl?: string | null;
   totalSlides?: number;
   scale?: number;
   showPhoneFrame?: boolean;
@@ -75,6 +76,7 @@ export function CanvasRenderer({
   format = 'FEED_PORTRAIT',
   handle = '@newsly.ai',
   brandName = 'NEWSLY AI',
+  logoUrl = null,
   totalSlides = 5,
   scale = 1,
   showPhoneFrame = false,
@@ -615,11 +617,16 @@ export function CanvasRenderer({
           isLight ? 'border-t border-slate-200 bg-white/40' : 'border-t border-white/10'
         }`}
       >
-        <span className="font-bold tracking-wide" style={{ color: textMuted }}>
-          {handle}
-        </span>
+        <div className="flex items-center gap-1.5 min-w-0">
+          {logoUrl && (
+            <img src={logoUrl} alt="Brand Logo" className="size-4 object-contain shrink-0 rounded-sm" />
+          )}
+          <span className="font-bold tracking-wide truncate" style={{ color: textMuted }}>
+            {handle}
+          </span>
+        </div>
 
-        <span className="uppercase tracking-widest text-[9px] font-bold" style={{ color: textMuted }}>
+        <span className="uppercase tracking-widest text-[9px] font-bold shrink-0 ml-2" style={{ color: textMuted }}>
           {slide.source || 'Newsly AI'}
         </span>
       </div>

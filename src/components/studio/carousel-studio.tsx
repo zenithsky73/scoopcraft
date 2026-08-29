@@ -80,6 +80,7 @@ export function CarouselStudio({
   const [isExportingPdf, setIsExportingPdf] = React.useState(false);
   const [isExportingPng, setIsExportingPng] = React.useState(false);
   const [isExportingZip, setIsExportingZip] = React.useState(false);
+  const [viralHooks, setViralHooks] = React.useState<string[]>([]);
   const [activeTab, setActiveTab] = React.useState<'styles' | 'editor' | 'caption'>('styles');
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -722,16 +723,55 @@ export function CarouselStudio({
               {/* Slide Cover Fields */}
               {currentSlide.type === 'COVER' && (
                 <>
-                  <div>
-                    <Label className="text-xs text-slate-500 dark:text-slate-400 font-semibold mb-1 block">
-                      Headline Cover
-                    </Label>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs text-slate-500 dark:text-slate-400 font-semibold block">
+                        Headline Cover
+                      </Label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const base = currentSlide.headline || article.title;
+                          const clean = base.replace(/^[^a-zA-Z0-9]+/, '');
+                          setViralHooks([
+                            `🔥 Terungkap: ${clean.slice(0, 50)} yang Wajib Kamu Tahu!`,
+                            `⚡ 4 Fakta Kunci: Mengapa ${clean.slice(0, 45)} Jadi Sorotan?`,
+                            `🚨 Jangan Sampai Ketinggalan: Analisis Lengkap ${clean.slice(0, 40)}!`,
+                          ]);
+                        }}
+                        className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
+                      >
+                        <Sparkles className="size-3" /> 🔄 3 Variasi Judul Viral
+                      </button>
+                    </div>
                     <Input
                       value={currentSlide.headline || ''}
                       onChange={(e) => updateActiveSlide({ headline: e.target.value })}
                       placeholder="Headline yang memikat..."
                       className="text-sm font-bold bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
                     />
+
+                    {/* Viral Hook Suggestion Cards */}
+                    {viralHooks.length > 0 && (
+                      <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/60 space-y-1.5 animate-fade-in">
+                        <span className="text-[10px] font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wider block">
+                          Pilih Variasi Judul (1-Klik untuk Terapkan):
+                        </span>
+                        {viralHooks.map((hook, hIdx) => (
+                          <button
+                            key={hIdx}
+                            type="button"
+                            onClick={() => {
+                              updateActiveSlide({ headline: hook });
+                              setViralHooks([]);
+                            }}
+                            className="w-full text-left p-2 rounded-lg text-xs font-semibold bg-white dark:bg-slate-900 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800 transition-all truncate block"
+                          >
+                            {hook}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   <div>
                     <Label className="text-xs text-slate-500 dark:text-slate-400 font-semibold mb-1 block">

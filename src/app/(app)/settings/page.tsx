@@ -45,6 +45,7 @@ export default async function SettingsPage() {
           <BrandForm
             initialHandle={user.brandKit?.handle ?? null}
             initialDisplayName={user.brandKit?.displayName ?? null}
+            initialLogoUrl={user.brandKit?.logoUrl ?? null}
             fallbackHandle={APP.handle}
           />
         </CardContent>
