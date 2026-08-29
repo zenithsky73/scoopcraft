@@ -8,8 +8,11 @@ export const metadata: Metadata = {
   title: { default: `${APP.name} — ${APP.tagline}`, template: `%s · ${APP.name}` },
   description: APP.description,
   icons: {
-    icon: '/favicon.png',
-    apple: '/app-icon-dark.png',
+    icon: [
+      { url: '/favicon.png?v=3', type: 'image/png' },
+      { url: '/favicon.ico?v=3' },
+    ],
+    apple: '/app-icon-dark.png?v=3',
   },
 };
 
@@ -24,8 +27,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="id" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/favicon.png" type="image/png" />
-        <link rel="apple-touch-icon" href="/app-icon-dark.png" />
+        <link rel="icon" href="/favicon.png?v=3" type="image/png" />
+        <link rel="shortcut icon" href="/favicon.ico?v=3" />
+        <link rel="apple-touch-icon" href="/app-icon-dark.png?v=3" />
         <link rel="stylesheet" href="/fonts/inter.css" />
       </head>
       <body>
