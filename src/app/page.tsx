@@ -5,6 +5,7 @@ import { ThemeToggle } from '@/components/layout/theme-toggle';
 import { APP } from '@/config/app';
 import { TRIAL, GUEST } from '@/config/trial';
 import { STYLES } from '@/config/styles';
+import { HeroShowcase } from '@/components/landing/hero-showcase';
 
 const STEPS = [
   {
@@ -106,15 +107,9 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Right Column 3D Mascot Banner */}
+          {/* Right Column: 3D Layered Carousel Showcase Mockup (100% Seamless & Transparent) */}
           <div className="lg:col-span-5 flex justify-center items-center">
-            <div className="relative w-full max-w-sm sm:max-w-md drop-shadow-[0_25px_50px_rgba(56,189,248,0.25)] hover:scale-105 transition-transform duration-500">
-              <img
-                src="/mascot-hero.png"
-                alt="Newsly AI Showcase"
-                className="w-full h-auto object-contain rounded-3xl"
-              />
-            </div>
+            <HeroShowcase />
           </div>
         </div>
 

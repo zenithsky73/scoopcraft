@@ -81,14 +81,35 @@ export default async function DashboardPage() {
             </div>
           </div>
 
-          {/* 3D Mascot Image */}
-          <div className="relative shrink-0 flex justify-center items-center">
-            <div className="relative size-36 sm:size-44 drop-shadow-[0_15px_30px_rgba(56,189,248,0.25)] hover:scale-105 transition-transform duration-300">
-              <img
-                src="/mascot-hero.png"
-                alt="Newsly AI Showcase"
-                className="w-full h-full object-contain rounded-2xl"
-              />
+          {/* Mini 3D Carousel Stack Graphic (100% Seamless & Transparent) */}
+          <div className="relative shrink-0 hidden md:flex items-center justify-center">
+            <div className="relative w-44 h-44 group">
+              {/* Back Card */}
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-950 to-slate-900 border border-indigo-500/30 transform -rotate-6 -translate-x-2 -translate-y-2 shadow-xl opacity-60" />
+              {/* Front Card */}
+              <div className="relative w-full h-full rounded-2xl bg-gradient-to-br from-slate-900 via-indigo-950/80 to-slate-900 border border-indigo-500/40 p-3.5 shadow-2xl flex flex-col justify-between">
+                <div className="flex items-center justify-between text-[10px]">
+                  <span className="px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-400 font-bold border border-rose-500/30">
+                    🔥 HOT NEWS
+                  </span>
+                  <span className="font-mono text-indigo-400 font-bold">1/5</span>
+                </div>
+                <div className="space-y-1.5 my-auto">
+                  <div className="h-3 w-5/6 bg-white/90 rounded-full" />
+                  <div className="h-3 w-4/6 bg-indigo-400/80 rounded-full" />
+                  <div className="h-2 w-full bg-slate-600/50 rounded-full mt-2" />
+                </div>
+                <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-[9px] text-slate-400">
+                  <span className="text-cyan-400 font-bold">Instagram 1080p</span>
+                  <span className="text-indigo-400 font-bold flex items-center gap-0.5">
+                    Geser ➔
+                  </span>
+                </div>
+              </div>
+              {/* Glowing Badge */}
+              <div className="absolute -bottom-2 -right-2 px-2.5 py-1 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 text-[10px] font-black text-white shadow-lg shadow-indigo-500/30">
+                ✨ Gemini Turbo
+              </div>
             </div>
           </div>
         </div>
