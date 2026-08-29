@@ -49,10 +49,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <div className="flex flex-col items-center justify-center mb-6 text-center">
               <div className="relative mb-3 group">
                 <div className="absolute -inset-1.5 rounded-full bg-gradient-to-r from-cyan-500 via-indigo-500 to-pink-500 opacity-70 blur-md group-hover:opacity-100 transition duration-300 animate-pulse" />
-                <div className="relative size-16 sm:size-18 rounded-full bg-white dark:bg-slate-950 p-2 border border-slate-200 dark:border-slate-800 flex items-center justify-center shadow-lg">
+                <div className="relative size-16 sm:size-18 rounded-2xl bg-white dark:bg-slate-950 p-2.5 border border-slate-200 dark:border-slate-800 flex items-center justify-center shadow-lg">
                   <img
-                    src="/robot-avatar.png"
-                    alt="Newsly AI Mascot"
+                    src="/logo-icon.png"
+                    alt="Newsly AI Logo"
                     className="w-full h-full object-contain drop-shadow-sm"
                   />
                 </div>

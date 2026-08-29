@@ -111,8 +111,8 @@ export default function LandingPage() {
             <div className="relative w-full max-w-sm sm:max-w-md drop-shadow-[0_25px_50px_rgba(56,189,248,0.25)] hover:scale-105 transition-transform duration-500">
               <img
                 src="/mascot-hero.png"
-                alt="Newsly AI Robot Mascot"
-                className="w-full h-auto object-contain"
+                alt="Newsly AI Showcase"
+                className="w-full h-auto object-contain rounded-3xl"
               />
             </div>
           </div>

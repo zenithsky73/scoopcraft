@@ -86,8 +86,8 @@ export default async function DashboardPage() {
             <div className="relative size-36 sm:size-44 drop-shadow-[0_15px_30px_rgba(56,189,248,0.25)] hover:scale-105 transition-transform duration-300">
               <img
                 src="/mascot-hero.png"
-                alt="Newsly AI Mascot"
-                className="w-full h-full object-contain"
+                alt="Newsly AI Showcase"
+                className="w-full h-full object-contain rounded-2xl"
               />
             </div>
           </div>
