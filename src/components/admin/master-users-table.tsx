@@ -124,37 +124,37 @@ export function MasterUsersTable() {
       {/* ─── 1. TOP STATS HUD ─── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="p-4 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
-          <span className="text-[11px] font-mono uppercase font-bold text-slate-500 flex items-center gap-1">
-            <Users className="size-3.5 text-indigo-600" /> Total Pengguna
+          <span className="text-[11px] font-mono uppercase font-black text-slate-700 dark:text-slate-400 flex items-center gap-1.5">
+            <Users className="size-3.5 text-indigo-600 dark:text-indigo-400" /> Total Pengguna
           </span>
           <span className="text-2xl font-black text-slate-900 dark:text-white mt-1">
             {totalUsersCount}
           </span>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900/80 border border-indigo-200 dark:border-indigo-800/60 shadow-sm flex flex-col justify-between">
-          <span className="text-[11px] font-mono uppercase font-bold text-indigo-700 dark:text-indigo-400 flex items-center gap-1">
-            <Sparkles className="size-3.5" /> Pengguna PRO
+        <div className="p-4 rounded-2xl bg-indigo-50/70 dark:bg-slate-900/80 border border-indigo-200 dark:border-indigo-800/60 shadow-sm flex flex-col justify-between">
+          <span className="text-[11px] font-mono uppercase font-black text-indigo-800 dark:text-indigo-400 flex items-center gap-1.5">
+            <Sparkles className="size-3.5 text-indigo-600" /> Pengguna PRO
           </span>
-          <span className="text-2xl font-black text-indigo-600 dark:text-indigo-400 mt-1">
+          <span className="text-2xl font-black text-indigo-700 dark:text-indigo-400 mt-1">
             {proUsersCount}
           </span>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
-          <span className="text-[11px] font-mono uppercase font-bold text-slate-500 flex items-center gap-1">
+        <div className="p-4 rounded-2xl bg-cyan-50/70 dark:bg-slate-900/80 border border-cyan-200 dark:border-cyan-800/60 shadow-sm flex flex-col justify-between">
+          <span className="text-[11px] font-mono uppercase font-black text-cyan-800 dark:text-cyan-400 flex items-center gap-1.5">
             <TrendingUp className="size-3.5 text-cyan-600" /> Total Generate
           </span>
-          <span className="text-2xl font-black text-slate-900 dark:text-white mt-1">
+          <span className="text-2xl font-black text-cyan-700 dark:text-cyan-400 mt-1">
             {totalGenerationsCount}x
           </span>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900/80 border border-amber-200 dark:border-amber-800/60 shadow-sm flex flex-col justify-between">
-          <span className="text-[11px] font-mono uppercase font-bold text-amber-700 dark:text-amber-400 flex items-center gap-1">
-            <Crown className="size-3.5" /> God-Mode Status
+        <div className="p-4 rounded-2xl bg-amber-50/70 dark:bg-slate-900/80 border border-amber-200 dark:border-amber-800/60 shadow-sm flex flex-col justify-between">
+          <span className="text-[11px] font-mono uppercase font-black text-amber-800 dark:text-amber-400 flex items-center gap-1.5">
+            <Crown className="size-3.5 text-amber-600" /> God-Mode Status
           </span>
-          <span className="text-xs font-bold text-amber-800 dark:text-amber-300 mt-2">
+          <span className="text-xs font-black text-amber-900 dark:text-amber-300 mt-2">
             Master Controller Live
           </span>
         </div>
