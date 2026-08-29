@@ -10,7 +10,7 @@ const MOBILE_NAV_ITEMS = [
   { href: '/templates', label: 'Template', icon: Palette },
   { href: '/content', label: 'Riwayat', icon: History },
   { href: '/upgrade', label: 'Upgrade', icon: Sparkles, highlight: true },
-  { href: '/settings', label: 'Setelan', icon: Settings },
+  { href: '/settings', label: 'Pengaturan', icon: Settings },
 ];
 
 export function BottomNav() {

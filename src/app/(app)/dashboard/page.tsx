@@ -65,19 +65,20 @@ export default async function DashboardPage() {
               </p>
             </div>
 
-            {/* Workflow Step Pills */}
-            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 pt-2 text-[11px] font-bold">
-              <span className="px-3 py-1 rounded-xl bg-cyan-100 dark:bg-cyan-950/60 border border-cyan-300 dark:border-cyan-800/60 text-cyan-800 dark:text-cyan-300 flex items-center gap-1.5 shadow-sm">
-                🔗 Tempel Link / Naskah
-              </span>
-              <span className="text-slate-400 font-bold">➔</span>
-              <span className="px-3 py-1 rounded-xl bg-purple-100 dark:bg-purple-950/60 border border-purple-300 dark:border-purple-800/60 text-purple-800 dark:text-purple-300 flex items-center gap-1.5 shadow-sm">
-                ✨ AI Meriset & Menyusun
-              </span>
-              <span className="text-slate-400 font-bold">➔</span>
-              <span className="px-3 py-1 rounded-xl bg-amber-100 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800/60 text-amber-800 dark:text-amber-300 flex items-center gap-1.5 shadow-sm">
-                📸 Siap Posting IG & LinkedIn
-              </span>
+            {/* Workflow Step Badges (Responsive 3-Column on Mobile & Desktop) */}
+            <div className="grid grid-cols-3 gap-1.5 sm:gap-2 pt-2 text-[10px] sm:text-xs font-bold max-w-lg mx-auto md:mx-0">
+              <div className="px-2 sm:px-3 py-1.5 rounded-xl bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-200 dark:border-cyan-800/60 text-cyan-800 dark:text-cyan-300 flex items-center justify-center gap-1 sm:gap-1.5 shadow-sm text-center">
+                <span className="shrink-0">🔗</span>
+                <span className="truncate">1. Tempel Link</span>
+              </div>
+              <div className="px-2 sm:px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800/60 text-purple-800 dark:text-purple-300 flex items-center justify-center gap-1 sm:gap-1.5 shadow-sm text-center">
+                <span className="shrink-0">✨</span>
+                <span className="truncate">2. AI Format</span>
+              </div>
+              <div className="px-2 sm:px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/60 text-amber-800 dark:text-amber-300 flex items-center justify-center gap-1 sm:gap-1.5 shadow-sm text-center">
+                <span className="shrink-0">📸</span>
+                <span className="truncate">3. Siap Post</span>
+              </div>
             </div>
           </div>
 
