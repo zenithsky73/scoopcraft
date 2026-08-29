@@ -26,7 +26,6 @@ import {
   Upload,
   Image as ImageIcon,
   Eye,
-  Film,
 } from 'lucide-react';
 import { STYLES, isProStyle, type StyleDef } from '@/config/styles';
 import { CanvasRenderer, type SlideData } from '@/components/studio/canvas-renderer';
@@ -35,7 +34,6 @@ import { Input, Label } from '@/components/ui/input';
 import { downloadSlideAsPng, exportSlidesToPdf, exportSlidesToZip } from '@/lib/export-client';
 import { UpgradeDialog } from '@/components/billing/upgrade-dialog';
 import { TemplatePreviewModal } from '@/components/generate/template-preview-modal';
-import { VideoExportDialog } from '@/components/studio/video-export-dialog';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
 import { cn } from '@/lib/utils';
 
@@ -93,7 +91,6 @@ export function CarouselStudio({
   const [isExportingPdf, setIsExportingPdf] = React.useState(false);
   const [isExportingPng, setIsExportingPng] = React.useState(false);
   const [isExportingZip, setIsExportingZip] = React.useState(false);
-  const [showVideoExportModal, setShowVideoExportModal] = React.useState(false);
   const [viralHooks, setViralHooks] = React.useState<string[]>([]);
   const [activeTab, setActiveTab] = React.useState<'styles' | 'editor' | 'caption'>('styles');
 
@@ -339,16 +336,6 @@ export function CarouselStudio({
               >
                 <FileDown className="size-3.5" />
                 <span>{isExportingPdf ? 'PDF...' : 'PDF'}</span>
-              </Button>
-
-              <Button
-                size="sm"
-                onClick={() => setShowVideoExportModal(true)}
-                className="flex items-center gap-1.5 text-xs font-black bg-gradient-to-r from-purple-600 via-fuchsia-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-md shadow-purple-600/30 ring-1 ring-purple-400/30 transition-all hover:scale-105"
-              >
-                <Film className="size-3.5" />
-                <span className="hidden sm:inline">🎬 Video Reels / TikTok</span>
-                <span className="sm:hidden">🎬 Video</span>
               </Button>
             </div>
           </div>
@@ -942,15 +929,6 @@ export function CarouselStudio({
           }
           setCurrentStyle(styleId);
         }}
-      />
-
-      {/* ─── 9:16 VERTICAL MOTION VIDEO EXPORT MODAL ─── */}
-      <VideoExportDialog
-        isOpen={showVideoExportModal}
-        onClose={() => setShowVideoExportModal(false)}
-        totalSlides={slides.length}
-        style={currentStyle}
-        title={initialContent.headline || article.title || 'newsly-carousel'}
       />
 
       {/* ─── HIDDEN OFFSCREEN RENDER CONTAINER FOR 100% RELIABLE EXPORTS ─── */}
