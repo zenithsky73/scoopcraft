@@ -8,11 +8,53 @@ export const dynamic = 'force-dynamic';
 
 const PAGE_SIZE = 24;
 
-/**
- * Daftar riwayat untuk grid di /content. Hanya mengirim satu aset cover per
- * run sebagai thumbnail — memuat seluruh slide untuk 24 kartu sekaligus
- * membuat respons membengkak tanpa dipakai.
- */
+function decodeHtmlEntities(str: string | null): string | null {
+  if (!str) return null;
+  return str
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, '&')
+    .replace(/&#039;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&nbsp;/g, ' ');
+}
+
+function extractThumbnail(run: any) {
+  if (run.generatedContent?.assets?.[0]?.imageUrl) {
+    return {
+      imageUrl: run.generatedContent.assets[0].imageUrl,
+      format: run.generatedContent.assets[0].format,
+    };
+  }
+  if (run.generatedContent?.visualUrl) {
+    return {
+      imageUrl: run.generatedContent.visualUrl,
+      format: run.requestedFormats?.[0] || 'FEED_PORTRAIT',
+    };
+  }
+  if (run.article?.imageUrl) {
+    return {
+      imageUrl: run.article.imageUrl,
+      format: run.requestedFormats?.[0] || 'FEED_PORTRAIT',
+    };
+  }
+  const rawSlides = run.generatedContent?.slides;
+  const slideList = Array.isArray(rawSlides?.slides)
+    ? rawSlides.slides
+    : Array.isArray(rawSlides)
+    ? rawSlides
+    : [];
+
+  if (slideList[0]?.imageUrl) {
+    return {
+      imageUrl: slideList[0].imageUrl,
+      format: run.requestedFormats?.[0] || 'FEED_PORTRAIT',
+    };
+  }
+  return null;
+}
+
 export async function GET(req: Request) {
   const viewer = await getViewer();
   if (!viewer) {
@@ -42,6 +84,7 @@ export async function GET(req: Request) {
     where.OR = [
       { sourceUrl: { contains: search, mode: 'insensitive' } },
       { article: { title: { contains: search, mode: 'insensitive' } } },
+      { generatedContent: { headline: { contains: search, mode: 'insensitive' } } },
     ];
   }
 
@@ -60,11 +103,13 @@ export async function GET(req: Request) {
       requestedSlides: true,
       stepsDone: true,
       stepsTotal: true,
-      article: { select: { title: true, source: true } },
+      article: { select: { title: true, source: true, imageUrl: true } },
       generatedContent: {
         select: {
           id: true,
           headline: true,
+          visualUrl: true,
+          slides: true,
           _count: { select: { assets: true } },
           assets: {
             where: { slideIndex: 0, status: 'READY' },
@@ -80,20 +125,23 @@ export async function GET(req: Request) {
   const page = hasMore ? runs.slice(0, PAGE_SIZE) : runs;
 
   return NextResponse.json({
-    runs: page.map((run) => ({
-      id: run.id,
-      status: run.status,
-      createdAt: run.createdAt,
-      sourceUrl: run.sourceUrl,
-      styles: run.requestedStyles,
-      formats: run.requestedFormats,
-      slides: run.requestedSlides,
-      progress: { done: run.stepsDone, total: run.stepsTotal },
-      title: run.article?.title ?? run.generatedContent?.headline ?? null,
-      source: run.article?.source ?? null,
-      assetCount: run.generatedContent?._count.assets ?? 0,
-      thumbnail: run.generatedContent?.assets[0] ?? null,
-    })),
+    runs: page.map((run) => {
+      const rawTitle = run.article?.title ?? run.generatedContent?.headline ?? null;
+      return {
+        id: run.id,
+        status: run.status,
+        createdAt: run.createdAt,
+        sourceUrl: run.sourceUrl,
+        styles: run.requestedStyles,
+        formats: run.requestedFormats,
+        slides: run.requestedSlides || 5,
+        progress: { done: run.stepsDone, total: run.stepsTotal },
+        title: decodeHtmlEntities(rawTitle),
+        source: run.article?.source ?? null,
+        assetCount: run.generatedContent?._count.assets ?? 0,
+        thumbnail: extractThumbnail(run),
+      };
+    }),
     nextCursor: hasMore ? page[page.length - 1].id : null,
   });
 }
