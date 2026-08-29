@@ -82,37 +82,37 @@ export function TemplatePreviewModal({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="relative w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-7 shadow-2xl flex flex-col items-center space-y-5 max-h-[95vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 dark:bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="relative w-full max-w-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-7 shadow-2xl flex flex-col items-center space-y-4 sm:space-y-5 max-h-[95vh] overflow-y-auto transition-colors duration-200">
         {/* Header Modal */}
-        <div className="w-full flex items-center justify-between border-b border-slate-800 pb-3.5">
-          <div className="flex items-center gap-2.5">
+        <div className="w-full flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 sm:pb-3.5">
+          <div className="flex items-center gap-2.5 min-w-0">
             <span
-              className="size-3.5 rounded-full inline-block"
+              className="size-3.5 rounded-full shrink-0 shadow-sm"
               style={{ backgroundColor: styleDef.accentColor }}
             />
-            <div>
-              <h3 className="text-base font-black text-white flex items-center gap-2">
+            <div className="min-w-0">
+              <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white flex items-center gap-2 truncate">
                 {styleDef.label}
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/30 font-bold">
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 dark:bg-primary/20 text-primary border border-primary/20 font-bold shrink-0">
                   {styleDef.badge || 'PRO'}
                 </span>
               </h3>
-              <p className="text-xs text-slate-400">{styleDef.description}</p>
+              <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 truncate">{styleDef.description}</p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="size-9 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-colors"
+            className="size-8 sm:size-9 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors shrink-0 ml-2"
           >
             <X className="size-4" />
           </button>
         </div>
 
         {/* Live Canvas Preview */}
-        <div className="w-full flex flex-col items-center justify-center py-2">
-          <div className="w-full max-w-[340px] sm:max-w-[360px] relative">
+        <div className="w-full flex flex-col items-center justify-center py-1 sm:py-2">
+          <div className="w-full max-w-[320px] sm:max-w-[360px] relative">
             <CanvasRenderer
               slide={mockSlides[slideIndex]}
               style={styleDef.id}
@@ -124,19 +124,19 @@ export function TemplatePreviewModal({
         </div>
 
         {/* Navigation Slider Bar */}
-        <div className="w-full flex items-center justify-between gap-3 pt-1 border-t border-slate-800">
-          <div className="flex items-center gap-1.5">
+        <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 sm:pt-1 border-t border-slate-200 dark:border-slate-800">
+          <div className="flex items-center justify-between w-full sm:w-auto gap-1.5">
             <Button
               variant="secondary"
               size="sm"
               disabled={slideIndex === 0}
               onClick={() => setSlideIndex((prev) => Math.max(0, prev - 1))}
-              className="h-8 px-3 text-xs bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700"
+              className="h-8 px-3 text-xs bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700"
             >
               <ChevronLeft className="size-3.5 mr-1" /> Prev
             </Button>
 
-            <span className="text-xs font-mono font-bold text-slate-400 px-2">
+            <span className="text-xs font-mono font-bold text-slate-600 dark:text-slate-400 px-2">
               Slide {slideIndex + 1} / 5
             </span>
 
@@ -145,7 +145,7 @@ export function TemplatePreviewModal({
               size="sm"
               disabled={slideIndex === 4}
               onClick={() => setSlideIndex((prev) => Math.min(4, prev + 1))}
-              className="h-8 px-3 text-xs bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700"
+              className="h-8 px-3 text-xs bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700"
             >
               Next <ChevronRight className="size-3.5 ml-1" />
             </Button>
@@ -157,7 +157,7 @@ export function TemplatePreviewModal({
               onSelectStyle?.(styleDef.id);
               onClose();
             }}
-            className="h-9 px-5 text-xs font-bold bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25"
+            className="w-full sm:w-auto h-9 px-5 text-xs font-bold bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25"
           >
             <Check className="size-3.5 mr-1.5" /> Gunakan Template Ini
           </Button>

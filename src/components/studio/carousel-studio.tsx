@@ -267,39 +267,43 @@ export function CarouselStudio({
           </div>
 
           {/* Quick Actions & Theme Switcher */}
-          <div className="flex items-center gap-2 shrink-0 self-end md:self-auto">
+          <div className="flex flex-wrap items-center gap-2 shrink-0 w-full md:w-auto justify-between md:justify-end">
             <ThemeToggle />
 
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={handleCopyCaption}
-              className="flex items-center gap-1.5 text-xs font-bold bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800"
-            >
-              {copiedCaption ? <Check className="size-3.5 text-emerald-500" /> : <Copy className="size-3.5" />}
-              {copiedCaption ? 'Tersalin!' : 'Salin Caption'}
-            </Button>
+            <div className="flex items-center gap-1.5">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleCopyCaption}
+                className="flex items-center gap-1 text-xs font-bold bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800"
+              >
+                {copiedCaption ? <Check className="size-3.5 text-emerald-500" /> : <Copy className="size-3.5" />}
+                <span className="hidden sm:inline">{copiedCaption ? 'Tersalin!' : 'Salin Caption'}</span>
+                <span className="sm:hidden">{copiedCaption ? 'Tersalin' : 'Caption'}</span>
+              </Button>
 
-            <Button
-              variant="secondary"
-              size="sm"
-              disabled={isExportingPng}
-              onClick={handleDownloadCurrentPng}
-              className="flex items-center gap-1.5 text-xs font-bold bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-cyan-700 dark:text-cyan-400 hover:bg-slate-200 dark:hover:bg-slate-800"
-            >
-              <Download className="size-3.5 text-cyan-600 dark:text-cyan-400" />
-              PNG Slide {activeSlideIndex + 1}
-            </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={isExportingPng}
+                onClick={handleDownloadCurrentPng}
+                className="flex items-center gap-1 text-xs font-bold bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-cyan-700 dark:text-cyan-400 hover:bg-slate-200 dark:hover:bg-slate-800"
+              >
+                <Download className="size-3.5 text-cyan-600 dark:text-cyan-400" />
+                <span className="hidden sm:inline">PNG Slide {activeSlideIndex + 1}</span>
+                <span className="sm:hidden">PNG</span>
+              </Button>
 
-            <Button
-              size="sm"
-              disabled={isExportingPdf}
-              onClick={handleExportPdf}
-              className="flex items-center gap-1.5 text-xs font-bold bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-500 text-white shadow-lg shadow-primary/25"
-            >
-              <FileDown className="size-3.5" />
-              {isExportingPdf ? 'Mengekspor PDF...' : 'Ekspor PDF'}
-            </Button>
+              <Button
+                size="sm"
+                disabled={isExportingPdf}
+                onClick={handleExportPdf}
+                className="flex items-center gap-1.5 text-xs font-bold bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-500 text-white shadow-lg shadow-primary/25"
+              >
+                <FileDown className="size-3.5" />
+                <span>{isExportingPdf ? 'Ekspor...' : 'PDF'}</span>
+              </Button>
+            </div>
           </div>
         </div>
       </header>
