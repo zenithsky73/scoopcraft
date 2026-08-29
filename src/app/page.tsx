@@ -6,6 +6,7 @@ import { APP } from '@/config/app';
 import { TRIAL, GUEST } from '@/config/trial';
 import { STYLES } from '@/config/styles';
 import { HeroShowcase } from '@/components/landing/hero-showcase';
+import { NewslyLogo } from '@/components/brand/newsly-logo';
 
 const STEPS = [
   {
@@ -34,11 +35,7 @@ export default function LandingPage() {
       {/* ─── HEADER ─── */}
       <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-slate-200 dark:border-slate-800/80 bg-white/80 dark:bg-slate-950/80 px-4 backdrop-blur-xl lg:px-12 transition-colors duration-200">
         <Link href="/" className="flex items-center gap-2.5">
-          <img
-            src="/logo-icon.png"
-            alt="Newsly AI"
-            className="size-8 object-contain"
-          />
+          <NewslyLogo size={32} />
           <span className="text-lg font-black tracking-tight text-slate-900 dark:text-white">
             Newsly<span className="bg-gradient-to-r from-cyan-500 via-pink-500 to-amber-500 bg-clip-text text-transparent">AI</span>
           </span>
@@ -178,7 +175,7 @@ export default function LandingPage() {
       <footer className="border-t border-slate-200 dark:border-slate-800/80 py-8 px-4 text-center text-xs text-slate-500 bg-white/50 dark:bg-slate-950 transition-colors duration-200">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <img src="/logo-icon.png" alt="Newsly AI" className="size-5 object-contain" />
+            <NewslyLogo size={20} />
             <span className="font-bold text-slate-700 dark:text-slate-400">Newsly AI — From News to Stunning Content</span>
           </div>
           <p>© {new Date().getFullYear()} Newsly AI. All rights reserved.</p>

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Crown, Sparkles } from 'lucide-react';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
 import { UserMenu } from '@/components/layout/user-menu';
+import { NewslyLogo } from '@/components/brand/newsly-logo';
 import type { QuotaState } from '@/server/billing/quota';
 
 export function Topbar({
@@ -20,11 +21,7 @@ export function Topbar({
       {/* Mobile Brand Logo */}
       <div className="flex items-center gap-2.5 lg:hidden">
         <Link href="/dashboard" className="flex items-center gap-2">
-          <img
-            src="/logo-icon.png"
-            alt="Newsly AI"
-            className="size-7 object-contain"
-          />
+          <NewslyLogo size={28} />
           <span className="text-sm font-black tracking-tight text-slate-900 dark:text-white">
             Newsly<span className="bg-gradient-to-r from-cyan-500 via-pink-500 to-amber-500 bg-clip-text text-transparent">AI</span>
           </span>

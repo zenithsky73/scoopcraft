@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { APP } from '@/config/app';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
 import { Sparkles, Layers, Zap, Download, ShieldCheck, ArrowRight } from 'lucide-react';
+import { NewslyLogo } from '@/components/brand/newsly-logo';
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -16,12 +17,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       {/* Top Navbar */}
       <header className="h-16 flex items-center justify-between px-4 sm:px-8 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl shrink-0 z-20">
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="size-9 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-1 flex items-center justify-center shadow-md shadow-indigo-600/15 group-hover:scale-105 transition-transform">
-            <img
-              src="/logo-icon.png"
-              alt="Newsly AI"
-              className="size-7 object-contain"
-            />
+          <div className="size-9 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+            <NewslyLogo size={28} />
           </div>
           <span className="text-base font-black tracking-tight text-slate-900 dark:text-white">
             Newsly<span className="bg-gradient-to-r from-cyan-500 via-pink-500 to-amber-500 bg-clip-text text-transparent">AI</span>
@@ -45,16 +42,12 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <div className="w-full max-w-[460px] space-y-5">
           {/* Glass Card Container */}
           <div className="rounded-[32px] border border-slate-200/90 dark:border-slate-800/90 bg-white/95 dark:bg-slate-900/90 p-6 sm:p-9 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.07)] dark:shadow-[0_25px_70px_-15px_rgba(0,0,0,0.6)] backdrop-blur-2xl transition-all duration-200">
-            {/* Integrated Mascot Header */}
+            {/* Integrated Brandmark Header */}
             <div className="flex flex-col items-center justify-center mb-6 text-center">
               <div className="relative mb-3 group">
                 <div className="absolute -inset-1.5 rounded-full bg-gradient-to-r from-cyan-500 via-indigo-500 to-pink-500 opacity-70 blur-md group-hover:opacity-100 transition duration-300 animate-pulse" />
-                <div className="relative size-16 sm:size-18 rounded-2xl bg-white dark:bg-slate-950 p-2.5 border border-slate-200 dark:border-slate-800 flex items-center justify-center shadow-lg">
-                  <img
-                    src="/logo-icon.png"
-                    alt="Newsly AI Logo"
-                    className="w-full h-full object-contain drop-shadow-sm"
-                  />
+                <div className="relative size-16 sm:size-18 rounded-2xl bg-gradient-to-b from-slate-900 to-[#0c1222] p-2.5 border border-slate-700/80 flex items-center justify-center shadow-lg">
+                  <NewslyLogo size={42} />
                 </div>
               </div>
             </div>

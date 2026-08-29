@@ -6,6 +6,7 @@ import { Sparkles, Crown, Users } from 'lucide-react';
 import { NAV_ITEMS, isActive } from '@/components/layout/nav-items';
 import { QuotaMeter } from '@/components/billing/quota-meter';
 import type { QuotaState } from '@/server/billing/quota';
+import { NewslyLogo } from '@/components/brand/newsly-logo';
 import { cn } from '@/lib/utils';
 
 export function Sidebar({ quota }: { quota: QuotaState }) {
@@ -16,12 +17,8 @@ export function Sidebar({ quota }: { quota: QuotaState }) {
       {/* Brand Header */}
       <div className="flex h-18 items-center justify-between border-b border-slate-200 dark:border-slate-800/80 px-4 py-3">
         <Link href="/dashboard" className="flex items-center gap-2.5 group min-w-0">
-          <div className="relative size-9 rounded-xl overflow-hidden shadow-md shadow-indigo-600/20 shrink-0 group-hover:scale-105 transition-transform bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center">
-            <img
-              src="/logo-icon.png"
-              alt="Newsly AI Icon"
-              className="size-7 object-contain"
-            />
+          <div className="size-9 rounded-xl overflow-hidden shrink-0 group-hover:scale-105 transition-transform flex items-center justify-center">
+            <NewslyLogo size={30} />
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
