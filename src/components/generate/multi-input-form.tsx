@@ -147,14 +147,14 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
     <>
       <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
         {/* ─── 1. MODE TABS (URL vs TEXT vs PROMPT) ─── */}
-        <div className="flex p-1 sm:p-1.5 rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-md">
+        <div className="flex p-1 sm:p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-sm">
           <button
             type="button"
             onClick={() => setMode('url')}
             className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold transition-all ${
               mode === 'url'
-                ? 'bg-primary text-white shadow-lg shadow-primary/25'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
+                : 'text-slate-700 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white'
             }`}
           >
             <Link2 className="size-3.5 sm:size-4" />
@@ -166,8 +166,8 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
             onClick={() => setMode('text')}
             className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold transition-all ${
               mode === 'text'
-                ? 'bg-primary text-white shadow-lg shadow-primary/25'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
+                : 'text-slate-700 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white'
             }`}
           >
             <FileText className="size-3.5 sm:size-4" />
@@ -179,8 +179,8 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
             onClick={() => setMode('prompt')}
             className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold transition-all ${
               mode === 'prompt'
-                ? 'bg-primary text-white shadow-lg shadow-primary/25'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
+                : 'text-slate-700 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white'
             }`}
           >
             <Sparkles className="size-3.5 sm:size-4" />
