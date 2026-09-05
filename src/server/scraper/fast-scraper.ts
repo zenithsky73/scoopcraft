@@ -19,13 +19,17 @@ export async function scrapeArticleFast(targetUrl: string): Promise<FastScrapedA
   const urlObj = new URL(cleanUrl.startsWith('http') ? cleanUrl : `https://${cleanUrl}`);
   const domain = urlObj.hostname.replace(/^www\./, '');
 
-  // ─── A. KHUSUS LINK YOUTUBE (WATCH, SHORTS, YOUTU.BE) ───
+  // ─── A. KHUSUS LINK YOUTUBE (WATCH, SHORTS, LIVE, EMBED, YOUTU.BE) ───
   if (domain.includes('youtube.com') || domain.includes('youtu.be')) {
     let videoId = '';
     if (domain.includes('youtu.be')) {
-      videoId = urlObj.pathname.replace(/^\//, '').split('/')[0];
+      videoId = urlObj.pathname.replace(/^\//, '').split(/[/?#]/)[0];
     } else if (urlObj.pathname.includes('/shorts/')) {
-      videoId = urlObj.pathname.split('/shorts/')[1]?.split('/')[0] || '';
+      videoId = urlObj.pathname.split('/shorts/')[1]?.split(/[/?#]/)[0] || '';
+    } else if (urlObj.pathname.includes('/live/')) {
+      videoId = urlObj.pathname.split('/live/')[1]?.split(/[/?#]/)[0] || '';
+    } else if (urlObj.pathname.includes('/embed/')) {
+      videoId = urlObj.pathname.split('/embed/')[1]?.split(/[/?#]/)[0] || '';
     } else {
       videoId = urlObj.searchParams.get('v') || '';
     }
@@ -33,69 +37,153 @@ export async function scrapeArticleFast(targetUrl: string): Promise<FastScrapedA
     if (videoId) {
       let videoTitle = '';
       let authorName = 'Kreator YouTube';
-      let videoThumbnail = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
       let videoDesc = '';
+      let videoTranscript = '';
+      const hqThumbnail = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+      const maxThumbnail = `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
+      const mqThumbnail = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
 
-      // 1. Ambil Judul & Channel dari YouTube oEmbed API Resmi
-      try {
-        const oembedRes = await fetch(
-          `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`,
-          { signal: AbortSignal.timeout(4000) }
-        );
-        if (oembedRes.ok) {
-          const oembed = await oembedRes.json();
-          videoTitle = (oembed.title || '').trim();
-          authorName = (oembed.author_name || 'Kreator YouTube').trim();
-        }
-      } catch (oembedErr) {
-        console.warn('[FastScraper YouTube oEmbed]:', oembedErr);
-      }
+      // Eksekusi paralel oEmbed resmi & HTML video page dengan timeout cepat (3.5s)
+      await Promise.allSettled([
+        // 1. YouTube oEmbed Resmi (cepat & terjamin tidak diblokir)
+        (async () => {
+          try {
+            const oembedRes = await fetch(
+              `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`,
+              { signal: AbortSignal.timeout(3500) }
+            );
+            if (oembedRes.ok) {
+              const oembed = await oembedRes.json();
+              if (oembed.title) videoTitle = oembed.title.trim();
+              if (oembed.author_name) authorName = oembed.author_name.trim();
+            }
+          } catch (e) {
+            console.warn('[FastScraper YouTube oEmbed]:', e);
+          }
+        })(),
 
-      // 2. Ambil Deskripsi Meta Tag dari Halaman Video
-      try {
-        const pageRes = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
-          headers: {
-            'User-Agent':
-              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept-Language': 'id-ID,id;q=0.9,en;q=0.8',
-          },
-          signal: AbortSignal.timeout(4000),
-        });
-        if (pageRes.ok) {
-          const html = await pageRes.text();
-          const descMatch = html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i)
-            || html.match(/<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i);
-          if (descMatch?.[1]) {
-            videoDesc = descMatch[1].trim();
+        // 2. HTML Video Page (untuk transkrip ucapan & deskripsi lengkap)
+        (async () => {
+          try {
+            const pageRes = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
+              headers: {
+                'User-Agent':
+                  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                'Accept-Language': 'id-ID,id;q=0.9,en;q=0.8',
+              },
+              signal: AbortSignal.timeout(3500),
+            });
+            if (pageRes.ok) {
+              const html = await pageRes.text();
+
+              // Ekstraksi ytInitialPlayerResponse untuk deskripsi komprehensif & caption tracks
+              const playerMatch = html.match(/ytInitialPlayerResponse\s*=\s*({.+?});(?:\s*var|\s*<\/script>)/s)
+                || html.match(/ytInitialPlayerResponse\s*=\s*({.+?});/);
+
+              if (playerMatch?.[1]) {
+                try {
+                  const player = JSON.parse(playerMatch[1]);
+                  const shortDesc = player?.videoDetails?.shortDescription;
+                  if (shortDesc && shortDesc.trim().length > 0) {
+                    videoDesc = shortDesc.trim();
+                  }
+                  if (!authorName && player?.videoDetails?.author) {
+                    authorName = player.videoDetails.author;
+                  }
+                  if (!videoTitle && player?.videoDetails?.title) {
+                    videoTitle = player.videoDetails.title;
+                  }
+
+                  // Ekstraksi Transkrip Otomatis / Manual dari Caption Tracks
+                  const captionTracks = player?.captions?.playerCaptionsTracklistRenderer?.captionTracks;
+                  if (Array.isArray(captionTracks) && captionTracks.length > 0) {
+                    // Prioritaskan bahasa Indonesia ('id') atau Inggris ('en')
+                    const selectedTrack =
+                      captionTracks.find((t: any) => t.languageCode === 'id') ||
+                      captionTracks.find((t: any) => t.languageCode === 'en') ||
+                      captionTracks[0];
+
+                    if (selectedTrack?.baseUrl) {
+                      try {
+                        const transcriptRes = await fetch(selectedTrack.baseUrl, {
+                          signal: AbortSignal.timeout(2500),
+                        });
+                        if (transcriptRes.ok) {
+                          const xml = await transcriptRes.text();
+                          const textSnippets = Array.from(xml.matchAll(/<text[^>]*>([^<]+)<\/text>/g))
+                            .map((m) => m[1])
+                            .filter(Boolean);
+                          if (textSnippets.length > 0) {
+                            videoTranscript = textSnippets
+                              .map((t) =>
+                                t
+                                  .replace(/&amp;/g, '&')
+                                  .replace(/&quot;/g, '"')
+                                  .replace(/&#39;/g, "'")
+                                  .replace(/&lt;/g, '<')
+                                  .replace(/&gt;/g, '>')
+                              )
+                              .join(' ')
+                              .replace(/\s+/g, ' ')
+                              .trim();
+                          }
+                        }
+                      } catch (tErr) {
+                        console.warn('[FastScraper YouTube Transcript Fetch]:', tErr);
+                      }
+                    }
+                  }
+                } catch (pErr) {
+                  console.warn('[FastScraper YouTube Player Parse]:', pErr);
+                }
+              }
+
+              // Fallback Meta Tags
+              if (!videoDesc) {
+                const descMatch =
+                  html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i) ||
+                  html.match(/<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i);
+                if (descMatch?.[1]) videoDesc = descMatch[1].trim();
+              }
+              if (!videoTitle) {
+                const ogTitle = html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i);
+                if (ogTitle?.[1]) videoTitle = ogTitle[1].replace(/ - YouTube$/, '').trim();
+              }
+            }
+          } catch (pageErr) {
+            console.warn('[FastScraper YouTube HTML Fetch]:', pageErr);
           }
-          if (!videoTitle) {
-            const ogTitle = html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i);
-            if (ogTitle?.[1]) videoTitle = ogTitle[1].replace(/ - YouTube$/, '').trim();
-          }
-        }
-      } catch (pageErr) {
-        console.warn('[FastScraper YouTube HTML Fetch]:', pageErr);
-      }
+        })(),
+      ]);
 
       if (!videoTitle) {
         videoTitle = `Ulasan Video YouTube (${videoId})`;
       }
 
-      const content = `Judul Video: "${videoTitle}"
-Saluran/Kreator: ${authorName}
-Deskripsi & Topik Bahasan:
-${videoDesc || videoTitle}
+      // Susun konten yang kaya dan informatif untuk Gemini AI
+      let content = `JUDUL VIDEO YOUTUBE: "${videoTitle}"
+SALURAN / KREATOR: ${authorName}
+SUMBER TAUTAN: https://www.youtube.com/watch?v=${videoId}
+`;
 
-Instruksi Analisis AI:
-Buatkan ringkasan edukatif, poin-poin penting, wawasan kunci, dan kesimpulan mendalam dari video YouTube ini ke dalam format carousel slide berbahasa Indonesia.`;
+      if (videoTranscript) {
+        content += `\nTRANSKRIP ISI UCAPAN KREATOR DALAM VIDEO:\n${videoTranscript.slice(0, 5000)}\n`;
+      }
+
+      if (videoDesc) {
+        content += `\nDESKRIPSI & RINCIAN MATERI VIDEO:\n${videoDesc.slice(0, 2500)}\n`;
+      }
+
+      content += `\nINSTRUKSI KHUSUS ANALISIS YOUTUBE:
+Anda adalah kurator edukasi carousel media sosial. Rangkumlah materi dan topik video ini ke dalam slide carousel yang edukatif, memikat, dan terstruktur. Jabarkan poin-poin utama, data/fakta penting, solusi konkret, dan wawasan berharga dari video ini.`;
 
       return {
         url: urlObj.href,
         title: videoTitle,
         content,
         source: `YouTube (${authorName})`,
-        imageUrl: videoThumbnail,
-        images: [videoThumbnail],
+        imageUrl: hqThumbnail,
+        images: [hqThumbnail, maxThumbnail, mqThumbnail],
         author: authorName,
       };
     }

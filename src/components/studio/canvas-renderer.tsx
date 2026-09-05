@@ -319,16 +319,16 @@ export function CanvasRenderer({
               <img
                 src={slide.imageUrl}
                 alt="Cover Background"
-                className={`w-full h-full object-cover filter ${
-                  isLight ? 'opacity-85 brightness-100 contrast-105' : 'opacity-65 brightness-95 contrast-110'
+                className={`w-full h-full object-cover filter transition-opacity duration-300 ${
+                  isLight ? 'opacity-95 brightness-100 contrast-105' : 'opacity-90 brightness-100 contrast-105'
                 }`}
               />
               <div
                 className="absolute inset-0"
                 style={{
                   background: isLight
-                    ? `linear-gradient(to top, #FFFFFF 25%, rgba(255,255,255,0.92) 55%, rgba(255,255,255,0.4) 85%, transparent 100%)`
-                    : `linear-gradient(to top, ${styleDef.bgColor} 30%, ${styleDef.bgColor}d9 65%, rgba(0,0,0,0.3) 90%, ${styleDef.bgColor}99 100%)`,
+                    ? `linear-gradient(to top, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 25%, rgba(255,255,255,0.1) 45%, transparent 65%)`
+                    : `linear-gradient(to top, ${styleDef.bgColor} 0%, ${styleDef.bgColor}ee 20%, ${styleDef.bgColor}90 38%, rgba(0,0,0,0.2) 55%, transparent 70%)`,
                 }}
               />
             </div>
@@ -356,7 +356,7 @@ export function CanvasRenderer({
           ) : (
             <div
               className={`relative z-10 space-y-3 ${
-                isLight ? 'p-4 rounded-2xl bg-white/95 border border-slate-200 shadow-xl' : ''
+                isLight ? 'p-4 rounded-2xl bg-white/80 backdrop-blur-md border border-white/60 shadow-lg' : ''
               }`}
             >
               {/* Live Ticker for BLOOMBERG */}
@@ -384,7 +384,7 @@ export function CanvasRenderer({
                     : style === 'MINIMAL'
                     ? 'font-sans text-2xl sm:text-3xl uppercase tracking-tighter'
                     : 'font-sans text-2xl sm:text-3xl'
-                }`}
+                } ${!isLight ? 'drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]' : ''}`}
                 style={{
                   color: isLight
                     ? textPrimary
@@ -398,8 +398,10 @@ export function CanvasRenderer({
 
               {slide.lead && (
                 <p
-                  className="text-xs sm:text-sm font-medium line-clamp-3 leading-relaxed"
-                  style={{ color: textSecondary }}
+                  className={`text-xs sm:text-sm font-medium line-clamp-3 leading-relaxed ${
+                    !isLight ? 'drop-shadow-[0_1px_6px_rgba(0,0,0,0.8)]' : ''
+                  }`}
+                  style={{ color: isLight ? textSecondary : '#F1F5F9' }}
                 >
                   {slide.lead}
                 </p>

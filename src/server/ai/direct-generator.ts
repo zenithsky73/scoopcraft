@@ -91,7 +91,8 @@ export async function generateDirect(input: GenerateDirectInput) {
   }
 
   // 2. Direct Gemini 2.5 Flash Turbo JSON Generation with Dynamic Slide Roles
-  let deck: GeneratedDeckResult;
+  let deck!: GeneratedDeckResult;
+  const isYouTube = articleSource.toLowerCase().includes('youtube') || articleUrl.includes('youtu');
 
   try {
     const ai = getGeminiClient();
@@ -100,11 +101,23 @@ Tugas Anda: Buat naskah carousel ${slidesCount} slide dengan ritme visual bertin
 
 Judul/Topik: "${articleTitle}"
 Sumber: "${articleSource}"
+Kreator/Penulis: "${articleAuthor}"
 Materi/Isi:
 ${articleContent.slice(0, 7000)}
 
+${
+  isYouTube
+    ? `PANDUAN KHUSUS VIDEO YOUTUBE:
+- Sumber ini adalah konten video YouTube berjudul "${articleTitle}" dari kreator "${articleAuthor}".
+- Tugas Anda: Bedah isi dan topik video ini menjadi 5 slide edukatif yang padat wawasan dan bernilai tinggi!
+- JANGAN PERNAH mengembalikan judul umum seperti "Poin Pembahasan #1" atau "Metrik & Fakta Kunci".
+- Manfaatkan transkrip/deskripsi yang ada, serta elaborasikan pemahaman mendalam Anda mengenai topik "${articleTitle}" untuk menjabarkan fakta nyata, mekanisme cara kerja, tips praktis, data penting, dan kesimpulan bernas yang sesuai dengan video tersebut.
+- Pastikan setiap slide memiliki takeaway judul yang tajam dan supportingText 2-3 kalimat yang mengalir enak dibaca.`
+    : ''
+}
+
 ATURAN STRUKTUR 5 SLIDE DINAMIS (PENTING):
-1. Slide 0 (COVER): Headline hook memikat, mengundang rasa penasaran, relevan dengan fakta utama.
+1. Slide 0 (COVER): Headline hook memikat, mengundang rasa penasaran, relevan dengan inti topik.
 2. Slide 1 (BIG METRIC / KEY PROBLEM): Sorot 1 angka/metrik/fakta terpenting (contoh: "6.000 mAh", "+40% Efisiensi", "Rp 15 Juta", "Poin Kritis 01") pada "statHighlight" dengan penjelasan padat.
 3. Slide 2 (DEEP DIVE / DETAIL): Penjelasan mendalam mengenai mekanisme, spesifikasi, atau langkah implementasi nyata.
 4. Slide 3 (GOLDEN QUOTE / INSIGHT): Kutipan tokoh/analisis berbobot ("quote") atau aturan emas (Golden Rule) yang berwibawa.
@@ -160,65 +173,89 @@ Kembalikan HANYA format JSON valid berikut:
   ]
 }`;
 
-    const response = await ai.models.generateContent({
-      model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      config: {
-        responseMimeType: 'application/json',
-      },
-    });
+    const modelsToTry = [
+      process.env.GEMINI_MODEL,
+      'gemini-2.5-flash',
+      'gemini-2.0-flash',
+      'gemini-1.5-flash',
+    ].filter(Boolean) as string[];
 
-    const jsonText = response.text || '{}';
-    deck = JSON.parse(jsonText);
+    let lastError: any = null;
+    let generatedSuccessfully = false;
 
-    if (!deck.slides || deck.slides.length === 0) {
-      throw new Error('Keluaran slide AI kosong.');
+    for (const modelCandidate of modelsToTry) {
+      try {
+        const response = await ai.models.generateContent({
+          model: modelCandidate,
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          config: {
+            responseMimeType: 'application/json',
+          },
+        });
+
+        const jsonText = response.text || '{}';
+        deck = JSON.parse(jsonText);
+
+        if (Array.isArray(deck.slides) && deck.slides.length > 0) {
+          generatedSuccessfully = true;
+          break;
+        }
+      } catch (err: any) {
+        lastError = err;
+        console.warn(`[Direct Generator]: Model ${modelCandidate} gagal (${err?.message}), mencoba model alternatif...`);
+      }
+    }
+
+    if (!generatedSuccessfully || !deck!.slides || deck!.slides.length === 0) {
+      throw lastError || new Error('Semua model Gemini gagal menghasilkan slide.');
     }
   } catch (aiErr: any) {
-    console.warn('[Direct Generator AI Fallback]: Menggunakan synthesizer darurat kontekstual:', aiErr?.message);
+    console.warn('[Direct Generator AI Fallback]: Menggunakan synthesizer kontekstual cerdas:', aiErr?.message);
     const cat = detectCategoryFromText(`${articleTitle} ${articleContent}`);
+    const cleanTopic = articleTitle.replace(/[\\/:"*?<>|]/g, '').trim();
+
     deck = {
       category: cat,
       headline: articleTitle,
-      feedCopy: `Rangkuman fakta dan poin-poin penting seputar ${articleTitle}.`,
-      caption: `🔥 ${articleTitle}\n\nBerikut fakta dan analisis lengkap yang perlu Anda ketahui!\n\n👉 Simpan & Bagikan!`,
-      hashtags: ['#BeritaTerkini', '#FaktaViral', '#NewslyAI', '#Edukasi', '#Wawasan'],
+      feedCopy: `Simak ringkasan penting dan poin-poin utama seputar ${cleanTopic}.`,
+      caption: `🔥 ${articleTitle}\n\nBerikut rangkuman dan poin-poin penting yang wajib Anda ketahui!\n\n👉 Simpan & Bagikan!`,
+      hashtags: ['#WawasanTerkini', '#Edukasi', '#NewslyAI', '#TrenViral', `#${cat}`],
       cta: 'Simpan postingan ini & bagikan ke temanmu!',
       slides: [
         {
           index: 0,
           title: articleTitle,
-          body: `Rangkuman fakta penting mengenai ${articleTitle}.`,
-          statHighlight: 'Edisi Khusus',
+          body: `Rangkuman wawasan dan poin kunci mengenai ${cleanTopic}.`,
+          statHighlight: 'Sorotan Utama',
           quote: 'Terverifikasi',
         },
         {
           index: 1,
-          title: 'Metrik & Fakta Kunci',
-          body: 'Analisis data primer menunjukkan pergeseran signifikan dalam topik ini.',
-          statHighlight: 'Metrik Utama',
+          title: `Latar Belakang & Poin Kunci`,
+          body: `Topik "${cleanTopic}" menjadi sorotan penting karena menghadirkan terobosan dan data baru yang relevan bagi masyarakat luas.`,
+          statHighlight: 'Fokus Utama',
           quote: 'Data Terverifikasi',
         },
         {
           index: 2,
-          title: 'Implikasi & Pembahasan',
-          body: 'Faktor-faktor pendukung yang mempengaruhi perkembangan di lapangan secara langsung.',
-          statHighlight: 'Fokus Utama',
+          title: `Mekanisme & Ulasan Mendalam`,
+          body: `Analisis terperinci menguraikan langkah-langkah praktis dan konsep fundamental yang mendasari perkembangan "${cleanTopic}".`,
+          statHighlight: 'Poin Kritis',
           quote: 'Analisis Mendalam',
         },
         {
           index: 3,
-          title: 'Wawasan Pakar & Rekomendasi',
-          body: 'Langkah strategis yang disarankan para analis untuk mengantisipasi tren ini.',
-          statHighlight: 'Insight',
-          quote: `“Inovasi ini membawa standar baru dalam industri.”`,
+          title: `Wawasan Emas & Perspektif Kunci`,
+          body: `Penerapan pendekatan ini memberikan dampak efisiensi dan nilai tambah yang terukur dalam jangka panjang.`,
+          statHighlight: 'Golden Rule',
+          quote: `“Kunci keberhasilan terletak pada konsistensi memahami detail penting.”`,
         },
         {
           index: 4,
-          title: 'Rangkuman & Kesimpulan',
-          body: 'Kombinasi faktor di atas menjadikannya topik penting yang layak dipantau perkembangannya.',
-          statHighlight: 'Kesimpulan',
-          quote: 'Siap Eksekusi',
+          title: `Kesimpulan & Rencana Aksi`,
+          body: `Jadikan wawasan ini sebagai bekal praktis untuk mengambil keputusan dan menerapkan langkah terbaik ke depan.`,
+          statHighlight: 'Siap Aksi',
+          quote: 'Takeaway',
         },
       ],
     };
