@@ -224,43 +224,72 @@ Kembalikan HANYA format JSON valid berikut:
     };
   }
 
-  // 3. Enrich Each Slide with Multi-Photo or Clean Contextual HD Images
+  // 3. Enrich Each Slide with Multi-Photo & Dynamic Varied Layout Architectures (Slide 2+)
   const detectedCategory = deck.category || detectCategoryFromText(articleTitle);
+
+  // 6 Pola Kombinasi Layout Beragam (Diacak Setiap Generate Agar Tidak Monoton)
+  const LAYOUT_PATTERNS = [
+    ['STAT_HERO', 'IMAGE_TOP_TEXT_BOTTOM', 'QUOTE_CARD', 'TEXT_CENTER', 'SPLIT_TWO_COL'],
+    ['TEXT_CENTER', 'STAT_HERO', 'TEXT_BOTTOM', 'SPLIT_TWO_COL', 'QUOTE_CARD'],
+    ['IMAGE_TOP_TEXT_BOTTOM', 'SPLIT_TWO_COL', 'TEXT_CENTER', 'STAT_HERO', 'QUOTE_CARD'],
+    ['TEXT_BOTTOM', 'QUOTE_CARD', 'STAT_HERO', 'IMAGE_TOP_TEXT_BOTTOM', 'TEXT_CENTER'],
+    ['SPLIT_TWO_COL', 'IMAGE_TOP_TEXT_BOTTOM', 'QUOTE_CARD', 'STAT_HERO', 'TEXT_BOTTOM'],
+    ['QUOTE_CARD', 'TEXT_CENTER', 'IMAGE_TOP_TEXT_BOTTOM', 'STAT_HERO', 'SPLIT_TWO_COL'],
+  ];
+  const randomPatternIndex = Math.floor(Math.random() * LAYOUT_PATTERNS.length);
+  const activePattern = LAYOUT_PATTERNS[randomPatternIndex];
 
   const enrichedSlides = (deck.slides || []).map((s: any, idx: number) => {
     const isCover = idx === 0;
     const isOutro = idx === deck.slides.length - 1;
-    const isSlide3 = idx === 2; // Slide 3 gets secondary photo if available
+
+    // Varian layout dinamis per slide konten
+    const layoutVariant = isCover
+      ? 'COVER'
+      : isOutro
+      ? 'OUTRO'
+      : activePattern[(idx - 1) % activePattern.length];
 
     let photoUrl: string | null = null;
 
     if (isCover) {
       photoUrl = articleImages[0] || articleImageUrl || getContextualPhotoForSlide(detectedCategory, 0, articleTitle);
-    } else if (isSlide3 && articleImages.length > 1) {
-      photoUrl = articleImages[1];
+    } else if (layoutVariant === 'IMAGE_TOP_TEXT_BOTTOM' || layoutVariant === 'TEXT_BOTTOM') {
+      photoUrl =
+        articleImages[idx] ||
+        (articleImages.length > 1 ? articleImages[1] : null) ||
+        getContextualPhotoForSlide(detectedCategory, idx, s.title || articleTitle);
     } else if (articleImages.length > idx) {
       photoUrl = articleImages[idx];
     }
 
+    // Tag badge kontekstual sesuai varian tata letak
+    const slideTag = isCover
+      ? detectedCategory || 'HEADLINE'
+      : isOutro
+      ? 'KESIMPULAN'
+      : layoutVariant === 'STAT_HERO'
+      ? 'METRIK & FAKTA'
+      : layoutVariant === 'QUOTE_CARD'
+      ? 'INSIGHT / KUTIPAN'
+      : layoutVariant === 'TEXT_CENTER'
+      ? 'POIN FOKUS'
+      : layoutVariant === 'SPLIT_TWO_COL'
+      ? 'ANALISIS POIN'
+      : 'PEMBAHASAN';
+
     return {
       index: idx,
       type: isCover ? 'COVER' : isOutro ? 'OUTRO' : 'POINT',
+      layoutVariant,
       pointNumber: isCover || isOutro ? undefined : idx,
-      tag: isCover
-        ? detectedCategory || 'HEADLINE'
-        : idx === 1
-        ? 'METRIK UTAMA'
-        : idx === 2
-        ? 'PEMBAHASAN'
-        : idx === 3
-        ? 'INSIGHT PAKAR'
-        : 'KESIMPULAN',
+      tag: slideTag,
       headline: isCover ? deck.headline || s.title : undefined,
       lead: isCover ? deck.feedCopy || s.body : undefined,
       takeaway: s.title || `Poin Pembahasan #${idx + 1}`,
       supportingText: s.body,
-      statHighlight: s.statHighlight || (idx === 1 ? 'Data Kunci' : undefined),
-      sourceQuote: s.quote || (idx === 3 ? `"${articleTitle}"` : undefined),
+      statHighlight: s.statHighlight || (layoutVariant === 'STAT_HERO' || idx === 1 ? 'Data Kunci' : undefined),
+      sourceQuote: s.quote || (layoutVariant === 'QUOTE_CARD' || idx === 3 ? `"${articleTitle}"` : undefined),
       ctaText: isOutro ? deck.cta : undefined,
       secondaryCta: isOutro ? 'Ikuti @newsly.ai untuk wawasan harian.' : undefined,
       imageUrl: photoUrl,

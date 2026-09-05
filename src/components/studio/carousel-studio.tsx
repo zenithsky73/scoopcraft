@@ -26,9 +26,15 @@ import {
   Upload,
   Image as ImageIcon,
   Eye,
+  Search,
+  Wand2,
+  Type,
+  LayoutGrid,
+  ArrowRight,
 } from 'lucide-react';
 import { STYLES, isProStyle, type StyleDef } from '@/config/styles';
-import { CanvasRenderer, type SlideData } from '@/components/studio/canvas-renderer';
+import { CanvasRenderer, type SlideData, type SlideLayoutVariant } from '@/components/studio/canvas-renderer';
+import { StockPhotoModal } from '@/components/studio/stock-photo-modal';
 import { Button } from '@/components/ui/button';
 import { Input, Label } from '@/components/ui/input';
 import { downloadSlideAsPng, exportSlidesToPdf, exportSlidesToZip } from '@/lib/export-client';
@@ -94,6 +100,11 @@ export function CarouselStudio({
   const [viralHooks, setViralHooks] = React.useState<string[]>([]);
   const [activeTab, setActiveTab] = React.useState<'styles' | 'editor' | 'caption'>('styles');
   const [styleCategory, setStyleCategory] = React.useState<'ALL' | 'FREE' | 'PRO' | 'NEWS' | 'BIZ' | 'MODERN'>('ALL');
+  const [customAccentColor, setCustomAccentColor] = React.useState<string | undefined>(undefined);
+  const [fontFamily, setFontFamily] = React.useState<string>('font-sans');
+  const [isStockModalOpen, setIsStockModalOpen] = React.useState(false);
+  const [isPolishing, setIsPolishing] = React.useState(false);
+  const [polishField, setPolishField] = React.useState<'headline' | 'takeaway' | 'lead' | 'supportingText' | null>(null);
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -120,12 +131,14 @@ export function CarouselStudio({
       return initialContent.slides.map((s, idx) => ({
         index: idx,
         type: s.type || (idx === 0 ? 'COVER' : idx === initialContent.slides.length - 1 ? 'OUTRO' : 'POINT'),
+        layoutVariant: s.layoutVariant,
         tag: s.tag,
         headline: s.headline || (idx === 0 ? initialContent.headline : s.title),
         lead: s.lead || s.body,
         pointNumber: s.pointNumber || (idx === 0 ? undefined : idx),
         takeaway: s.takeaway || s.title || s.headline,
         supportingText: s.supportingText || s.body,
+        statHighlight: s.statHighlight,
         sourceQuote: s.sourceQuote,
         ctaText: s.ctaText || initialContent.cta,
         secondaryCta: s.secondaryCta,
@@ -223,6 +236,52 @@ export function CarouselStudio({
     }));
     setSlides(reindexed);
     setActiveSlideIndex(Math.max(0, Math.min(activeSlideIndex, reindexed.length - 1)));
+  };
+
+  const handleMoveSlide = (direction: 'left' | 'right') => {
+    const fromIndex = activeSlideIndex;
+    const toIndex = direction === 'left' ? fromIndex - 1 : fromIndex + 1;
+    if (toIndex < 0 || toIndex >= slides.length) return;
+
+    setSlides((prev) => {
+      const next = [...prev];
+      const temp = next[fromIndex];
+      next[fromIndex] = next[toIndex];
+      next[toIndex] = temp;
+      return next.map((s, i) => ({
+        ...s,
+        index: i,
+        type: (i === 0 ? 'COVER' : i === next.length - 1 ? 'OUTRO' : 'POINT') as any,
+      }));
+    });
+    setActiveSlideIndex(toIndex);
+  };
+
+  const handleAiPolish = async (
+    field: 'headline' | 'takeaway' | 'lead' | 'supportingText',
+    mode: 'SHORTEN' | 'HOOK' | 'FORMAL' | 'CASUAL'
+  ) => {
+    const currentText = currentSlide[field];
+    if (!currentText) return;
+
+    setIsPolishing(true);
+    setPolishField(field);
+    try {
+      const res = await fetch('/api/ai-polish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: currentText, mode }),
+      });
+      const data = await res.json();
+      if (data.success && data.polishedText) {
+        updateActiveSlide({ [field]: data.polishedText });
+      }
+    } catch (err) {
+      console.error('AI polish error:', err);
+    } finally {
+      setIsPolishing(false);
+      setPolishField(null);
+    }
   };
 
   const handleCopyCaption = async () => {
@@ -463,6 +522,8 @@ export function CarouselStudio({
                 hideNewslyWatermark={hideNewslyWatermark}
                 totalSlides={slides.length}
                 showPhoneFrame={showPhoneFrame}
+                customAccent={customAccentColor}
+                fontFamily={fontFamily}
               />
             </div>
           </div>
@@ -688,6 +749,94 @@ export function CarouselStudio({
                 })}
               </div>
 
+              {/* Custom Color Palette & Typography Switcher */}
+              <div className="p-4 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3.5">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                      <Palette className="size-3.5 text-primary" /> Warna Aksen Brand:
+                    </p>
+                    {customAccentColor && (
+                      <button
+                        type="button"
+                        onClick={() => setCustomAccentColor(undefined)}
+                        className="text-[10px] font-bold text-red-500 hover:underline"
+                      >
+                        Reset Default
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {[
+                      { color: '#EF4444', label: 'Merah' },
+                      { color: '#10B981', label: 'Emerald' },
+                      { color: '#F59E0B', label: 'Gold' },
+                      { color: '#06B6D4', label: 'Cyan' },
+                      { color: '#8B5CF6', label: 'Ungu' },
+                      { color: '#F97316', label: 'Sunset' },
+                      { color: '#6366F1', label: 'Indigo' },
+                      { color: '#EC4899', label: 'Pink' },
+                    ].map((p) => (
+                      <button
+                        key={p.color}
+                        type="button"
+                        onClick={() => setCustomAccentColor(p.color)}
+                        className={`size-7 rounded-xl border-2 transition-transform hover:scale-110 shadow-sm ${
+                          (customAccentColor || (STYLES.find((s) => s.id === currentStyle)?.accentColor)) === p.color
+                            ? 'border-white ring-2 ring-primary scale-110'
+                            : 'border-transparent'
+                        }`}
+                        style={{ backgroundColor: p.color }}
+                        title={p.label}
+                      />
+                    ))}
+
+                    {/* Native Hex Color Input */}
+                    <div className="flex items-center gap-1.5 pl-1">
+                      <input
+                        type="color"
+                        value={customAccentColor || (STYLES.find((s) => s.id === currentStyle)?.accentColor) || '#EF4444'}
+                        onChange={(e) => setCustomAccentColor(e.target.value)}
+                        className="size-7 rounded-xl border border-slate-300 dark:border-slate-700 cursor-pointer bg-transparent p-0.5"
+                        title="Pilih warna heksadesimal bebas"
+                      />
+                      <span className="text-[10px] font-mono font-bold text-slate-500 dark:text-slate-400">
+                        {customAccentColor || (STYLES.find((s) => s.id === currentStyle)?.accentColor)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Typography Switcher */}
+                <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
+                  <p className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <Type className="size-3.5 text-primary" /> Gaya Tipografi Font:
+                  </p>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                    {[
+                      { id: 'font-sans', label: 'Modern Sans' },
+                      { id: 'font-serif', label: 'Serif Koran' },
+                      { id: 'font-bold-impact', label: 'Bold Impact' },
+                      { id: 'font-mono', label: 'Tech Mono' },
+                    ].map((f) => (
+                      <button
+                        key={f.id}
+                        type="button"
+                        onClick={() => setFontFamily(f.id)}
+                        className={`py-1.5 px-2 rounded-xl text-xs font-bold border transition-all text-center ${
+                          fontFamily === f.id
+                            ? 'bg-primary text-white border-primary shadow-sm'
+                            : 'bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-400'
+                        }`}
+                      >
+                        {f.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
               {/* Watermark & Branding Customizer */}
               <div className="p-4 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
                 <p className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
@@ -725,9 +874,36 @@ export function CarouselStudio({
           {activeTab === 'editor' && (
             <div className="space-y-4 bg-white dark:bg-slate-900/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
               <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-                <span className="text-xs font-bold text-primary uppercase">
-                  Mengedit Slide #{activeSlideIndex + 1} ({currentSlide.type})
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-primary uppercase">
+                    Slide #{activeSlideIndex + 1} ({currentSlide.type})
+                  </span>
+                  {/* Reorder Slide Buttons */}
+                  <div className="flex items-center gap-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      disabled={activeSlideIndex === 0}
+                      onClick={() => handleMoveSlide('left')}
+                      className="h-6 px-1.5 text-[10px] font-bold text-slate-500 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+                      title="Tukar urutan ke kiri"
+                    >
+                      <ChevronLeft className="size-3 mr-0.5" /> Geser
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      disabled={activeSlideIndex === slides.length - 1}
+                      onClick={() => handleMoveSlide('right')}
+                      className="h-6 px-1.5 text-[10px] font-bold text-slate-500 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+                      title="Tukar urutan ke kanan"
+                    >
+                      Geser <ChevronRight className="size-3 ml-0.5" />
+                    </Button>
+                  </div>
+                </div>
                 {slides.length > 2 && (
                   <Button
                     type="button"
@@ -741,24 +917,81 @@ export function CarouselStudio({
                 )}
               </div>
 
-              {/* Photo Replacement Button */}
+              {/* Photo Replacement: Unsplash Search & Manual Upload */}
               <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2 min-w-0">
                   <ImageIcon className="size-4 text-cyan-600 dark:text-cyan-400 shrink-0" />
                   <div className="min-w-0">
                     <p className="text-xs font-bold text-slate-900 dark:text-white truncate">Foto Latar Slide #{activeSlideIndex + 1}</p>
-                    <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">Unggah gambar dari perangkat Anda</p>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">Cari Unsplash atau unggah manual</p>
                   </div>
                 </div>
-                <Button
-                  size="sm"
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="h-8 px-3 text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white shrink-0 shadow-sm"
-                >
-                  <Upload className="size-3.5 mr-1" /> Unggah Foto
-                </Button>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <Button
+                    size="sm"
+                    type="button"
+                    onClick={() => setIsStockModalOpen(true)}
+                    className="h-8 px-2.5 text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm flex items-center gap-1 rounded-xl"
+                  >
+                    <Search className="size-3" /> Cari Foto
+                  </Button>
+                  <Button
+                    size="sm"
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="h-8 px-2.5 text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl shadow-sm"
+                  >
+                    <Upload className="size-3 mr-1" /> Unggah
+                  </Button>
+                </div>
               </div>
+
+              {/* 1-KLIK GANTI TATA LETAK SLIDE INI (SLIDE 2 KE ATAS) */}
+              {currentSlide.type === 'POINT' && (
+                <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                      <LayoutGrid className="size-3.5 text-primary" /> Tata Letak Slide #{activeSlideIndex + 1}:
+                    </Label>
+                    <span className="text-[10px] font-mono text-primary font-bold">1-Klik Ganti Bentuk</span>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {[
+                      { id: 'STAT_HERO', label: '⚡ Metrik Data' },
+                      { id: 'IMAGE_TOP_TEXT_BOTTOM', label: '📸 Foto di Atas' },
+                      { id: 'TEXT_CENTER', label: '🎯 Teks Tengah' },
+                      { id: 'TEXT_BOTTOM', label: '📄 Teks Bawah' },
+                      { id: 'QUOTE_CARD', label: '💬 Kutipan' },
+                      { id: 'SPLIT_TWO_COL', label: '📊 2 Kolom' },
+                    ].map((variant) => {
+                      const isActive =
+                        (currentSlide.layoutVariant ||
+                          (activeSlideIndex === 1
+                            ? 'STAT_HERO'
+                            : activeSlideIndex === 2
+                            ? 'IMAGE_TOP_TEXT_BOTTOM'
+                            : activeSlideIndex === 3
+                            ? 'QUOTE_CARD'
+                            : 'TEXT_CENTER')) === variant.id;
+                      return (
+                        <button
+                          key={variant.id}
+                          type="button"
+                          onClick={() => updateActiveSlide({ layoutVariant: variant.id as any })}
+                          className={`py-1.5 px-2 rounded-xl text-[10px] sm:text-[11px] font-bold border transition-all truncate ${
+                            isActive
+                              ? 'bg-primary text-white border-primary shadow-sm ring-1 ring-primary/50'
+                              : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-400'
+                          }`}
+                        >
+                          {variant.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               {/* Tag / Category Badge */}
               <div>
@@ -781,21 +1014,27 @@ export function CarouselStudio({
                       <Label className="text-xs text-slate-500 dark:text-slate-400 font-semibold block">
                         Headline Cover
                       </Label>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const base = currentSlide.headline || article.title;
-                          const clean = base.replace(/^[^a-zA-Z0-9]+/, '');
-                          setViralHooks([
-                            `🔥 Terungkap: ${clean.slice(0, 50)} yang Wajib Kamu Tahu!`,
-                            `⚡ 4 Fakta Kunci: Mengapa ${clean.slice(0, 45)} Jadi Sorotan?`,
-                            `🚨 Jangan Sampai Ketinggalan: Analisis Lengkap ${clean.slice(0, 40)}!`,
-                          ]);
-                        }}
-                        className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
-                      >
-                        <Sparkles className="size-3" /> 🔄 3 Variasi Judul Viral
-                      </button>
+                      {/* AI Polish Buttons for Headline */}
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          disabled={isPolishing}
+                          onClick={() => handleAiPolish('headline', 'SHORTEN')}
+                          className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 flex items-center gap-1 transition-all disabled:opacity-50"
+                          title="Persingkat kalimat agar lebih padat"
+                        >
+                          <Wand2 className="size-2.5" /> ⚡ Singkat
+                        </button>
+                        <button
+                          type="button"
+                          disabled={isPolishing}
+                          onClick={() => handleAiPolish('headline', 'HOOK')}
+                          className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 flex items-center gap-1 transition-all disabled:opacity-50"
+                          title="Ubah jadi hook viral penasaran"
+                        >
+                          🔥 Hook
+                        </button>
+                      </div>
                     </div>
                     <Input
                       value={currentSlide.headline || ''}
@@ -827,9 +1066,19 @@ export function CarouselStudio({
                     )}
                   </div>
                   <div>
-                    <Label className="text-xs text-slate-500 dark:text-slate-400 font-semibold mb-1 block">
-                      Sub-headline / Lead Text
-                    </Label>
+                    <div className="flex items-center justify-between mb-1">
+                      <Label className="text-xs text-slate-500 dark:text-slate-400 font-semibold block">
+                        Sub-headline / Lead Text
+                      </Label>
+                      <button
+                        type="button"
+                        disabled={isPolishing}
+                        onClick={() => handleAiPolish('lead', 'SHORTEN')}
+                        className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 flex items-center gap-1 transition-all disabled:opacity-50"
+                      >
+                        <Wand2 className="size-2.5" /> ⚡ Singkat
+                      </button>
+                    </div>
                     <textarea
                       value={currentSlide.lead || ''}
                       onChange={(e) => updateActiveSlide({ lead: e.target.value })}
@@ -844,20 +1093,50 @@ export function CarouselStudio({
               {currentSlide.type === 'POINT' && (
                 <>
                   <div>
-                    <Label className="text-xs text-slate-500 dark:text-slate-400 font-semibold mb-1 block">
-                      Header Poin Manfaat (Takeaway)
-                    </Label>
+                    <div className="flex items-center justify-between mb-1">
+                      <Label className="text-xs text-slate-500 dark:text-slate-400 font-semibold block">
+                        Poin Pembahasan / Takeaway
+                      </Label>
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          disabled={isPolishing}
+                          onClick={() => handleAiPolish('takeaway', 'SHORTEN')}
+                          className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 flex items-center gap-1 transition-all disabled:opacity-50"
+                        >
+                          <Wand2 className="size-2.5" /> ⚡ Singkat
+                        </button>
+                        <button
+                          type="button"
+                          disabled={isPolishing}
+                          onClick={() => handleAiPolish('takeaway', 'HOOK')}
+                          className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 flex items-center gap-1 transition-all disabled:opacity-50"
+                        >
+                          🔥 Hook
+                        </button>
+                      </div>
+                    </div>
                     <Input
                       value={currentSlide.takeaway || ''}
                       onChange={(e) => updateActiveSlide({ takeaway: e.target.value })}
-                      placeholder="Judul poin manfaat spesifik..."
+                      placeholder="Judul poin pembahasan..."
                       className="text-sm font-bold bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
                     />
                   </div>
                   <div>
-                    <Label className="text-xs text-slate-500 dark:text-slate-400 font-semibold mb-1 block">
-                      Penjelasan Mendalam
-                    </Label>
+                    <div className="flex items-center justify-between mb-1">
+                      <Label className="text-xs text-slate-500 dark:text-slate-400 font-semibold block">
+                        Penjelasan Mendalam
+                      </Label>
+                      <button
+                        type="button"
+                        disabled={isPolishing}
+                        onClick={() => handleAiPolish('supportingText', 'SHORTEN')}
+                        className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 flex items-center gap-1 transition-all disabled:opacity-50"
+                      >
+                        <Wand2 className="size-2.5" /> ⚡ Singkat
+                      </button>
+                    </div>
                     <textarea
                       value={currentSlide.supportingText || ''}
                       onChange={(e) => updateActiveSlide({ supportingText: e.target.value })}
@@ -971,6 +1250,17 @@ export function CarouselStudio({
         }}
       />
 
+      {/* ─── STOCK PHOTO SEARCH MODAL (UNSPLASH) ─── */}
+      <StockPhotoModal
+        isOpen={isStockModalOpen}
+        onClose={() => setIsStockModalOpen(false)}
+        slideIndex={activeSlideIndex}
+        initialQuery={article.title || 'bisnis'}
+        onSelectPhoto={(photoUrl) => {
+          updateActiveSlide({ imageUrl: photoUrl });
+        }}
+      />
+
       {/* ─── HIDDEN OFFSCREEN RENDER CONTAINER FOR 100% RELIABLE EXPORTS ─── */}
       <div
         aria-hidden="true"
@@ -996,6 +1286,8 @@ export function CarouselStudio({
               hideNewslyWatermark={hideNewslyWatermark}
               totalSlides={slides.length}
               showPhoneFrame={false}
+              customAccent={customAccentColor}
+              fontFamily={fontFamily}
             />
           </div>
         ))}

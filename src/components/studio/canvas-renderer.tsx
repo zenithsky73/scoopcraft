@@ -39,9 +39,20 @@ import {
   Check,
 } from 'lucide-react';
 
+export type SlideLayoutVariant =
+  | 'COVER'
+  | 'OUTRO'
+  | 'STAT_HERO'
+  | 'IMAGE_TOP_TEXT_BOTTOM'
+  | 'TEXT_CENTER'
+  | 'TEXT_BOTTOM'
+  | 'QUOTE_CARD'
+  | 'SPLIT_TWO_COL';
+
 export type SlideData = {
   index: number;
   type: 'COVER' | 'POINT' | 'OUTRO';
+  layoutVariant?: SlideLayoutVariant;
   tag?: string;
   headline?: string;
   lead?: string;
@@ -69,6 +80,8 @@ export type CanvasRendererProps = {
   scale?: number;
   showPhoneFrame?: boolean;
   className?: string;
+  customAccent?: string;
+  fontFamily?: string;
 };
 
 export function CanvasRenderer({
@@ -83,9 +96,11 @@ export function CanvasRenderer({
   scale = 1,
   showPhoneFrame = false,
   className = '',
+  customAccent,
+  fontFamily,
 }: CanvasRendererProps) {
   const styleDef = STYLES.find((s) => s.id === style) || STYLES[0];
-  const accent = styleDef.accentColor;
+  const accent = customAccent || styleDef.accentColor;
   const isLight = styleDef.isLight ?? false;
 
   const aspectClass =
@@ -103,6 +118,29 @@ export function CanvasRenderer({
   const isSlide3_Detail = !isCover && !isOutro && slide.index === 2;
   const isSlide4_Quote = !isCover && !isOutro && (slide.index === 3 || slide.index >= 3);
 
+  // Menentukan varian tata letak dinamis untuk slide konten (slide 2 ke atas)
+  const defaultVariant: SlideLayoutVariant =
+    slide.index % 5 === 1
+      ? 'STAT_HERO'
+      : slide.index % 5 === 2
+      ? 'IMAGE_TOP_TEXT_BOTTOM'
+      : slide.index % 5 === 3
+      ? 'QUOTE_CARD'
+      : slide.index % 5 === 4
+      ? 'SPLIT_TWO_COL'
+      : 'TEXT_CENTER';
+
+  const activeVariant: SlideLayoutVariant = slide.layoutVariant || defaultVariant;
+
+  const fontClass =
+    fontFamily === 'font-serif'
+      ? 'font-serif'
+      : fontFamily === 'font-mono'
+      ? 'font-mono'
+      : fontFamily === 'font-bold-impact'
+      ? 'font-sans tracking-tight'
+      : 'font-sans';
+
   // Bersihkan penomoran kaku 1,2,3 dari takeaway
   const cleanTakeaway = (slide.takeaway || '')
     .replace(/^(?:\d+[\.\)\-:]\s*|Poin\s*\d+[\.\)\-:]\s*|Fakta\s*\d+[\.\)\-:]\s*|Langkah\s*\d+[\.\)\-:]\s*)/i, '')
@@ -117,7 +155,7 @@ export function CanvasRenderer({
     <div
       id={`slide-canvas-${slide.index}`}
       data-slide-index={slide.index}
-      className={`relative w-full overflow-hidden rounded-2xl shadow-2xl flex flex-col justify-between select-none transition-all duration-300 ${aspectClass} ${className}`}
+      className={`relative w-full overflow-hidden rounded-2xl shadow-2xl flex flex-col justify-between select-none transition-all duration-300 ${aspectClass} ${fontClass} ${className}`}
       style={{
         backgroundColor: styleDef.bgColor,
         color: textPrimary,
@@ -380,172 +418,278 @@ export function CanvasRenderer({
         </div>
       )}
 
-      {/* ─── B. SLIDE 2: THE BIG STAT / CORE METRIC CARD ─── */}
-      {isSlide2_Metric && (
-        <div className="relative z-10 flex-1 flex flex-col justify-center p-5 sm:p-7 space-y-4 overflow-hidden">
-          {/* Big Stat Pill */}
-          <div
-            className={`p-5 rounded-3xl border text-center space-y-2 shadow-xl ${
-              isLight
-                ? 'bg-gradient-to-br from-white to-slate-50 border-slate-200 shadow-md'
-                : 'bg-gradient-to-br from-slate-900/90 to-slate-950/90 border-white/15'
-            }`}
-          >
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider block" style={{ color: accent }}>
-              ⚡ METRIK & FAKTA UTAMA
-            </span>
-
-            <div
-              className="text-3xl sm:text-4xl font-black tracking-tight leading-none"
-              style={{
-                color: style === 'BOLD' ? '#FACC15' : accent,
-              }}
-            >
-              {slide.statHighlight || 'Poin Krusial 01'}
-            </div>
-
-            <div className="h-0.5 w-16 mx-auto rounded-full" style={{ backgroundColor: accent }} />
-          </div>
-
-          {/* Explanation Box */}
-          <div
-            className={`p-4 rounded-2xl space-y-2 ${
-              isLight ? 'bg-white border border-slate-200 shadow-md' : 'bg-slate-900/60 border border-white/10'
-            }`}
-          >
-            <h2
-              className={`font-black text-base sm:text-lg tracking-tight ${
-                style === 'EDITORIAL' || style === 'POLICY' ? 'font-serif' : 'font-sans'
-              }`}
-              style={{ color: textPrimary }}
-            >
-              {cleanTakeaway || 'Sorotan Data Utama'}
-            </h2>
-
-            {slide.supportingText && (
-              <p className="text-xs sm:text-sm font-medium leading-relaxed" style={{ color: textSecondary }}>
-                {slide.supportingText}
-              </p>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* ─── C. SLIDE 3: DEEP DIVE / SECONDARY PHOTO / ACTION DETAIL ─── */}
-      {isSlide3_Detail && (
-        <div className="relative z-10 flex-1 flex flex-col justify-between p-4 sm:p-6 space-y-3.5 overflow-hidden">
-          {/* Secondary Photo if available */}
-          {slide.imageUrl ? (
-            <div
-              className={`relative w-full h-36 sm:h-44 rounded-2xl overflow-hidden shadow-md shrink-0 ${
-                isLight ? 'border-2 border-slate-200 shadow-lg' : 'border border-white/15'
-              }`}
-            >
-              <img
-                src={slide.imageUrl}
-                alt="Visual Detail"
-                className="w-full h-full object-cover filter contrast-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
-              <div className="absolute bottom-2.5 left-3.5 right-3.5 flex items-center justify-between">
-                <span className="text-[10px] font-bold text-white drop-shadow truncate max-w-[220px]">
-                  {cleanTakeaway}
+      {/* ─── B. SLIDE KONTEN (SLIDE 2 KE ATAS): 6 VARIAN TATA LETAK MODULAR ─── */}
+      {!isCover && !isOutro && (
+        <>
+          {/* VARIAN 1: STAT_HERO (Angka / Data Kunci Raksasa di Tengah) */}
+          {activeVariant === 'STAT_HERO' && (
+            <div className="relative z-10 flex-1 flex flex-col justify-center p-5 sm:p-7 space-y-4 overflow-hidden">
+              <div
+                className={`p-5 sm:p-6 rounded-3xl border text-center space-y-2 shadow-xl ${
+                  isLight
+                    ? 'bg-gradient-to-br from-white to-slate-50 border-slate-200 shadow-md'
+                    : 'bg-gradient-to-br from-slate-900/90 to-slate-950/90 border-white/15'
+                }`}
+              >
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider block" style={{ color: accent }}>
+                  ⚡ {slide.tag || 'METRIK & DATA KUNCI'}
                 </span>
-                <span className="text-[9px] font-mono font-black bg-black/80 px-2 py-0.5 rounded text-white border border-white/20">
-                  DETAIL #03
-                </span>
+
+                <div
+                  className="text-3xl sm:text-4xl font-black tracking-tight leading-none"
+                  style={{ color: style === 'BOLD' ? '#FACC15' : accent }}
+                >
+                  {slide.statHighlight || 'Data Utama'}
+                </div>
+
+                <div className="h-0.5 w-16 mx-auto rounded-full" style={{ backgroundColor: accent }} />
+              </div>
+
+              <div
+                className={`p-4 rounded-2xl space-y-2 ${
+                  isLight ? 'bg-white border border-slate-200 shadow-md' : 'bg-slate-900/60 border border-white/10'
+                }`}
+              >
+                <h2
+                  className={`font-black text-base sm:text-lg tracking-tight ${
+                    style === 'EDITORIAL' || style === 'POLICY' ? 'font-serif' : 'font-sans'
+                  }`}
+                  style={{ color: textPrimary }}
+                >
+                  {cleanTakeaway || 'Sorotan Data Utama'}
+                </h2>
+
+                {slide.supportingText && (
+                  <p className="text-xs sm:text-sm font-medium leading-relaxed" style={{ color: textSecondary }}>
+                    {slide.supportingText}
+                  </p>
+                )}
               </div>
             </div>
-          ) : (
-            /* 3-Pillar Structured Action Box when no photo */
-            <div
-              className={`p-4 rounded-2xl border space-y-2.5 ${
-                isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-900/70 border-white/10'
-              }`}
-            >
-              <span className="text-[10px] font-black uppercase tracking-wider block" style={{ color: accent }}>
-                📋 TAHAPAN & PEMBAHASAN MENDALAM
-              </span>
-              <div className="space-y-1.5 text-xs font-semibold" style={{ color: textSecondary }}>
-                <div className="flex items-center gap-2">
-                  <Check className="size-3.5 shrink-0" style={{ color: accent }} />
-                  <span>Analisis Faktual Sesuai Laporan Lapangan</span>
+          )}
+
+          {/* VARIAN 2: IMAGE_TOP_TEXT_BOTTOM (Foto Nyata di Atas, Kartu Teks di Bawah) */}
+          {activeVariant === 'IMAGE_TOP_TEXT_BOTTOM' && (
+            <div className="relative z-10 flex-1 flex flex-col justify-between p-4 sm:p-6 space-y-3.5 overflow-hidden">
+              {slide.imageUrl ? (
+                <div
+                  className={`relative w-full h-36 sm:h-44 rounded-2xl overflow-hidden shadow-md shrink-0 ${
+                    isLight ? 'border-2 border-slate-200 shadow-lg' : 'border border-white/15'
+                  }`}
+                >
+                  <img
+                    src={slide.imageUrl}
+                    alt="Visual Detail"
+                    className="w-full h-full object-cover filter contrast-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+                  <div className="absolute bottom-2.5 left-3.5 right-3.5 flex items-center justify-between">
+                    <span className="text-[10px] font-bold text-white drop-shadow truncate max-w-[220px]">
+                      {cleanTakeaway}
+                    </span>
+                    <span className="text-[9px] font-mono font-black bg-black/80 px-2 py-0.5 rounded text-white border border-white/20">
+                      #{slide.index + 1}
+                    </span>
+                  </div>
                 </div>
+              ) : (
+                <div
+                  className={`p-4 rounded-2xl border space-y-2 ${
+                    isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-900/70 border-white/10'
+                  }`}
+                >
+                  <span className="text-[10px] font-black uppercase tracking-wider block" style={{ color: accent }}>
+                    📋 {slide.tag || 'ANALISIS & FAKTA LAPANGAN'}
+                  </span>
+                  <div className="space-y-1 text-xs font-semibold" style={{ color: textSecondary }}>
+                    <div className="flex items-center gap-2">
+                      <Check className="size-3.5 shrink-0" style={{ color: accent }} />
+                      <span>Fakta Lapangan Sesuai Laporan Utama</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div
+                className={`space-y-2.5 flex-1 flex flex-col justify-center ${
+                  isLight ? 'p-4 rounded-2xl bg-white border border-slate-200 shadow-md' : 'p-3.5 rounded-2xl bg-slate-900/60 border border-white/10'
+                }`}
+              >
+                <div className="flex items-start gap-2">
+                  <div className="w-1.5 self-stretch rounded-full shrink-0" style={{ backgroundColor: accent }} />
+                  <h2
+                    className={`font-black tracking-tight text-base sm:text-lg leading-snug ${
+                      style === 'EDITORIAL' || style === 'POLICY' ? 'font-serif' : 'font-sans'
+                    }`}
+                    style={{ color: textPrimary }}
+                  >
+                    {cleanTakeaway || `Pembahasan Mendalam`}
+                  </h2>
+                </div>
+
+                {slide.supportingText && (
+                  <p className="text-xs sm:text-sm font-medium leading-relaxed" style={{ color: textSecondary }}>
+                    {slide.supportingText}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* VARIAN 3: TEXT_CENTER (Kartu Fokus Elegan di Tengah Layar) */}
+          {activeVariant === 'TEXT_CENTER' && (
+            <div className="relative z-10 flex-1 flex flex-col justify-center p-5 sm:p-7 overflow-hidden">
+              <div
+                className={`p-6 sm:p-8 rounded-3xl border shadow-2xl space-y-4 text-center relative overflow-hidden ${
+                  isLight
+                    ? 'bg-white border-slate-200 shadow-lg'
+                    : 'bg-slate-900/90 border-white/15 backdrop-blur-xl'
+                }`}
+              >
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider mx-auto" style={{ backgroundColor: `${accent}20`, color: accent }}>
+                  <Sparkles className="size-3" />
+                  <span>{slide.tag || 'POIN PENTING'}</span>
+                </div>
+
+                <h2
+                  className={`font-black text-lg sm:text-xl leading-tight ${
+                    style === 'EDITORIAL' || style === 'POLICY' ? 'font-serif' : 'font-sans'
+                  }`}
+                  style={{ color: textPrimary }}
+                >
+                  {cleanTakeaway}
+                </h2>
+
+                <div className="h-0.5 w-12 mx-auto rounded-full" style={{ backgroundColor: accent }} />
+
+                {slide.supportingText && (
+                  <p className="text-xs sm:text-sm font-medium leading-relaxed" style={{ color: textSecondary }}>
+                    {slide.supportingText}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* VARIAN 4: TEXT_BOTTOM (Visual Aksen di Atas + Teks Utama di Bawah) */}
+          {activeVariant === 'TEXT_BOTTOM' && (
+            <div className="relative z-10 flex-1 flex flex-col justify-between p-5 sm:p-7 overflow-hidden">
+              {/* Top Accent Area with Big Number Watermark */}
+              <div className="flex items-center justify-between opacity-80 pt-2">
                 <div className="flex items-center gap-2">
-                  <Check className="size-3.5 shrink-0" style={{ color: accent }} />
-                  <span>Dampak Nyata & Implikasi Strategis</span>
+                  <div className="size-3 rounded-full" style={{ backgroundColor: accent }} />
+                  <span className="text-[11px] font-mono font-bold uppercase tracking-wider" style={{ color: accent }}>
+                    {slide.tag || 'RINGKASAN POIN'}
+                  </span>
+                </div>
+                <span className="text-3xl font-black font-mono opacity-25" style={{ color: textPrimary }}>
+                  0{slide.index + 1}
+                </span>
+              </div>
+
+              {/* Lower 65% Prominent Text Card */}
+              <div
+                className={`p-5 sm:p-6 rounded-3xl border space-y-3 shadow-xl ${
+                  isLight ? 'bg-white border-slate-200 shadow-md' : 'bg-slate-900/80 border-white/10 backdrop-blur-md'
+                }`}
+              >
+                <h2
+                  className={`font-black text-base sm:text-xl tracking-tight leading-snug ${
+                    style === 'EDITORIAL' || style === 'POLICY' ? 'font-serif' : 'font-sans'
+                  }`}
+                  style={{ color: textPrimary }}
+                >
+                  {cleanTakeaway}
+                </h2>
+
+                {slide.supportingText && (
+                  <p className="text-xs sm:text-sm font-medium leading-relaxed" style={{ color: textSecondary }}>
+                    {slide.supportingText}
+                  </p>
+                )}
+
+                <div className="pt-2 flex items-center justify-between text-[10px] font-mono font-bold" style={{ color: textMuted }}>
+                  <span>GESER KE POIN BERIKUTNYA</span>
+                  <span>➔</span>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Text Content Block */}
-          <div
-            className={`space-y-2.5 flex-1 flex flex-col justify-center ${
-              isLight ? 'p-4 rounded-2xl bg-white border border-slate-200 shadow-md' : 'p-3 rounded-2xl bg-slate-900/60 border border-white/10'
-            }`}
-          >
-            <div className="flex items-start gap-2">
-              <div className="w-1.5 self-stretch rounded-full shrink-0" style={{ backgroundColor: accent }} />
-              <h2
-                className={`font-black tracking-tight text-base sm:text-lg leading-snug ${
-                  style === 'EDITORIAL' || style === 'POLICY' ? 'font-serif' : 'font-sans'
+          {/* VARIAN 5: QUOTE_CARD (Kutipan Tokoh / Wawasan Berwibawa) */}
+          {activeVariant === 'QUOTE_CARD' && (
+            <div className="relative z-10 flex-1 flex flex-col justify-center p-5 sm:p-7 space-y-4 overflow-hidden">
+              <div
+                className={`p-6 rounded-3xl border shadow-xl relative overflow-hidden space-y-3.5 ${
+                  isLight
+                    ? 'bg-gradient-to-br from-white via-slate-50 to-slate-100 border-slate-200 shadow-md'
+                    : 'bg-gradient-to-br from-slate-900/95 to-slate-950/95 border-white/15'
                 }`}
-                style={{ color: textPrimary }}
               >
-                {cleanTakeaway || `Pembahasan Mendalam`}
-              </h2>
+                <Quote className="absolute -bottom-4 -right-4 size-28 opacity-10 pointer-events-none" style={{ color: accent }} />
+
+                <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider" style={{ color: accent }}>
+                  <Lightbulb className="size-3.5" />
+                  <span>{slide.tag || 'WAWASAN KUNCI // GOLDEN RULE'}</span>
+                </div>
+
+                <div
+                  className={`text-sm sm:text-base italic leading-relaxed font-serif font-semibold pl-3 border-l-4`}
+                  style={{
+                    borderColor: accent,
+                    color: textPrimary,
+                  }}
+                >
+                  "{slide.sourceQuote ? slide.sourceQuote.replace(/^["']|["']$/g, '') : cleanTakeaway}"
+                </div>
+
+                {slide.supportingText && (
+                  <p className="text-xs font-medium leading-relaxed pt-1" style={{ color: textSecondary }}>
+                    {slide.supportingText}
+                  </p>
+                )}
+
+                <div className="pt-2 flex items-center justify-between text-[10px] font-mono font-bold" style={{ color: textMuted }}>
+                  <span>— {slide.author || 'Analisis Redaksi'}</span>
+                  <span>#VERIFIED</span>
+                </div>
+              </div>
             </div>
+          )}
 
-            {slide.supportingText && (
-              <p className="text-xs sm:text-sm font-medium leading-relaxed" style={{ color: textSecondary }}>
-                {slide.supportingText}
-              </p>
-            )}
-          </div>
-        </div>
-      )}
+          {/* VARIAN 6: SPLIT_TWO_COL (Dua Pilar Komparasi / Analisis Bertingkat) */}
+          {activeVariant === 'SPLIT_TWO_COL' && (
+            <div className="relative z-10 flex-1 flex flex-col justify-center p-4 sm:p-6 space-y-3 overflow-hidden">
+              {/* Card 1: Main Takeaway */}
+              <div
+                className={`p-4 rounded-2xl border space-y-1.5 shadow-md ${
+                  isLight ? 'bg-white border-slate-200' : 'bg-slate-900/70 border-white/10'
+                }`}
+              >
+                <span className="text-[9px] font-black uppercase tracking-wider block" style={{ color: accent }}>
+                  FAKTA UTAMA #01
+                </span>
+                <h3 className="font-bold text-sm sm:text-base tracking-tight leading-snug" style={{ color: textPrimary }}>
+                  {cleanTakeaway}
+                </h3>
+              </div>
 
-      {/* ─── D. SLIDE 4: GOLDEN QUOTE / EXPERT INSIGHT ─── */}
-      {isSlide4_Quote && (
-        <div className="relative z-10 flex-1 flex flex-col justify-center p-5 sm:p-7 space-y-4 overflow-hidden">
-          <div
-            className={`p-6 rounded-3xl border shadow-xl relative overflow-hidden space-y-3.5 ${
-              isLight
-                ? 'bg-gradient-to-br from-white via-slate-50 to-slate-100 border-slate-200 shadow-md'
-                : 'bg-gradient-to-br from-slate-900/95 to-slate-950/95 border-white/15'
-            }`}
-          >
-            {/* Giant Watermark Quote */}
-            <Quote className="absolute -bottom-4 -right-4 size-28 opacity-10 pointer-events-none" style={{ color: accent }} />
-
-            <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider" style={{ color: accent }}>
-              <Lightbulb className="size-3.5" />
-              <span>WAWASAN KUNCI // GOLDEN RULE</span>
+              {/* Card 2: Impact / Implikasi Nyata */}
+              <div
+                className={`p-4 rounded-2xl border space-y-1.5 shadow-md ${
+                  isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/80 border-white/10'
+                }`}
+              >
+                <span className="text-[9px] font-black uppercase tracking-wider block" style={{ color: accent }}>
+                  IMPLIKASI & DAMPAK
+                </span>
+                <p className="text-xs sm:text-sm font-medium leading-relaxed" style={{ color: textSecondary }}>
+                  {slide.supportingText || 'Memberikan dampak signifikan terhadap ekosistem dan strategi jangka panjang.'}
+                </p>
+              </div>
             </div>
-
-            <div
-              className={`text-sm sm:text-base italic leading-relaxed font-serif font-semibold pl-3 border-l-4`}
-              style={{
-                borderColor: accent,
-                color: textPrimary,
-              }}
-            >
-              "{slide.sourceQuote ? slide.sourceQuote.replace(/^["']|["']$/g, '') : cleanTakeaway}"
-            </div>
-
-            {slide.supportingText && (
-              <p className="text-xs font-medium leading-relaxed pt-1" style={{ color: textSecondary }}>
-                {slide.supportingText}
-              </p>
-            )}
-
-            <div className="pt-2 flex items-center justify-between text-[10px] font-mono font-bold" style={{ color: textMuted }}>
-              <span>— Analisis Redaksi</span>
-              <span>#VERIFIED</span>
-            </div>
-          </div>
-        </div>
+          )}
+        </>
       )}
 
       {/* ─── E. SLIDE 5: OUTRO / SUMMARY & CALL TO ACTION ─── */}
