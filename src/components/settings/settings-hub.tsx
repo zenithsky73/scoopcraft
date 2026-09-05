@@ -27,6 +27,7 @@ import { Input, Label } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn, formatDate } from '@/lib/utils';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
+import { notify } from '@/lib/notify';
 
 interface SettingsHubProps {
   user: {
@@ -84,7 +85,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
     if (!file) return;
 
     if (file.size > 2 * 1024 * 1024) {
-      alert('Ukuran file logo maksimal 2MB.');
+      notify.warning('Ukuran File Terlalu Besar', 'Ukuran file logo maksimal 2MB.');
       return;
     }
 
@@ -118,16 +119,17 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
       setBrandLoading(false);
 
       if (!res.ok) {
-        alert(data.error || 'Gagal menyimpan pengaturan brand.');
+        notify.error('Gagal Menyimpan', data.error || 'Gagal menyimpan pengaturan brand.');
         return;
       }
 
+      notify.success('Pengaturan Brand Tersimpan', 'Identitas Brand & Watermark berhasil diperbarui.');
       setBrandToast('✓ Identitas Brand & Watermark berhasil disimpan!');
       setTimeout(() => setBrandToast(null), 4000);
       router.refresh();
     } catch (err: any) {
       setBrandLoading(false);
-      alert(err.message || 'Terjadi kesalahan sistem.');
+      notify.error('Terjadi Kesalahan', err.message || 'Terjadi kesalahan sistem.');
     }
   };
 

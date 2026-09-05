@@ -1,6 +1,7 @@
 import { toPng } from 'html-to-image';
 import { PDFDocument } from 'pdf-lib';
 import JSZip from 'jszip';
+import { notify } from '@/lib/notify';
 
 /**
  * Mengonversi elemen DOM slide canvas menjadi data URL PNG dengan resolusi tinggi (100% presisi menggunakan html-to-image).
@@ -32,7 +33,7 @@ export async function downloadSlideAsPng(slideIndex: number, title: string = 'sl
     document.body.removeChild(a);
   } catch (error) {
     console.error('Download PNG error:', error);
-    alert('Gagal mengunduh gambar slide. Silakan coba lagi.');
+    notify.error('Gagal Mengunduh Slide', 'Silakan coba beberapa saat lagi.');
   }
 }
 
@@ -63,7 +64,7 @@ export async function exportSlidesToZip(totalSlides: number, title: string = 'ne
     URL.revokeObjectURL(url);
   } catch (error) {
     console.error('Export ZIP error:', error);
-    alert('Gagal membuat file ZIP secara otomatis. Silakan unduh per slide.');
+    notify.error('Gagal Membuat File ZIP', 'Silakan unduh per slide atau coba lagi.');
   }
 }
 
@@ -103,6 +104,6 @@ export async function exportSlidesToPdf(totalSlides: number, title: string = 'ne
     URL.revokeObjectURL(url);
   } catch (error) {
     console.error('Export PDF error:', error);
-    alert('Gagal mengekspor PDF secara otomatis. Silakan unduh slide per halaman.');
+    notify.error('Gagal Mengekspor PDF', 'Silakan coba lagi atau unduh slide per halaman.');
   }
 }

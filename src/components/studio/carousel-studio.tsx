@@ -41,6 +41,8 @@ import { downloadSlideAsPng, exportSlidesToPdf, exportSlidesToZip } from '@/lib/
 import { UpgradeDialog } from '@/components/billing/upgrade-dialog';
 import { TemplatePreviewModal } from '@/components/generate/template-preview-modal';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
+import { notify } from '@/lib/notify';
+import { triggerCelebrationParticles } from '@/lib/celebrate';
 import { cn } from '@/lib/utils';
 
 export type CarouselStudioProps = {
@@ -255,7 +257,28 @@ export function CarouselStudio({
       }));
     });
     setActiveSlideIndex(toIndex);
+    notify.info(`Slide dipindahkan ke posisi ${toIndex + 1} 🔀`);
   };
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const isJustGenerated =
+        params.get('generated') === 'true' ||
+        sessionStorage.getItem(`just_gen_${initialContent.headline}`);
+
+      if (isJustGenerated) {
+        notify.celebrate(
+          'Carousel Berhasil Dibuat! 🎉',
+          'Semua slide naskah dan visual telah siap Anda gunakan.'
+        );
+        sessionStorage.removeItem(`just_gen_${initialContent.headline}`);
+        try {
+          window.history.replaceState({}, '', window.location.pathname);
+        } catch {}
+      }
+    }
+  }, []);
 
   const handleAiPolish = async (
     field: 'headline' | 'takeaway' | 'lead' | 'supportingText',
@@ -275,9 +298,13 @@ export function CarouselStudio({
       const data = await res.json();
       if (data.success && data.polishedText) {
         updateActiveSlide({ [field]: data.polishedText });
+        notify.success('Teks Berhasil Dipoles AI! ✨', 'Gaya penulisan telah disempurnakan.');
+      } else {
+        notify.error('Gagal Memoles Teks', data.error || 'Silakan coba beberapa saat lagi.');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('AI polish error:', err);
+      notify.error('Gagal Memoles Teks', err?.message || 'Terjadi kesalahan sistem.');
     } finally {
       setIsPolishing(false);
       setPolishField(null);
@@ -289,8 +316,10 @@ export function CarouselStudio({
     try {
       await navigator.clipboard.writeText(fullCaption);
       setCopiedCaption(true);
+      notify.success('Caption Berhasil Disalin! 📋', 'Siap diposting ke media sosial Anda.');
       setTimeout(() => setCopiedCaption(false), 2000);
     } catch {
+      notify.error('Gagal Menyalin Caption', 'Izin clipboard browser tidak diizinkan.');
       setCopiedCaption(false);
     }
   };
@@ -299,6 +328,9 @@ export function CarouselStudio({
     setIsExportingPng(true);
     try {
       await downloadSlideAsPng(activeSlideIndex, initialContent.headline || 'slide');
+      notify.success(`Slide ${activeSlideIndex + 1} Berhasil Diunduh! 🖼️`);
+    } catch (err: any) {
+      notify.error('Gagal Mengunduh Slide', err?.message);
     } finally {
       setIsExportingPng(false);
     }
@@ -308,6 +340,9 @@ export function CarouselStudio({
     setIsExportingZip(true);
     try {
       await exportSlidesToZip(slides.length, initialContent.headline || 'newsly-carousel');
+      notify.celebrate('Paket ZIP Siap! 📦', `Semua ${slides.length} slide berhasil diekspor resolusi tinggi.`);
+    } catch (err: any) {
+      notify.error('Gagal Ekspor ZIP', err?.message);
     } finally {
       setIsExportingZip(false);
     }
@@ -324,6 +359,9 @@ export function CarouselStudio({
     setIsExportingPdf(true);
     try {
       await exportSlidesToPdf(slides.length, initialContent.headline || 'carousel');
+      notify.celebrate('Dokumen PDF Siap! 📄', 'Carousel siap dibagikan ke LinkedIn.');
+    } catch (err: any) {
+      notify.error('Gagal Ekspor PDF', err?.message);
     } finally {
       setIsExportingPdf(false);
     }
@@ -1258,6 +1296,10 @@ export function CarouselStudio({
         initialQuery={article.title || 'bisnis'}
         onSelectPhoto={(photoUrl) => {
           updateActiveSlide({ imageUrl: photoUrl });
+          notify.success(
+            'Foto Berhasil Dipasang! 📸',
+            `Slide ${activeSlideIndex + 1} kini menggunakan foto resolusi tinggi pilihan Anda.`
+          );
         }}
       />
 

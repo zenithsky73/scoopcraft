@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { notify } from '@/lib/notify';
 
 export type UserItem = {
   id: string;
@@ -91,10 +92,11 @@ export function MasterUsersTable() {
         )
       );
 
+      notify.success('Paket Berhasil Diaktifkan', `${user.email} kini aktif di paket ${targetPlan}.`);
       setToastMessage(`Sukses! ${user.email} kini aktif di paket ${targetPlan} (${quotaAmount} kuota).`);
       setTimeout(() => setToastMessage(null), 4000);
     } catch (err: any) {
-      alert(err.message || 'Terjadi kesalahan.');
+      notify.error('Gagal Mengaktifkan Paket', err.message || 'Terjadi kesalahan.');
     } finally {
       setActionLoadingId(null);
     }
@@ -121,10 +123,11 @@ export function MasterUsersTable() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Gagal mereset password.');
 
+      notify.success('Password Direset', `Password baru untuk ${user.email} berhasil diterapkan.`);
       setToastMessage(`🔑 Sukses! Password untuk ${user.email} diubah menjadi: "${confirmPrompt}".`);
       setTimeout(() => setToastMessage(null), 6000);
     } catch (err: any) {
-      alert(err.message || 'Terjadi kesalahan.');
+      notify.error('Gagal Reset Password', err.message || 'Terjadi kesalahan.');
     } finally {
       setActionLoadingId(null);
     }
@@ -155,10 +158,11 @@ export function MasterUsersTable() {
         )
       );
 
+      notify.info('Paket Dibatalkan', `Paket untuk ${user.email} dikembalikan ke Free Trial.`);
       setToastMessage(`✓ Paket untuk ${user.email} berhasil dibatalkan (dikembalikan ke Free Trial).`);
       setTimeout(() => setToastMessage(null), 5000);
     } catch (err: any) {
-      alert(err.message || 'Terjadi kesalahan.');
+      notify.error('Gagal Membatalkan Paket', err.message || 'Terjadi kesalahan.');
     } finally {
       setActionLoadingId(null);
     }

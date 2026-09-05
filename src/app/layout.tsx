@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { SessionProvider } from 'next-auth/react';
 import { ThemeProvider } from '@/components/ui/theme-provider';
+import { Toaster } from 'sonner';
 import { APP } from '@/config/app';
 import './globals.css';
 
@@ -34,7 +35,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <ThemeProvider>
-          <SessionProvider>{children}</SessionProvider>
+          <SessionProvider>
+            {children}
+            <Toaster
+              position="top-right"
+              richColors
+              closeButton
+              theme="system"
+              toastOptions={{
+                className: 'rounded-2xl border backdrop-blur-xl shadow-2xl font-sans',
+              }}
+            />
+          </SessionProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -21,6 +21,7 @@ import type { Plan } from '@prisma/client';
 import { PLANS, formatIDR, type PaidPlan } from '@/config/plans';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { notify } from '@/lib/notify';
 
 interface NativePaymentModalProps {
   isOpen: boolean;
@@ -93,18 +94,19 @@ export function NativePaymentModal({
       setLoading(false);
 
       if (!res.ok) {
-        alert(data.error || 'Terjadi kendala saat konfirmasi pembayaran.');
+        notify.error('Gagal Konfirmasi', data.error || 'Terjadi kendala saat konfirmasi pembayaran.');
         return;
       }
 
       setSuccessState(true);
+      notify.celebrate('Paket Berhasil Diaktifkan! 🚀', `Selamat, akun Anda kini aktif di paket ${plan.name}.`);
       setTimeout(() => {
         onSuccess(plan.name);
         onClose();
       }, 1800);
     } catch (err: any) {
       setLoading(false);
-      alert(err.message || 'Terjadi kesalahan sistem.');
+      notify.error('Terjadi Kesalahan', err.message || 'Terjadi kesalahan sistem.');
     }
   };
 

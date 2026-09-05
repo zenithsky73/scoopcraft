@@ -13,7 +13,7 @@ export function Sidebar({ quota }: { quota: QuotaState }) {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden w-64 shrink-0 flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950/90 backdrop-blur-xl lg:flex text-slate-900 dark:text-slate-200 transition-colors duration-200">
+    <aside className="hidden w-64 shrink-0 flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950/90 backdrop-blur-xl lg:flex text-slate-900 dark:text-slate-200 transition-colors duration-200 sticky top-0 h-screen overflow-y-auto z-30">
       {/* Brand Header */}
       <div className="flex h-18 items-center justify-between border-b border-slate-200 dark:border-slate-800/80 px-4 py-3">
         <Link href="/dashboard" className="flex items-center gap-2.5 group min-w-0">

@@ -20,6 +20,7 @@ import { Input, Label } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { UpgradeDialog } from '@/components/billing/upgrade-dialog';
 import { VisualTemplatePicker } from '@/components/generate/visual-template-picker';
+import { notify } from '@/lib/notify';
 
 export type InputMode = 'url' | 'text' | 'prompt';
 
@@ -133,13 +134,14 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
       }
 
       if (targetId) {
-        window.location.href = `/content/${targetId}`;
+        window.location.href = `/content/${targetId}?generated=true`;
       } else {
         router.push('/dashboard');
         setLoading(false);
       }
     } catch (err: any) {
       setError(err.message || 'Terjadi kesalahan sistem.');
+      notify.error('Gagal Membuat Carousel', err.message || 'Terjadi kesalahan sistem.');
       setLoading(false);
     }
   }
