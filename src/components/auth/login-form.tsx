@@ -16,10 +16,21 @@ export function LoginForm() {
 
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [rememberMe, setRememberMe] = React.useState(true);
   const [showPassword, setShowPassword] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [googleLoading, setGoogleLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    try {
+      const savedEmail = localStorage.getItem('newsly_remember_email');
+      if (savedEmail) {
+        setEmail(savedEmail);
+        setRememberMe(true);
+      }
+    } catch {}
+  }, []);
 
   React.useEffect(() => {
     if (errorParam === 'CredentialsSignin') {
@@ -42,6 +53,15 @@ export function LoginForm() {
       setError('Email dan password wajib diisi.');
       return;
     }
+
+    // Simpan atau hapus preferensi Ingat Saya
+    try {
+      if (rememberMe) {
+        localStorage.setItem('newsly_remember_email', email.trim().toLowerCase());
+      } else {
+        localStorage.removeItem('newsly_remember_email');
+      }
+    } catch {}
 
     setLoading(true);
 
@@ -129,17 +149,9 @@ export function LoginForm() {
 
         {/* Password Field */}
         <div>
-          <div className="flex items-center justify-between">
-            <Label htmlFor="password" className="text-xs font-bold text-slate-800 dark:text-slate-200">
-              Password
-            </Label>
-            <Link
-              href="/forgot-password"
-              className="text-[11px] font-semibold text-primary hover:underline"
-            >
-              Lupa kata sandi?
-            </Link>
-          </div>
+          <Label htmlFor="password" className="text-xs font-bold text-slate-800 dark:text-slate-200">
+            Password
+          </Label>
           <div className="relative mt-1">
             <Lock className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
             <Input
@@ -161,6 +173,30 @@ export function LoginForm() {
               {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
             </button>
           </div>
+        </div>
+
+        {/* Remember Me & Forgot Password Row */}
+        <div className="flex items-center justify-between pt-0.5">
+          <label className="flex items-center gap-2 cursor-pointer select-none group">
+            <input
+              type="checkbox"
+              id="rememberMe"
+              name="rememberMe"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              className="size-4 rounded border-slate-300 dark:border-slate-700 text-primary focus:ring-primary/40 accent-primary cursor-pointer"
+            />
+            <span className="text-xs text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-slate-200 transition-colors font-medium">
+              Ingat saya
+            </span>
+          </label>
+
+          <Link
+            href="/forgot-password"
+            className="text-xs font-semibold text-primary hover:underline transition-colors"
+          >
+            Lupa kata sandi?
+          </Link>
         </div>
 
         {/* Error Banner */}
