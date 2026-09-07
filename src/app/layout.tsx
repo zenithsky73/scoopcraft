@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { SessionProvider } from 'next-auth/react';
 import { ThemeProvider } from '@/components/ui/theme-provider';
 import { Toaster } from 'sonner';
+import { NewslyAssistantWidget } from '@/components/assistant/newsly-assistant-widget';
 import { APP } from '@/config/app';
 import './globals.css';
 
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider>
           <SessionProvider>
             {children}
+            <NewslyAssistantWidget />
             <Toaster
               position="top-right"
               richColors
