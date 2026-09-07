@@ -34,15 +34,6 @@ export function Topbar({
 
       {/* Right Controls: Theme Switcher, Role Badge & User Profile Menu */}
       <div className="flex items-center gap-2.5">
-        <Link
-          href="/assistant"
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white text-xs font-bold shadow-md shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-105 active:scale-95 transition-all"
-          title="Tanya Newsly Copilot AI"
-        >
-          <Bot className="size-3.5 text-amber-300" />
-          <span className="hidden sm:inline">Tanya AI</span>
-        </Link>
-
         <ThemeToggle />
 
         {quota?.isOwner ? (

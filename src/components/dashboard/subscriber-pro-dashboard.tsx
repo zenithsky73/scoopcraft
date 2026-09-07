@@ -100,32 +100,6 @@ export function SubscriberProDashboard({ user, quota }: SubscriberProDashboardPr
         </div>
       </div>
 
-      {/* ─── 1.5 AI ASSISTANT COPILOT BANNER ─── */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-indigo-300/60 dark:border-indigo-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-500/25 shrink-0">
-            <Bot className="size-5" />
-          </div>
-          <div>
-            <h3 className="font-black text-sm text-slate-900 dark:text-white flex items-center gap-2">
-              Newsly Copilot — Asisten AI Eksklusif
-              <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-500/30 font-bold">
-                ONLINE
-              </span>
-            </h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400">
-              Tanyakan apa saja seputar pembuatan carousel dari YouTube, memilih template, ganti watermark, hingga tips viral!
-            </p>
-          </div>
-        </div>
-
-        <Button asChild size="sm" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs rounded-xl shadow-md shadow-indigo-500/25 shrink-0">
-          <Link href="/assistant" className="flex items-center gap-1.5">
-            <Bot className="size-3.5" /> Buka Asisten AI ➔
-          </Link>
-        </Button>
-      </div>
-
       {/* ─── 2. AI GENERATOR ENGINE ─── */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">

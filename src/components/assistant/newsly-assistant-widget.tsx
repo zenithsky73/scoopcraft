@@ -196,72 +196,48 @@ export function NewslyAssistantWidget() {
 
   return (
     <div className="fixed bottom-20 right-4 lg:bottom-6 lg:right-6 z-[9999] font-sans">
-      {/* 1. Floating Action Button when collapsed */}
-      {!isOpen && (
-        <div className="relative group">
-          <button
-            onClick={() => setIsOpen(true)}
-            aria-label="Buka Asisten Newsly AI"
-            className="flex items-center gap-2.5 px-4 py-3 rounded-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white shadow-xl shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:scale-105 active:scale-95 transition-all duration-300 border border-white/20 backdrop-blur-md"
-          >
-            <div className="relative flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-amber-300 animate-pulse" />
-              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-indigo-900 animate-ping" />
-              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-indigo-900" />
-            </div>
-            <span className="text-xs sm:text-sm font-semibold tracking-wide">
-              Tanya Newsly AI ⚡
-            </span>
-          </button>
-        </div>
-      )}
-
-      {/* 2. Chat Window when open */}
+      {/* 1. Chat Window when open (Small & Compact) */}
       {isOpen && (
-        <div className="relative w-[92vw] sm:w-[410px] h-[580px] max-h-[82vh] rounded-[28px] bg-slate-900/95 dark:bg-slate-950/95 border border-slate-800/80 dark:border-slate-800 shadow-2xl shadow-black/80 flex flex-col overflow-hidden backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-200">
+        <div className="relative mb-2 w-[310px] sm:w-[330px] h-[430px] max-h-[72vh] rounded-2xl bg-slate-900/95 dark:bg-slate-950/95 border border-slate-800 shadow-2xl shadow-black/80 flex flex-col overflow-hidden backdrop-blur-xl animate-in fade-in slide-in-from-bottom-3 duration-200">
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border-b border-slate-800/80">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-500 flex items-center justify-center shadow-md shadow-indigo-500/30 text-white font-black text-sm">
-                <Bot className="w-5 h-5" />
+          <div className="flex items-center justify-between px-3.5 py-2.5 bg-slate-900 border-b border-slate-800">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="size-6 rounded-lg bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center text-indigo-300 shrink-0">
+                <Bot className="size-3.5" />
               </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="font-bold text-sm text-slate-100">Newsly Copilot</h3>
-                  <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-semibold border border-emerald-500/20">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    Online
-                  </span>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <h3 className="font-bold text-xs text-slate-100 truncate">Newsly Copilot</h3>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
                 </div>
-                <p className="text-[11px] text-slate-400">Asisten Resmi Newsly AI</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-1 text-slate-400">
+            <div className="flex items-center gap-0.5 text-slate-400">
               <button
                 onClick={handleResetChat}
                 title="Reset Obrolan"
-                className="p-2 rounded-xl hover:bg-slate-800 hover:text-slate-200 transition-colors"
+                className="p-1 rounded-lg hover:bg-slate-800 hover:text-slate-200 transition-colors"
               >
-                <RotateCcw className="w-4 h-4" />
+                <RotateCcw className="size-3.5" />
               </button>
               <button
                 onClick={() => setIsOpen(false)}
                 title="Tutup Obrolan"
-                className="p-2 rounded-xl hover:bg-slate-800 hover:text-slate-200 transition-colors"
+                className="p-1 rounded-lg hover:bg-slate-800 hover:text-slate-200 transition-colors"
               >
-                <ChevronDown className="w-5 h-5" />
+                <X className="size-3.5" />
               </button>
             </div>
           </div>
 
-          {/* Quick Suggestions (Carousel Chips) */}
-          <div className="px-4 py-2.5 bg-slate-950/40 border-b border-slate-800/60 overflow-x-auto no-scrollbar flex items-center gap-2">
+          {/* Quick Suggestions (Compact Chips) */}
+          <div className="px-2.5 py-1.5 bg-slate-950/50 border-b border-slate-800/60 overflow-x-auto no-scrollbar flex items-center gap-1.5">
             {INITIAL_SUGGESTIONS.map((item, idx) => (
               <button
                 key={idx}
                 onClick={() => handleSend(item.query)}
-                className="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-800/70 hover:bg-indigo-900/40 border border-slate-700/50 hover:border-indigo-500/40 text-[11px] text-slate-300 hover:text-indigo-200 transition-all flex-shrink-0"
+                className="whitespace-nowrap px-2 py-0.5 rounded-full bg-slate-800/70 hover:bg-indigo-900/40 border border-slate-700/50 hover:border-indigo-500/40 text-[10px] text-slate-300 hover:text-indigo-200 transition-all flex-shrink-0"
               >
                 {item.label}
               </button>
@@ -269,35 +245,29 @@ export function NewslyAssistantWidget() {
           </div>
 
           {/* Messages Stream */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3.5 no-scrollbar">
+          <div className="flex-1 overflow-y-auto p-3 space-y-2.5 no-scrollbar text-xs">
             {messages.map((msg) => {
               const isUser = msg.role === 'user';
               return (
                 <div
                   key={msg.id}
                   className={cn(
-                    'flex gap-2.5 max-w-[86%]',
+                    'flex gap-2 max-w-[90%]',
                     isUser ? 'ml-auto flex-row-reverse' : 'mr-auto'
                   )}
                 >
-                  {!isUser && (
-                    <div className="w-7 h-7 rounded-xl bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center flex-shrink-0 text-indigo-300 mt-1">
-                      <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                    </div>
-                  )}
-
                   <div
                     className={cn(
-                      'rounded-2xl px-4 py-3 shadow-md',
+                      'rounded-xl px-3 py-2 shadow-sm',
                       isUser
-                        ? 'bg-gradient-to-tr from-indigo-600 to-purple-600 text-white rounded-br-none text-xs sm:text-sm font-medium'
+                        ? 'bg-gradient-to-tr from-indigo-600 to-purple-600 text-white rounded-br-none font-medium'
                         : 'bg-slate-800/90 border border-slate-700/60 text-slate-200 rounded-bl-none'
                     )}
                   >
                     {isUser ? msg.content : renderFormattedText(msg.content)}
                     <div
                       className={cn(
-                        'text-[9px] mt-1.5 font-medium opacity-60 flex items-center gap-1',
+                        'text-[8px] mt-1 opacity-60 flex items-center gap-1',
                         isUser ? 'justify-end text-white/80' : 'text-slate-400'
                       )}
                     >
@@ -310,18 +280,15 @@ export function NewslyAssistantWidget() {
 
             {/* Typing Indicator */}
             {isLoading && (
-              <div className="flex items-center gap-2 max-w-[80%] mr-auto">
-                <div className="w-7 h-7 rounded-xl bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center flex-shrink-0 text-indigo-300">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-spin" />
-                </div>
-                <div className="bg-slate-800/90 border border-slate-700/60 rounded-2xl rounded-bl-none px-4 py-3 flex items-center gap-1.5 shadow-md">
-                  <span className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce" />
+              <div className="flex items-center gap-1.5 max-w-[80%] mr-auto">
+                <div className="bg-slate-800/90 border border-slate-700/60 rounded-xl rounded-bl-none px-3 py-2 flex items-center gap-1">
+                  <span className="size-1.5 rounded-full bg-indigo-400 animate-bounce" />
                   <span
-                    className="w-2 h-2 rounded-full bg-purple-400 animate-bounce"
+                    className="size-1.5 rounded-full bg-purple-400 animate-bounce"
                     style={{ animationDelay: '0.2s' }}
                   />
                   <span
-                    className="w-2 h-2 rounded-full bg-pink-400 animate-bounce"
+                    className="size-1.5 rounded-full bg-pink-400 animate-bounce"
                     style={{ animationDelay: '0.4s' }}
                   />
                 </div>
@@ -332,37 +299,60 @@ export function NewslyAssistantWidget() {
           </div>
 
           {/* Footer Input */}
-          <div className="p-3 bg-slate-900 border-t border-slate-800/80">
+          <div className="p-2 bg-slate-900 border-t border-slate-800">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 handleSend();
               }}
-              className="flex items-center gap-2"
+              className="flex items-center gap-1.5"
             >
               <input
                 ref={inputRef}
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Tanyakan apa saja seputar Newsly AI..."
-                className="flex-1 bg-slate-950/70 border border-slate-800 rounded-2xl px-4 py-2.5 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                placeholder="Tanya seputar Newsly..."
+                className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-all"
                 disabled={isLoading}
               />
               <button
                 type="submit"
                 disabled={isLoading || !input.trim()}
-                className="p-2.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90 active:scale-95 transition-all shadow-md shadow-indigo-600/20 flex-shrink-0"
+                className="p-1.5 rounded-xl bg-indigo-600 text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-indigo-500 active:scale-95 transition-all shadow-sm flex-shrink-0"
               >
-                <Send className="w-4 h-4" />
+                <Send className="size-3.5" />
               </button>
             </form>
-            <p className="text-[10px] text-center text-slate-500 mt-2">
-              Khusus topik Newsly AI • Didukung Gemini AI Engine
+            <p className="text-[9px] text-center text-slate-500 mt-1">
+              Khusus topik Newsly AI
             </p>
           </div>
         </div>
       )}
+
+      {/* 2. Small Floating Action Button */}
+      <div className="flex justify-end">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label={isOpen ? 'Tutup Asisten AI' : 'Buka Asisten AI'}
+          className={cn(
+            'relative flex items-center justify-center size-11 sm:size-12 rounded-full text-white shadow-lg transition-all duration-200 border border-white/20 active:scale-90',
+            isOpen
+              ? 'bg-slate-800 hover:bg-slate-700 shadow-black/40'
+              : 'bg-gradient-to-tr from-indigo-600 to-purple-600 hover:scale-105 shadow-indigo-500/30'
+          )}
+        >
+          {isOpen ? (
+            <X className="size-5 text-slate-200" />
+          ) : (
+            <>
+              <Bot className="size-5 text-white" />
+              <span className="absolute top-0 right-0 size-2.5 bg-emerald-400 rounded-full border-2 border-slate-900" />
+            </>
+          )}
+        </button>
+      </div>
     </div>
   );
 }
