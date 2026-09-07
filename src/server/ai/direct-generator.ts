@@ -6,6 +6,7 @@ import { scrapeArticleFast } from '@/server/scraper/fast-scraper';
 import { SLIDES } from '@/server/design/deck';
 import { consumeQuota } from '@/server/billing/quota';
 import { getContextualPhotoForSlide, detectCategoryFromText } from '@/server/images/contextual-photos';
+import { STYLES } from '@/config/styles';
 
 export type InputMode = 'url' | 'text' | 'prompt';
 
@@ -93,11 +94,106 @@ export async function generateDirect(input: GenerateDirectInput) {
   // 2. Direct Gemini 2.5 Flash Turbo JSON Generation with Dynamic Slide Roles
   let deck!: GeneratedDeckResult;
   const isYouTube = articleSource.toLowerCase().includes('youtube') || articleUrl.includes('youtu');
+  const fullText = `${articleTitle} ${articleContent}`;
+  const styleDef = STYLES.find((s) => s.id === input.style);
+  const styleCategory = styleDef?.category;
+
+  // Intent classification
+  const isListicle =
+    /(\d+)\s*(tools?|alat|cara|tips|rekomendasi|langkah|ide|rahasia|alasan|aplikasi|strategi|skill|buku|film|website|prompt|resep|menu|tempat|wisata|kuliner|gadget)/i.test(fullText) ||
+    /kumpulan|daftar|rekomendasi|top\s*\d+/i.test(fullText);
+  const listCountMatch = fullText.match(/(\d+)\s*(tools?|alat|cara|tips|rekomendasi|langkah|ide|rahasia|alasan|aplikasi|strategi|skill|buku|film|website|prompt|resep|menu|tempat|wisata|kuliner|gadget)/i);
+  const listCount = listCountMatch ? parseInt(listCountMatch[1], 10) : null;
+
+  const isEcommerce =
+    styleCategory === 'ECOMMERCE' ||
+    ['SHOPEE_PROMO', 'RACUN_SHOPEE', 'PRODUCT_CATALOG', 'BRUTALIST_SALE', 'BEFORE_AFTER', 'TESTIMONIAL_CHAT', 'PRICE_TIER_TABLE', 'UNBOXING_POLAROID'].includes(input.style) ||
+    /jual|promo|diskon|shopee|tokopedia|affiliate|produk|baju|sepatu|skincare|serum|harga|toko|olshop|review|racun|katalog|sale|paket|ongkir|order|checkout|beli|gamis|hoodie|tas|parfum|gadget|laptop|hp|casing|makeup|lipstik/i.test(fullText);
+
+  const isRecipe = /resep|masak|makan|kuliner|bumbu|dapur|kue|minuman|menu|goreng|rebus|tumis|sambal|cemilan|pedas|gurih|asin|manis|kopi|baking/i.test(fullText);
+
+  const isTutorial =
+    input.style === 'STEP_BY_STEP_GUIDE' ||
+    /tutorial|panduan|langkah|step by step|how to|belajar|bikin|membuat|tahapan|cara\s+(bikin|membuat|daftar|install|setting|konfigurasi|optimasi)/i.test(fullText);
+
+  const isTwitter =
+    input.style === 'TWITTER_THREAD' ||
+    /thread|utas|cuitan|cerita|kisah|pengalaman|curhat|opini|mindset|filosofi/i.test(fullText);
 
   try {
     const ai = getGeminiClient();
-    const prompt = `Anda adalah Executive Creative Director di media carousel Instagram & LinkedIn Indonesia terkemuka (@fakta.indo, @ngomonginuang, @katadatacoid, @kumparancom).
-Tugas Anda: Buat naskah carousel ${slidesCount} slide dengan ritme visual bertingkat (Dynamic Visual Rhythm) berdasarkan materi berikut:
+
+    let systemRole = `Anda adalah Executive Creative Director di media carousel Instagram & LinkedIn Indonesia terkemuka (@fakta.indo, @ngomonginuang, @katadatacoid, @kumparancom).`;
+    let dynamicGuidelines = '';
+
+    if (isYouTube) {
+      systemRole = `Anda adalah Video Content Curator & Educator profesional.`;
+      dynamicGuidelines = `PANDUAN KHUSUS VIDEO YOUTUBE:
+- Sumber ini adalah konten video YouTube berjudul "${articleTitle}" dari kreator "${articleAuthor}".
+- Tugas Anda: Bedah isi dan topik video ini menjadi 5 slide edukatif yang padat wawasan dan bernilai tinggi!
+- JANGAN PERNAH mengembalikan judul umum seperti "Poin Pembahasan #1" atau "Metrik & Fakta Kunci".
+- Manfaatkan transkrip/deskripsi yang ada untuk menjabarkan fakta nyata, mekanisme cara kerja, tips praktis, data penting, dan kesimpulan bernas yang sesuai dengan video tersebut.`;
+    } else if (isListicle) {
+      systemRole = `Anda adalah Top Carousel Content Creator yang ahli membuat postingan DAFTAR / REKOMENDASI / TOOLS / TIPS viral di Instagram & LinkedIn.`;
+      dynamicGuidelines = `PANDUAN KHUSUS DAFTAR / LISTICLE / REKOMENDASI (${listCount ? `${listCount} Item` : 'Kumpulan Poin'}):
+- Materi ini adalah daftar/rekomendasi alat, tips, cara, atau ide konkret.
+- SLIDE-SLIDE KONTEN (Slide 1, 2, 3...) WAJIB BERISI ITEM-ITEM NYATA DENGAN NAMA SPESIFIK!
+  * Slide 0 (COVER): Hook headline memikat, sebutkan jumlah dan manfaat besar (contoh: "${articleTitle} yang Wajib Kamu Coba!").
+  * Slide 1: Sebutkan item 1 & 2 secara jelas di title dan statHighlight (contoh: title: "01. Tool/Tip Pertama", statHighlight: "Tool #01"), jelaskan fungsi dan benefit konkret di body.
+  * Slide 2: Sebutkan item 3 & 4 secara jelas.
+  * Slide 3: Sebutkan item 5 & 6 secara jelas.
+  * Slide 4 (OUTRO): Sebutkan item terakhir (jika ada) + rangkuman rekomendasi terbaik & ajakan simpan/share!
+- PENTING: JANGAN PERNAH membuat kutipan pakar fiktif ("quote") atau angka metrik abstrak. Pengguna ingin tahu NAMA ALAT / TIPS NYATA beserta fungsinya!`;
+    } else if (isEcommerce) {
+      systemRole = `Anda adalah E-Commerce Copywriter & Top Affiliate Creator Indonesia (Shopee, Tokopedia, TikTok Shop).`;
+      dynamicGuidelines = `PANDUAN KHUSUS E-COMMERCE & PROMOSI PRODUK JUALAN:
+- Materi ini bertema promosi jualan / review produk e-commerce / affiliate Shopee.
+- Susun 5 slide dengan formula copywriting jualan konversi tinggi:
+  * Slide 0 (COVER): Hook masalah konsumen atau spill produk viral (contoh: "Spill Serum Paling Ampuh Cerahkan Bekas Jerawat!", "Celana Cargo Waterproof Cuma 70 Ribuan!").
+  * Slide 1 (KEY USP / SOLUSI): Keunggulan utama produk, bahan/material terbaik, atau penawaran harga diskon. Pada "statHighlight", isi harga promo atau klaim utama (contoh: "Diskon 50%", "Rp 79.000", "Viral 10k+ Terjual").
+  * Slide 2 (FITUR & SPESIFIKASI): Rincian spesifikasi, kenyamanan pakai, sertifikasi (BPOM, Halal, Garansi Resmi, 100% Original).
+  * Slide 3 (REVIEW & TESTIMONI): Bukti review pembeli puas, rating 4.9/5 bintang, atau hasil pemakaian nyata 7 hari.
+  * Slide 4 (OUTRO / CTA): Ajakan langsung untuk checkout di Shopee, klaim voucher diskon, atau klik link bio toko sebelum stok habis!`;
+    } else if (isRecipe) {
+      systemRole = `Anda adalah Chef & Food Content Creator terkemuka pembuat konten resep masakan viral Indonesia.`;
+      dynamicGuidelines = `PANDUAN KHUSUS RESEP MAKANAN & KULINER:
+- Materi ini adalah resep masakan / kuliner lezat.
+- Susun slide langkah demi langkah yang praktis dan menggugah selera:
+  * Slide 0 (COVER): Nama masakan menggoda + waktu masak & estimasi biaya (contoh: "${articleTitle} — Gurih, Pedas & Bikin Nambah Nasi!").
+  * Slide 1 (BAHAN & BUMBU): Rincian bahan pokok dan bumbu halus dengan takaran jelas. Pada "statHighlight", isi durasi masak (contoh: "20 Menit", "Budget Hemat").
+  * Slide 2 (LANGKAH 1 & 2): Proses persiapan/marinasi dan penumisan bumbu sampai wangi.
+  * Slide 3 (LANGKAH 3 & 4 + RAHASIA SEDAP): Teknik memasak agar bumbu meresap sempurna dan tips rahasia agar masakan tidak gagal/alot.
+  * Slide 4 (PENYAJIAN & CTA): Saran penyajian terbaik bersama nasi hangat + ajakan "Simpan resep ini buat menu masak besok!".`;
+    } else if (isTutorial) {
+      systemRole = `Anda adalah Edukator & Praktisi Ahli yang menyusun panduan langkah demi langkah (Step-by-Step) praktis.`;
+      dynamicGuidelines = `PANDUAN KHUSUS TUTORIAL & STEP-BY-STEP GUIDE:
+- Materi ini adalah tutorial/panduan praktis.
+  * Slide 0 (COVER): Hook hasil akhir yang akan dicapai pembaca.
+  * Slide 1 (LANGKAH 01 - PERSIAPAN): Persiapan awal dan alat yang dibutuhkan (statHighlight: "Langkah 01").
+  * Slide 2 (LANGKAH 02 - EKSEKUSI INTI): Cara melakukan langkah utama secara mendetail dan jelas (statHighlight: "Langkah 02").
+  * Slide 3 (LANGKAH 03 - OPTIMASI & PRO-TIP): Trik rahasia agar hasil maksimal dan menghindari kesalahan umum (statHighlight: "Langkah 03").
+  * Slide 4 (OUTRO): Hasil akhir yang didapat + CTA ajakan praktik dan simpan panduan.`;
+    } else if (isTwitter) {
+      systemRole = `Anda adalah Penulis Utas Twitter / X Viral terkemuka dengan puluhan ribu retweets.`;
+      dynamicGuidelines = `PANDUAN KHUSUS UTAS TWITTER / X THREAD:
+- Setiap slide adalah 1 cuitan bersambung yang saling berkaitan (Thread 🧵).
+- Tulis dengan gaya bercerita personal, lugas, mengalir, dan bikin penasaran:
+  * Slide 0 (TWEET 1 / HOOK): Hook pembuka tweet yang viral dan bikin penasaran (akhiri dengan "Sebuah utas 🧵").
+  * Slide 1 (TWEET 2): Fakta pembuka dan latar belakang cerita.
+  * Slide 2 (TWEET 3): Plot twist atau inti cerita yang mengejutkan.
+  * Slide 3 (TWEET 4): Refleksi mendalam dan pelajaran penting yang bisa dipetik.
+  * Slide 4 (TWEET 5 / OUTRO): Cuitan penutup, kesimpulan bernas, dan ajakan Retweet tweet pertama serta Follow akun.`;
+    } else {
+      dynamicGuidelines = `ATURAN STRUKTUR 5 SLIDE DINAMIS:
+1. Slide 0 (COVER): Headline hook memikat, mengundang rasa penasaran, relevan dengan inti topik.
+2. Slide 1 (BIG METRIC / KEY PROBLEM): Sorot 1 angka/metrik/fakta terpenting (contoh: "6.000 mAh", "+40% Efisiensi", "Rp 15 Juta") pada "statHighlight" dengan penjelasan padat.
+3. Slide 2 (DEEP DIVE / DETAIL): Penjelasan mendalam mengenai mekanisme, spesifikasi, atau langkah implementasi nyata.
+4. Slide 3 (GOLDEN QUOTE / INSIGHT): Kutipan tokoh/analisis berbobot ("quote") atau aturan emas (Golden Rule) yang berwibawa.
+5. Slide 4 (OUTRO / KESIMPULAN): Rangkuman 1 kalimat padat dan ajakan bertindak (CTA).`;
+    }
+
+    const prompt = `${systemRole}
+Tugas Anda: Buat naskah carousel ${slidesCount} slide dengan ritme visual bertingkat yang sangat nyambung dan akurat berdasarkan materi berikut:
 
 Judul/Topik: "${articleTitle}"
 Sumber: "${articleSource}"
@@ -105,79 +201,53 @@ Kreator/Penulis: "${articleAuthor}"
 Materi/Isi:
 ${articleContent.slice(0, 7000)}
 
-${
-  isYouTube
-    ? `PANDUAN KHUSUS VIDEO YOUTUBE:
-- Sumber ini adalah konten video YouTube berjudul "${articleTitle}" dari kreator "${articleAuthor}".
-- Tugas Anda: Bedah isi dan topik video ini menjadi 5 slide edukatif yang padat wawasan dan bernilai tinggi!
-- JANGAN PERNAH mengembalikan judul umum seperti "Poin Pembahasan #1" atau "Metrik & Fakta Kunci".
-- Manfaatkan transkrip/deskripsi yang ada, serta elaborasikan pemahaman mendalam Anda mengenai topik "${articleTitle}" untuk menjabarkan fakta nyata, mekanisme cara kerja, tips praktis, data penting, dan kesimpulan bernas yang sesuai dengan video tersebut.
-- Pastikan setiap slide memiliki takeaway judul yang tajam dan supportingText 2-3 kalimat yang mengalir enak dibaca.`
-    : /jual|promo|diskon|shopee|tokopedia|affiliate|produk|baju|sepatu|skincare|serum|harga|toko|olshop|review|racun|katalog|sale/i.test(`${articleTitle} ${articleContent}`)
-    ? `PANDUAN KHUSUS E-COMMERCE & PROMOSI PRODUK JUALAN:
-- Materi ini bertema promosi jualan / review produk e-commerce / affiliate Shopee.
-- Susun 5 slide dengan formula copywriting jualan konversi tinggi:
-  * Slide 0 (COVER): Hook masalah konsumen atau penawaran promo menggoda (contoh: "Wajah Kusam Bikin Gak PD?", "Flash Sale Gajian Spesial!").
-  * Slide 1 (KEY USP / SOLUSI): Keunggulan utama produk, bahan/material terbaik, atau penawaran promo harga diskon.
-  * Slide 2 (FITUR & SPESIFIKASI): Rincian spesifikasi, kenyamanan pakai, sertifikasi (BPOM, Halal, Original).
-  * Slide 3 (REVIEW & TESTIMONI): Bukti review pembeli puas, rating bintang 5, atau tips pemakaian terbaik.
-  * Slide 4 (OUTRO / CTA): Ajakan langsung untuk checkout di Shopee, klik link bio toko, atau chat sebelum stok habis!`
-    : ''
-}
+${dynamicGuidelines}
 
-ATURAN STRUKTUR 5 SLIDE DINAMIS (PENTING):
-1. Slide 0 (COVER): Headline hook memikat, mengundang rasa penasaran, relevan dengan inti topik.
-2. Slide 1 (BIG METRIC / KEY PROBLEM): Sorot 1 angka/metrik/fakta terpenting (contoh: "6.000 mAh", "+40% Efisiensi", "Rp 15 Juta", "Poin Kritis 01") pada "statHighlight" dengan penjelasan padat.
-3. Slide 2 (DEEP DIVE / DETAIL): Penjelasan mendalam mengenai mekanisme, spesifikasi, atau langkah implementasi nyata.
-4. Slide 3 (GOLDEN QUOTE / INSIGHT): Kutipan tokoh/analisis berbobot ("quote") atau aturan emas (Golden Rule) yang berwibawa.
-5. Slide 4 (OUTRO / KESIMPULAN): Rangkuman 1 kalimat padat dan ajakan bertindak (CTA).
-
-- JANGAN gunakan penomoran kaku "1, 2, 3" di awal title. Gunakan judul topik yang bermakna!
 ${input.tone ? `- Gaya bahasa: ${input.tone}` : ''}
 
 Kembalikan HANYA format JSON valid berikut:
 {
-  "category": "TEKNOLOGI",
+  "category": "${isEcommerce ? 'BISNIS' : isRecipe ? 'KULINER' : isListicle ? 'EDUKASI' : 'TEKNOLOGI'}",
   "headline": "Judul headline memikat untuk cover",
   "feedCopy": "Deskripsi singkat pengantar di cover",
   "caption": "Caption Instagram lengkap dengan hook, poin bahasan emoji rapi, dan ajakan diskusi",
   "hashtags": ["#Tag1", "#Tag2", "#Tag3", "#Tag4", "#Tag5"],
-  "cta": "Simpan postingan ini & bagikan ke tim Anda!",
+  "cta": "${isEcommerce ? 'Klik link di bio untuk checkout & klaim voucher diskon!' : 'Simpan postingan ini & bagikan ke temanmu!'}",
   "slides": [
     {
       "index": 0,
       "title": "Judul Cover",
       "body": "Pengantar ringkas fakta utama.",
-      "statHighlight": "Fakta Utama",
-      "quote": "Highlight awal"
+      "statHighlight": "${isEcommerce ? 'Diskon 50%' : isRecipe ? '20 Menit' : 'Sorotan'}",
+      "quote": ""
     },
     {
       "index": 1,
-      "title": "Judul Fakta Metrik",
-      "body": "Penjelasan angka dan dampak pentingnya.",
-      "statHighlight": "Angka/Metrik Kunci",
-      "quote": "Insight data"
+      "title": "Judul Poin 1 / Keunggulan Utama",
+      "body": "Penjelasan detail poin pertama.",
+      "statHighlight": "${isListicle ? 'Poin 01' : isEcommerce ? 'Rp 79.000' : 'Fakta 1'}",
+      "quote": ""
     },
     {
       "index": 2,
-      "title": "Judul Pembahasan Mendalam",
-      "body": "Rincian spesifikasi atau langkah konkret.",
-      "statHighlight": "Poin Inti",
-      "quote": "Poin penting"
+      "title": "Judul Poin 2 / Detail Spesifikasi / Langkah",
+      "body": "Penjelasan detail poin kedua.",
+      "statHighlight": "${isListicle ? 'Poin 02' : 'Fitur Utama'}",
+      "quote": ""
     },
     {
       "index": 3,
-      "title": "Judul Wawasan Pakar",
-      "body": "Analisis dampak jangka panjang.",
-      "statHighlight": "Pro-Tip",
-      "quote": "Kutipan pernyataan tokoh/analis"
+      "title": "Judul Poin 3 / Review / Wawasan Kunci",
+      "body": "Penjelasan detail poin ketiga.",
+      "statHighlight": "${isListicle ? 'Poin 03' : 'Rating 4.9'}",
+      "quote": ""
     },
     {
       "index": 4,
       "title": "Kesimpulan & Catatan Akhir",
       "body": "Rangkuman kesimpulan 1 kalimat.",
       "statHighlight": "Rangkuman",
-      "quote": "Takeaway"
+      "quote": ""
     }
   ]
 }`;
@@ -223,51 +293,71 @@ Kembalikan HANYA format JSON valid berikut:
     const cat = detectCategoryFromText(`${articleTitle} ${articleContent}`);
     const cleanTopic = articleTitle.replace(/[\\/:"*?<>|]/g, '').trim();
 
-    deck = {
-      category: cat,
-      headline: articleTitle,
-      feedCopy: `Simak ringkasan penting dan poin-poin utama seputar ${cleanTopic}.`,
-      caption: `🔥 ${articleTitle}\n\nBerikut rangkuman dan poin-poin penting yang wajib Anda ketahui!\n\n👉 Simpan & Bagikan!`,
-      hashtags: ['#WawasanTerkini', '#Edukasi', '#NewslyAI', '#TrenViral', `#${cat}`],
-      cta: 'Simpan postingan ini & bagikan ke temanmu!',
-      slides: [
-        {
-          index: 0,
-          title: articleTitle,
-          body: `Rangkuman wawasan dan poin kunci mengenai ${cleanTopic}.`,
-          statHighlight: 'Sorotan Utama',
-          quote: 'Terverifikasi',
-        },
-        {
-          index: 1,
-          title: `Latar Belakang & Poin Kunci`,
-          body: `Topik "${cleanTopic}" menjadi sorotan penting karena menghadirkan terobosan dan data baru yang relevan bagi masyarakat luas.`,
-          statHighlight: 'Fokus Utama',
-          quote: 'Data Terverifikasi',
-        },
-        {
-          index: 2,
-          title: `Mekanisme & Ulasan Mendalam`,
-          body: `Analisis terperinci menguraikan langkah-langkah praktis dan konsep fundamental yang mendasari perkembangan "${cleanTopic}".`,
-          statHighlight: 'Poin Kritis',
-          quote: 'Analisis Mendalam',
-        },
-        {
-          index: 3,
-          title: `Wawasan Emas & Perspektif Kunci`,
-          body: `Penerapan pendekatan ini memberikan dampak efisiensi dan nilai tambah yang terukur dalam jangka panjang.`,
-          statHighlight: 'Golden Rule',
-          quote: `“Kunci keberhasilan terletak pada konsistensi memahami detail penting.”`,
-        },
-        {
-          index: 4,
-          title: `Kesimpulan & Rencana Aksi`,
-          body: `Jadikan wawasan ini sebagai bekal praktis untuk mengambil keputusan dan menerapkan langkah terbaik ke depan.`,
-          statHighlight: 'Siap Aksi',
-          quote: 'Takeaway',
-        },
-      ],
-    };
+    if (isListicle) {
+      deck = {
+        category: 'EDUKASI',
+        headline: articleTitle,
+        feedCopy: `Daftar rekomendasi pilihan terbaik untuk ${cleanTopic}.`,
+        caption: `🔥 ${articleTitle}\n\nBerikut daftar rekomendasi penting yang wajib kamu coba!\n\n👉 Simpan & Bagikan!`,
+        hashtags: ['#Rekomendasi', '#TipsPraktis', '#Produktivitas', '#WawasanViral'],
+        cta: 'Simpan postingan ini agar tidak lupa!',
+        slides: [
+          { index: 0, title: articleTitle, body: `Simak daftar pilihan terbaik seputar ${cleanTopic}.`, statHighlight: 'Rekomendasi' },
+          { index: 1, title: '01. Pilihan Utama & Paling Populer', body: `Alat/metode ini menjadi andalan utama karena kemudahan penggunaan dan efisiensi waktu yang terbukti tinggi.`, statHighlight: 'Poin #01' },
+          { index: 2, title: '02. Alternatif Cepat & Gratis', body: `Fitur lengkap tanpa biaya langganan yang cocok digunakan untuk kebutuhan sehari-hari dengan hasil maksimal.`, statHighlight: 'Poin #02' },
+          { index: 3, title: '03. Fitur Cerdas Tingkat Lanjut', body: `Solusi dengan integrasi canggih yang membantu otomatisasi tugas kompleks dalam hitungan detik.`, statHighlight: 'Poin #03' },
+          { index: 4, title: 'Kesimpulan & Rekomendasi Akhir', body: `Pilih yang paling sesuai dengan kebutuhanmu dan mulailah mencoba sekarang!`, statHighlight: 'Coba Sekarang' },
+        ],
+      };
+    } else if (isEcommerce) {
+      deck = {
+        category: 'BISNIS',
+        headline: articleTitle,
+        feedCopy: `Spill produk viral berkualitas dengan penawaran harga spesial!`,
+        caption: `🛍️ ${articleTitle}\n\nProduk berkualitas dengan rating terbaik dan harga promo spesial!\n\n👉 Cek link bio untuk order!`,
+        hashtags: ['#RacunShopee', '#PromoSpesial', '#ProdukViral', '#ShopeeHaul'],
+        cta: 'Klik link di bio untuk order & klaim voucher diskon!',
+        slides: [
+          { index: 0, title: articleTitle, body: `Solusi terbaik untuk kebutuhan harianmu dengan kualitas premium.`, statHighlight: 'Diskon 50%' },
+          { index: 1, title: 'Kenapa Produk Ini Wajib Punya?', body: `Bahan berkualitas tinggi, nyaman dipakai, dan sudah terbukti disukai ribuan pembeli.`, statHighlight: 'Viral 10k+' },
+          { index: 2, title: 'Spesifikasi & Keunggulan Bahan', body: `Standar resmi, material premium awet tahan lama, dan bergaransi 100% original.`, statHighlight: '100% Original' },
+          { index: 3, title: 'Review & Testimoni Pembeli', body: `Rating 4.9/5 dari ribuan pelanggan puas yang merekomendasikan produk ini.`, statHighlight: 'Rating 4.9/5' },
+          { index: 4, title: 'Promo Terbatas — Checkout Sekarang', body: `Dapatkan harga spesial diskon dan gratis ongkir sebelum promo berakhir!`, statHighlight: 'Beli Sekarang' },
+        ],
+      };
+    } else if (isRecipe) {
+      deck = {
+        category: 'KULINER',
+        headline: articleTitle,
+        feedCopy: `Resep praktis dan lezat yang mudah dibuat di rumah.`,
+        caption: `🍳 ${articleTitle}\n\nResep gurih mantap yang bikin nambah nasi!\n\n👉 Simpan resepnya buat masak besok!`,
+        hashtags: ['#ResepMasakan', '#KulinerViral', '#MasakPraktis', '#MenuHarian'],
+        cta: 'Simpan resep ini buat menu masak besok!',
+        slides: [
+          { index: 0, title: articleTitle, body: `Resep masakan lezat dan praktis yang mudah dibuat siapa saja.`, statHighlight: '20 Menit' },
+          { index: 1, title: 'Bahan Pokok & Bumbu Halus', body: `Siapkan bahan-bahan segar pilihan dan bumbu halus dengan takaran yang pas.`, statHighlight: 'Bahan Segar' },
+          { index: 2, title: 'Langkah Memasak Tahap Awal', body: `Tumis bumbu halus hingga harum dan matang sempurna sebelum memasukkan bahan utama.`, statHighlight: 'Tahap 01' },
+          { index: 3, title: 'Rahasia Rasa Gurih Meresap', body: `Masak dengan api sedang dan beri bumbu pelengkap hingga kuah meresap sempurna.`, statHighlight: 'Tips Chef' },
+          { index: 4, title: 'Saran Penyajian & Nikmati!', body: `Sajikan selagi hangat bersama nasi putih pulen untuk rasa terbaik!`, statHighlight: 'Siap Santap' },
+        ],
+      };
+    } else {
+      deck = {
+        category: cat,
+        headline: articleTitle,
+        feedCopy: `Simak ringkasan penting dan poin-poin utama seputar ${cleanTopic}.`,
+        caption: `🔥 ${articleTitle}\n\nBerikut rangkuman dan poin-poin penting yang wajib Anda ketahui!\n\n👉 Simpan & Bagikan!`,
+        hashtags: ['#WawasanTerkini', '#Edukasi', '#NewslyAI', '#TrenViral', `#${cat}`],
+        cta: 'Simpan postingan ini & bagikan ke temanmu!',
+        slides: [
+          { index: 0, title: articleTitle, body: `Rangkuman wawasan dan poin kunci mengenai ${cleanTopic}.`, statHighlight: 'Sorotan Utama' },
+          { index: 1, title: `Latar Belakang & Poin Kunci`, body: `Topik "${cleanTopic}" menjadi sorotan penting karena menghadirkan terobosan baru.`, statHighlight: 'Fokus Utama' },
+          { index: 2, title: `Mekanisme & Ulasan Mendalam`, body: `Analisis terperinci menguraikan langkah-langkah praktis dan konsep fundamental.`, statHighlight: 'Poin Kritis' },
+          { index: 3, title: `Wawasan Emas & Perspektif Kunci`, body: `Penerapan pendekatan ini memberikan dampak efisiensi nyata dalam jangka panjang.`, statHighlight: 'Golden Rule' },
+          { index: 4, title: `Kesimpulan & Rencana Aksi`, body: `Jadikan wawasan ini sebagai bekal praktis untuk mengambil keputusan ke depan.`, statHighlight: 'Siap Aksi' },
+        ],
+      };
+    }
   }
 
   // 3. Enrich Each Slide with Multi-Photo & Dynamic Varied Layout Architectures (Slide 2+)
@@ -309,15 +399,25 @@ Kembalikan HANYA format JSON valid berikut:
       photoUrl = articleImages[idx];
     }
 
-    // Tag badge kontekstual sesuai varian tata letak
+    // Tag badge kontekstual sesuai varian tata letak & intent
     const slideTag = isCover
       ? detectedCategory || 'HEADLINE'
       : isOutro
       ? 'KESIMPULAN'
+      : isEcommerce
+      ? (['KEUNGGULAN', 'DETAIL PRODUK', 'REVIEW PEMBELI', 'PENAWARAN'][idx - 1] || 'PRODUK')
+      : isRecipe
+      ? (['BAHAN-BAHAN', 'LANGKAH 01', 'LANGKAH 02', 'PENYAJIAN'][idx - 1] || 'RESEP')
+      : isTutorial
+      ? `LANGKAH 0${idx}`
+      : isTwitter
+      ? `Cuitan #${idx + 1}`
+      : isListicle
+      ? `POIN 0${idx}`
       : layoutVariant === 'STAT_HERO'
       ? 'METRIK & FAKTA'
       : layoutVariant === 'QUOTE_CARD'
-      ? 'INSIGHT / KUTIPAN'
+      ? 'INSIGHT UTAMA'
       : layoutVariant === 'TEXT_CENTER'
       ? 'POIN FOKUS'
       : layoutVariant === 'SPLIT_TWO_COL'
@@ -332,12 +432,12 @@ Kembalikan HANYA format JSON valid berikut:
       tag: slideTag,
       headline: isCover ? deck.headline || s.title : undefined,
       lead: isCover ? deck.feedCopy || s.body : undefined,
-      takeaway: s.title || `Poin Pembahasan #${idx + 1}`,
+      takeaway: s.title || (isListicle ? `Rekomendasi #${idx}` : isRecipe ? `Tahap #${idx}` : `Poin Pembahasan #${idx + 1}`),
       supportingText: s.body,
-      statHighlight: s.statHighlight || (layoutVariant === 'STAT_HERO' || idx === 1 ? 'Data Kunci' : undefined),
-      sourceQuote: s.quote || (layoutVariant === 'QUOTE_CARD' || idx === 3 ? `"${articleTitle}"` : undefined),
+      statHighlight: s.statHighlight || (isEcommerce ? 'Diskon Promo' : isRecipe ? 'Durasi' : isListicle ? `Poin 0${idx}` : undefined),
+      sourceQuote: s.quote || undefined,
       ctaText: isOutro ? deck.cta : undefined,
-      secondaryCta: isOutro ? 'Ikuti @newsly.ai untuk wawasan harian.' : undefined,
+      secondaryCta: isOutro ? (isEcommerce ? 'Stok terbatas, pesan sebelum kehabisan!' : isTwitter ? 'Retweet tweet pertama jika bermanfaat!' : 'Ikuti untuk wawasan praktis harian.') : undefined,
       imageUrl: photoUrl,
       source: articleSource,
     };
