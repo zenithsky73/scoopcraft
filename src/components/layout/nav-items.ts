@@ -4,6 +4,7 @@ import {
   Palette,
   Sparkles,
   Settings,
+  Bot,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -18,6 +19,7 @@ export type NavItem = {
 
 export const NAV_ITEMS: NavItem[] = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/assistant', label: 'AI Assistant', icon: Bot, badge: 'Copilot' },
   { href: '/templates', label: 'Template Explorer', icon: Palette, badge: '20 Gaya' },
   { href: '/content', label: 'Riwayat Carousel', icon: History, matchPrefix: true },
   { href: '/upgrade', label: 'Paket & Kuota', icon: Sparkles },

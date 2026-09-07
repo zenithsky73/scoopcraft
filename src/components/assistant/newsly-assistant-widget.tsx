@@ -35,6 +35,7 @@ const INITIAL_SUGGESTIONS = [
 
 export function NewslyAssistantWidget() {
   const pathname = usePathname();
+  const [mounted, setMounted] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
   const [input, setInput] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
@@ -51,8 +52,12 @@ export function NewslyAssistantWidget() {
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  // Jangan tampilkan widget di halaman canvas render headless
-  const isRenderCanvas = pathname?.startsWith('/render');
+  React.useEffect(() => {
+    setMounted(true);
+    const handleOpen = () => setIsOpen(true);
+    window.addEventListener('open-newsly-copilot', handleOpen);
+    return () => window.removeEventListener('open-newsly-copilot', handleOpen);
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -65,7 +70,10 @@ export function NewslyAssistantWidget() {
     }
   }, [isOpen, messages]);
 
-  if (isRenderCanvas) return null;
+  // Sembunyikan saat belum dimuat, di rute render canvas, atau saat sedang berada di halaman /assistant
+  if (!mounted || pathname?.startsWith('/render') || pathname === '/assistant') {
+    return null;
+  }
 
   const handleSend = async (userText?: string) => {
     const textToSend = (userText || input).trim();
@@ -187,7 +195,7 @@ export function NewslyAssistantWidget() {
   };
 
   return (
-    <div className="fixed bottom-5 right-5 z-[9999] font-sans">
+    <div className="fixed bottom-20 right-4 lg:bottom-6 lg:right-6 z-[9999] font-sans">
       {/* 1. Floating Action Button when collapsed */}
       {!isOpen && (
         <div className="relative group">
