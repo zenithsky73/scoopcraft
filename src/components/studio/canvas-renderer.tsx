@@ -37,6 +37,15 @@ import {
   HelpCircle,
   BarChart3,
   Check,
+  ShoppingBag,
+  Tag,
+  MessageSquare,
+  ThumbsUp,
+  Calendar,
+  Clock,
+  Ticket,
+  BadgeCheck,
+  Repeat,
 } from 'lucide-react';
 
 export type SlideLayoutVariant =
@@ -231,6 +240,78 @@ export function CanvasRenderer({
         </>
       )}
 
+      {/* ─── 12 NEW E-COMMERCE & SOCIAL DNA ACCENTS ─── */}
+      {style === 'SHOPEE_PROMO' && (
+        <>
+          <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-orange-500 via-amber-400 to-red-500 z-30 shadow-[0_0_20px_rgba(238,77,45,0.8)]" />
+          <div className="absolute -top-20 -right-20 w-72 h-72 bg-orange-600/25 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-red-600/20 rounded-full blur-3xl pointer-events-none" />
+        </>
+      )}
+
+      {style === 'RACUN_SHOPEE' && (
+        <>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-pink-500/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-60 h-60 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
+        </>
+      )}
+
+      {style === 'PRODUCT_CATALOG' && (
+        <div className="absolute inset-3 border border-[#C5A880]/40 pointer-events-none rounded-2xl" />
+      )}
+
+      {style === 'BRUTALIST_SALE' && (
+        <>
+          <div className="absolute inset-2 border-2 border-black pointer-events-none rounded-xl" />
+          <div className="absolute inset-0 bg-[radial-gradient(#00000015_1px,transparent_1px)] [background-size:12px_12px] pointer-events-none" />
+        </>
+      )}
+
+      {style === 'BEFORE_AFTER' && (
+        <div className="absolute top-0 bottom-0 left-1/2 w-px bg-white/15 pointer-events-none z-0" />
+      )}
+
+      {style === 'TESTIMONIAL_CHAT' && (
+        <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+      )}
+
+      {style === 'PRICE_TIER_TABLE' && (
+        <>
+          <div className="absolute top-0 right-0 w-72 h-72 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
+        </>
+      )}
+
+      {style === 'UNBOXING_POLAROID' && (
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-6 bg-amber-200/50 -rotate-2 pointer-events-none z-30 shadow-sm backdrop-blur-[1px]" />
+      )}
+
+      {style === 'TWITTER_THREAD' && (
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(29,155,240,0.05),transparent_40%)] pointer-events-none" />
+      )}
+
+      {style === 'QUOTE_MINIMAL' && (
+        <div className="absolute -bottom-8 -right-2 text-[180px] font-serif font-black text-white/5 select-none pointer-events-none leading-none z-0">
+          “
+        </div>
+      )}
+
+      {style === 'STEP_BY_STEP_GUIDE' && (
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-slate-800 z-30">
+          <div
+            className="h-full bg-gradient-to-r from-purple-500 to-indigo-500 transition-all duration-300"
+            style={{ width: `${((slide.index + 1) / totalSlides) * 100}%` }}
+          />
+        </div>
+      )}
+
+      {style === 'EVENT_WEBINAR' && (
+        <>
+          <div className="absolute top-0 right-0 w-80 h-80 bg-pink-500/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
+        </>
+      )}
+
       {/* ─── 2. HEADER BAR (CUSTOM UNIK PER TEMPLATE) ─── */}
       <div
         className={`relative z-20 px-5 sm:px-6 pt-4 pb-3 flex items-center justify-between shrink-0 ${
@@ -275,6 +356,64 @@ export function CanvasRenderer({
           ) : style === 'BLOOMBERG' ? (
             <span className="px-2.5 py-0.5 text-[10px] font-mono font-black uppercase bg-blue-600 text-white rounded">
               MARKETS LIVE
+            </span>
+          ) : style === 'SHOPEE_PROMO' ? (
+            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase bg-[#EE4D2D] text-white flex items-center gap-1 shadow-sm rounded-md">
+              <Zap className="size-3 fill-current text-yellow-300" /> {slide.tag || 'FLASH SALE'}
+            </span>
+          ) : style === 'RACUN_SHOPEE' ? (
+            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase bg-gradient-to-r from-pink-500 to-rose-500 text-white flex items-center gap-1 shadow-sm rounded-md">
+              <Sparkles className="size-3" /> {slide.tag || 'RACUN SHOPEE'}
+            </span>
+          ) : style === 'PRODUCT_CATALOG' ? (
+            <span className="px-3 py-0.5 text-[9px] font-serif tracking-widest uppercase border border-[#C5A880] text-[#8C6D46] rounded-full">
+              {slide.tag || 'OFFICIAL BOUTIQUE'}
+            </span>
+          ) : style === 'BRUTALIST_SALE' ? (
+            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase bg-[#CCFF00] text-black border-2 border-black shadow-[2px_2px_0px_#000] -rotate-1">
+              <Tag className="size-3 inline mr-1" /> {slide.tag || 'DROP ALERT'}
+            </span>
+          ) : style === 'BEFORE_AFTER' ? (
+            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase bg-emerald-600 text-white flex items-center gap-1 rounded-md shadow-sm">
+              ✨ {slide.tag || 'TRANSFORMASI'}
+            </span>
+          ) : style === 'TESTIMONIAL_CHAT' ? (
+            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase bg-[#25D366] text-white flex items-center gap-1 rounded-md shadow-sm">
+              <MessageSquare className="size-3" /> {slide.tag || 'VERIFIED BUYER'}
+            </span>
+          ) : style === 'PRICE_TIER_TABLE' ? (
+            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase bg-amber-500 text-slate-950 font-mono flex items-center gap-1 rounded-md shadow-sm">
+              <Tag className="size-3" /> {slide.tag || 'PRICE LIST'}
+            </span>
+          ) : style === 'UNBOXING_POLAROID' ? (
+            <span className="px-2.5 py-0.5 text-[10px] font-bold text-slate-700 bg-amber-100 border border-amber-300 rounded shadow-sm rotate-1">
+              <Bookmark className="size-3 text-pink-500 inline mr-1" /> {slide.tag || 'UNBOXING DIARY'}
+            </span>
+          ) : style === 'TWITTER_THREAD' ? (
+            <div className="flex items-center gap-1.5">
+              <div className="size-4.5 rounded-full bg-slate-800 flex items-center justify-center text-[9px] font-bold text-white border border-white/20">
+                𝕏
+              </div>
+              <span className="text-[10px] font-bold text-white flex items-center gap-1">
+                Thread <BadgeCheck className="size-3 text-sky-400 fill-sky-400" />
+              </span>
+            </div>
+          ) : style === 'QUOTE_MINIMAL' ? (
+            <span className="text-[9px] font-mono tracking-widest uppercase text-slate-400 border-b border-slate-700 pb-0.5">
+              {slide.tag || 'REFLEKSI'}
+            </span>
+          ) : style === 'STEP_BY_STEP_GUIDE' ? (
+            <div className="flex items-center gap-1.5">
+              <span className="size-4 rounded-full bg-purple-600 text-[9px] font-black text-white flex items-center justify-center">
+                {slide.index + 1}
+              </span>
+              <span className="text-[10px] font-black text-purple-400 uppercase tracking-wider">
+                {slide.tag || `LANGKAH 0${slide.index + 1}`}
+              </span>
+            </div>
+          ) : style === 'EVENT_WEBINAR' ? (
+            <span className="px-2.5 py-0.5 text-[10px] font-mono font-black uppercase bg-gradient-to-r from-pink-600 to-purple-600 text-white rounded-md flex items-center gap-1 shadow-sm">
+              <Ticket className="size-3" /> {slide.tag || 'ADMISSION PASS'}
             </span>
           ) : (
             <span
@@ -371,6 +510,91 @@ export function CanvasRenderer({
               {style === 'SPOTLIGHT' && (
                 <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-fuchsia-600/40 border border-fuchsia-400/50 text-fuchsia-100 text-[10px] font-black uppercase shadow-sm">
                   <Star className="size-3 text-amber-400 fill-amber-400" /> TOP TRENDING #1
+                </div>
+              )}
+
+              {/* Special Cover: SHOPEE_PROMO */}
+              {style === 'SHOPEE_PROMO' && (
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-orange-950/90 border border-orange-500/60 text-xs shadow-md">
+                  <span className="line-through text-slate-400 text-[11px]">Rp 189.000</span>
+                  <span className="font-black text-yellow-300 text-sm">🔥 Rp 79.000</span>
+                  <span className="px-1.5 py-0.5 bg-red-600 text-white text-[9px] font-black rounded-md uppercase">DISKON 60%</span>
+                </div>
+              )}
+
+              {/* Special Cover: RACUN_SHOPEE */}
+              {style === 'RACUN_SHOPEE' && (
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-slate-900/90 border border-pink-500/40 text-xs shadow-md">
+                  <span className="text-amber-400 text-xs font-black">★★★★★</span>
+                  <span className="text-white text-[11px] font-bold">4.9/5 (1.8k+ Ulasan)</span>
+                  <span className="text-[10px] text-pink-400 font-mono">#ViralAffiliate</span>
+                </div>
+              )}
+
+              {/* Special Cover: PRODUCT_CATALOG */}
+              {style === 'PRODUCT_CATALOG' && (
+                <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                  <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#C5A880]/20 border border-[#C5A880] text-[#8C6D46]">100% Halal</span>
+                  <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#C5A880]/20 border border-[#C5A880] text-[#8C6D46]">BPOM Certified</span>
+                  <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#C5A880]/20 border border-[#C5A880] text-[#8C6D46]">Original</span>
+                </div>
+              )}
+
+              {/* Special Cover: BRUTALIST_SALE */}
+              {style === 'BRUTALIST_SALE' && (
+                <div className="inline-block px-3 py-1 bg-[#CCFF00] text-black font-black text-xs uppercase border-2 border-black shadow-[3px_3px_0px_#000] -rotate-2">
+                  ⚡ SPECIAL DROP — 50% OFF TODAY
+                </div>
+              )}
+
+              {/* Special Cover: BEFORE_AFTER */}
+              {style === 'BEFORE_AFTER' && (
+                <div className="grid grid-cols-2 gap-2 text-center text-xs font-bold pt-1">
+                  <div className="p-1.5 rounded-xl bg-red-950/80 border border-red-500/40 text-red-300">❌ SEBELUM (Masalah)</div>
+                  <div className="p-1.5 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-300">✨ SESUDAH (Solusi)</div>
+                </div>
+              )}
+
+              {/* Special Cover: TESTIMONIAL_CHAT */}
+              {style === 'TESTIMONIAL_CHAT' && (
+                <div className="p-2.5 rounded-2xl bg-[#005c4b]/90 border border-emerald-400/30 text-emerald-50 text-xs shadow-lg space-y-1">
+                  <div className="flex items-center justify-between text-[10px] text-emerald-300">
+                    <span className="font-bold flex items-center gap-1"><MessageSquare className="size-3" /> WhatsApp Review</span>
+                    <span>14:32 ✓✓</span>
+                  </div>
+                  <p className="italic font-medium text-[11px]">“Barangnya original, packing rapi dan cepat banget sampai. Bintang 5!”</p>
+                </div>
+              )}
+
+              {/* Special Cover: TWITTER_THREAD */}
+              {style === 'TWITTER_THREAD' && (
+                <div className="flex items-center justify-between p-2 rounded-xl bg-slate-900/80 border border-slate-700 text-xs text-slate-300">
+                  <div className="flex items-center gap-2">
+                    <div className="size-6 rounded-full bg-slate-700 flex items-center justify-center text-[10px] font-bold text-white">𝕏</div>
+                    <div>
+                      <p className="text-[11px] font-bold text-white flex items-center gap-1">{brandName} <BadgeCheck className="size-3 text-sky-400 fill-sky-400" /></p>
+                      <p className="text-[9px] text-slate-400">{handle}</p>
+                    </div>
+                  </div>
+                  <div className="text-[9px] font-mono text-slate-400">
+                    🔁 2.4k • ❤️ 18.2k
+                  </div>
+                </div>
+              )}
+
+              {/* Special Cover: PRICE_TIER_TABLE */}
+              {style === 'PRICE_TIER_TABLE' && (
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-amber-950/80 border border-amber-500/40 text-xs font-mono text-amber-300">
+                  <Tag className="size-3" />
+                  <span>PAKET BEST SELLER • MULAI DARI Rp 49.000</span>
+                </div>
+              )}
+
+              {/* Special Cover: EVENT_WEBINAR */}
+              {style === 'EVENT_WEBINAR' && (
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-pink-950/80 border border-pink-500/40 text-xs font-mono text-pink-300">
+                  <Calendar className="size-3" />
+                  <span>ONLINE WORKSHOP • SLOT TERBATAS</span>
                 </div>
               )}
 
@@ -750,11 +974,45 @@ export function CanvasRenderer({
             className="w-full max-w-xs py-3 px-4 rounded-2xl font-black text-xs shadow-xl flex items-center justify-center gap-2"
             style={{
               backgroundColor: accent,
-              color: style === 'STREETWEAR' || style === 'MINIMAL' || style === 'BOLD' ? '#000000' : '#FFFFFF',
+              color: style === 'STREETWEAR' || style === 'MINIMAL' || style === 'BOLD' || style === 'BRUTALIST_SALE' ? '#000000' : '#FFFFFF',
             }}
           >
-            <span>{slide.ctaText || 'Ikuti untuk analisis harian'}</span>
-            <ArrowRight className="size-3.5" />
+            {style === 'SHOPEE_PROMO' ? (
+              <>
+                <ShoppingBag className="size-3.5" />
+                <span>{slide.ctaText || 'Beli Sekarang di Shopee / Link Bio'}</span>
+              </>
+            ) : style === 'RACUN_SHOPEE' ? (
+              <>
+                <Sparkles className="size-3.5" />
+                <span>{slide.ctaText || 'Komentar "MAU" / Cek Link di Bio'}</span>
+              </>
+            ) : style === 'PRODUCT_CATALOG' ? (
+              <>
+                <Award className="size-3.5" />
+                <span>{slide.ctaText || 'Dapatkan Koleksi Eksklusif di Toko'}</span>
+              </>
+            ) : style === 'TESTIMONIAL_CHAT' ? (
+              <>
+                <MessageSquare className="size-3.5" />
+                <span>{slide.ctaText || 'Pesan Langsung via WhatsApp'}</span>
+              </>
+            ) : style === 'TWITTER_THREAD' ? (
+              <>
+                <Repeat className="size-3.5" />
+                <span>{slide.ctaText || 'Follow Akun untuk Thread Menarik'}</span>
+              </>
+            ) : style === 'EVENT_WEBINAR' ? (
+              <>
+                <Ticket className="size-3.5" />
+                <span>{slide.ctaText || 'Amankan Slot / Tiket Sekarang'}</span>
+              </>
+            ) : (
+              <>
+                <span>{slide.ctaText || 'Ikuti untuk analisis harian'}</span>
+                <ArrowRight className="size-3.5" />
+              </>
+            )}
           </div>
         </div>
       )}

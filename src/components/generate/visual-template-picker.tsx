@@ -15,14 +15,15 @@ export interface VisualTemplatePickerProps {
   onRequireUpgrade?: (style: StyleDef) => void;
 }
 
-type CategoryFilter = 'ALL' | 'BREAKING' | 'BIZ' | 'EDITORIAL' | 'URBAN';
+type CategoryFilter = 'ALL' | 'ECOMMERCE' | 'SOCIAL' | 'LINKEDIN' | 'NEWS' | 'TECH';
 
 const CATEGORIES: { id: CategoryFilter; label: string; icon: string; count: number }[] = [
-  { id: 'ALL', label: 'Semua', icon: '🌟', count: 20 },
-  { id: 'BREAKING', label: 'Breaking', icon: '⚡', count: 6 },
-  { id: 'BIZ', label: 'Bisnis & Cuan', icon: '💼', count: 5 },
-  { id: 'EDITORIAL', label: 'Editorial', icon: '📰', count: 4 },
-  { id: 'URBAN', label: 'Urban & Pop', icon: '🎨', count: 5 },
+  { id: 'ALL', label: 'Semua', icon: '🌟', count: 32 },
+  { id: 'ECOMMERCE', label: 'E-Commerce & Jualan', icon: '🛍️', count: 8 },
+  { id: 'SOCIAL', label: 'Sosmed & Kreator', icon: '📸', count: 8 },
+  { id: 'LINKEDIN', label: 'Bisnis & LinkedIn', icon: '💼', count: 7 },
+  { id: 'NEWS', label: 'Berita & Editorial', icon: '📰', count: 5 },
+  { id: 'TECH', label: 'Tech & Edukasi', icon: '⚡', count: 4 },
 ];
 
 export function VisualTemplatePicker({
@@ -52,17 +53,46 @@ export function VisualTemplatePicker({
       }
 
       // 2. Category Filter
-      if (activeCategory === 'BREAKING') {
-        return ['BREAKING_NEWS', 'BOLD', 'SPOTLIGHT', 'POLICY', 'RED_COLLAGE', 'PODCAST'].includes(style.id);
+      if (activeCategory === 'ECOMMERCE') {
+        return [
+          'SHOPEE_PROMO',
+          'RACUN_SHOPEE',
+          'PRODUCT_CATALOG',
+          'BRUTALIST_SALE',
+          'BEFORE_AFTER',
+          'TESTIMONIAL_CHAT',
+          'PRICE_TIER_TABLE',
+          'UNBOXING_POLAROID',
+        ].includes(style.id);
       }
-      if (activeCategory === 'BIZ') {
-        return ['FINANCE', 'BLOOMBERG', 'CORPORATE', 'TECH', 'MINIMAL'].includes(style.id);
+      if (activeCategory === 'SOCIAL') {
+        return [
+          'CULINARY',
+          'STREETWEAR',
+          'SPOTLIGHT',
+          'RED_COLLAGE',
+          'TWITTER_THREAD',
+          'QUOTE_MINIMAL',
+          'STEP_BY_STEP_GUIDE',
+          'LIFESTYLE',
+        ].includes(style.id);
       }
-      if (activeCategory === 'EDITORIAL') {
-        return ['EDITORIAL', 'MINIMAL', 'CORPORATE', 'POLICY'].includes(style.id);
+      if (activeCategory === 'LINKEDIN') {
+        return [
+          'CORPORATE',
+          'PODCAST',
+          'FINANCE',
+          'BLOOMBERG',
+          'MINIMAL',
+          'EVENT_WEBINAR',
+          'POLICY',
+        ].includes(style.id);
       }
-      if (activeCategory === 'URBAN') {
-        return ['STREETWEAR', 'ATHLETIC', 'TERMINAL', 'COSMIC', 'CULINARY', 'LIFESTYLE', 'MODERN'].includes(style.id);
+      if (activeCategory === 'NEWS') {
+        return ['BREAKING_NEWS', 'EDITORIAL', 'MODERN', 'POLICY', 'BOLD'].includes(style.id);
+      }
+      if (activeCategory === 'TECH') {
+        return ['TERMINAL', 'COSMIC', 'TECH', 'ATHLETIC'].includes(style.id);
       }
 
       return true;
@@ -265,10 +295,10 @@ export function VisualTemplatePicker({
                 <p className="font-bold text-xs text-slate-900 dark:text-white truncate">
                   {style.label}
                 </p>
-                <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate flex items-center gap-1 font-medium">
-                  <span className="text-primary font-bold">⚡ Ref {idx + 1}:</span>
-                  <span>{style.subLabel?.replace(/^ala /, '') || style.instagramRef || 'Visual'}</span>
-                </p>
+                <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 truncate font-medium">
+                  <span className="text-primary font-bold">{style.platformBadge || `⚡ Ref ${idx + 1}`}</span>
+                  <span className="truncate max-w-[50%]">{style.subLabel?.replace(/^ala /, '') || style.instagramRef || 'Visual'}</span>
+                </div>
               </div>
             </div>
           );

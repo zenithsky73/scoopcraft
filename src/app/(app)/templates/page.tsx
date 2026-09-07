@@ -7,15 +7,17 @@ import { STYLES, isProStyle, type StyleDef } from '@/config/styles';
 import { Button } from '@/components/ui/button';
 import { TemplatePreviewModal } from '@/components/generate/template-preview-modal';
 
-type CategoryFilter = 'ALL' | 'FREE' | 'PRO' | 'NEWS' | 'BIZ' | 'MODERN';
+type CategoryFilter = 'ALL' | 'ECOMMERCE' | 'SOCIAL' | 'LINKEDIN' | 'NEWS' | 'TECH' | 'FREE' | 'PRO';
 
 const CATEGORIES: { id: CategoryFilter; label: string; count: number }[] = [
-  { id: 'ALL', label: '⭐ Semua', count: 20 },
-  { id: 'FREE', label: '🆓 Gratis', count: 5 },
-  { id: 'PRO', label: '👑 PRO Exclusive', count: 15 },
-  { id: 'NEWS', label: '📰 Media Berita', count: 6 },
-  { id: 'BIZ', label: '💼 Finansial & Bisnis', count: 5 },
-  { id: 'MODERN', label: '⚡ Tech & Gen-Z', count: 9 },
+  { id: 'ALL', label: '⭐ Semua', count: 32 },
+  { id: 'ECOMMERCE', label: '🛍️ E-Commerce & Jualan', count: 8 },
+  { id: 'SOCIAL', label: '📸 Sosmed & Kreator', count: 8 },
+  { id: 'LINKEDIN', label: '💼 Bisnis & LinkedIn', count: 7 },
+  { id: 'NEWS', label: '📰 Media Berita', count: 5 },
+  { id: 'TECH', label: '⚡ Tech & Edukasi', count: 4 },
+  { id: 'FREE', label: '🆓 Gratis', count: 3 },
+  { id: 'PRO', label: '👑 PRO Exclusive', count: 29 },
 ];
 
 export default function TemplatesPage() {
@@ -26,14 +28,46 @@ export default function TemplatesPage() {
     return STYLES.filter((style) => {
       if (activeCategory === 'FREE') return style.tier === 'FREE';
       if (activeCategory === 'PRO') return style.tier === 'PRO';
+      if (activeCategory === 'ECOMMERCE') {
+        return [
+          'SHOPEE_PROMO',
+          'RACUN_SHOPEE',
+          'PRODUCT_CATALOG',
+          'BRUTALIST_SALE',
+          'BEFORE_AFTER',
+          'TESTIMONIAL_CHAT',
+          'PRICE_TIER_TABLE',
+          'UNBOXING_POLAROID',
+        ].includes(style.id);
+      }
+      if (activeCategory === 'SOCIAL') {
+        return [
+          'CULINARY',
+          'STREETWEAR',
+          'SPOTLIGHT',
+          'RED_COLLAGE',
+          'TWITTER_THREAD',
+          'QUOTE_MINIMAL',
+          'STEP_BY_STEP_GUIDE',
+          'LIFESTYLE',
+        ].includes(style.id);
+      }
+      if (activeCategory === 'LINKEDIN') {
+        return [
+          'CORPORATE',
+          'PODCAST',
+          'FINANCE',
+          'BLOOMBERG',
+          'MINIMAL',
+          'EVENT_WEBINAR',
+          'POLICY',
+        ].includes(style.id);
+      }
       if (activeCategory === 'NEWS') {
-        return ['EDITORIAL', 'BOLD', 'CORPORATE', 'POLICY', 'SPOTLIGHT', 'RED_COLLAGE'].includes(style.id);
+        return ['BREAKING_NEWS', 'EDITORIAL', 'MODERN', 'POLICY', 'BOLD'].includes(style.id);
       }
-      if (activeCategory === 'BIZ') {
-        return ['FINANCE', 'BLOOMBERG', 'CORPORATE', 'MINIMAL'].includes(style.id);
-      }
-      if (activeCategory === 'MODERN') {
-        return ['STREETWEAR', 'ATHLETIC', 'TERMINAL', 'TECH', 'COSMIC', 'PODCAST', 'CULINARY', 'LIFESTYLE', 'MODERN'].includes(style.id);
+      if (activeCategory === 'TECH') {
+        return ['TERMINAL', 'COSMIC', 'TECH', 'ATHLETIC'].includes(style.id);
       }
       return true;
     });
@@ -44,13 +78,13 @@ export default function TemplatesPage() {
       {/* ─── HEADER ─── */}
       <div className="text-center sm:text-left space-y-2">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 dark:bg-primary/20 text-primary border border-primary/20 dark:border-primary/30 text-xs font-bold uppercase tracking-wider shadow-sm">
-          <Palette className="size-3.5" /> 20 Preset Desain Media Indonesia
+          <Palette className="size-3.5" /> 32 Preset Desain E-Commerce & Media Sosial
         </div>
         <h1 className="text-xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-          Katalog Gaya Visual Media Indonesia
+          Katalog Gaya Visual E-Commerce &amp; Media Sosial
         </h1>
         <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-2xl">
-          Eksplorasi 20 gaya visual carousel kelas dunia. Klik pada salah satu template untuk melihat preview 5-slide lengkap!
+          Eksplorasi 32 gaya visual carousel kelas dunia: dari Shopee flash sale, review produk, konten LinkedIn, hingga portal berita. Klik pada template untuk melihat preview 5-slide!
         </p>
       </div>
 

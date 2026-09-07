@@ -113,6 +113,15 @@ ${
 - JANGAN PERNAH mengembalikan judul umum seperti "Poin Pembahasan #1" atau "Metrik & Fakta Kunci".
 - Manfaatkan transkrip/deskripsi yang ada, serta elaborasikan pemahaman mendalam Anda mengenai topik "${articleTitle}" untuk menjabarkan fakta nyata, mekanisme cara kerja, tips praktis, data penting, dan kesimpulan bernas yang sesuai dengan video tersebut.
 - Pastikan setiap slide memiliki takeaway judul yang tajam dan supportingText 2-3 kalimat yang mengalir enak dibaca.`
+    : /jual|promo|diskon|shopee|tokopedia|affiliate|produk|baju|sepatu|skincare|serum|harga|toko|olshop|review|racun|katalog|sale/i.test(`${articleTitle} ${articleContent}`)
+    ? `PANDUAN KHUSUS E-COMMERCE & PROMOSI PRODUK JUALAN:
+- Materi ini bertema promosi jualan / review produk e-commerce / affiliate Shopee.
+- Susun 5 slide dengan formula copywriting jualan konversi tinggi:
+  * Slide 0 (COVER): Hook masalah konsumen atau penawaran promo menggoda (contoh: "Wajah Kusam Bikin Gak PD?", "Flash Sale Gajian Spesial!").
+  * Slide 1 (KEY USP / SOLUSI): Keunggulan utama produk, bahan/material terbaik, atau penawaran promo harga diskon.
+  * Slide 2 (FITUR & SPESIFIKASI): Rincian spesifikasi, kenyamanan pakai, sertifikasi (BPOM, Halal, Original).
+  * Slide 3 (REVIEW & TESTIMONI): Bukti review pembeli puas, rating bintang 5, atau tips pemakaian terbaik.
+  * Slide 4 (OUTRO / CTA): Ajakan langsung untuk checkout di Shopee, klik link bio toko, atau chat sebelum stok habis!`
     : ''
 }
 
