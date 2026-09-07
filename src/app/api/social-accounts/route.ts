@@ -7,7 +7,7 @@ import type { SocialPlatform } from '@prisma/client';
 export const runtime = 'nodejs';
 
 const connectSchema = z.object({
-  platform: z.enum(['INSTAGRAM', 'LINKEDIN', 'FACEBOOK', 'PINTEREST', 'TELEGRAM']),
+  platform: z.enum(['INSTAGRAM', 'LINKEDIN', 'FACEBOOK', 'THREADS', 'PINTEREST', 'TELEGRAM']),
   accountName: z.string().min(1),
   accountHandle: z.string().optional(),
   accessToken: z.string().optional(),

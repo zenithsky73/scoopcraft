@@ -51,12 +51,16 @@ export async function GET(req: Request) {
   // Verifikasi viewer atau userId dari state
   const viewer = await getViewer();
   let targetUserId = viewer?.user?.id;
+  let targetPlatform = 'INSTAGRAM';
 
   if (state) {
     try {
       const decoded = JSON.parse(Buffer.from(state, 'base64url').toString('utf-8'));
       if (!targetUserId && decoded?.userId) {
         targetUserId = decoded.userId;
+      }
+      if (decoded?.targetPlatform) {
+        targetPlatform = decoded.targetPlatform;
       }
     } catch (e) {
       console.warn('[Meta OAuth State Decode Warning]:', e);
@@ -218,6 +222,7 @@ export async function GET(req: Request) {
     const redirectParams = new URLSearchParams({
       tab: 'social',
       connected: 'meta',
+      platform: targetPlatform.toLowerCase(),
       ig: igConnectedCount.toString(),
       fb: fbConnectedCount.toString(),
     });

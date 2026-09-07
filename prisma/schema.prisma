@@ -412,6 +412,7 @@ enum SocialPlatform {
   INSTAGRAM
   LINKEDIN
   FACEBOOK
+  THREADS
   PINTEREST
   TELEGRAM
 }

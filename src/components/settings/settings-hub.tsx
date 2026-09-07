@@ -25,6 +25,8 @@ import {
   Share2,
   Instagram,
   Linkedin,
+  Facebook,
+  AtSign,
   ExternalLink,
   Plus,
 } from 'lucide-react';
@@ -89,7 +91,9 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
   const [socialAccounts, setSocialAccounts] = React.useState<any[]>([]);
   const [socialLoading, setSocialLoading] = React.useState(false);
   const [showConnectRealModal, setShowConnectRealModal] = React.useState(false);
-  const [realModalPlatform, setRealModalPlatform] = React.useState<'INSTAGRAM' | 'LINKEDIN'>('INSTAGRAM');
+  const [realModalPlatform, setRealModalPlatform] = React.useState<
+    'INSTAGRAM' | 'FACEBOOK' | 'THREADS' | 'LINKEDIN'
+  >('INSTAGRAM');
 
   const fetchSocialAccounts = React.useCallback(async () => {
     try {
@@ -150,7 +154,11 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
     }
   }, [fetchSocialAccounts]);
 
-  const handleConnectSocial = async (platform: 'INSTAGRAM' | 'LINKEDIN', handleName: string, isDemo = true) => {
+  const handleConnectSocial = async (
+    platform: 'INSTAGRAM' | 'FACEBOOK' | 'THREADS' | 'LINKEDIN',
+    handleName: string,
+    isDemo = true
+  ) => {
     try {
       setSocialLoading(true);
       const res = await fetch('/api/social-accounts', {
@@ -847,34 +855,40 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
               </Link>
             </div>
 
-            {/* Quick Connect Actions */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+            {/* Quick Connect Actions: 4 Dedicated Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+              {/* 1. INSTAGRAM */}
               <div className="p-4 rounded-2xl border border-pink-200 dark:border-pink-900/50 bg-pink-50/40 dark:bg-pink-950/20 flex flex-col justify-between">
-                <div className="flex items-start gap-3 mb-3">
-                  <div className="p-2 rounded-xl bg-gradient-to-tr from-pink-500 via-purple-600 to-indigo-600 text-white shadow-sm">
-                    <Instagram className="size-5" />
+                <div className="space-y-2 mb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="p-2 rounded-xl bg-gradient-to-tr from-pink-500 via-purple-600 to-indigo-600 text-white shadow-sm">
+                      <Instagram className="size-4" />
+                    </div>
+                    <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-pink-100 dark:bg-pink-950 text-pink-700 dark:text-pink-300">
+                      Instagram
+                    </span>
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">Instagram &amp; Facebook (Resmi Meta)</h4>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                      Hubungkan akun Instagram Bisnis &amp; Halaman Facebook via otorisasi 1-klik Meta.
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">Instagram Pro</h4>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">
+                      Posting carousel foto &amp; cover ke feed akun Bisnis / Kreator.
                     </p>
                   </div>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <Button
                     type="button"
                     size="sm"
                     onClick={() => {
-                      notify.info('Membuka Otorisasi Meta...', 'Mengalihkan ke dialog persetujuan resmi Meta Facebook.');
-                      window.location.href = '/api/social-accounts/oauth/meta';
+                      notify.info('Membuka Otorisasi Instagram...', 'Mengalihkan ke dialog persetujuan resmi Meta.');
+                      window.location.href = '/api/social-accounts/oauth/meta?platform=instagram';
                     }}
                     className="w-full text-xs font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:opacity-95 text-white shadow-sm"
                   >
                     <ShieldCheck className="size-3.5 mr-1" />
-                    ⚡ Hubungkan 1-Klik via Meta
+                    ⚡ Hubungkan IG
                   </Button>
-                  <div className="flex items-center justify-between px-1 text-[11px]">
+                  <div className="flex items-center justify-between px-1 text-[10px]">
                     <button
                       type="button"
                       onClick={() => {
@@ -883,7 +897,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                       }}
                       className="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold"
                     >
-                      Opsi Manual / Token
+                      Token Manual
                     </button>
                     <button
                       type="button"
@@ -891,25 +905,139 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                       onClick={() => handleConnectSocial('INSTAGRAM', '@newsly.creatives', true)}
                       className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 font-medium"
                     >
-                      Mode Demo
+                      Demo
                     </button>
                   </div>
                 </div>
               </div>
 
+              {/* 2. FACEBOOK */}
               <div className="p-4 rounded-2xl border border-blue-200 dark:border-blue-900/50 bg-blue-50/40 dark:bg-blue-950/20 flex flex-col justify-between">
-                <div className="flex items-start gap-3 mb-3">
-                  <div className="p-2 rounded-xl bg-blue-600 text-white shadow-sm">
-                    <Linkedin className="size-5" />
+                <div className="space-y-2 mb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="p-2 rounded-xl bg-blue-600 text-white shadow-sm">
+                      <Facebook className="size-4" />
+                    </div>
+                    <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
+                      Facebook
+                    </span>
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">LinkedIn Account (Asli)</h4>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                      Posting carousel dokumen &amp; naskah ke feed akun LinkedIn resmi Anda.
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">Facebook Page</h4>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">
+                      Posting album slide &amp; update status ke Halaman Facebook Anda.
                     </p>
                   </div>
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-1.5">
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => {
+                      notify.info('Membuka Otorisasi Facebook...', 'Mengalihkan ke dialog persetujuan Facebook.');
+                      window.location.href = '/api/social-accounts/oauth/meta?platform=facebook';
+                    }}
+                    className="w-full text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-sm"
+                  >
+                    <ShieldCheck className="size-3.5 mr-1" />
+                    ⚡ Hubungkan FB
+                  </Button>
+                  <div className="flex items-center justify-between px-1 text-[10px]">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRealModalPlatform('FACEBOOK');
+                        setShowConnectRealModal(true);
+                      }}
+                      className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                    >
+                      Token Manual
+                    </button>
+                    <button
+                      type="button"
+                      disabled={socialLoading}
+                      onClick={() => handleConnectSocial('FACEBOOK', 'Newsly Community', true)}
+                      className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 font-medium"
+                    >
+                      Demo
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. THREADS */}
+              <div className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/40 flex flex-col justify-between">
+                <div className="space-y-2 mb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="p-2 rounded-xl bg-black text-white shadow-sm">
+                      <AtSign className="size-4" />
+                    </div>
+                    <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200">
+                      Threads
+                    </span>
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">Threads Meta</h4>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">
+                      Posting teks utas berita &amp; carousel microblog ke Threads.
+                    </p>
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => {
+                      notify.info('Membuka Otorisasi Threads...', 'Mengalihkan ke dialog otorisasi Meta Threads.');
+                      window.location.href = '/api/social-accounts/oauth/meta?platform=threads';
+                    }}
+                    className="w-full text-xs font-bold bg-black hover:bg-neutral-800 text-white shadow-sm"
+                  >
+                    <ShieldCheck className="size-3.5 mr-1" />
+                    ⚡ Hubungkan Threads
+                  </Button>
+                  <div className="flex items-center justify-between px-1 text-[10px]">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRealModalPlatform('THREADS');
+                        setShowConnectRealModal(true);
+                      }}
+                      className="text-slate-700 dark:text-slate-300 hover:underline font-semibold"
+                    >
+                      Token Manual
+                    </button>
+                    <button
+                      type="button"
+                      disabled={socialLoading}
+                      onClick={() => handleConnectSocial('THREADS', '@newsly_threads', true)}
+                      className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 font-medium"
+                    >
+                      Demo
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* 4. LINKEDIN */}
+              <div className="p-4 rounded-2xl border border-sky-200 dark:border-sky-900/50 bg-sky-50/40 dark:bg-sky-950/20 flex flex-col justify-between">
+                <div className="space-y-2 mb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="p-2 rounded-xl bg-[#0A66C2] text-white shadow-sm">
+                      <Linkedin className="size-4" />
+                    </div>
+                    <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300">
+                      LinkedIn
+                    </span>
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">LinkedIn</h4>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">
+                      Posting dokumen PDF carousel &amp; naskah feed ke LinkedIn.
+                    </p>
+                  </div>
+                </div>
+                <div className="space-y-1.5">
                   <Button
                     type="button"
                     size="sm"
@@ -917,19 +1045,31 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                       setRealModalPlatform('LINKEDIN');
                       setShowConnectRealModal(true);
                     }}
-                    className="w-full text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-sm"
+                    className="w-full text-xs font-bold bg-[#0A66C2] hover:bg-[#004182] text-white shadow-sm"
                   >
                     <ShieldCheck className="size-3.5 mr-1" />
-                    Hubungkan Akun Asli LinkedIn
+                    ⚡ Hubungkan LinkedIn
                   </Button>
-                  <button
-                    type="button"
-                    disabled={socialLoading}
-                    onClick={() => handleConnectSocial('LINKEDIN', 'Newsly Official', true)}
-                    className="w-full text-[11px] text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 text-center py-1 font-medium transition-colors"
-                  >
-                    Atau gunakan Mode Simulator Demo
-                  </button>
+                  <div className="flex items-center justify-between px-1 text-[10px]">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRealModalPlatform('LINKEDIN');
+                        setShowConnectRealModal(true);
+                      }}
+                      className="text-[#0A66C2] dark:text-sky-400 hover:underline font-semibold"
+                    >
+                      Token Manual
+                    </button>
+                    <button
+                      type="button"
+                      disabled={socialLoading}
+                      onClick={() => handleConnectSocial('LINKEDIN', 'Newsly Official', true)}
+                      className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 font-medium"
+                    >
+                      Demo
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -955,9 +1095,11 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                           {acc.platform === 'INSTAGRAM' ? (
                             <Instagram className="size-4 text-pink-500" />
                           ) : acc.platform === 'FACEBOOK' ? (
-                            <Share2 className="size-4 text-blue-600" />
+                            <Facebook className="size-4 text-blue-600" />
+                          ) : acc.platform === 'THREADS' ? (
+                            <AtSign className="size-4 text-slate-900 dark:text-white" />
                           ) : (
-                            <Linkedin className="size-4 text-blue-500" />
+                            <Linkedin className="size-4 text-[#0A66C2]" />
                           )}
                         </div>
                         <div>

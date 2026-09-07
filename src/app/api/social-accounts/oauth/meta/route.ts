@@ -39,18 +39,22 @@ export async function GET(req: Request) {
     );
   }
 
+  const { searchParams } = new URL(req.url);
+  const targetPlatform = (searchParams.get('platform') || 'INSTAGRAM').toUpperCase();
+
   const redirectUri = `${baseUrl}/api/social-accounts/oauth/meta/callback`;
 
-  // State parameter to prevent CSRF and identify user
+  // State parameter to prevent CSRF and identify user & target platform
   const statePayload = {
     userId: viewer.user.id,
+    targetPlatform,
     timestamp: Date.now(),
     nonce: Math.random().toString(36).substring(2, 12),
   };
   const state = Buffer.from(JSON.stringify(statePayload)).toString('base64url');
 
-  // Permissions for Instagram and Facebook Publishing (Verified valid Meta scopes)
-  const scopes = [
+  // Scopes tailored to platform
+  let scopes = [
     'public_profile',
     'pages_show_list',
     'pages_read_engagement',
@@ -58,6 +62,15 @@ export async function GET(req: Request) {
     'instagram_basic',
     'instagram_content_publish',
   ];
+
+  if (targetPlatform === 'FACEBOOK') {
+    scopes = [
+      'public_profile',
+      'pages_show_list',
+      'pages_read_engagement',
+      'pages_manage_metadata',
+    ];
+  }
 
   const authUrl = new URL('https://www.facebook.com/v19.0/dialog/oauth');
   authUrl.searchParams.set('client_id', appId);
