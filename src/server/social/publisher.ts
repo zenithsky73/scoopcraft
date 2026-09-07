@@ -58,6 +58,9 @@ export async function executeScheduledPost(postId: string): Promise<PublishResul
         case 'INSTAGRAM':
           result = await publishToInstagram(post, post.socialAccount!);
           break;
+        case 'FACEBOOK':
+          result = await publishToFacebook(post, post.socialAccount!);
+          break;
         case 'LINKEDIN':
           result = await publishToLinkedIn(post, post.socialAccount!);
           break;
@@ -323,3 +326,113 @@ async function publishToLinkedIn(
     };
   }
 }
+
+/**
+ * Facebook Graph API: Publish to Facebook Page (Single photo or Carousel album)
+ */
+async function publishToFacebook(
+  post: ScheduledPost,
+  account: SocialAccount
+): Promise<PublishResult> {
+  const pageId = account.externalId;
+  const accessToken = account.accessToken;
+
+  if (!pageId || !accessToken) {
+    return {
+      success: false,
+      isSimulated: false,
+      error: 'ID Halaman Facebook atau Access Token belum terkonfigurasi.',
+    };
+  }
+
+  const hashtagsFormatted = post.hashtags?.length
+    ? '\n\n' + post.hashtags.map((h) => (h.startsWith('#') ? h : `#${h}`)).join(' ')
+    : '';
+  const fullCaption = `${post.caption}${hashtagsFormatted}`;
+  const mediaUrls = post.mediaUrls || [];
+
+  try {
+    if (mediaUrls.length === 1) {
+      const res = await fetch(`https://graph.facebook.com/v19.0/${pageId}/photos`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          url: mediaUrls[0],
+          caption: fullCaption,
+          access_token: accessToken,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.id) {
+        throw new Error(data?.error?.message || 'Gagal memposting gambar ke Facebook Page.');
+      }
+      return {
+        success: true,
+        externalPostId: data.post_id || data.id,
+        externalPostUrl: `https://facebook.com/${data.post_id || data.id}`,
+        isSimulated: false,
+      };
+    } else if (mediaUrls.length > 1) {
+      const photoIds: string[] = [];
+      for (const url of mediaUrls) {
+        const pRes = await fetch(`https://graph.facebook.com/v19.0/${pageId}/photos`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            url,
+            published: false,
+            access_token: accessToken,
+          }),
+        });
+        const pData = await pRes.json();
+        if (pData.id) photoIds.push(pData.id);
+      }
+
+      const feedRes = await fetch(`https://graph.facebook.com/v19.0/${pageId}/feed`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: fullCaption,
+          attached_media: photoIds.map((id) => ({ media_fbid: id })),
+          access_token: accessToken,
+        }),
+      });
+      const feedData = await feedRes.json();
+      if (!feedRes.ok || !feedData.id) {
+        throw new Error(feedData?.error?.message || 'Gagal memposting album slide ke Facebook Page.');
+      }
+      return {
+        success: true,
+        externalPostId: feedData.id,
+        externalPostUrl: `https://facebook.com/${feedData.id}`,
+        isSimulated: false,
+      };
+    } else {
+      const feedRes = await fetch(`https://graph.facebook.com/v19.0/${pageId}/feed`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: fullCaption,
+          access_token: accessToken,
+        }),
+      });
+      const feedData = await feedRes.json();
+      if (!feedRes.ok || !feedData.id) {
+        throw new Error(feedData?.error?.message || 'Gagal memposting status ke Facebook Page.');
+      }
+      return {
+        success: true,
+        externalPostId: feedData.id,
+        externalPostUrl: `https://facebook.com/${feedData.id}`,
+        isSimulated: false,
+      };
+    }
+  } catch (err: any) {
+    return {
+      success: false,
+      isSimulated: false,
+      error: `Facebook API: ${err?.message || 'Gagal memposting'}`,
+    };
+  }
+}
+

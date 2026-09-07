@@ -112,6 +112,44 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
     }
   }, [activeTab, fetchSocialAccounts]);
 
+  // Handle OAuth callback notifications from URL params
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get('tab');
+    const connected = params.get('connected');
+    const canceled = params.get('canceled');
+    const warning = params.get('warning');
+    const error = params.get('error');
+
+    if (tab === 'social' || connected || canceled || warning || error) {
+      setActiveTab('SOCIAL');
+      fetchSocialAccounts();
+    }
+
+    if (connected === 'meta') {
+      const ig = params.get('ig') || '0';
+      const fb = params.get('fb') || '0';
+      notify.celebrate(
+        'Akun Meta Berhasil Terhubung! 🎉',
+        `${ig} Akun Instagram Bisnis & ${fb} Halaman Facebook Anda siap digunakan.`
+      );
+      window.history.replaceState({}, '', '/settings');
+    } else if (canceled === 'meta') {
+      notify.info('Otorisasi Dibatalkan', 'Penyambungan akun Meta dibatalkan.');
+      window.history.replaceState({}, '', '/settings');
+    } else if (warning === 'no_pages_found') {
+      notify.warning(
+        'Halaman Facebook Belum Ada',
+        'Akun Facebook Anda belum memiliki Fanpage. Buat Fanpage di Facebook terlebih dahulu lalu tautkan akun Instagram Bisnis Anda.'
+      );
+      window.history.replaceState({}, '', '/settings');
+    } else if (error) {
+      notify.error('Gagal Menghubungkan Meta', `Kendala: ${error}`);
+      window.history.replaceState({}, '', '/settings');
+    }
+  }, [fetchSocialAccounts]);
+
   const handleConnectSocial = async (platform: 'INSTAGRAM' | 'LINKEDIN', handleName: string, isDemo = true) => {
     try {
       setSocialLoading(true);
@@ -813,37 +851,49 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
               <div className="p-4 rounded-2xl border border-pink-200 dark:border-pink-900/50 bg-pink-50/40 dark:bg-pink-950/20 flex flex-col justify-between">
                 <div className="flex items-start gap-3 mb-3">
-                  <div className="p-2 rounded-xl bg-pink-500 text-white shadow-sm">
+                  <div className="p-2 rounded-xl bg-gradient-to-tr from-pink-500 via-purple-600 to-indigo-600 text-white shadow-sm">
                     <Instagram className="size-5" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">Instagram Professional (Asli)</h4>
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">Instagram &amp; Facebook (Resmi Meta)</h4>
                     <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                      Hubungkan akun Instagram Bisnis/Kreator asli via Meta Graph API.
+                      Hubungkan akun Instagram Bisnis &amp; Halaman Facebook via otorisasi 1-klik Meta.
                     </p>
                   </div>
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-2">
                   <Button
                     type="button"
                     size="sm"
                     onClick={() => {
-                      setRealModalPlatform('INSTAGRAM');
-                      setShowConnectRealModal(true);
+                      notify.info('Membuka Otorisasi Meta...', 'Mengalihkan ke dialog persetujuan resmi Meta Facebook.');
+                      window.location.href = '/api/social-accounts/oauth/meta';
                     }}
                     className="w-full text-xs font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:opacity-95 text-white shadow-sm"
                   >
                     <ShieldCheck className="size-3.5 mr-1" />
-                    Hubungkan Akun Asli Instagram
+                    ⚡ Hubungkan 1-Klik via Meta
                   </Button>
-                  <button
-                    type="button"
-                    disabled={socialLoading}
-                    onClick={() => handleConnectSocial('INSTAGRAM', '@newsly.creatives', true)}
-                    className="w-full text-[11px] text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 text-center py-1 font-medium transition-colors"
-                  >
-                    Atau gunakan Mode Simulator Demo
-                  </button>
+                  <div className="flex items-center justify-between px-1 text-[11px]">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRealModalPlatform('INSTAGRAM');
+                        setShowConnectRealModal(true);
+                      }}
+                      className="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold"
+                    >
+                      Opsi Manual / Token
+                    </button>
+                    <button
+                      type="button"
+                      disabled={socialLoading}
+                      onClick={() => handleConnectSocial('INSTAGRAM', '@newsly.creatives', true)}
+                      className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 font-medium"
+                    >
+                      Mode Demo
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -904,6 +954,8 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                         <div className="p-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
                           {acc.platform === 'INSTAGRAM' ? (
                             <Instagram className="size-4 text-pink-500" />
+                          ) : acc.platform === 'FACEBOOK' ? (
+                            <Share2 className="size-4 text-blue-600" />
                           ) : (
                             <Linkedin className="size-4 text-blue-500" />
                           )}
