@@ -142,8 +142,8 @@ async function publishToInstagram(
   account: SocialAccount
 ): Promise<PublishResult> {
   const metadata = (account.metadata as any) || {};
-  const igUserId = metadata.instagram_business_account_id || account.externalId;
-  const accessToken = account.accessToken;
+  const igUserId = metadata.instagram_business_account_id || account.externalId || process.env.META_INSTAGRAM_ACCOUNT_ID;
+  const accessToken = account.accessToken || process.env.META_ACCESS_TOKEN;
 
   if (!igUserId || !accessToken) {
     return {
