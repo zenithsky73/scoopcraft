@@ -32,6 +32,7 @@ import { Input, Label } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn, formatDate } from '@/lib/utils';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
+import { ConnectRealSocialModal } from '@/components/settings/connect-real-social-modal';
 import { notify } from '@/lib/notify';
 
 interface SettingsHubProps {
@@ -87,6 +88,8 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
   // Social Accounts State
   const [socialAccounts, setSocialAccounts] = React.useState<any[]>([]);
   const [socialLoading, setSocialLoading] = React.useState(false);
+  const [showConnectRealModal, setShowConnectRealModal] = React.useState(false);
+  const [realModalPlatform, setRealModalPlatform] = React.useState<'INSTAGRAM' | 'LINKEDIN'>('INSTAGRAM');
 
   const fetchSocialAccounts = React.useCallback(async () => {
     try {
@@ -814,22 +817,34 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                     <Instagram className="size-5" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">Instagram Business / Creator</h4>
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">Instagram Professional (Asli)</h4>
                     <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                      Publikasi langsung carousel feed &amp; caption via Meta Graph API.
+                      Hubungkan akun Instagram Bisnis/Kreator asli via Meta Graph API.
                     </p>
                   </div>
                 </div>
-                <Button
-                  type="button"
-                  size="sm"
-                  disabled={socialLoading}
-                  onClick={() => handleConnectSocial('INSTAGRAM', '@newsly.creatives', true)}
-                  className="w-full text-xs font-bold bg-gradient-to-r from-pink-600 to-purple-600 hover:opacity-95 text-white"
-                >
-                  <Plus className="size-3.5 mr-1" />
-                  Hubungkan Instagram (Live Simulator)
-                </Button>
+                <div className="space-y-1">
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => {
+                      setRealModalPlatform('INSTAGRAM');
+                      setShowConnectRealModal(true);
+                    }}
+                    className="w-full text-xs font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:opacity-95 text-white shadow-sm"
+                  >
+                    <ShieldCheck className="size-3.5 mr-1" />
+                    Hubungkan Akun Asli Instagram
+                  </Button>
+                  <button
+                    type="button"
+                    disabled={socialLoading}
+                    onClick={() => handleConnectSocial('INSTAGRAM', '@newsly.creatives', true)}
+                    className="w-full text-[11px] text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 text-center py-1 font-medium transition-colors"
+                  >
+                    Atau gunakan Mode Simulator Demo
+                  </button>
+                </div>
               </div>
 
               <div className="p-4 rounded-2xl border border-blue-200 dark:border-blue-900/50 bg-blue-50/40 dark:bg-blue-950/20 flex flex-col justify-between">
@@ -838,22 +853,34 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                     <Linkedin className="size-5" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">LinkedIn Profil / Page</h4>
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">LinkedIn Account (Asli)</h4>
                     <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                      Posting carousel dokumen &amp; naskah wawasan bisnis secara otomatis.
+                      Posting carousel dokumen &amp; naskah ke feed akun LinkedIn resmi Anda.
                     </p>
                   </div>
                 </div>
-                <Button
-                  type="button"
-                  size="sm"
-                  disabled={socialLoading}
-                  onClick={() => handleConnectSocial('LINKEDIN', 'Newsly Official', true)}
-                  className="w-full text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white"
-                >
-                  <Plus className="size-3.5 mr-1" />
-                  Hubungkan LinkedIn (Live Simulator)
-                </Button>
+                <div className="space-y-1">
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => {
+                      setRealModalPlatform('LINKEDIN');
+                      setShowConnectRealModal(true);
+                    }}
+                    className="w-full text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-sm"
+                  >
+                    <ShieldCheck className="size-3.5 mr-1" />
+                    Hubungkan Akun Asli LinkedIn
+                  </Button>
+                  <button
+                    type="button"
+                    disabled={socialLoading}
+                    onClick={() => handleConnectSocial('LINKEDIN', 'Newsly Official', true)}
+                    className="w-full text-[11px] text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 text-center py-1 font-medium transition-colors"
+                  >
+                    Atau gunakan Mode Simulator Demo
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -886,9 +913,15 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                             <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
                               {acc.accountName}
                             </span>
-                            <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold">
-                              Aktif
-                            </span>
+                            {acc.accessToken && !acc.accessToken.startsWith('demo_') ? (
+                              <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold border border-emerald-300 dark:border-emerald-800">
+                                🟢 Akun Asli (Live)
+                              </span>
+                            ) : (
+                              <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 font-bold border border-amber-300 dark:border-amber-800">
+                                🟡 Simulator Demo
+                              </span>
+                            )}
                           </div>
                           <span className="text-[11px] text-slate-400">{acc.accountHandle}</span>
                         </div>
@@ -911,6 +944,14 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
           </div>
         </div>
       )}
+
+      {/* Modal Hubungkan Akun Asli */}
+      <ConnectRealSocialModal
+        open={showConnectRealModal}
+        onClose={() => setShowConnectRealModal(false)}
+        onAccountConnected={fetchSocialAccounts}
+        defaultPlatform={realModalPlatform}
+      />
     </div>
   );
 }

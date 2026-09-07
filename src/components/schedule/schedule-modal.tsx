@@ -91,10 +91,32 @@ export function ScheduleModal({
   const [editableCaption, setEditableCaption] = React.useState(caption);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isInstantTesting, setIsInstantTesting] = React.useState(false);
+  const [accounts, setAccounts] = React.useState<any[]>([]);
+  const [useRealPublish, setUseRealPublish] = React.useState(false);
 
   React.useEffect(() => {
     setEditableCaption(caption);
   }, [caption]);
+
+  React.useEffect(() => {
+    if (open) {
+      fetch('/api/social-accounts')
+        .then((r) => r.json())
+        .then((d) => {
+          const list = d.accounts || [];
+          setAccounts(list);
+          const current = list.find((a: any) => a.platform === selectedPlatform);
+          const isReal = current && current.accessToken && !current.accessToken.startsWith('demo_');
+          setUseRealPublish(Boolean(isReal));
+        })
+        .catch(() => {});
+    }
+  }, [open, selectedPlatform]);
+
+  const currentAccount = accounts.find((a) => a.platform === selectedPlatform);
+  const isRealAccount = Boolean(
+    currentAccount && currentAccount.accessToken && !currentAccount.accessToken.startsWith('demo_')
+  );
 
   if (!open) return null;
 
@@ -145,7 +167,7 @@ export function ScheduleModal({
           mediaUrls: finalMediaUrls,
           format,
           style: style || null,
-          isSimulated: true,
+          isSimulated: isRealAccount ? !useRealPublish : true,
         }),
       });
 
@@ -249,6 +271,57 @@ export function ScheduleModal({
                   </button>
                 );
               })}
+            </div>
+
+            {/* Account Status Card */}
+            <div className="mt-2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 flex items-center justify-between text-xs">
+              {isRealAccount ? (
+                <div className="flex items-center gap-2">
+                  <span className="size-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                  <div>
+                    <span className="font-bold text-slate-800 dark:text-slate-200 block text-[11px]">
+                      Akun Asli: {currentAccount?.accountName}
+                    </span>
+                    <span className="text-[10px] text-slate-400 block">
+                      {currentAccount?.accountHandle} • Meta API Siap
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <span className="size-2 rounded-full bg-amber-500 shrink-0" />
+                  <div>
+                    <span className="font-bold text-slate-800 dark:text-slate-200 block text-[11px]">
+                      Mode Simulator Aktif
+                    </span>
+                    <span className="text-[10px] text-slate-400 block">
+                      Belum terhubung akun asli {selectedPlatform}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {isRealAccount ? (
+                <label className="flex items-center gap-1.5 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={useRealPublish}
+                    onChange={(e) => setUseRealPublish(e.target.checked)}
+                    className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                  />
+                  <span className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400">
+                    Post ke Akun Asli
+                  </span>
+                </label>
+              ) : (
+                <a
+                  href="/settings"
+                  target="_blank"
+                  className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
+                >
+                  Hubungkan Akun Asli
+                </a>
+              )}
             </div>
           </div>
 
