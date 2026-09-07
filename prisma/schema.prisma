@@ -133,6 +133,8 @@ model User {
   articles Article[]
   runs     GenerationRun[]
   brandKit BrandKit?
+  socialAccounts SocialAccount[]
+  scheduledPosts ScheduledPost[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -238,9 +240,10 @@ model GeneratedContent {
 
   edited Boolean @default(false)
 
-  assets  DesignAsset[]
-  visuals ContentVisual[]
-  run     GenerationRun?
+  assets         DesignAsset[]
+  visuals        ContentVisual[]
+  run            GenerationRun?
+  scheduledPosts ScheduledPost[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -390,3 +393,80 @@ model BrandKit {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// ─── AUTO-SCHEDULE & SOCIAL INTEGRATIONS ────────────────────────────────────
+
+enum SocialPlatform {
+  INSTAGRAM
+  LINKEDIN
+  FACEBOOK
+  PINTEREST
+  TELEGRAM
+}
+
+enum ScheduleStatus {
+  PENDING
+  PROCESSING
+  PUBLISHED
+  FAILED
+  CANCELED
+}
+
+model SocialAccount {
+  id             String         @id @default(cuid())
+  userId         String
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  platform       SocialPlatform
+  accountName    String
+  accountHandle  String?
+  avatarUrl      String?
+  externalId     String?        // ID from Meta / LinkedIn
+  accessToken    String?        @db.Text
+  refreshToken   String?        @db.Text
+  tokenExpiresAt DateTime?
+  isConnected    Boolean        @default(true)
+  metadata       Json?          // e.g. instagram_business_account_id, facebook_page_id
+
+  scheduledPosts ScheduledPost[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, platform, externalId])
+  @@index([userId, platform])
+}
+
+model ScheduledPost {
+  id                 String            @id @default(cuid())
+  userId             String
+  user               User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  generatedContentId String?
+  generatedContent   GeneratedContent? @relation(fields: [generatedContentId], references: [id], onDelete: SetNull)
+  socialAccountId    String?
+  socialAccount      SocialAccount?    @relation(fields: [socialAccountId], references: [id], onDelete: SetNull)
+
+  platform       SocialPlatform
+  status         ScheduleStatus    @default(PENDING)
+  scheduledAt    DateTime
+  publishedAt    DateTime?
+
+  caption        String            @db.Text
+  hashtags       String[]
+  mediaUrls      String[]          // List of carousel slide image URLs
+  format         OutputFormat      @default(FEED_PORTRAIT)
+  style          DesignStyle?
+
+  // Feedback & Tracking
+  externalPostId  String?          // e.g. Instagram media ID or LinkedIn URN
+  externalPostUrl String?          // Direct public URL to the live post
+  errorMessage    String?          @db.Text
+  publishAttempts Int              @default(0)
+  isSimulated     Boolean          @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, status])
+  @@index([status, scheduledAt])
+}
+

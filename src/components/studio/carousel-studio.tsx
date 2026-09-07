@@ -31,10 +31,12 @@ import {
   Type,
   LayoutGrid,
   ArrowRight,
+  Calendar,
 } from 'lucide-react';
 import { STYLES, isProStyle, type StyleDef } from '@/config/styles';
 import { CanvasRenderer, type SlideData, type SlideLayoutVariant } from '@/components/studio/canvas-renderer';
 import { StockPhotoModal } from '@/components/studio/stock-photo-modal';
+import { ScheduleModal } from '@/components/schedule/schedule-modal';
 import { Button } from '@/components/ui/button';
 import { Input, Label } from '@/components/ui/input';
 import { downloadSlideAsPng, exportSlidesToPdf, exportSlidesToZip } from '@/lib/export-client';
@@ -64,6 +66,7 @@ export type CarouselStudioProps = {
   initialStyle?: DesignStyle;
   initialFormat?: OutputFormat;
   isProUser?: boolean;
+  contentId?: string;
   initialBrandKit?: {
     handle?: string | null;
     brandName?: string | null;
@@ -78,6 +81,7 @@ export function CarouselStudio({
   initialStyle = 'BREAKING_NEWS',
   initialFormat = 'FEED_PORTRAIT',
   isProUser = false,
+  contentId,
   initialBrandKit,
 }: CarouselStudioProps) {
   const [currentStyle, setCurrentStyle] = React.useState<DesignStyle>(initialStyle);
@@ -86,6 +90,7 @@ export function CarouselStudio({
   const [showPhoneFrame, setShowPhoneFrame] = React.useState(true);
   const [mobileView, setMobileView] = React.useState<'preview' | 'edit'>('preview');
   const [showUpgradeModal, setShowUpgradeModal] = React.useState(false);
+  const [showScheduleModal, setShowScheduleModal] = React.useState(false);
   const [upgradeReason, setUpgradeReason] = React.useState<'PRO_STYLE' | 'PDF_EXPORT'>('PRO_STYLE');
   const [upgradeTitle, setUpgradeTitle] = React.useState('Buka Template Eksklusif Pro');
   const [selectedPreviewStyle, setSelectedPreviewStyle] = React.useState<StyleDef | null>(null);
@@ -451,6 +456,16 @@ export function CarouselStudio({
               >
                 <FileDown className="size-3.5" />
                 <span>{isExportingPdf ? 'PDF...' : 'PDF'}</span>
+              </Button>
+
+              <Button
+                size="sm"
+                onClick={() => setShowScheduleModal(true)}
+                className="flex items-center gap-1.5 text-xs font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:opacity-95 text-white shadow-md shadow-pink-600/20"
+              >
+                <Calendar className="size-3.5" />
+                <span className="hidden sm:inline">Jadwalkan</span>
+                <span className="sm:hidden">Post</span>
               </Button>
             </div>
           </div>
@@ -1301,6 +1316,20 @@ export function CarouselStudio({
             `Slide ${activeSlideIndex + 1} kini menggunakan foto resolusi tinggi pilihan Anda.`
           );
         }}
+      />
+
+      {/* ─── SCHEDULE & AUTO-POST MODAL ─── */}
+      <ScheduleModal
+        open={showScheduleModal}
+        onClose={() => setShowScheduleModal(false)}
+        contentId={contentId}
+        headline={initialContent.headline}
+        caption={initialContent.caption}
+        hashtags={initialContent.hashtags}
+        slideImages={slides.map((s) => s.imageUrl).filter(Boolean) as string[]}
+        totalSlides={slides.length}
+        format={currentFormat}
+        style={currentStyle}
       />
 
       {/* ─── HIDDEN OFFSCREEN RENDER CONTAINER FOR 100% RELIABLE EXPORTS ─── */}

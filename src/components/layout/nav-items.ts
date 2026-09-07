@@ -5,6 +5,7 @@ import {
   Sparkles,
   Settings,
   Bot,
+  Calendar,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -21,6 +22,7 @@ export const NAV_ITEMS: NavItem[] = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/templates', label: 'Template Explorer', icon: Palette, badge: '20 Gaya' },
   { href: '/content', label: 'Riwayat Carousel', icon: History, matchPrefix: true },
+  { href: '/calendar', label: 'Jadwal & Auto-Post', icon: Calendar, badge: 'Baru' },
   { href: '/upgrade', label: 'Paket & Kuota', icon: Sparkles },
   { href: '/settings', label: 'Pengaturan & Brand Kit', icon: Settings },
 ];

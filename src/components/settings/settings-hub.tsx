@@ -22,6 +22,11 @@ import {
   Clock,
   Trash2,
   Info,
+  Share2,
+  Instagram,
+  Linkedin,
+  ExternalLink,
+  Plus,
 } from 'lucide-react';
 import { Input, Label } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -54,7 +59,7 @@ interface SettingsHubProps {
 
 export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubProps) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = React.useState<'BRAND' | 'ACCOUNT' | 'BILLING' | 'PREFS'>('BRAND');
+  const [activeTab, setActiveTab] = React.useState<'BRAND' | 'ACCOUNT' | 'BILLING' | 'PREFS' | 'SOCIAL'>('BRAND');
 
   // Brand Kit State
   const [handle, setHandle] = React.useState(user.brandKit?.handle ?? '@');
@@ -78,6 +83,70 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
 
   const isOwner = user.role === 'OWNER';
   const isPro = isOwner || user.plan === 'PRO' || user.plan === 'BUSINESS';
+
+  // Social Accounts State
+  const [socialAccounts, setSocialAccounts] = React.useState<any[]>([]);
+  const [socialLoading, setSocialLoading] = React.useState(false);
+
+  const fetchSocialAccounts = React.useCallback(async () => {
+    try {
+      setSocialLoading(true);
+      const res = await fetch('/api/social-accounts');
+      if (res.ok) {
+        const data = await res.json();
+        setSocialAccounts(data.accounts || []);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setSocialLoading(false);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (activeTab === 'SOCIAL') {
+      fetchSocialAccounts();
+    }
+  }, [activeTab, fetchSocialAccounts]);
+
+  const handleConnectSocial = async (platform: 'INSTAGRAM' | 'LINKEDIN', handleName: string, isDemo = true) => {
+    try {
+      setSocialLoading(true);
+      const res = await fetch('/api/social-accounts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          platform,
+          accountName: `${handleName} (${platform})`,
+          accountHandle: handleName.startsWith('@') ? handleName : `@${handleName}`,
+          isDemo,
+        }),
+      });
+      if (res.ok) {
+        notify.success('Akun Terhubung! 🎉', `Akun ${platform} berhasil disambungkan.`);
+        fetchSocialAccounts();
+      } else {
+        notify.error('Gagal', 'Tidak dapat menghubungkan akun.');
+      }
+    } catch (e: any) {
+      notify.error('Gagal', e?.message);
+    } finally {
+      setSocialLoading(false);
+    }
+  };
+
+  const handleDisconnectSocial = async (id: string) => {
+    if (!confirm('Putuskan koneksi akun ini?')) return;
+    try {
+      const res = await fetch(`/api/social-accounts?id=${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        notify.success('Terputus', 'Koneksi akun berhasil dilepas.');
+        fetchSocialAccounts();
+      }
+    } catch (e: any) {
+      notify.error('Gagal', e?.message);
+    }
+  };
 
   // Handle Logo Upload (Base64 data URL)
   const handleLogoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -267,6 +336,20 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
         >
           <Sliders className="size-4" />
           <span>Preferensi AI</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('SOCIAL')}
+          className={cn(
+            'flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0',
+            activeTab === 'SOCIAL'
+              ? 'bg-white dark:bg-slate-800 text-pink-600 dark:text-pink-400 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+          )}
+        >
+          <Share2 className="size-4 text-pink-500" />
+          <span>Akun Media Sosial</span>
         </button>
       </div>
 
@@ -695,6 +778,135 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                 </div>
                 <span className="font-mono text-xs font-bold text-slate-400">v2.5 Pro</span>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── TAB 5: AKUN MEDIA SOSIAL (AUTO-POST) ─── */}
+      {activeTab === 'SOCIAL' && (
+        <div className="space-y-6 animate-fade-in">
+          <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <Share2 className="size-4 text-pink-500" />
+                  Akun Media Sosial &amp; Auto-Post
+                </h3>
+                <p className="text-xs text-slate-500 mt-1">
+                  Hubungkan akun Instagram Business dan LinkedIn untuk mempublikasikan carousel terjadwal secara otomatis.
+                </p>
+              </div>
+
+              <Link href="/calendar">
+                <Button size="sm" variant="secondary" className="text-xs font-bold border border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400">
+                  <ExternalLink className="size-3.5 mr-1.5" />
+                  Buka Kalender Konten
+                </Button>
+              </Link>
+            </div>
+
+            {/* Quick Connect Actions */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+              <div className="p-4 rounded-2xl border border-pink-200 dark:border-pink-900/50 bg-pink-50/40 dark:bg-pink-950/20 flex flex-col justify-between">
+                <div className="flex items-start gap-3 mb-3">
+                  <div className="p-2 rounded-xl bg-pink-500 text-white shadow-sm">
+                    <Instagram className="size-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">Instagram Business / Creator</h4>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                      Publikasi langsung carousel feed &amp; caption via Meta Graph API.
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  type="button"
+                  size="sm"
+                  disabled={socialLoading}
+                  onClick={() => handleConnectSocial('INSTAGRAM', '@newsly.creatives', true)}
+                  className="w-full text-xs font-bold bg-gradient-to-r from-pink-600 to-purple-600 hover:opacity-95 text-white"
+                >
+                  <Plus className="size-3.5 mr-1" />
+                  Hubungkan Instagram (Live Simulator)
+                </Button>
+              </div>
+
+              <div className="p-4 rounded-2xl border border-blue-200 dark:border-blue-900/50 bg-blue-50/40 dark:bg-blue-950/20 flex flex-col justify-between">
+                <div className="flex items-start gap-3 mb-3">
+                  <div className="p-2 rounded-xl bg-blue-600 text-white shadow-sm">
+                    <Linkedin className="size-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">LinkedIn Profil / Page</h4>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                      Posting carousel dokumen &amp; naskah wawasan bisnis secara otomatis.
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  type="button"
+                  size="sm"
+                  disabled={socialLoading}
+                  onClick={() => handleConnectSocial('LINKEDIN', 'Newsly Official', true)}
+                  className="w-full text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white"
+                >
+                  <Plus className="size-3.5 mr-1" />
+                  Hubungkan LinkedIn (Live Simulator)
+                </Button>
+              </div>
+            </div>
+
+            {/* List Akun Terhubung */}
+            <div>
+              <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-2.5">
+                Akun yang Terhubung ({socialAccounts.length})
+              </h4>
+              {socialAccounts.length === 0 ? (
+                <div className="p-4 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400">
+                  Belum ada akun yang terhubung. Klik salah satu tombol di atas untuk menghubungkan akun.
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {socialAccounts.map((acc) => (
+                    <div
+                      key={acc.id}
+                      className="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className="p-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                          {acc.platform === 'INSTAGRAM' ? (
+                            <Instagram className="size-4 text-pink-500" />
+                          ) : (
+                            <Linkedin className="size-4 text-blue-500" />
+                          )}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                              {acc.accountName}
+                            </span>
+                            <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold">
+                              Aktif
+                            </span>
+                          </div>
+                          <span className="text-[11px] text-slate-400">{acc.accountHandle}</span>
+                        </div>
+                      </div>
+
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDisconnectSocial(acc.id)}
+                        className="text-xs text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
+                      >
+                        Putuskan
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>

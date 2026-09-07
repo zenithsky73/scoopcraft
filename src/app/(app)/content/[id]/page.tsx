@@ -91,6 +91,7 @@ export default async function ContentDetailPage({ params }: { params: { id: stri
         initialStyle={requestedStyle}
         initialFormat={requestedFormat}
         isProUser={isProUser}
+        contentId={content.id}
         initialBrandKit={{
           handle: user?.brandKit?.handle ?? '@newsly.ai',
           brandName: user?.brandKit?.displayName ?? 'NEWSLY AI',
