@@ -61,6 +61,9 @@ export async function executeScheduledPost(postId: string): Promise<PublishResul
         case 'FACEBOOK':
           result = await publishToFacebook(post, post.socialAccount!);
           break;
+        case 'THREADS':
+          result = await publishToThreads(post, post.socialAccount!);
+          break;
         case 'LINKEDIN':
           result = await publishToLinkedIn(post, post.socialAccount!);
           break;
@@ -435,4 +438,94 @@ async function publishToFacebook(
     };
   }
 }
+
+/**
+ * Threads API: Publish text or carousel to Threads
+ * Docs: https://developers.facebook.com/docs/threads/posts
+ */
+async function publishToThreads(
+  post: ScheduledPost,
+  account: SocialAccount
+): Promise<PublishResult> {
+  const threadsUserId = account.externalId;
+  const accessToken = account.accessToken;
+
+  if (!threadsUserId || !accessToken) {
+    return {
+      success: false,
+      isSimulated: false,
+      error: 'ID Akun Threads atau Access Token belum terkonfigurasi.',
+    };
+  }
+
+  const hashtagsFormatted = post.hashtags?.length
+    ? '\n\n' + post.hashtags.map((h) => (h.startsWith('#') ? h : `#${h}`)).join(' ')
+    : '';
+  const text = `${post.caption}${hashtagsFormatted}`;
+  const mediaUrls = post.mediaUrls || [];
+
+  try {
+    let creationId = '';
+
+    if (mediaUrls.length > 0) {
+      const res = await fetch(`https://graph.threads.net/v1.0/${threadsUserId}/threads`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          media_type: 'IMAGE',
+          image_url: mediaUrls[0],
+          text: text,
+          access_token: accessToken,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.id) {
+        throw new Error(data?.error?.message || 'Gagal membuat draft Threads.');
+      }
+      creationId = data.id;
+    } else {
+      const res = await fetch(`https://graph.threads.net/v1.0/${threadsUserId}/threads`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          media_type: 'TEXT',
+          text: text,
+          access_token: accessToken,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.id) {
+        throw new Error(data?.error?.message || 'Gagal membuat draft Threads.');
+      }
+      creationId = data.id;
+    }
+
+    const pubRes = await fetch(`https://graph.threads.net/v1.0/${threadsUserId}/threads_publish`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        creation_id: creationId,
+        access_token: accessToken,
+      }),
+    });
+    const pubData = await pubRes.json();
+    if (!pubRes.ok || !pubData.id) {
+      throw new Error(pubData?.error?.message || 'Gagal mempublikasikan ke Threads.');
+    }
+
+    return {
+      success: true,
+      externalPostId: pubData.id,
+      externalPostUrl: `https://www.threads.net/post/${pubData.id}`,
+      isSimulated: false,
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      isSimulated: false,
+      error: `Threads API: ${err?.message || 'Koneksi gagal'}`,
+    };
+  }
+}
+
 
