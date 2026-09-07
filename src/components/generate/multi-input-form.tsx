@@ -19,6 +19,7 @@ import { STYLES, isProStyle } from '@/config/styles';
 import { Input, Label } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { UpgradeDialog } from '@/components/billing/upgrade-dialog';
+import { CampaignModal } from '@/components/campaign/campaign-modal';
 import { VisualTemplatePicker } from '@/components/generate/visual-template-picker';
 import { notify } from '@/lib/notify';
 
@@ -71,6 +72,7 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
   const [error, setError] = React.useState<string | null>(null);
   const [showUpgradeModal, setShowUpgradeModal] = React.useState(false);
   const [upgradeModalTitle, setUpgradeModalTitle] = React.useState('Buka Template Eksklusif Pro');
+  const [showCampaignModal, setShowCampaignModal] = React.useState(false);
 
   function handleSelectStyle(styleId: DesignStyle) {
     const isLocked = isProStyle(styleId) && !isProUser;
@@ -188,6 +190,16 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
           >
             <Sparkles className="size-3.5 sm:size-4" />
             <span>Ide Prompt</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setShowCampaignModal(true)}
+            className="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 px-2 sm:px-3 rounded-xl text-xs sm:text-sm font-bold transition-all bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:opacity-95 text-white shadow-md shadow-pink-600/20"
+          >
+            <Sparkles className="size-3.5 sm:size-4 text-amber-300" />
+            <span className="hidden sm:inline">Campaign 30 Hari</span>
+            <span className="sm:hidden">Campaign</span>
           </button>
         </div>
 
@@ -388,6 +400,15 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
         onClose={() => setShowUpgradeModal(false)}
         title={upgradeModalTitle}
         reason="PRO_STYLE"
+      />
+
+      {/* Campaign 30 Hari Auto-Pilot Modal */}
+      <CampaignModal
+        open={showCampaignModal}
+        onClose={() => setShowCampaignModal(false)}
+        onCampaignSuccess={() => {
+          router.push('/calendar');
+        }}
       />
     </>
   );

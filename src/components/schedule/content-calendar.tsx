@@ -21,6 +21,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { CampaignModal } from '@/components/campaign/campaign-modal';
 import { notify } from '@/lib/notify';
 import { cn } from '@/lib/utils';
 import type { SocialPlatform, ScheduleStatus } from '@prisma/client';
@@ -63,6 +64,7 @@ export function ContentCalendar({ initialPosts }: ContentCalendarProps) {
   const [statusFilter, setStatusFilter] = React.useState<'ALL' | 'PENDING' | 'PUBLISHED' | 'FAILED'>('ALL');
   const [isLoading, setIsLoading] = React.useState(false);
   const [actionLoadingId, setActionLoadingId] = React.useState<string | null>(null);
+  const [showCampaignModal, setShowCampaignModal] = React.useState(false);
 
   const fetchPosts = async () => {
     setIsLoading(true);
@@ -210,6 +212,16 @@ export function ContentCalendar({ initialPosts }: ContentCalendarProps) {
           >
             <RefreshCw className={cn('size-3.5 mr-1.5', isLoading && 'animate-spin')} />
             Segarkan
+          </Button>
+
+          <Button
+            size="sm"
+            onClick={() => setShowCampaignModal(true)}
+            className="text-xs font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:opacity-95 text-white shadow-md shadow-pink-600/20"
+          >
+            <Sparkles className="size-3.5 mr-1.5" />
+            <span className="hidden sm:inline">Campaign 30 Hari (Auto-Pilot)</span>
+            <span className="sm:hidden">Campaign 30H</span>
           </Button>
 
           <Link href="/dashboard">
@@ -398,6 +410,13 @@ export function ContentCalendar({ initialPosts }: ContentCalendarProps) {
           })}
         </div>
       )}
+
+      {/* ─── 30-DAY CAMPAIGN AUTO-PILOT MODAL ─── */}
+      <CampaignModal
+        open={showCampaignModal}
+        onClose={() => setShowCampaignModal(false)}
+        onCampaignSuccess={fetchPosts}
+      />
     </div>
   );
 }
