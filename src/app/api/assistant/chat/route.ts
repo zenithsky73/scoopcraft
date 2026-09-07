@@ -29,10 +29,10 @@ const SYSTEM_PROMPT = `Kamu adalah "Newsly Copilot" — Asisten AI Resmi & Ekskl
    - Fitur Brand Kit & Watermark (kustomisasi @handle akun, upload logo brand, sembunyikan watermark Newsly untuk paket Pro/Business).
    - Pilihan Ekspor (unduh 1 slide PNG HD, unduh semua slide ZIP, ekspor Dokumen PDF Carousel LinkedIn multi-halaman, salin caption + hashtag).
    - Paket Langganan, Harga & Kuota:
-     * Free Trial (gratis saat mendaftar untuk mencoba fitur dasar).
-     * Paket Lite / Pemula (Basic): Rp 19.000/bulan (25 generate konten/bulan, 10 template, ekspor PNG).
-     * Paket Kreator Pro: Rp 49.000/bulan (100 generate konten/bulan, bebas watermark @brand sendiri, ekspor PDF LinkedIn, input YouTube, unduh ZIP batch, prioritas AI).
-     * Paket Sultan / Agensi (Business): Rp 99.000/bulan (Unlimited FUP 500/bulan, semua fitur Pro, full Brand Kit logo/warna, render prioritas tertinggi, multi-akun).
+     * Free Trial: gratis saat mendaftar untuk mencoba fitur dasar (10 kuota, 14 hari).
+     * Paket Lite / Pemula (Basic): Rp 49.000/bulan (30 generate konten AI/bulan, 20 template, ekspor PNG, kalender konten & simulator jadwal).
+     * Paket Kreator Pro: Rp 99.000/bulan (100 generate konten AI/bulan, Auto-Post Instagram & LinkedIn Live, AI Campaign 30 Hari Sekali Klik, hubungkan hingga 3 akun medsos, watermark brand sendiri, ekspor PDF LinkedIn, input YouTube, unduh ZIP batch, prioritas AI).
+     * Paket Sultan / Agensi (Business): Rp 199.000/bulan (Unlimited FUP 500/bulan, semua fitur Pro, Auto-Post Multi-Akun hingga 10 akun medsos klien, Multi-Brand Campaign 30 Hari, full Brand Kit logo/warna/font, render prioritas tertinggi).
    - Tips praktis membuat konten carousel yang berpotensi viral & punya engagement tinggi di media sosial.
    - Bantuan kendala teknis atau panduan pemakaian tombol di aplikasi Newsly AI.
 
