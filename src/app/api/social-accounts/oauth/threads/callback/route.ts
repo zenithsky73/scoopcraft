@@ -43,10 +43,10 @@ export async function GET(req: Request) {
     return NextResponse.redirect(new URL('/login?callbackUrl=/settings', baseUrl));
   }
 
-  const appId = process.env.THREADS_APP_ID || '1639563870930153';
+  const appId = process.env.THREADS_APP_ID || process.env.META_APP_ID;
   const appSecret = process.env.THREADS_APP_SECRET || process.env.META_APP_SECRET;
 
-  if (!appSecret) {
+  if (!appId || !appSecret) {
     return NextResponse.redirect(new URL('/settings?tab=social&error=threads_secret_missing', baseUrl));
   }
 

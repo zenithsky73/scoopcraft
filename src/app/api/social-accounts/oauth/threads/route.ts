@@ -24,7 +24,10 @@ export async function GET(req: Request) {
     return NextResponse.redirect(new URL('/login?callbackUrl=/settings', baseUrl));
   }
 
-  const thAppId = process.env.THREADS_APP_ID || '1639563870930153';
+  const thAppId = process.env.THREADS_APP_ID || process.env.META_APP_ID;
+  if (!thAppId) {
+    return NextResponse.redirect(new URL('/settings?tab=social&error=threads_app_not_configured', baseUrl));
+  }
   const redirectUri = `${baseUrl}/api/social-accounts/oauth/threads/callback`;
   const statePayload = {
     userId: viewer.user.id,
