@@ -40,6 +40,7 @@ export async function GET(req: Request) {
   authUrl.searchParams.set('scope', 'public_profile,pages_show_list,pages_read_engagement,instagram_basic,instagram_content_publish');
   authUrl.searchParams.set('response_type', 'code');
   authUrl.searchParams.set('state', state);
+  authUrl.searchParams.set('auth_type', 'rerequest,reauthenticate');
 
   return NextResponse.redirect(authUrl.toString());
 }
