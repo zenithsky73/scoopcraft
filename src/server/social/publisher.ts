@@ -537,7 +537,9 @@ async function publishToThreads(
   account: SocialAccount
 ): Promise<PublishResult> {
   const threadsUserId = account.externalId;
-  const accessToken = account.accessToken;
+  const accessToken = (account.accessToken && account.accessToken !== 'demo_token')
+    ? account.accessToken
+    : (process.env.META_SYSTEM_USER_TOKEN || process.env.META_ACCESS_TOKEN);
 
   if (!threadsUserId || !accessToken) {
     return {
