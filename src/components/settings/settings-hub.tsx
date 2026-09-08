@@ -871,8 +871,8 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
               </Link>
             </div>
 
-            {/* Quick Connect Actions: 4 Dedicated Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+            {/* Quick Connect Actions: 3 Dedicated Cards (Instagram, Facebook, Threads) */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
               {/* 1. INSTAGRAM */}
               <div className="p-4 rounded-2xl border border-pink-200 dark:border-pink-900/50 bg-pink-50/40 dark:bg-pink-950/20 flex flex-col justify-between">
                 <div className="space-y-2 mb-3">
@@ -896,8 +896,8 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                     type="button"
                     size="sm"
                     onClick={() => {
-                      notify.info('Membuka Otorisasi Instagram...', 'Mengalihkan ke dialog persetujuan resmi Meta.');
-                      window.location.href = '/api/social-accounts/oauth/meta?platform=instagram';
+                      notify.info('Membuka Otorisasi Instagram...', 'Mengalihkan ke dialog resmi Instagram.');
+                      window.location.href = '/api/social-accounts/oauth/instagram';
                     }}
                     className="w-full text-xs font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:opacity-95 text-white shadow-sm"
                   >
@@ -988,8 +988,8 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                     type="button"
                     size="sm"
                     onClick={() => {
-                      notify.info('Membuka Otorisasi Threads...', 'Mengalihkan ke dialog otorisasi Meta Threads.');
-                      window.location.href = '/api/social-accounts/oauth/meta?platform=threads';
+                      notify.info('Membuka Otorisasi Threads...', 'Mengalihkan ke dialog resmi Threads.');
+                      window.location.href = '/api/social-accounts/oauth/threads';
                     }}
                     className="w-full text-xs font-bold bg-black hover:bg-neutral-800 text-white shadow-sm"
                   >
@@ -1006,52 +1006,6 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                       className="text-slate-700 dark:text-slate-300 hover:underline font-semibold"
                     >
                       Input Token Manual
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* 4. LINKEDIN */}
-              <div className="p-4 rounded-2xl border border-sky-200 dark:border-sky-900/50 bg-sky-50/40 dark:bg-sky-950/20 flex flex-col justify-between">
-                <div className="space-y-2 mb-3">
-                  <div className="flex items-center justify-between">
-                    <div className="p-2 rounded-xl bg-[#0A66C2] text-white shadow-sm">
-                      <Linkedin className="size-4" />
-                    </div>
-                    <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300">
-                      LinkedIn
-                    </span>
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">LinkedIn</h4>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">
-                      Posting dokumen PDF carousel &amp; naskah feed ke LinkedIn.
-                    </p>
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  <Button
-                    type="button"
-                    size="sm"
-                    onClick={() => {
-                      setRealModalPlatform('LINKEDIN');
-                      setShowConnectRealModal(true);
-                    }}
-                    className="w-full text-xs font-bold bg-[#0A66C2] hover:bg-[#004182] text-white shadow-sm"
-                  >
-                    <ShieldCheck className="size-3.5 mr-1" />
-                    ⚡ Hubungkan LinkedIn
-                  </Button>
-                  <div className="flex items-center justify-center px-1 text-[10px]">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setRealModalPlatform('LINKEDIN');
-                        setShowConnectRealModal(true);
-                      }}
-                      className="text-[#0A66C2] dark:text-sky-400 hover:underline font-semibold"
-                    >
-                      Input URN &amp; Token
                     </button>
                   </div>
                 </div>

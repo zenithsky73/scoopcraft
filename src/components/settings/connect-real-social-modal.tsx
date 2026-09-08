@@ -23,7 +23,7 @@ import { Button } from '@/components/ui/button';
 import { notify } from '@/lib/notify';
 import { cn } from '@/lib/utils';
 
-export type SupportedPlatform = 'INSTAGRAM' | 'FACEBOOK' | 'THREADS' | 'LINKEDIN';
+export type SupportedPlatform = 'INSTAGRAM' | 'FACEBOOK' | 'THREADS';
 
 interface ConnectRealSocialModalProps {
   open: boolean;
@@ -49,23 +49,24 @@ export function ConnectRealSocialModal({
 
   React.useEffect(() => {
     setPlatform(defaultPlatform);
-    setConnectionMode(defaultPlatform === 'LINKEDIN' ? 'MANUAL' : 'ONE_CLICK');
+    setConnectionMode('ONE_CLICK');
   }, [defaultPlatform, open]);
 
   if (!open) return null;
 
-  // 1-Click Meta OAuth Redirect for targeted platform
+  // 1-Click Portal OAuth Redirect for targeted platform
   const handleOneClickMetaConnect = () => {
     setIsRedirecting(true);
-    const platformParam = platform.toLowerCase();
     notify.info(
       `Membuka Otorisasi ${platform}...`,
       'Anda akan dialihkan ke dialog persetujuan resmi.'
     );
     if (platform === 'THREADS') {
       window.location.href = '/api/social-accounts/oauth/threads';
+    } else if (platform === 'INSTAGRAM') {
+      window.location.href = '/api/social-accounts/oauth/instagram';
     } else {
-      window.location.href = `/api/social-accounts/oauth/meta?platform=${platformParam}`;
+      window.location.href = '/api/social-accounts/oauth/meta?platform=facebook';
     }
   };
 
@@ -164,12 +165,12 @@ export function ConnectRealSocialModal({
 
         {/* Modal Body */}
         <div className="p-5 space-y-4 overflow-y-auto flex-1">
-          {/* 1. Pilih Platform (4 Pilihan Terpisah) */}
+          {/* 1. Pilih Platform (3 Pilihan Terpisah: Instagram, Facebook, Threads) */}
           <div>
             <label className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-1.5 block">
               Pilih Platform Tujuan
             </label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
                 onClick={() => {
@@ -219,23 +220,6 @@ export function ConnectRealSocialModal({
               >
                 <AtSign className="size-4 text-slate-900 dark:text-white" />
                 <span>Threads</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setPlatform('LINKEDIN');
-                  setConnectionMode('MANUAL');
-                }}
-                className={cn(
-                  'flex flex-col items-center justify-center gap-1.5 py-2.5 px-2 rounded-2xl border text-xs font-bold transition-all text-center',
-                  platform === 'LINKEDIN'
-                    ? 'border-sky-600 bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 ring-2 ring-sky-500/20'
-                    : 'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'
-                )}
-              >
-                <Linkedin className="size-4 text-[#0A66C2]" />
-                <span>LinkedIn</span>
               </button>
             </div>
           </div>

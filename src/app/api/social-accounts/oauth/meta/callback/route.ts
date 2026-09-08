@@ -145,8 +145,8 @@ export async function GET(req: Request) {
     let fbConnectedCount = 0;
 
     for (const page of pages) {
-      // 3A. Simpan Akun Instagram Profesional jika terhubung ke Fanpage
-      if (page.instagram_business_account?.id) {
+      // 3A. Simpan Akun Instagram Profesional jika terhubung ke Fanpage (HANYA JIKA user memilih login Instagram)
+      if ((targetPlatform === 'INSTAGRAM' || targetPlatform === 'ALL') && page.instagram_business_account?.id) {
         const ig = page.instagram_business_account;
         const handle = ig.username ? (ig.username.startsWith('@') ? ig.username : `@${ig.username}`) : `@${page.name}`;
         
@@ -189,34 +189,36 @@ export async function GET(req: Request) {
         igConnectedCount++;
       }
 
-      // 3B. Simpan Halaman Facebook
-      await db.socialAccount.upsert({
-        where: {
-          userId_platform_externalId: {
+      // 3B. Simpan Halaman Facebook (HANYA JIKA user memilih login Facebook)
+      if (targetPlatform === 'FACEBOOK' || targetPlatform === 'ALL') {
+        await db.socialAccount.upsert({
+          where: {
+            userId_platform_externalId: {
+              userId: targetUserId,
+              platform: 'FACEBOOK',
+              externalId: page.id,
+            },
+          },
+          update: {
+            accountName: page.name,
+            accountHandle: page.name,
+            accessToken: page.access_token,
+            isConnected: true,
+            metadata: { pageId: page.id },
+          },
+          create: {
             userId: targetUserId,
             platform: 'FACEBOOK',
+            accountName: page.name,
+            accountHandle: page.name,
             externalId: page.id,
+            accessToken: page.access_token,
+            isConnected: true,
+            metadata: { pageId: page.id },
           },
-        },
-        update: {
-          accountName: page.name,
-          accountHandle: page.name,
-          accessToken: page.access_token,
-          isConnected: true,
-          metadata: { pageId: page.id },
-        },
-        create: {
-          userId: targetUserId,
-          platform: 'FACEBOOK',
-          accountName: page.name,
-          accountHandle: page.name,
-          externalId: page.id,
-          accessToken: page.access_token,
-          isConnected: true,
-          metadata: { pageId: page.id },
-        },
-      });
-      fbConnectedCount++;
+        });
+        fbConnectedCount++;
+      }
     }
 
     const redirectParams = new URLSearchParams({
