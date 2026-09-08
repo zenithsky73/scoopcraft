@@ -5,27 +5,39 @@ import { clampLines } from '@/components/design/canvas';
 
 /**
  * Slide isi dan penutup dipakai bersama oleh semua gaya — geometrinya sama,
- * yang berbeda hanya token warna. Ini menjaga carousel tetap konsisten:
- * pembaca tidak melihat tata letak berubah-ubah saat menggeser.
+ * yang berbeda hanya token warna. Ini menjaga carousel tetap konsisten dan rapi.
  */
 
-/** Penanda "2 / 5" + akun. Muncul di setiap slide agar sumbernya jelas. */
+/** Penanda "2 / 5" + akun brand. */
 export function SlideFooter({ data, t, size }: { data: RenderData; t: StyleTokens; size: number }) {
   return (
     <div
       style={{
         display: 'flex',
-        alignItems: 'baseline',
+        alignItems: 'center',
         justifyContent: 'space-between',
-        gap: 24,
+        gap: 16,
         fontSize: size,
         color: t.muted,
-        fontWeight: 500,
+        fontWeight: 600,
       }}
     >
-      <span style={{ fontWeight: 600 }}>{data.handle}</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ fontWeight: 700, color: t.fg }}>{data.handle || '@brandbisnis'}</span>
+        {data.slide.total > 1 && data.slide.index + 1 < data.slide.total && (
+          <span style={{ fontSize: Math.round(size * 0.85), color: t.accent }}>· Geser ➔</span>
+        )}
+      </div>
       {data.slide.total > 1 && (
-        <span style={{ fontVariantNumeric: 'tabular-nums' }}>
+        <span
+          style={{
+            fontVariantNumeric: 'tabular-nums',
+            fontWeight: 700,
+            background: 'rgba(128,128,128,0.15)',
+            padding: '2px 8px',
+            borderRadius: 6,
+          }}
+        >
           {data.slide.index + 1} / {data.slide.total}
         </span>
       )}
@@ -35,9 +47,9 @@ export function SlideFooter({ data, t, size }: { data: RenderData; t: StyleToken
 
 /**
  * Gambar slide. Tiap slide punya gambarnya sendiri — kalau belum jadi,
- * yang tampil latar cadangan gaya itu, bukan gambar slide lain.
+ * yang tampil latar cadangan gaya itu.
  */
-export function SlideImage({ data, t, mode }: { data: RenderData; t: StyleTokens; mode: 'band' | 'full'; }) {
+export function SlideImage({ data, t, mode }: { data: RenderData; t: StyleTokens; mode: 'band' | 'full' }) {
   const l = layoutFor(data.style, data.format, data.slide.type);
   const band = l.image.mode === 'band' ? l.image : null;
 
@@ -56,7 +68,7 @@ export function SlideImage({ data, t, mode }: { data: RenderData; t: StyleTokens
           <div style={{ width: '100%', height: '100%', background: t.fallbackBg }} />
         )}
       </div>
-      {/* Scrim hanya saat teks duduk di atas gambar. */}
+      {/* Scrim saat teks duduk di atas gambar */}
       {mode === 'full' && <div style={{ position: 'absolute', inset: 0, background: t.scrim }} />}
     </>
   );
@@ -91,9 +103,6 @@ export function PointSlide({ data, t }: { data: RenderData; t: StyleTokens }) {
           flexDirection: 'column',
         }}
       >
-        {/* Blok teks ditengahkan vertikal saat gambar berupa pita; kalau
-            teks duduk di atas gambar penuh, ia menempel ke bawah supaya
-            tidak menutupi subjek foto. */}
         <div
           style={{
             flex: 1,
@@ -102,55 +111,61 @@ export function PointSlide({ data, t }: { data: RenderData; t: StyleTokens }) {
             justifyContent: overImage ? 'flex-end' : 'center',
           }}
         >
-        {/* Nomor besar memberi ritme carousel dan memberi tahu posisi pembaca. */}
-        {l.number && (
-          <span
+          {/* Header Baris Atas: Nomor Urut & Stat/Pill Highlight */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: Math.round(l.gap * 0.6) }}>
+            {l.number && (
+              <span
+                style={{
+                  fontSize: l.number.size,
+                  lineHeight: 1,
+                  fontWeight: 900,
+                  color: t.accent,
+                  letterSpacing: '-0.04em',
+                  ...(overImage
+                    ? { background: t.accent, color: t.accentFg, padding: '2px 14px 4px', borderRadius: 8 }
+                    : {}),
+                }}
+              >
+                {String(data.slide.index).padStart(2, '0')}
+              </span>
+            )}
+            {data.handle && !overImage && (
+              <span style={{ fontSize: 15, color: t.muted, fontWeight: 600 }}>
+                {data.handle}
+              </span>
+            )}
+          </div>
+
+          <h2
             style={{
-              alignSelf: 'flex-start',
-              fontSize: l.number.size,
-              lineHeight: 1,
-              fontWeight: 900,
-              color: t.accent,
-              letterSpacing: '-0.05em',
-              marginBottom: Math.round(l.gap * 0.6),
-              // Di atas foto, angka butuh jangkar visual supaya tidak hilang.
-              ...(overImage
-                ? { background: t.accent, color: t.accentFg, padding: '0 18px 8px', borderRadius: 8 }
-                : {}),
+              margin: 0,
+              fontSize: titleSize,
+              lineHeight: l.headline.lineHeight,
+              fontWeight: t.headlineWeight,
+              letterSpacing: t.headlineTracking,
+              fontFamily: t.headlineFont ?? t.fontFamily,
+              textShadow: overImage ? '0 2px 24px rgba(0,0,0,.5)' : undefined,
+              ...clampLines(l.headline.maxLines),
             }}
           >
-            {String(data.slide.index).padStart(2, '0')}
-          </span>
-        )}
+            {data.slide.title}
+          </h2>
 
-        <h2
-          style={{
-            margin: 0,
-            fontSize: titleSize,
-            lineHeight: l.headline.lineHeight,
-            fontWeight: t.headlineWeight,
-            letterSpacing: t.headlineTracking,
-            fontFamily: t.headlineFont ?? t.fontFamily,
-            textShadow: overImage ? '0 2px 24px rgba(0,0,0,.4)' : undefined,
-            ...clampLines(l.headline.maxLines),
-          }}
-        >
-          {data.slide.title}
-        </h2>
-
-        {l.feedCopy && (
-          <p
-            style={{
-              margin: `${l.gap}px 0 0`,
-              fontSize: l.feedCopy.size,
-              lineHeight: l.feedCopy.lineHeight,
-              color: overImage ? 'rgba(255,255,255,.85)' : t.muted,
-              ...clampLines(l.feedCopy.maxLines),
-            }}
-          >
-            {data.slide.body}
-          </p>
-        )}
+          {l.feedCopy && data.slide.body && (
+            <p
+              style={{
+                margin: `${l.gap}px 0 0`,
+                fontSize: l.feedCopy.size,
+                lineHeight: l.feedCopy.lineHeight,
+                color: overImage ? 'rgba(255,255,255,.9)' : t.muted,
+                fontWeight: 450,
+                textShadow: overImage ? '0 2px 12px rgba(0,0,0,.5)' : undefined,
+                ...clampLines(l.feedCopy.maxLines),
+              }}
+            >
+              {data.slide.body}
+            </p>
+          )}
         </div>
 
         <div style={{ paddingTop: l.gap }}>
@@ -189,8 +204,10 @@ export function OutroSlide({ data, t }: { data: RenderData; t: StyleTokens }) {
           justifyContent: 'center',
         }}
       >
-        <div style={{ width: 72, height: 5, background: t.accent, borderRadius: 3, marginBottom: l.gap }} />
+        {/* Accent Bar */}
+        <div style={{ width: 64, height: 6, background: t.accent, borderRadius: 3, marginBottom: l.gap }} />
 
+        {/* CTA Hook Headline */}
         <h2
           style={{
             margin: 0,
@@ -205,13 +222,15 @@ export function OutroSlide({ data, t }: { data: RenderData; t: StyleTokens }) {
           {data.slide.title}
         </h2>
 
-        {l.feedCopy && (
+        {/* Subhead / Description */}
+        {l.feedCopy && data.slide.body && (
           <p
             style={{
               margin: `${l.gap}px 0 0`,
               fontSize: l.feedCopy.size,
               lineHeight: l.feedCopy.lineHeight,
               color: t.muted,
+              maxWidth: '90%',
               ...clampLines(l.feedCopy.maxLines),
             }}
           >
@@ -219,18 +238,38 @@ export function OutroSlide({ data, t }: { data: RenderData; t: StyleTokens }) {
           </p>
         )}
 
-        <div style={{ marginTop: Math.round(l.gap * 2.2), width: '100%' }}>
-          <div style={{ fontSize: l.meta.size, fontWeight: 700, color: t.fg }}>{data.handle}</div>
-          {data.displayName && (
-            <div style={{ marginTop: 6, fontSize: Math.round(l.meta.size * 0.75), color: t.muted }}>
-              {data.displayName}
-            </div>
-          )}
-          {data.source && (
-            <div style={{ marginTop: Math.round(l.gap * 0.7), fontSize: Math.round(l.meta.size * 0.7), color: t.muted }}>
-              Sumber: {data.source}
-            </div>
-          )}
+        {/* Business Conversion Box */}
+        <div
+          style={{
+            marginTop: Math.round(l.gap * 1.8),
+            width: '100%',
+            background: 'rgba(128,128,128,0.08)',
+            border: `1px solid ${t.rule}`,
+            borderRadius: 16,
+            padding: '20px 24px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 10,
+          }}
+        >
+          <div
+            style={{
+              fontSize: l.meta.size * 1.1,
+              fontWeight: 800,
+              color: t.accent,
+            }}
+          >
+            {data.cta || '👉 Order Sekarang via Link di Bio / WhatsApp'}
+          </div>
+
+          <div style={{ fontSize: l.meta.size, fontWeight: 700, color: t.fg }}>
+            {data.handle || '@brandbisnis'}
+          </div>
+
+          <div style={{ fontSize: Math.round(l.meta.size * 0.85), color: t.muted, fontWeight: 500 }}>
+            {data.displayName || '📌 Simpan postingan ini & tag temanmu!'}
+          </div>
         </div>
       </div>
     </div>

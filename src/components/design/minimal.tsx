@@ -1,12 +1,13 @@
 import type { RenderData } from '@/server/design/types';
 import { layoutFor, fitHeadline } from '@/server/design/layout';
 import { tokensFor } from '@/server/design/tokens';
-import { clampLines, formatMeta } from '@/components/design/canvas';
+import { clampLines } from '@/components/design/canvas';
 import { PointSlide, OutroSlide, SlideFooter, SlideImage } from '@/components/design/slides';
 
 /**
- * Gaya Minimal: latar terang, banyak ruang kosong, foto sebagai pita di
- * bagian atas, teks tenang di bawahnya. Tanpa gradasi berlebihan.
+ * Gaya Katalog Produk Studio:
+ * Khas brand fashion, skincare minimalis, furnitur, dan produk estetik.
+ * Latar putih bersih, foto band presisi, aksen indigo berkelas, dan ruang baca lapang.
  */
 export function MinimalTemplate(data: RenderData) {
   const t = tokensFor('MINIMAL');
@@ -33,8 +34,26 @@ export function MinimalTemplate(data: RenderData) {
           flexDirection: 'column',
         }}
       >
-        {/* Garis aksen pendek — penanda merek tanpa logo. */}
-        <div style={{ width: 72, height: 5, background: t.accent, borderRadius: 3, marginBottom: l.gap }} />
+        {/* Brand Tagline & Pill */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: l.gap }}>
+          <div
+            style={{
+              padding: '6px 14px',
+              borderRadius: 8,
+              background: t.accent,
+              color: '#FFFFFF',
+              fontSize: 14,
+              fontWeight: 800,
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase',
+            }}
+          >
+            {t.badgeText ?? '🏷️ BEST SELLER'}
+          </div>
+          <span style={{ fontSize: 16, color: '#4F46E5', fontWeight: 700 }}>
+            {data.handle || '@brandstudio'}
+          </span>
+        </div>
 
         <h1
           style={{
@@ -43,6 +62,7 @@ export function MinimalTemplate(data: RenderData) {
             lineHeight: l.headline.lineHeight,
             fontWeight: t.headlineWeight,
             letterSpacing: t.headlineTracking,
+            color: '#0F172A',
             ...clampLines(l.headline.maxLines),
           }}
         >
@@ -55,8 +75,8 @@ export function MinimalTemplate(data: RenderData) {
               margin: `${l.gap}px 0 0`,
               fontSize: l.feedCopy.size,
               lineHeight: l.feedCopy.lineHeight,
-              color: t.muted,
-              fontWeight: 400,
+              color: '#475569',
+              fontWeight: 450,
               ...clampLines(l.feedCopy.maxLines),
             }}
           >
@@ -66,17 +86,16 @@ export function MinimalTemplate(data: RenderData) {
 
         <div style={{ marginTop: 'auto', paddingTop: l.gap }}>
           <div style={{ height: 1, background: t.rule, marginBottom: Math.round(l.gap * 0.7) }} />
-          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 24 }}>
-            <span style={{ fontSize: l.meta.size, color: t.muted, fontWeight: 500 }}>
-              {formatMeta(data.source, data.publishedAt)}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
+            <span style={{ fontSize: l.meta.size, color: t.muted, fontWeight: 600 }}>
+              {data.displayName || 'Ready Stock · Garansi Original'}
             </span>
             {l.cta && data.cta && data.slide.total === 1 && (
-              <span style={{ fontSize: l.cta.size, color: t.accent, fontWeight: 600, whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: l.cta.size, color: t.accent, fontWeight: 700, whiteSpace: 'nowrap' }}>
                 {data.cta} →
               </span>
             )}
           </div>
-          {/* Di carousel, CTA pindah ke slide penutup — di sini cukup akun. */}
           {data.slide.total > 1 && (
             <div style={{ marginTop: Math.round(l.gap * 0.6) }}>
               <SlideFooter data={data} t={t} size={l.meta.size} />

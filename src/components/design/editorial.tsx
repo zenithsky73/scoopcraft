@@ -1,12 +1,13 @@
 import type { RenderData } from '@/server/design/types';
 import { layoutFor, fitHeadline } from '@/server/design/layout';
 import { tokensFor } from '@/server/design/tokens';
-import { clampLines, formatMeta } from '@/components/design/canvas';
+import { clampLines } from '@/components/design/canvas';
 import { PointSlide, OutroSlide, SlideFooter, SlideImage } from '@/components/design/slides';
 
 /**
- * Gaya Editorial Serif: Kemewahan majalah & koran terkemuka (ala NYT/Vogue/The New Yorker).
- * Tipografi serif anggun, dateline klasik dengan garis pemisah ganda, dan ruang baca lega.
+ * Gaya Artisanal & Kuliner Asli:
+ * Khas restoran legendaris (ala Rumah Makan Padang, warung nusantara, roastery kopi klasik).
+ * Latar kertas hangat, bingkai elegan, tipografi serif berwibawa, dan cita rasa autentik.
  */
 export function EditorialTemplate(data: RenderData) {
   const t = tokensFor('EDITORIAL');
@@ -30,7 +31,7 @@ export function EditorialTemplate(data: RenderData) {
     >
       {image && <SlideImage data={data} t={t} mode="band" />}
 
-      {/* Frame border klasik khas koran / editorial */}
+      {/* Frame border klasik khas kuliner & brand legendaris */}
       <div
         style={{
           position: 'absolute',
@@ -38,7 +39,7 @@ export function EditorialTemplate(data: RenderData) {
           left: 24,
           right: 24,
           bottom: 24,
-          border: '1px solid rgba(120, 113, 108, 0.25)',
+          border: '1px solid rgba(180, 83, 9, 0.2)',
           pointerEvents: 'none',
         }}
       />
@@ -54,22 +55,22 @@ export function EditorialTemplate(data: RenderData) {
           flexDirection: 'column',
         }}
       >
-        {/* Dateline & Kategori Tag */}
+        {/* Dateline & Tag Merek */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: l.gap }}>
           <span
             style={{
-              fontSize: 18,
-              fontWeight: 700,
-              letterSpacing: '0.15em',
+              fontSize: 16,
+              fontWeight: 800,
+              letterSpacing: '0.12em',
               textTransform: 'uppercase',
               color: t.accent,
             }}
           >
-            {t.badgeText ?? 'EDITORIAL'}
+            {t.badgeText ?? '🍛 KISAH RASA'}
           </span>
           <div style={{ flex: 1, height: 1, background: t.rule }} />
-          <span style={{ fontSize: 16, color: t.muted, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-            {data.source ?? 'SCOOPCRAFT'}
+          <span style={{ fontSize: 15, color: t.fg, fontWeight: 700, letterSpacing: '0.04em' }}>
+            {data.handle || '@kulinerasli'}
           </span>
         </div>
 
@@ -81,6 +82,7 @@ export function EditorialTemplate(data: RenderData) {
             fontWeight: t.headlineWeight,
             letterSpacing: t.headlineTracking,
             fontFamily: t.headlineFont ?? t.fontFamily,
+            color: '#1A1817',
             ...clampLines(l.headline.maxLines),
           }}
         >
@@ -93,7 +95,7 @@ export function EditorialTemplate(data: RenderData) {
               margin: `${l.gap}px 0 0`,
               fontSize: l.feedCopy.size,
               lineHeight: l.feedCopy.lineHeight,
-              color: t.muted,
+              color: '#57534E',
               fontWeight: 400,
               fontStyle: 'italic',
               ...clampLines(l.feedCopy.maxLines),
@@ -105,12 +107,12 @@ export function EditorialTemplate(data: RenderData) {
 
         <div style={{ marginTop: 'auto', paddingTop: l.gap }}>
           <div style={{ height: 2, borderTop: `1px solid ${t.rule}`, borderBottom: `1px solid ${t.rule}`, marginBottom: Math.round(l.gap * 0.7) }} />
-          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 24 }}>
-            <span style={{ fontSize: l.meta.size, color: t.muted, fontWeight: 500 }}>
-              {formatMeta(data.source, data.publishedAt)}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
+            <span style={{ fontSize: l.meta.size, color: t.muted, fontWeight: 600 }}>
+              {data.displayName || '100% Rempah Pilihan & Halal'}
             </span>
             {l.cta && data.cta && data.slide.total === 1 && (
-              <span style={{ fontSize: l.cta.size, color: t.accent, fontWeight: 600, fontStyle: 'italic' }}>
+              <span style={{ fontSize: l.cta.size, color: t.accent, fontWeight: 700, fontStyle: 'italic' }}>
                 {data.cta} →
               </span>
             )}

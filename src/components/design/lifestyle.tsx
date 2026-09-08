@@ -1,12 +1,13 @@
 import type { RenderData } from '@/server/design/types';
 import { layoutFor, fitHeadline } from '@/server/design/layout';
 import { tokensFor } from '@/server/design/tokens';
-import { clampLines, formatMeta } from '@/components/design/canvas';
+import { clampLines } from '@/components/design/canvas';
 import { PointSlide, OutroSlide, SlideFooter, SlideImage } from '@/components/design/slides';
 
 /**
- * Gaya Lifestyle Pastel: Hangat, lembut, dan fotogenik.
- * Latar pastel rose/peach, sudut melengkung halus, aksen rose gold, dan estetika majalah gaya hidup.
+ * Gaya Skincare & Fashion Glow:
+ * Khas brand kecantikan, skincare routine, fashion hijab/distro, dan produk self-care.
+ * Latar pastel rose/peach lembut, sudut melengkung halus, aksen rose gold, dan estetika majalah modern.
  */
 export function LifestyleTemplate(data: RenderData) {
   const t = tokensFor('LIFESTYLE');
@@ -33,24 +34,25 @@ export function LifestyleTemplate(data: RenderData) {
           flexDirection: 'column',
         }}
       >
-        {/* Soft Pastel Badge */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: l.gap }}>
+        {/* Soft Pastel Badge & Brand Handle */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: l.gap }}>
           <div
             style={{
               padding: '6px 14px',
               borderRadius: 20,
               background: t.accent,
               color: '#FFFFFF',
-              fontSize: 15,
-              fontWeight: 700,
-              letterSpacing: '0.08em',
+              fontSize: 14,
+              fontWeight: 800,
+              letterSpacing: '0.06em',
               textTransform: 'uppercase',
+              boxShadow: '0 2px 10px rgba(244,63,94,0.3)',
             }}
           >
-            {t.badgeText ?? 'LIFESTYLE'}
+            {t.badgeText ?? '💖 BEAUTY & CARE'}
           </div>
-          <span style={{ fontSize: 16, color: t.muted, fontWeight: 600 }}>
-            {data.source ?? 'SCOOPCRAFT'}
+          <span style={{ fontSize: 16, color: '#BE123C', fontWeight: 700 }}>
+            {data.handle || '@beautycare.id'}
           </span>
         </div>
 
@@ -75,7 +77,7 @@ export function LifestyleTemplate(data: RenderData) {
               fontSize: l.feedCopy.size,
               lineHeight: l.feedCopy.lineHeight,
               color: '#881337',
-              fontWeight: 400,
+              fontWeight: 450,
               ...clampLines(l.feedCopy.maxLines),
             }}
           >
@@ -85,9 +87,9 @@ export function LifestyleTemplate(data: RenderData) {
 
         <div style={{ marginTop: 'auto', paddingTop: l.gap }}>
           <div style={{ height: 1, background: t.rule, marginBottom: Math.round(l.gap * 0.7) }} />
-          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 24 }}>
-            <span style={{ fontSize: l.meta.size, color: t.muted, fontWeight: 500 }}>
-              {formatMeta(data.source, data.publishedAt)}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
+            <span style={{ fontSize: l.meta.size, color: t.muted, fontWeight: 600 }}>
+              {data.displayName || 'BPOM Approved · 100% Halal'}
             </span>
             {l.cta && data.cta && data.slide.total === 1 && (
               <span style={{ fontSize: l.cta.size, color: t.accent, fontWeight: 700, whiteSpace: 'nowrap' }}>

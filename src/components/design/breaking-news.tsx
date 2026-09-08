@@ -1,12 +1,13 @@
 import type { RenderData } from '@/server/design/types';
 import { layoutFor, fitHeadline } from '@/server/design/layout';
 import { tokensFor } from '@/server/design/tokens';
-import { clampLines, formatMeta } from '@/components/design/canvas';
+import { clampLines } from '@/components/design/canvas';
 import { PointSlide, OutroSlide, SlideImage } from '@/components/design/slides';
 
 /**
- * Gaya Breaking News: foto penuh bingkai, scrim gelap agar teks terbaca,
- * banner merah, tipografi berat yang menempel ke bawah.
+ * Gaya Promo Kilat & Flash Sale:
+ * Foto hero menggugah selera / produk penuh bingkai, badge diskon/promo merah membara,
+ * tipografi tebal berwibawa, dan branding bisnis yang tegas.
  */
 export function BreakingNewsTemplate(data: RenderData) {
   const t = tokensFor('BREAKING_NEWS');
@@ -19,27 +20,52 @@ export function BreakingNewsTemplate(data: RenderData) {
 
   return (
     <div style={{ position: 'absolute', inset: 0, background: t.bg, color: t.fg }}>
-      {/* Scrim ikut digambar SlideImage — tanpa itu teks putih hilang di foto terang. */}
+      {/* Scrim ikut digambar SlideImage — teks putih tetap kontras di atas foto */}
       <SlideImage data={data} t={t} mode="full" />
 
-      {l.badge && t.badgeText && (
+      {/* Promo Badge */}
+      <div
+        style={{
+          position: 'absolute',
+          top: l.badge?.top ?? 64,
+          left: l.badge?.left ?? 64,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+        }}
+      >
         <div
           style={{
-            position: 'absolute',
-            top: l.badge.top,
-            left: l.badge.left,
             background: t.accent,
             color: t.accentFg,
-            fontSize: l.badge.size,
-            fontWeight: 800,
-            letterSpacing: '0.14em',
-            padding: `${Math.round(l.badge.size * 0.42)}px ${Math.round(l.badge.size * 0.8)}px`,
-            borderRadius: 4,
+            fontSize: l.badge?.size ?? 22,
+            fontWeight: 900,
+            letterSpacing: '0.08em',
+            padding: `${Math.round((l.badge?.size ?? 22) * 0.45)}px ${Math.round((l.badge?.size ?? 22) * 0.85)}px`,
+            borderRadius: 8,
+            boxShadow: '0 4px 20px rgba(239,68,68,.45)',
+            textTransform: 'uppercase',
           }}
         >
-          {t.badgeText}
+          {t.badgeText ?? '🔥 PROMO SPESIAL'}
         </div>
-      )}
+        {data.handle && (
+          <div
+            style={{
+              padding: '6px 14px',
+              borderRadius: 8,
+              background: 'rgba(15,23,42,0.75)',
+              backdropFilter: 'blur(8px)',
+              border: '1px solid rgba(255,255,255,0.15)',
+              color: '#FFFFFF',
+              fontSize: 16,
+              fontWeight: 700,
+            }}
+          >
+            {data.handle}
+          </div>
+        )}
+      </div>
 
       <div
         style={{
@@ -60,7 +86,7 @@ export function BreakingNewsTemplate(data: RenderData) {
             lineHeight: l.headline.lineHeight,
             fontWeight: t.headlineWeight,
             letterSpacing: t.headlineTracking,
-            textShadow: '0 2px 24px rgba(0,0,0,.35)',
+            textShadow: '0 2px 28px rgba(0,0,0,.6)',
             ...clampLines(l.headline.maxLines),
           }}
         >
@@ -73,7 +99,8 @@ export function BreakingNewsTemplate(data: RenderData) {
               margin: `${l.gap}px 0 0`,
               fontSize: l.feedCopy.size,
               lineHeight: l.feedCopy.lineHeight,
-              color: 'rgba(255,255,255,.82)',
+              color: 'rgba(255,255,255,.9)',
+              textShadow: '0 2px 14px rgba(0,0,0,.5)',
               ...clampLines(l.feedCopy.maxLines),
             }}
           >
@@ -81,22 +108,26 @@ export function BreakingNewsTemplate(data: RenderData) {
           </p>
         )}
 
-        <div style={{ marginTop: Math.round(l.gap * 1.6) }}>
+        <div style={{ marginTop: Math.round(l.gap * 1.5) }}>
           <div style={{ height: 1, background: t.rule, marginBottom: Math.round(l.gap * 0.8) }} />
-          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 24 }}>
-            <span style={{ fontSize: l.meta.size, color: t.muted, fontWeight: 500 }}>
-              {formatMeta(data.source, data.publishedAt)}
-            </span>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
             <span style={{ fontSize: l.meta.size, color: t.muted, fontWeight: 600 }}>
-              {data.handle}
-              {data.slide.total > 1 && `  ·  ${data.slide.index + 1}/${data.slide.total}`}
+              {data.displayName || 'Tersedia di Outlet & Online'}
             </span>
-          </div>
-          {l.cta && data.cta && data.slide.total === 1 && (
-            <div style={{ marginTop: Math.round(l.gap * 0.8), fontSize: l.cta.size, color: t.fg, fontWeight: 700 }}>
-              {data.cta} →
+            <div
+              style={{
+                fontSize: l.meta.size,
+                color: '#FFFFFF',
+                fontWeight: 800,
+                background: 'rgba(255,255,255,0.12)',
+                padding: '4px 12px',
+                borderRadius: 6,
+                border: '1px solid rgba(255,255,255,0.2)',
+              }}
+            >
+              {data.slide.total > 1 ? `Slide 1/${data.slide.total} ➔` : data.cta || 'Order Sekarang ➔'}
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

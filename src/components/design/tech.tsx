@@ -1,12 +1,13 @@
 import type { RenderData } from '@/server/design/types';
 import { layoutFor, fitHeadline } from '@/server/design/layout';
 import { tokensFor } from '@/server/design/tokens';
-import { clampLines, formatMeta } from '@/components/design/canvas';
+import { clampLines } from '@/components/design/canvas';
 import { PointSlide, OutroSlide, SlideFooter, SlideImage } from '@/components/design/slides';
 
 /**
- * Gaya Tech HUD: Estetika futuristik / cyberpunk / HackerNews / AI Digest.
- * Monospace typography, aksen neon emerald & cyan, terminal tags, dan grid garis futuristik.
+ * Gaya SaaS & Otomasi UMKM:
+ * Khas aplikasi bisnis, software CRM/POS kasir, tools AI produktivitas, dan automasi digital.
+ * Monospace typography, aksen neon cyan & emerald, corner tags, dan nuansa tech cerdas.
  */
 export function TechTemplate(data: RenderData) {
   const t = tokensFor('TECH');
@@ -29,7 +30,7 @@ export function TechTemplate(data: RenderData) {
     >
       <SlideImage data={data} t={t} mode="full" />
 
-      {/* Cyberpunk Grid Overlay & HUD Corners */}
+      {/* Cyberpunk HUD Corners */}
       <div
         style={{
           position: 'absolute',
@@ -66,25 +67,25 @@ export function TechTemplate(data: RenderData) {
           flexDirection: 'column',
         }}
       >
-        {/* Terminal Command Prompt Badge */}
+        {/* Terminal Badge & Brand Handle */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: l.gap }}>
           <div
             style={{
               padding: '6px 12px',
               border: `1px solid ${t.accent}`,
-              background: 'rgba(16, 185, 129, 0.15)',
+              background: 'rgba(6, 182, 212, 0.2)',
               color: t.accent,
-              fontSize: 16,
+              fontSize: 15,
               fontWeight: 800,
-              letterSpacing: '0.12em',
+              letterSpacing: '0.08em',
               textTransform: 'uppercase',
-              boxShadow: '0 0 15px rgba(16, 185, 129, 0.3)',
+              boxShadow: '0 0 15px rgba(6, 182, 212, 0.35)',
             }}
           >
-            {t.badgeText ?? 'SYS://FEED'}
+            {t.badgeText ?? '⚡ AUTOMASI BISNIS'}
           </div>
-          <span style={{ fontSize: 15, color: t.muted, letterSpacing: '0.05em' }}>
-            [SRC: {data.source?.toUpperCase() ?? 'TECH_DISPATCH'}]
+          <span style={{ fontSize: 15, color: '#38BDF8', letterSpacing: '0.05em', fontWeight: 700 }}>
+            {data.handle || '@saasbiz.id'}
           </span>
         </div>
 
@@ -96,7 +97,7 @@ export function TechTemplate(data: RenderData) {
             fontWeight: t.headlineWeight,
             letterSpacing: t.headlineTracking,
             color: '#FFFFFF',
-            textShadow: '0 0 20px rgba(0,0,0,0.8), 0 0 35px rgba(16,185,129,0.4)',
+            textShadow: '0 0 20px rgba(0,0,0,0.8), 0 0 35px rgba(6,182,212,0.4)',
             ...clampLines(l.headline.maxLines),
           }}
         >
@@ -121,13 +122,13 @@ export function TechTemplate(data: RenderData) {
 
         <div style={{ marginTop: 'auto', paddingTop: l.gap }}>
           <div style={{ height: 1, background: t.rule, marginBottom: Math.round(l.gap * 0.7) }} />
-          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 24 }}>
-            <span style={{ fontSize: l.meta.size, color: t.muted, fontWeight: 500 }}>
-              &gt; {formatMeta(data.source, data.publishedAt)}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
+            <span style={{ fontSize: l.meta.size, color: t.muted, fontWeight: 600 }}>
+              {data.displayName || 'Trial Gratis 14 Hari · Akses Penuh'}
             </span>
             {l.cta && data.cta && data.slide.total === 1 && (
               <span style={{ fontSize: l.cta.size, color: t.accent, fontWeight: 700, whiteSpace: 'nowrap' }}>
-                EXECUTE {data.cta} _
+                {data.cta} ➔
               </span>
             )}
           </div>

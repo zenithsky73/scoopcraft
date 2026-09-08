@@ -1,12 +1,13 @@
 import type { RenderData } from '@/server/design/types';
 import { layoutFor, fitHeadline } from '@/server/design/layout';
 import { tokensFor } from '@/server/design/tokens';
-import { clampLines, formatMeta } from '@/components/design/canvas';
+import { clampLines } from '@/components/design/canvas';
 import { PointSlide, OutroSlide, SlideFooter, SlideImage } from '@/components/design/slides';
 
 /**
- * Gaya Finance & Stat: Khas Financial Times & Bloomberg.
- * Latar salmon/warm paper, aksen emerald hijau pasar, bar metrik analitis, dan tipografi berbobot.
+ * Gaya Tips Bisnis & Cuan:
+ * Khas edukasi scale-up bisnis, strategi omset UMKM, dan manajemen keuangan toko.
+ * Latar hangat berwibawa, aksen emerald green cuan, bar metrik rapi, dan tipografi otoritatif.
  */
 export function FinanceTemplate(data: RenderData) {
   const t = tokensFor('FINANCE');
@@ -22,7 +23,7 @@ export function FinanceTemplate(data: RenderData) {
     <div style={{ position: 'absolute', inset: 0, background: t.bg, color: t.fg }}>
       {image && <SlideImage data={data} t={t} mode="band" />}
 
-      {/* Top Financial Strip */}
+      {/* Top Emerald Strip */}
       <div
         style={{
           position: 'absolute',
@@ -49,20 +50,20 @@ export function FinanceTemplate(data: RenderData) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: l.gap }}>
           <div
             style={{
-              padding: '4px 10px',
-              borderRadius: 4,
-              background: '#1C1917',
-              color: '#F6EFEB',
+              padding: '6px 14px',
+              borderRadius: 6,
+              background: '#047857',
+              color: '#FFFFFF',
               fontSize: 15,
-              fontWeight: 800,
-              letterSpacing: '0.1em',
+              fontWeight: 900,
+              letterSpacing: '0.08em',
               textTransform: 'uppercase',
             }}
           >
-            {t.badgeText ?? 'MARKET'}
+            {t.badgeText ?? '📈 STRATEGI OMSET'}
           </div>
-          <span style={{ fontSize: 16, color: t.accent, fontWeight: 700 }}>
-            ▲ FINANCIAL REPORT
+          <span style={{ fontSize: 16, color: '#047857', fontWeight: 800 }}>
+            {data.handle || '@tipsbisnis.id'}
           </span>
         </div>
 
@@ -73,6 +74,7 @@ export function FinanceTemplate(data: RenderData) {
             lineHeight: l.headline.lineHeight,
             fontWeight: t.headlineWeight,
             letterSpacing: t.headlineTracking,
+            color: '#1C1917',
             ...clampLines(l.headline.maxLines),
           }}
         >
@@ -96,9 +98,9 @@ export function FinanceTemplate(data: RenderData) {
 
         <div style={{ marginTop: 'auto', paddingTop: l.gap }}>
           <div style={{ height: 2, background: t.rule, marginBottom: Math.round(l.gap * 0.7) }} />
-          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
             <span style={{ fontSize: l.meta.size, color: t.muted, fontWeight: 600 }}>
-              {formatMeta(data.source, data.publishedAt)}
+              {data.displayName || 'Wawasan Bisnis & Praktis UMKM'}
             </span>
             {l.cta && data.cta && data.slide.total === 1 && (
               <span style={{ fontSize: l.cta.size, color: t.accent, fontWeight: 800, whiteSpace: 'nowrap' }}>

@@ -1,12 +1,13 @@
 import type { RenderData } from '@/server/design/types';
 import { layoutFor, fitHeadline } from '@/server/design/layout';
 import { tokensFor } from '@/server/design/tokens';
-import { clampLines, formatMeta } from '@/components/design/canvas';
+import { clampLines } from '@/components/design/canvas';
 import { PointSlide, OutroSlide, SlideFooter, SlideImage } from '@/components/design/slides';
 
 /**
- * Gaya Modern Clean: Estetika media teknologi modern & portal berita digital terkemuka.
- * Blok geometris, badge kategori tegas, dan latar gelap bersih bernuansa navy.
+ * Gaya Modern Cafe & Brand:
+ * Estetika cafe kekinian (ala Fore Coffee), resto kontemporer & retail modern.
+ * Gambar band bersih, badge menu/promo cerah, dan layout yang sangat elegan.
  */
 export function ModernTemplate(data: RenderData) {
   const t = tokensFor('MODERN');
@@ -33,24 +34,25 @@ export function ModernTemplate(data: RenderData) {
           flexDirection: 'column',
         }}
       >
-        {/* Modern Pill Badge */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: l.gap }}>
+        {/* Modern Pill Badge & Brand Handle */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: l.gap }}>
           <div
             style={{
               padding: '6px 14px',
-              borderRadius: 6,
+              borderRadius: 8,
               background: t.accent,
               color: t.accentFg,
-              fontSize: 16,
-              fontWeight: 800,
-              letterSpacing: '0.08em',
+              fontSize: 15,
+              fontWeight: 900,
+              letterSpacing: '0.06em',
               textTransform: 'uppercase',
+              boxShadow: '0 2px 10px rgba(14,165,233,0.3)',
             }}
           >
-            {t.badgeText ?? 'DIGITAL'}
+            {t.badgeText ?? '✨ MENU SPESIAL'}
           </div>
-          <span style={{ fontSize: 16, color: t.muted, fontWeight: 600, textTransform: 'uppercase' }}>
-            {data.source ?? 'SCOOPCRAFT'}
+          <span style={{ fontSize: 16, color: '#38BDF8', fontWeight: 700 }}>
+            {data.handle || '@brandbisnis'}
           </span>
         </div>
 
@@ -73,7 +75,7 @@ export function ModernTemplate(data: RenderData) {
               margin: `${l.gap}px 0 0`,
               fontSize: l.feedCopy.size,
               lineHeight: l.feedCopy.lineHeight,
-              color: t.muted,
+              color: '#CBD5E1',
               fontWeight: 400,
               ...clampLines(l.feedCopy.maxLines),
             }}
@@ -84,12 +86,12 @@ export function ModernTemplate(data: RenderData) {
 
         <div style={{ marginTop: 'auto', paddingTop: l.gap }}>
           <div style={{ height: 1, background: t.rule, marginBottom: Math.round(l.gap * 0.7) }} />
-          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 24 }}>
-            <span style={{ fontSize: l.meta.size, color: t.muted, fontWeight: 500 }}>
-              {formatMeta(data.source, data.publishedAt)}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
+            <span style={{ fontSize: l.meta.size, color: t.muted, fontWeight: 600 }}>
+              {data.displayName || 'Tersedia Dine-In & Delivery'}
             </span>
             {l.cta && data.cta && data.slide.total === 1 && (
-              <span style={{ fontSize: l.cta.size, color: t.accent, fontWeight: 700, whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: l.cta.size, color: t.accent, fontWeight: 800, whiteSpace: 'nowrap' }}>
                 {data.cta} →
               </span>
             )}

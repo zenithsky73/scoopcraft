@@ -1,11 +1,12 @@
 import type { RenderData } from '@/server/design/types';
 import { layoutFor, fitHeadline } from '@/server/design/layout';
 import { tokensFor } from '@/server/design/tokens';
-import { clampLines, formatMeta } from '@/components/design/canvas';
+import { clampLines } from '@/components/design/canvas';
 import { PointSlide, OutroSlide, SlideFooter, SlideImage } from '@/components/design/slides';
 
 /**
- * Gaya Corporate Pro: Standar publikasi bisnis & konsultan elit (McKinsey / HBR / BCG).
+ * Gaya Profil Bisnis & B2B:
+ * Standar presentasi bisnis terkemuka, penawaran solusi korporat & profil UMKM scale-up.
  * Deep navy background, bar biru royal tegas, kartu insight, dan tipografi otoritatif.
  */
 export function CorporateTemplate(data: RenderData) {
@@ -45,23 +46,23 @@ export function CorporateTemplate(data: RenderData) {
         }}
       >
         {/* Executive Category Pill */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: l.gap }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: l.gap }}>
           <div
             style={{
               padding: '6px 14px',
-              borderRadius: 4,
+              borderRadius: 6,
               background: t.accent,
               color: '#FFFFFF',
-              fontSize: 16,
-              fontWeight: 800,
-              letterSpacing: '0.1em',
+              fontSize: 15,
+              fontWeight: 900,
+              letterSpacing: '0.08em',
               textTransform: 'uppercase',
             }}
           >
-            {t.badgeText ?? 'EXECUTIVE SUMMARY'}
+            {t.badgeText ?? '💼 SOLUSI BISNIS'}
           </div>
-          <span style={{ fontSize: 16, color: '#93C5FD', fontWeight: 600 }}>
-            {data.source?.toUpperCase() ?? 'ANALYSIS'}
+          <span style={{ fontSize: 16, color: '#93C5FD', fontWeight: 700 }}>
+            {data.handle || '@perusahaan.id'}
           </span>
         </div>
 
@@ -96,9 +97,9 @@ export function CorporateTemplate(data: RenderData) {
 
         <div style={{ marginTop: 'auto', paddingTop: l.gap }}>
           <div style={{ height: 1, background: t.rule, marginBottom: Math.round(l.gap * 0.7) }} />
-          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 24 }}>
-            <span style={{ fontSize: l.meta.size, color: '#94A3B8', fontWeight: 500 }}>
-              {formatMeta(data.source, data.publishedAt)}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
+            <span style={{ fontSize: l.meta.size, color: '#94A3B8', fontWeight: 600 }}>
+              {data.displayName || 'Konsultasi & Kemitraan Bisnis'}
             </span>
             {l.cta && data.cta && data.slide.total === 1 && (
               <span style={{ fontSize: l.cta.size, color: '#60A5FA', fontWeight: 700, whiteSpace: 'nowrap' }}>
