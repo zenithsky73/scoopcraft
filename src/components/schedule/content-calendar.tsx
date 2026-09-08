@@ -98,11 +98,14 @@ type ViewMode = 'WEEK' | 'MONTH' | 'LIST';
 type ContentSourceMode = 'AI_GENERATE' | 'EXISTING' | 'CUSTOM';
 
 const AVAILABLE_STYLES_PRESET = [
-  { id: 'BREAKING_NEWS', label: 'Breaking News Standar', color: '#EF4444' },
-  { id: 'MODERN', label: 'Modern Clean Media', color: '#38BDF8' },
-  { id: 'EDITORIAL', label: 'Editorial Berita', color: '#B91C1C' },
-  { id: 'TECH_RADAR', label: 'Tech & Modern Slate', color: '#6366F1' },
-  { id: 'CREATIVE_STORY', label: 'Creative Magazine', color: '#EC4899' },
+  { id: 'CULINARY', label: '🍲 Kuliner & Resto (Padang, Cafe, F&B)', color: '#F59E0B' },
+  { id: 'MINIMAL', label: '☕ Cafe & Fore Aesthetic Modern', color: '#10B981' },
+  { id: 'SHOPEE_PROMO', label: '🔥 Promo & Flash Sale UMKM', color: '#EE4D2D' },
+  { id: 'PRODUCT_CATALOG', label: '✨ Katalog Produk & Skincare', color: '#C5A880' },
+  { id: 'TESTIMONIAL_CHAT', label: '💬 Bukti Chat WA & Testimoni', color: '#25D366' },
+  { id: 'PRICE_TIER_TABLE', label: '📋 Daftar Menu & Paket Harga', color: '#6366F1' },
+  { id: 'STEP_BY_STEP_GUIDE', label: '📚 Tips & Panduan Praktis Bisnis', color: '#8B5CF6' },
+  { id: 'BREAKING_NEWS', label: '⚡ Pengumuman Penting & Info Bisnis', color: '#EF4444' },
 ];
 
 export function ContentCalendar({
@@ -135,7 +138,7 @@ export function ContentCalendar({
   const [contentSourceMode, setContentSourceMode] = React.useState<ContentSourceMode>('AI_GENERATE');
   const [aiInputType, setAiInputType] = React.useState<'PROMPT' | 'URL'>('PROMPT');
   const [aiPromptOrUrl, setAiPromptOrUrl] = React.useState<string>('');
-  const [aiSelectedStyle, setAiSelectedStyle] = React.useState<string>('BREAKING_NEWS');
+  const [aiSelectedStyle, setAiSelectedStyle] = React.useState<string>('CULINARY');
   const [aiSlidesCount, setAiSlidesCount] = React.useState<number>(5);
 
   const [selectedContentId, setSelectedContentId] = React.useState<string>(recentContents[0]?.id || '');

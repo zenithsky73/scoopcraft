@@ -99,18 +99,22 @@ export async function generateDirect(input: GenerateDirectInput) {
   const styleCategory = styleDef?.category;
 
   // Intent classification
-  const isListicle =
-    /(\d+)\s*(tools?|alat|cara|tips|rekomendasi|langkah|ide|rahasia|alasan|aplikasi|strategi|skill|buku|film|website|prompt|resep|menu|tempat|wisata|kuliner|gadget)/i.test(fullText) ||
-    /kumpulan|daftar|rekomendasi|top\s*\d+/i.test(fullText);
   const listCountMatch = fullText.match(/(\d+)\s*(tools?|alat|cara|tips|rekomendasi|langkah|ide|rahasia|alasan|aplikasi|strategi|skill|buku|film|website|prompt|resep|menu|tempat|wisata|kuliner|gadget)/i);
   const listCount = listCountMatch ? parseInt(listCountMatch[1], 10) : null;
+  const isListicle =
+    Boolean(listCountMatch) ||
+    /(\d+)\s*(tools?|alat|cara|tips|rekomendasi|langkah|ide|rahasia|alasan|aplikasi|strategi|skill|buku|film|website|prompt|resep|menu|tempat|wisata|kuliner|gadget)/i.test(fullText) ||
+    /kumpulan|daftar|rekomendasi|top\s*\d+/i.test(fullText);
+  const isFnB =
+    input.style === 'CULINARY' ||
+    /fore|kopi|coffee|cafe|kafe|padang|rendang|resto|restoran|warung|kuliner|f&b|catering|bakery|roti|boba|matcha|minuman|makanan|snack|jajanan|sambal|ayam goreng|bebek|mie|nasi/i.test(fullText);
 
   const isEcommerce =
     styleCategory === 'ECOMMERCE' ||
     ['SHOPEE_PROMO', 'RACUN_SHOPEE', 'PRODUCT_CATALOG', 'BRUTALIST_SALE', 'BEFORE_AFTER', 'TESTIMONIAL_CHAT', 'PRICE_TIER_TABLE', 'UNBOXING_POLAROID'].includes(input.style) ||
     /jual|promo|diskon|shopee|tokopedia|affiliate|produk|baju|sepatu|skincare|serum|harga|toko|olshop|review|racun|katalog|sale|paket|ongkir|order|checkout|beli|gamis|hoodie|tas|parfum|gadget|laptop|hp|casing|makeup|lipstik/i.test(fullText);
 
-  const isRecipe = /resep|masak|makan|kuliner|bumbu|dapur|kue|minuman|menu|goreng|rebus|tumis|sambal|cemilan|pedas|gurih|asin|manis|kopi|baking/i.test(fullText);
+  const isRecipe = /resep|masak|bumbu|dapur|kue|baking|rebus|tumis/i.test(fullText) && !isFnB;
 
   const isTutorial =
     input.style === 'STEP_BY_STEP_GUIDE' ||
@@ -123,10 +127,20 @@ export async function generateDirect(input: GenerateDirectInput) {
   try {
     const ai = getGeminiClient();
 
-    let systemRole = `Anda adalah Executive Creative Director di media carousel Instagram & LinkedIn Indonesia terkemuka (@fakta.indo, @ngomonginuang, @katadatacoid, @kumparancom).`;
+    let systemRole = `Anda adalah Executive Creative Director & Growth Marketer untuk promosi dan konten UMKM / Bisnis di Instagram, Facebook & Threads.`;
     let dynamicGuidelines = '';
 
-    if (isYouTube) {
+    if (isFnB) {
+      systemRole = `Anda adalah Senior F&B Marketer & Food Storyteller handal yang ahli mempromosikan Cafe (ala Fore Coffee), Restoran (ala Rumah Makan Padang), dan Bisnis Kuliner UMKM.`;
+      dynamicGuidelines = `PANDUAN KHUSUS BISNIS F&B, CAFE & KULINER RESTO:
+- Materi ini adalah promosi bisnis kuliner / cafe / restoran / F&B.
+- Susun slide dengan formula visual storytelling F&B yang menggugah selera dan memicu nafsu makan / pesanan (order conversion):
+  * Slide 0 (COVER): Visual hero & hook promo atau sensasi rasa menggoda (contoh: "Menu Best Seller yang Wajib Kamu Coba di [Nama Brand]!", "Sensasi Kopi Creamy yang Bikin Semangat Seharian ☕", "Paket Nasi Padang Rendang Komplit Cuma 25rb!").
+  * Slide 1 (KEY USP / RAHASIA RASA & BAHAN): Keunggulan bahan segar, rempah otentik pilihan, atau biji kopi 100% Arabica berkualitas. Pada "statHighlight", isi klaim utama (contoh: "100% Halal", "Rempah Asli", "100% Arabica", "Tanpa Pengawet").
+  * Slide 2 (DETAIL MENU & VARIAN FAVORIT): Pilihan varian favorit, topping, paket combo hemat, atau level kepedasan. Pada "statHighlight", cantumkan promo/harga (contoh: "Diskon 20%", "Harga Mulai 18rb", "Best Seller").
+  * Slide 3 (SOCIAL PROOF / REVIEW PELANGGAN): Bukti kepuasan pelanggan, tekstur lembut daging / kesegaran minuman, atau review bintang 5. Pada "statHighlight", isi "Rating 4.9⭐" atau "1000+ Terjual".
+  * Slide 4 (OUTRO / CARA ORDER & LOKASI): Info pemesanan mudah (tersedia di GoFood, GrabFood, ShopeeFood, Dine-In), jam buka & lokasi, serta ajakan "Klik link di bio untuk order sekarang & tag teman makan barengmu!".`;
+    } else if (isYouTube) {
       systemRole = `Anda adalah Video Content Curator & Educator profesional.`;
       dynamicGuidelines = `PANDUAN KHUSUS VIDEO YOUTUBE:
 - Sumber ini adalah konten video YouTube berjudul "${articleTitle}" dari kreator "${articleAuthor}".

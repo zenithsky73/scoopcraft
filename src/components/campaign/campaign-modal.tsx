@@ -29,11 +29,11 @@ interface CampaignModalProps {
 }
 
 const TOPIC_PRESETS = [
-  'Resep masakan rumahan simpel & hemat',
-  'Tips keuangan pribadi & investasi pemula',
-  'Strategi digital marketing & media sosial',
-  'Gaya hidup sehat & tips olahraga di rumah',
-  'Wawasan teknologi & AI untuk produktivitas',
+  '☕ Menu spesial cafe & promo buy 1 get 1 (Coffee shop / Fore style)',
+  '🍲 Kuliner legendaris, rahasia rendang & paket hemat Rumah Makan Padang',
+  '🛍️ Promo flash sale gajian & racun outfit fashion / distro UMKM',
+  '✨ Edukasi perawatan kulit & rekomendasi paket skincare glowing',
+  '💼 Strategi scale-up UMKM & tips mengelola keuangan bisnis',
 ];
 
 export function CampaignModal({ open, onClose, onCampaignSuccess }: CampaignModalProps) {
