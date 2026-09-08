@@ -24,8 +24,8 @@ export async function GET(req: Request) {
     return NextResponse.redirect(new URL('/login?callbackUrl=/settings', baseUrl));
   }
 
-  const appId = process.env.META_APP_ID || '1059971823315435';
-  const redirectUri = `${baseUrl}/api/social-accounts/oauth/meta/callback`;
+  const igAppId = process.env.INSTAGRAM_APP_ID || '2326532283319066';
+  const redirectUri = `${baseUrl}/api/social-accounts/oauth/instagram/callback`;
   const statePayload = {
     userId: viewer.user.id,
     targetPlatform: 'INSTAGRAM',
@@ -34,13 +34,14 @@ export async function GET(req: Request) {
   };
   const state = Buffer.from(JSON.stringify(statePayload)).toString('base64url');
 
-  const authUrl = new URL('https://www.facebook.com/v19.0/dialog/oauth');
-  authUrl.searchParams.set('client_id', appId);
+  const authUrl = new URL('https://www.instagram.com/oauth/authorize');
+  authUrl.searchParams.set('client_id', igAppId);
   authUrl.searchParams.set('redirect_uri', redirectUri);
-  authUrl.searchParams.set('scope', 'public_profile,pages_show_list,pages_read_engagement,instagram_basic,instagram_content_publish');
+  authUrl.searchParams.set('scope', 'instagram_business_basic,instagram_business_content_publish');
   authUrl.searchParams.set('response_type', 'code');
+  authUrl.searchParams.set('enable_fb_login', '0');
+  authUrl.searchParams.set('force_authentication', '1');
   authUrl.searchParams.set('state', state);
-  authUrl.searchParams.set('auth_type', 'rerequest,reauthenticate');
 
   return NextResponse.redirect(authUrl.toString());
 }
