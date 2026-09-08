@@ -260,11 +260,11 @@ export function ConnectRealSocialModal({
             <p className="text-[11px] text-slate-400">Atau login otomatis dengan browser:</p>
             <Button
               type="button"
-              variant="outline"
+              variant="secondary"
               size="sm"
               disabled={isRedirecting}
               onClick={handleOneClickMetaConnect}
-              className="w-full text-xs font-semibold border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300"
+              className="w-full text-xs font-semibold border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300"
             >
               <ShieldCheck className="size-3.5 mr-1.5 text-indigo-500" />
               {isRedirecting ? 'Mengalihkan...' : `🔑 Masuk dengan ${platform} Resmi`}
