@@ -6,6 +6,7 @@ import { scrapeArticleFast } from '@/server/scraper/fast-scraper';
 import { SLIDES } from '@/server/design/deck';
 import { consumeQuota } from '@/server/billing/quota';
 import { getContextualPhotoForSlide, detectCategoryFromText } from '@/server/images/contextual-photos';
+import { getAIThemeDef } from '@/config/ai-image-themes';
 import { STYLES } from '@/config/styles';
 
 export type InputMode = 'url' | 'text' | 'prompt';
@@ -21,6 +22,7 @@ export type GenerateDirectInput = {
   niche?: string;
   contentType?: string;
   targetAudience?: string;
+  aiVisualTheme?: string;
   style: DesignStyle;
   format?: OutputFormat;
   slides?: number;
@@ -263,6 +265,10 @@ export async function generateDirect(input: GenerateDirectInput) {
     if (input.targetAudience) {
       contextDirectives += `\n- TARGET AUDIENS: ${input.targetAudience}`;
     }
+    if (input.aiVisualTheme && input.aiVisualTheme !== 'AUTO') {
+      const themeDef = getAIThemeDef(input.aiVisualTheme);
+      contextDirectives += `\n- TEMA VISUAL SENI GAMBAR AI: ${themeDef.label} (${themeDef.description}). Arahan visual: ${themeDef.promptModifier}.`;
+    }
 
     const prompt = `${systemRole}
 Tugas Anda: Buat naskah carousel ${slidesCount} slide dengan ritme visual bertingkat yang sangat nyambung dan akurat berdasarkan materi berikut:
@@ -459,17 +465,20 @@ Kembalikan HANYA format JSON valid berikut:
       ? 'OUTRO'
       : activePattern[(idx - 1) % activePattern.length];
 
+    // SETIAP slide selalu mendapatkan foto unik, berkualitas dan kontekstual!
     let photoUrl: string | null = null;
-
-    if (isCover) {
-      photoUrl = articleImages[0] || articleImageUrl || getContextualPhotoForSlide(detectedCategory, 0, articleTitle);
-    } else if (layoutVariant === 'IMAGE_TOP_TEXT_BOTTOM' || layoutVariant === 'TEXT_BOTTOM') {
-      photoUrl =
-        articleImages[idx] ||
-        (articleImages.length > 1 ? articleImages[1] : null) ||
-        getContextualPhotoForSlide(detectedCategory, idx, s.title || articleTitle);
-    } else if (articleImages.length > idx) {
+    if (isCover && (articleImages[0] || articleImageUrl)) {
+      photoUrl = articleImages[0] || articleImageUrl;
+    } else if (articleImages.length > idx && articleImages[idx]) {
       photoUrl = articleImages[idx];
+    } else {
+      photoUrl = getContextualPhotoForSlide(
+        detectedCategory,
+        idx,
+        `${s.title || ''} ${s.body || ''} ${articleTitle}`,
+        isCover ? articleImageUrl : null,
+        input.aiVisualTheme
+      );
     }
 
     // Tag badge kontekstual sesuai varian tata letak & intent

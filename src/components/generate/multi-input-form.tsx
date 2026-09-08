@@ -21,6 +21,8 @@ import { Button } from '@/components/ui/button';
 import { UpgradeDialog } from '@/components/billing/upgrade-dialog';
 import { CampaignModal } from '@/components/campaign/campaign-modal';
 import { VisualTemplatePicker } from '@/components/generate/visual-template-picker';
+import { AIVisualThemePicker } from '@/components/generate/ai-visual-theme-picker';
+import type { AIImageThemeId } from '@/config/ai-image-themes';
 import { notify } from '@/lib/notify';
 
 export type InputMode = 'url' | 'text' | 'prompt';
@@ -62,6 +64,7 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
   const [rawTitle, setRawTitle] = React.useState('');
   const [prompt, setPrompt] = React.useState('');
   const [tone, setTone] = React.useState(TONES[0].id);
+  const [aiVisualTheme, setAiVisualTheme] = React.useState<AIImageThemeId>('AUTO');
 
   // Single Initial Style Selection (Default: BREAKING_NEWS Free)
   const [selectedStyle, setSelectedStyle] = React.useState<DesignStyle>('BREAKING_NEWS');
@@ -353,7 +356,12 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
           </div>
         </div>
 
-        {/* ─── 2. PILIHAN TEMPLATE DESAIN VISUAL (5-COLUMN MODERN MOCKUP PICKER) ─── */}
+        {/* ─── 2. TEMA VISUAL GAMBAR AI (27 ART STYLES) ─── */}
+        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shadow-md backdrop-blur-xl">
+          <AIVisualThemePicker value={aiVisualTheme} onChange={setAiVisualTheme} />
+        </div>
+
+        {/* ─── 3. PILIHAN TEMPLATE DESAIN VISUAL (5-COLUMN MODERN MOCKUP PICKER) ─── */}
         <VisualTemplatePicker
           selectedStyle={selectedStyle}
           onSelectStyle={handleSelectStyle}

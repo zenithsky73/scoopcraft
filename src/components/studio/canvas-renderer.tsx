@@ -837,16 +837,22 @@ export function CanvasRenderer({
             </div>
           ) : style === 'PRODUCT_CATALOG' ? (
             /* KHUSUS 5: PRODUCT_CATALOG (Luxury Boutique Card) */
-            <div className="relative z-10 flex-1 flex flex-col justify-between p-5 sm:p-6 space-y-3 overflow-hidden text-[#26211C]">
-              <div className="relative flex-1 flex flex-col justify-between p-6 rounded-3xl bg-white border border-[#C5A880]/40 shadow-xl">
-                <div className="space-y-1 text-center">
+            <div className="relative z-10 flex-1 flex flex-col justify-between p-4 sm:p-6 space-y-3 overflow-hidden text-[#26211C]">
+              <div className="relative flex-1 flex flex-col justify-between p-5 rounded-3xl bg-white border border-[#C5A880]/40 shadow-xl space-y-2.5">
+                {slide.imageUrl && (
+                  <div className="relative w-full h-32 sm:h-40 rounded-2xl overflow-hidden border border-[#C5A880]/30 shadow-md shrink-0">
+                    <img src={slide.imageUrl} alt="Catalog" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                  </div>
+                )}
+                <div className="space-y-0.5 text-center">
                   <span className="text-[9px] font-serif uppercase tracking-widest text-[#8C6D46] block">
                     {slide.tag || `Koleksi #${slide.index}`}
                   </span>
                   <div className="h-px w-12 mx-auto bg-[#C5A880]/50 my-1" />
                 </div>
 
-                <div className="space-y-2.5 my-auto text-center">
+                <div className="space-y-2 my-auto text-center">
                   <h2 className="font-serif font-bold text-base sm:text-lg tracking-wide text-[#26211C] leading-snug">
                     {cleanTakeaway}
                   </h2>
@@ -857,8 +863,8 @@ export function CanvasRenderer({
                   )}
                 </div>
 
-                <div className="pt-3 border-t border-[#C5A880]/30 flex items-center justify-around text-[10px] font-serif text-[#8C6D46]">
-                  <span>✨ Dermatologist Tested</span>
+                <div className="pt-2 border-t border-[#C5A880]/30 flex items-center justify-around text-[10px] font-serif text-[#8C6D46]">
+                  <span>✨ Premium Quality</span>
                   <span>•</span>
                   <span>BPOM & Halal</span>
                 </div>
@@ -1009,31 +1015,43 @@ export function CanvasRenderer({
             <>
               {/* VARIAN 1: STAT_HERO */}
               {activeVariant === 'STAT_HERO' && (
-                <div className="relative z-10 flex-1 flex flex-col justify-center p-5 sm:p-7 space-y-4 overflow-hidden">
-                  <div
-                    className={`p-5 sm:p-6 rounded-3xl border text-center space-y-2 shadow-xl ${
-                      isLight
-                        ? 'bg-gradient-to-br from-white to-slate-50 border-slate-200 shadow-md'
-                        : 'bg-gradient-to-br from-slate-900/90 to-slate-950/90 border-white/15'
-                    }`}
-                  >
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider block" style={{ color: accent }}>
-                      ⚡ {slide.tag || (slide.statHighlight ? 'SOROTAN UTAMA' : 'POIN KUNCI')}
-                    </span>
-
-                    <div
-                      className="text-3xl sm:text-4xl font-black tracking-tight leading-none"
-                      style={{ color: style === 'BOLD' ? '#FACC15' : accent }}
-                    >
-                      {slide.statHighlight || 'Data Utama'}
+                <div className="relative z-10 flex-1 flex flex-col justify-between p-4 sm:p-6 space-y-3 overflow-hidden">
+                  {slide.imageUrl ? (
+                    <div className="relative w-full h-28 sm:h-36 rounded-2xl overflow-hidden shadow-md shrink-0 border border-white/15">
+                      <img src={slide.imageUrl} alt="Visual" className="w-full h-full object-cover filter contrast-105" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                      <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between">
+                        <span className="text-[9px] font-mono font-bold text-white uppercase bg-black/60 px-2 py-0.5 rounded">
+                          {slide.tag || 'METRIK UTAMA'}
+                        </span>
+                        <span className="text-sm sm:text-base font-black text-yellow-300 font-mono">
+                          {slide.statHighlight || 'Sorotan Data'}
+                        </span>
+                      </div>
                     </div>
-
-                    <div className="h-0.5 w-16 mx-auto rounded-full" style={{ backgroundColor: accent }} />
-                  </div>
+                  ) : (
+                    <div
+                      className={`p-4 sm:p-5 rounded-2xl border text-center space-y-1.5 shadow-md ${
+                        isLight
+                          ? 'bg-gradient-to-br from-white to-slate-50 border-slate-200'
+                          : 'bg-gradient-to-br from-slate-900/90 to-slate-950/90 border-white/15'
+                      }`}
+                    >
+                      <span className="text-[9px] font-mono font-bold uppercase tracking-wider block" style={{ color: accent }}>
+                        ⚡ {slide.tag || 'SOROTAN UTAMA'}
+                      </span>
+                      <div
+                        className="text-2xl sm:text-3xl font-black tracking-tight leading-none"
+                        style={{ color: style === 'BOLD' ? '#FACC15' : accent }}
+                      >
+                        {slide.statHighlight || 'Data Utama'}
+                      </div>
+                    </div>
+                  )}
 
                   <div
-                    className={`p-4 rounded-2xl space-y-2 ${
-                      isLight ? 'bg-white border border-slate-200 shadow-md' : 'bg-slate-900/60 border border-white/10'
+                    className={`p-4 rounded-2xl space-y-2 flex-1 flex flex-col justify-center ${
+                      isLight ? 'bg-white border border-slate-200 shadow-md' : 'bg-slate-900/70 border border-white/10'
                     }`}
                   >
                     <h2
@@ -1159,26 +1177,26 @@ export function CanvasRenderer({
 
               {/* VARIAN 4: TEXT_BOTTOM */}
               {activeVariant === 'TEXT_BOTTOM' && (
-                <div className="relative z-10 flex-1 flex flex-col justify-between p-5 sm:p-7 overflow-hidden">
-                  <div className="flex items-center justify-between opacity-80 pt-2">
-                    <div className="flex items-center gap-2">
-                      <div className="size-3 rounded-full" style={{ backgroundColor: accent }} />
-                      <span className="text-[11px] font-mono font-bold uppercase tracking-wider" style={{ color: accent }}>
-                        {slide.tag || 'RINGKASAN POIN'}
-                      </span>
+                <div className="relative z-10 flex-1 flex flex-col justify-between p-4 sm:p-6 space-y-3 overflow-hidden">
+                  {slide.imageUrl && (
+                    <div className="relative w-full h-32 sm:h-40 rounded-2xl overflow-hidden shadow-md shrink-0 border border-white/15">
+                      <img src={slide.imageUrl} alt="Visual" className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                      <div className="absolute bottom-2 left-3">
+                        <span className="text-[10px] font-mono font-bold text-white bg-black/60 px-2 py-0.5 rounded">
+                          0{slide.index + 1} / {totalSlides}
+                        </span>
+                      </div>
                     </div>
-                    <span className="text-3xl font-black font-mono opacity-25" style={{ color: textPrimary }}>
-                      0{slide.index + 1}
-                    </span>
-                  </div>
+                  )}
 
                   <div
-                    className={`p-5 sm:p-6 rounded-3xl border space-y-3 shadow-xl ${
+                    className={`p-4 sm:p-5 rounded-2xl border space-y-2.5 shadow-xl flex-1 flex flex-col justify-center ${
                       isLight ? 'bg-white border-slate-200 shadow-md' : 'bg-slate-900/80 border-white/10 backdrop-blur-md'
                     }`}
                   >
                     <h2
-                      className={`font-black text-base sm:text-xl tracking-tight leading-snug ${
+                      className={`font-black text-base sm:text-lg tracking-tight leading-snug ${
                         style === 'EDITORIAL' || style === 'POLICY' ? 'font-serif' : 'font-sans'
                       }`}
                       style={{ color: textPrimary }}
@@ -1192,7 +1210,7 @@ export function CanvasRenderer({
                       </p>
                     )}
 
-                    <div className="pt-2 flex items-center justify-between text-[10px] font-mono font-bold" style={{ color: textMuted }}>
+                    <div className="pt-1.5 flex items-center justify-between text-[10px] font-mono font-bold" style={{ color: textMuted }}>
                       <span>GESER KE SLIDE BERIKUTNYA</span>
                       <span>➔</span>
                     </div>

@@ -35,6 +35,9 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { STYLES, isProStyle, type StyleDef } from '@/config/styles';
+import { AIVisualThemePicker } from '@/components/generate/ai-visual-theme-picker';
+import { getAIThemeDef, type AIImageThemeId } from '@/config/ai-image-themes';
+import { getContextualPhotoForSlide } from '@/server/images/contextual-photos';
 import { CanvasRenderer, type SlideData, type SlideLayoutVariant } from '@/components/studio/canvas-renderer';
 import { StockPhotoModal } from '@/components/studio/stock-photo-modal';
 import { ScheduleModal } from '@/components/schedule/schedule-modal';
@@ -108,6 +111,28 @@ export function CarouselStudio({
   const [viralHooks, setViralHooks] = React.useState<string[]>([]);
   const [activeTab, setActiveTab] = React.useState<'styles' | 'editor' | 'caption'>('styles');
   const [styleCategory, setStyleCategory] = React.useState<'ALL' | 'FREE' | 'PRO' | 'NEWS' | 'BIZ' | 'MODERN'>('ALL');
+  const [aiVisualTheme, setAiVisualTheme] = React.useState<AIImageThemeId>('AUTO');
+
+  const handleApplyAITheme = (newTheme: AIImageThemeId) => {
+    setAiVisualTheme(newTheme);
+    const themeDef = getAIThemeDef(newTheme);
+    setSlides((prev) =>
+      prev.map((s, idx) => ({
+        ...s,
+        imageUrl: getContextualPhotoForSlide(
+          undefined,
+          idx,
+          `${s.takeaway || s.headline || ''} ${s.supportingText || ''}`,
+          idx === 0 ? article.imageUrl : null,
+          newTheme
+        ),
+      }))
+    );
+    notify.success(
+      `Tema Visual Diubah: ${themeDef.label} ${themeDef.icon}`,
+      'Semua slide telah disesuaikan dengan gaya visual seni ini.'
+    );
+  };
   const [customAccentColor, setCustomAccentColor] = React.useState<string | undefined>(undefined);
   const [fontFamily, setFontFamily] = React.useState<string>('font-sans');
   const [isStockModalOpen, setIsStockModalOpen] = React.useState(false);
@@ -739,6 +764,10 @@ export function CarouselStudio({
           {/* TAB 1: 20 Multi-Template Switcher with Preview Button */}
           {activeTab === 'styles' && (
             <div className="space-y-3 sm:space-y-4">
+              {/* AI Visual Image Theme Dropdown */}
+              <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm">
+                <AIVisualThemePicker value={aiVisualTheme} onChange={handleApplyAITheme} />
+              </div>
               <div className="flex items-center justify-between">
                 <p className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
                   <Layers className="size-4 text-primary" /> 20 Preset Desain:
