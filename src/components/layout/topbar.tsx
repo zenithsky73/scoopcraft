@@ -23,7 +23,10 @@ export function Topbar({
         <Link href="/dashboard" className="flex items-center gap-2">
           <NewslyLogo size={28} />
           <span className="text-sm font-black tracking-tight text-slate-900 dark:text-white">
-            Newsly<span className="bg-gradient-to-r from-cyan-500 via-pink-500 to-amber-500 bg-clip-text text-transparent">AI</span>
+            InstaDeck
+          </span>
+          <span className="inline-flex items-center justify-center px-1.5 py-0.2 rounded-full bg-[#fff0ec] dark:bg-[#ff4526]/20 text-[#ff4526] text-[9px] font-black tracking-wider border border-[#ffd4ca] dark:border-[#ff4526]/40">
+            PRO
           </span>
         </Link>
       </div>

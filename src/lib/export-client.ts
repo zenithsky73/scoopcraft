@@ -40,7 +40,7 @@ export async function downloadSlideAsPng(slideIndex: number, title: string = 'sl
 /**
  * Unduh seluruh slide sekaligus dalam satu file .ZIP (PNG High-Res)
  */
-export async function exportSlidesToZip(totalSlides: number, title: string = 'newsly-carousel') {
+export async function exportSlidesToZip(totalSlides: number, title: string = 'instadeck-carousel') {
   try {
     const zip = new JSZip();
     const folder = zip.folder('slides') || zip;
@@ -71,11 +71,11 @@ export async function exportSlidesToZip(totalSlides: number, title: string = 'ne
 /**
  * Ekspor seluruh slide menjadi dokumen LinkedIn PDF multi-halaman
  */
-export async function exportSlidesToPdf(totalSlides: number, title: string = 'newsly-carousel') {
+export async function exportSlidesToPdf(totalSlides: number, title: string = 'instadeck-carousel') {
   try {
     const pdfDoc = await PDFDocument.create();
     pdfDoc.setTitle(title);
-    pdfDoc.setAuthor('Newsly AI');
+    pdfDoc.setAuthor('InstaDeck PRO');
 
     for (let i = 0; i < totalSlides; i++) {
       const dataUrl = await renderElementToPngDataUrl(`slide-canvas-${i}`).catch(() => null);

@@ -26,10 +26,10 @@ type Message = {
 };
 
 const INITIAL_SUGGESTIONS = [
-  { label: '📺 Buat dari YouTube', query: 'Bagaimana cara membuat carousel dari link video YouTube di Newsly?' },
-  { label: '💎 Paket & Kuota Pro', query: 'Berapa harga dan apa saja keuntungan paket Kreator Pro?' },
-  { label: '✨ Ganti Watermark Brand', query: 'Bagaimana cara mengganti watermark Newsly dengan akun brand saya sendiri?' },
-  { label: '📄 Ekspor PDF LinkedIn', query: 'Bagaimana cara ekspor carousel ke format PDF untuk LinkedIn?' },
+  { label: '⚡ Buat dari Topik/Ide', query: 'Bagaimana cara membuat carousel dari topik atau kata kunci di InstaDeck?' },
+  { label: '💎 Paket & Kuota Pro', query: 'Berapa harga dan apa saja keuntungan paket InstaDeck Pro?' },
+  { label: '✨ Auto-Post Instagram', query: 'Bagaimana cara menghubungkan akun Instagram dan auto-schedule postingan?' },
+  { label: '📱 Format 4:5 vs 9:16', query: 'Kapan sebaiknya saya pakai format Feed 4:5 dibanding Story 9:16?' },
   { label: '🔥 Tips Hook Slide 1', query: 'Beri saya tips membuat hook dan cover slide 1 yang viral dan memancing klik!' },
 ];
 
@@ -44,7 +44,7 @@ export function NewslyAssistantWidget() {
       id: 'welcome',
       role: 'assistant',
       content:
-        'Halo! Saya **Newsly Copilot** 🚀, asisten resmi Newsly AI.\n\nSaya siap memandu kamu seputar pembuatan carousel, memilih template, ganti watermark, ekspor LinkedIn PDF, hingga info paket langganan. Ada yang ingin kamu tanyakan?',
+        'Halo! Saya **InstaDeck Copilot** 🚀, asisten resmi InstaDeck PRO.\n\nSaya siap memandu kamu seputar pembuatan carousel, memilih template bisnis & UMKM, auto-post Instagram, hingga tips copywriting. Ada yang ingin kamu tanyakan?',
       timestamp: 'Sekarang',
     },
   ]);
@@ -207,7 +207,7 @@ export function NewslyAssistantWidget() {
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5">
-                  <h3 className="font-bold text-xs text-slate-100 truncate">Newsly Copilot</h3>
+                  <h3 className="font-bold text-xs text-slate-100 truncate">InstaDeck Copilot</h3>
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
                 </div>
               </div>

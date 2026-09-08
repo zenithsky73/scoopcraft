@@ -6,8 +6,6 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Semua warna dibaca dari CSS variable (lihat globals.css) supaya
-        // dark mode cukup menukar nilai variabel, bukan menulis ulang kelas.
         bg: 'hsl(var(--bg) / <alpha-value>)',
         surface: 'hsl(var(--surface) / <alpha-value>)',
         'surface-2': 'hsl(var(--surface-2) / <alpha-value>)',
@@ -15,19 +13,19 @@ const config: Config = {
         fg: 'hsl(var(--fg) / <alpha-value>)',
         muted: 'hsl(var(--muted) / <alpha-value>)',
         primary: {
-          DEFAULT: 'hsl(243 75% 59% / <alpha-value>)',
+          DEFAULT: 'hsl(8 100% 57% / <alpha-value>)',
           foreground: 'hsl(0 0% 100% / <alpha-value>)',
-          50: '#eef2ff',
-          100: '#e0e7ff',
-          200: '#c7d2fe',
-          300: '#a5b4fc',
-          400: '#818cf8',
-          500: '#6366f1',
-          600: '#4f46e5',
-          700: '#4338ca',
-          800: '#3730a3',
-          900: '#312e81',
-          950: '#1e1b4b',
+          50: '#fff0ec',
+          100: '#ffe1da',
+          200: '#ffc4b5',
+          300: '#ffa790',
+          400: '#ff7e5e',
+          500: '#ff4526', // InstaDeck Signature Coral Orange
+          600: '#e93a1d',
+          700: '#c92c11',
+          800: '#a12009',
+          900: '#7a1604',
+          950: '#480a01',
         },
         accent: {
           DEFAULT: 'hsl(var(--accent) / <alpha-value>)',

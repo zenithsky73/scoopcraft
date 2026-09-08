@@ -12,16 +12,14 @@
     --fg: 222 47% 11%;
     --muted: 215 16% 47%;
 
-    --accent: 243 75% 59%; /* indigo #4F46E5 — warna brand Scoopcraft */
+    --accent: 8 100% 57%; /* InstaDeck Coral Orange #FF4526 */
     --accent-fg: 0 0% 100%;
-    --accent-soft: 243 75% 96%;
+    --accent-soft: 8 100% 96%; /* #FFF0EC */
 
     --success: 142 71% 40%;
     --warning: 38 92% 50%;
     --danger: 0 72% 51%;
 
-    /* Ganti ke next/font (Inter) kalau build punya akses jaringan;
-       stack sistem dipakai supaya build tidak bergantung fetch font. */
     --font-sans: 'Inter', 'Segoe UI Variable', 'Segoe UI', system-ui, -apple-system,
       'Helvetica Neue', Arial, sans-serif;
   }
@@ -34,9 +32,9 @@
     --fg: 210 20% 96%;
     --muted: 215 16% 62%;
 
-    --accent: 243 75% 68%;
-    --accent-fg: 222 47% 9%;
-    --accent-soft: 243 38% 18%;
+    --accent: 8 100% 62%; /* #FF5E43 */
+    --accent-fg: 0 0% 100%;
+    --accent-soft: 8 45% 18%;
 
     --success: 142 60% 48%;
     --warning: 38 88% 58%;
@@ -56,13 +54,12 @@
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
 
-  /* Flat: fokus pakai ring tipis, bukan shadow tebal. */
   :focus-visible {
-    @apply outline-none ring-2 ring-accent/60 ring-offset-2 ring-offset-bg;
+    @apply outline-none ring-2 ring-primary/60 ring-offset-2 ring-offset-bg;
   }
 
   ::selection {
-    @apply bg-accent/20;
+    @apply bg-primary/20 text-primary-900;
   }
 }
 
@@ -70,7 +67,7 @@
   .field {
     @apply w-full rounded-md border border-border bg-surface px-3 py-2 text-sm
            text-fg placeholder:text-muted/70 transition-colors
-           focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/25
+           focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25
            disabled:cursor-not-allowed disabled:opacity-60;
   }
 

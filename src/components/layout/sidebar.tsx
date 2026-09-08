@@ -18,16 +18,19 @@ export function Sidebar({ quota }: { quota: QuotaState }) {
       <div className="flex h-18 items-center justify-between border-b border-slate-200 dark:border-slate-800/80 px-4 py-3">
         <Link href="/dashboard" className="flex items-center gap-2.5 group min-w-0">
           <div className="size-9 rounded-xl overflow-hidden shrink-0 group-hover:scale-105 transition-transform flex items-center justify-center">
-            <NewslyLogo size={30} />
+            <NewslyLogo size={32} />
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
               <span className="text-sm font-black tracking-tight text-slate-900 dark:text-white block leading-tight">
-                Newsly<span className="bg-gradient-to-r from-cyan-500 via-pink-500 to-amber-500 bg-clip-text text-transparent">AI</span>
+                InstaDeck
+              </span>
+              <span className="inline-flex items-center justify-center px-1.5 py-0.2 rounded-full bg-[#fff0ec] dark:bg-[#ff4526]/20 text-[#ff4526] text-[9px] font-black tracking-wider border border-[#ffd4ca] dark:border-[#ff4526]/40">
+                PRO
               </span>
             </div>
             <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate block">
-              From News to Content
+              AI Content Automation
             </span>
           </div>
         </Link>
