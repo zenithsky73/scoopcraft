@@ -132,12 +132,28 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
     }
 
     if (connected === 'meta') {
-      const ig = params.get('ig') || '0';
-      const fb = params.get('fb') || '0';
-      notify.celebrate(
-        'Akun Meta Berhasil Terhubung! 🎉',
-        `${ig} Akun Instagram Bisnis & ${fb} Halaman Facebook Anda siap digunakan.`
-      );
+      const ig = parseInt(params.get('ig') || '0', 10);
+      const fb = parseInt(params.get('fb') || '0', 10);
+      const platform = params.get('platform');
+
+      if (ig > 0) {
+        notify.celebrate(
+          'Instagram & Facebook Terhubung! 🎉',
+          `${ig} Akun Instagram Bisnis & ${fb} Halaman Facebook Anda siap digunakan.`
+        );
+      } else if (fb > 0) {
+        if (platform === 'instagram') {
+          notify.warning(
+            'Halaman FB Terhubung, IG Belum Tertaut ⚠️',
+            'Halaman Facebook Anda terhubung, tetapi belum ada Akun Instagram Bisnis yang ditautkan ke Halaman tersebut di pengaturan Facebook.'
+          );
+        } else {
+          notify.celebrate(
+            'Halaman Facebook Terhubung! 🎉',
+            `${fb} Halaman Facebook siap digunakan untuk posting.`
+          );
+        }
+      }
       window.history.replaceState({}, '', '/settings');
     } else if (canceled === 'meta') {
       notify.info('Otorisasi Dibatalkan', 'Penyambungan akun Meta dibatalkan.');
