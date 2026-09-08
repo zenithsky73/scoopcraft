@@ -16,28 +16,56 @@ export default async function CalendarPage() {
     redirect('/login');
   }
 
-  const posts = await db.scheduledPost.findMany({
-    where: { userId: viewer.user.id },
-    include: {
-      socialAccount: {
-        select: {
-          id: true,
-          accountName: true,
-          accountHandle: true,
-          avatarUrl: true,
-          platform: true,
+  const [posts, socialAccounts, recentContents] = await Promise.all([
+    db.scheduledPost.findMany({
+      where: { userId: viewer.user.id },
+      include: {
+        socialAccount: {
+          select: {
+            id: true,
+            accountName: true,
+            accountHandle: true,
+            avatarUrl: true,
+            platform: true,
+          },
+        },
+        generatedContent: {
+          select: {
+            id: true,
+            headline: true,
+            visualUrl: true,
+          },
         },
       },
-      generatedContent: {
-        select: {
-          id: true,
-          headline: true,
-          visualUrl: true,
+      orderBy: { scheduledAt: 'asc' },
+    }),
+    db.socialAccount.findMany({
+      where: { userId: viewer.user.id },
+      select: {
+        id: true,
+        accountName: true,
+        accountHandle: true,
+        avatarUrl: true,
+        platform: true,
+        isConnected: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    }),
+    db.generatedContent.findMany({
+      where: {
+        article: {
+          userId: viewer.user.id,
         },
       },
-    },
-    orderBy: { scheduledAt: 'asc' },
-  });
+      include: {
+        assets: {
+          orderBy: { slideIndex: 'asc' },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 20,
+    }),
+  ]);
 
   const serializedPosts = posts.map((post) => ({
     id: post.id,
@@ -58,9 +86,28 @@ export default async function CalendarPage() {
     generatedContent: post.generatedContent,
   }));
 
+  const serializedRecentContents = recentContents
+    .filter((gc) => gc.assets?.length > 0)
+    .map((gc) => {
+      const cover = gc.assets.find((a) => a.slideIndex === 0) || gc.assets[0];
+      return {
+        id: gc.id,
+        headline: gc.headline,
+        coverUrl: cover?.imageUrl || gc.visualUrl || null,
+        mediaUrls: gc.assets.map((a) => a.imageUrl).filter(Boolean) as string[],
+        format: (cover?.format || 'FEED_PORTRAIT') as string,
+        style: cover?.style || null,
+        totalSlides: gc.assets.length,
+      };
+    });
+
   return (
-    <div className="mx-auto max-w-6xl">
-      <ContentCalendar initialPosts={serializedPosts} />
+    <div className="w-full">
+      <ContentCalendar
+        initialPosts={serializedPosts}
+        socialAccounts={socialAccounts}
+        recentContents={serializedRecentContents}
+      />
     </div>
   );
 }
