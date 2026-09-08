@@ -45,6 +45,7 @@ export async function POST(
       success: result.success,
       result,
       post: updatedPost,
+      error: !result.success ? (result.error || 'Percobaan ulang gagal dipublikasikan.') : undefined,
       message: result.success
         ? 'Postingan berhasil dipublikasikan ulang!'
         : (result.error || 'Percobaan ulang gagal dipublikasikan.'),

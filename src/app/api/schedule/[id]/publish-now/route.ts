@@ -36,6 +36,7 @@ export async function POST(
       success: result.success,
       result,
       post: updatedPost,
+      error: !result.success ? (result.error || 'Gagal mempublikasikan postingan.') : undefined,
       message: result.success
         ? 'Postingan berhasil dipublikasikan sekarang!'
         : (result.error || 'Gagal mempublikasikan postingan.'),

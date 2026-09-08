@@ -157,8 +157,28 @@ async function publishToInstagram(
   account: SocialAccount
 ): Promise<PublishResult> {
   const metadata = (account.metadata as any) || {};
-  const igUserId = metadata.instagram_business_account_id || metadata.igUserId || account.externalId || process.env.META_INSTAGRAM_ACCOUNT_ID;
-  const accessToken = account.accessToken || process.env.META_ACCESS_TOKEN;
+  let igUserId = metadata.instagram_business_account_id || metadata.igUserId || account.externalId || process.env.META_INSTAGRAM_ACCOUNT_ID;
+  let accessToken = account.accessToken || process.env.META_ACCESS_TOKEN;
+
+  // Auto-resolve Instagram Business Account ID & Page Access Token jika belum ada di metadata
+  if (accessToken && account.externalId) {
+    try {
+      const pageRes = await fetch(
+        `https://graph.facebook.com/v19.0/${account.externalId}?fields=instagram_business_account,access_token&access_token=${accessToken}`
+      );
+      if (pageRes.ok) {
+        const pageData = await pageRes.json();
+        if (pageData.instagram_business_account?.id) {
+          igUserId = pageData.instagram_business_account.id;
+        }
+        if (pageData.access_token) {
+          accessToken = pageData.access_token;
+        }
+      }
+    } catch {
+      // fallback to original tokens
+    }
+  }
 
   if (!igUserId || !accessToken) {
     return {
@@ -370,7 +390,7 @@ async function publishToFacebook(
   account: SocialAccount
 ): Promise<PublishResult> {
   const pageId = account.externalId;
-  const accessToken = account.accessToken;
+  let accessToken = account.accessToken;
 
   if (!pageId || !accessToken) {
     return {
@@ -378,6 +398,21 @@ async function publishToFacebook(
       isSimulated: false,
       error: 'ID Halaman Facebook atau Access Token belum terkonfigurasi.',
     };
+  }
+
+  // Jika token tersimpan adalah User Token, otomatis minta Page Access Token ke Meta
+  try {
+    const pageTokenRes = await fetch(
+      `https://graph.facebook.com/v19.0/${pageId}?fields=access_token&access_token=${accessToken}`
+    );
+    if (pageTokenRes.ok) {
+      const pageTokenData = await pageTokenRes.json();
+      if (pageTokenData.access_token) {
+        accessToken = pageTokenData.access_token;
+      }
+    }
+  } catch {
+    // fallback
   }
 
   const hashtagsFormatted = post.hashtags?.length
@@ -464,10 +499,14 @@ async function publishToFacebook(
       };
     }
   } catch (err: any) {
+    let msg = err?.message || 'Gagal memposting ke Facebook.';
+    if (msg.includes('pages_manage_posts') || msg.includes('administrative permission')) {
+      msg = 'Izin memposting ke Halaman Facebook (pages_manage_posts) belum aktif di akun ini. Silakan sambungkan ulang akun Facebook di Pengaturan.';
+    }
     return {
       success: false,
       isSimulated: false,
-      error: `Facebook API: ${err?.message || 'Gagal memposting'}`,
+      error: `Facebook API: ${msg}`,
     };
   }
 }

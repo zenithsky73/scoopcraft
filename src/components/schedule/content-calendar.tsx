@@ -91,7 +91,8 @@ export function ContentCalendar({ initialPosts }: ContentCalendarProps) {
         notify.celebrate('Terbit! 🚀', 'Postingan berhasil dipublikasikan sekarang.');
         await fetchPosts();
       } else {
-        notify.error('Gagal Menerbitkan', data?.error || 'Terjadi kesalahan');
+        notify.error('Gagal Menerbitkan', data?.error || data?.message || data?.result?.error || 'Terjadi kesalahan');
+        await fetchPosts();
       }
     } catch (e: any) {
       notify.error('Gagal', e?.message);
@@ -109,7 +110,8 @@ export function ContentCalendar({ initialPosts }: ContentCalendarProps) {
         notify.celebrate('Terbit! 🚀', 'Postingan berhasil dipublikasikan ulang.');
         await fetchPosts();
       } else {
-        notify.error('Gagal Mengulang', data?.error || 'Terjadi kesalahan');
+        notify.error('Gagal Mengulang', data?.error || data?.message || data?.result?.error || 'Terjadi kesalahan');
+        await fetchPosts();
       }
     } catch (e: any) {
       notify.error('Gagal', e?.message);
