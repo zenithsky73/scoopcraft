@@ -167,35 +167,56 @@ export function CampaignModal({ open, onClose, onCampaignSuccess }: CampaignModa
           {generatedDays.length === 0 ? (
             /* FORM STATE */
             <>
-              {/* 1. Pilih Niche Bisnis */}
+                            {/* 1. Pilih Kategori / Niche Kampanye */}
               <div>
                 <label className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-1.5 block">
-                  1. Kategori / Niche Bisnis
+                  1. Kategori / Niche Kampanye
                 </label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
-                  {[
-                    { id: 'CULINARY_RESTO', label: '🍲 Kuliner & Padang' },
-                    { id: 'FNB_CAFE', label: '☕ Cafe & Fore Style' },
-                    { id: 'FASHION_RETAIL', label: '🛍️ Fashion & Distro' },
-                    { id: 'BEAUTY_SKINCARE', label: '✨ Skincare & Beauty' },
-                    { id: 'SERVICES_AGENCY', label: '💼 Jasa & Servis' },
-                    { id: 'GENERAL_BUSINESS', label: '🏢 Bisnis UMKM' },
-                  ].map((n) => (
-                    <button
-                      key={n.id}
-                      type="button"
-                      onClick={() => setNiche(n.id)}
-                      className={cn(
-                        'px-2 py-1.5 rounded-xl border text-[11px] font-bold transition-all text-left truncate',
-                        niche === n.id
-                          ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
-                          : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800'
-                      )}
-                    >
-                      {n.label}
-                    </button>
-                  ))}
-                </div>
+                <select
+                  value={niche}
+                  onChange={(e) => setNiche(e.target.value)}
+                  className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-xs font-bold text-slate-900 dark:text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  <optgroup label="Bisnis & Keuangan">
+                    <option value="BISNIS">💼 Bisnis & UMKM</option>
+                    <option value="KEUANGAN_PRIBADI">💰 Keuangan Pribadi</option>
+                    <option value="INVESTASI">📈 Investasi & Saham</option>
+                    <option value="BISNIS_DIGITAL">🛒 Bisnis Digital & E-Commerce</option>
+                    <option value="PENGEMBANGAN_KARIR">👔 Pengembangan Karir & HR</option>
+                    <option value="MARKETING_BRANDING">📣 Marketing & Branding</option>
+                  </optgroup>
+                  <optgroup label="Kuliner & F&B">
+                    <option value="KULINER_MAKANAN">🍲 Kuliner & Makanan (Resto/Padang)</option>
+                    <option value="CAFE_MINUMAN">☕ Cafe, Kopi & Minuman (Fore style)</option>
+                    <option value="RESEP_MASAKAN">🍳 Resep Masakan & Baking</option>
+                  </optgroup>
+                  <optgroup label="Kesehatan & Olahraga">
+                    <option value="KESEHATAN">🩺 Kesehatan & Medis</option>
+                    <option value="OLAHRAGA">🏋️ Olahraga & Fitness</option>
+                    <option value="DIET_NUTRISI">🥗 Diet & Nutrisi</option>
+                    <option value="KESEHATAN_MENTAL">🧘 Kesehatan Mental & Self-Care</option>
+                  </optgroup>
+                  <optgroup label="Teknologi & AI">
+                    <option value="TEKNOLOGI_GADGET">📱 Teknologi & Gadget</option>
+                    <option value="ULASAN_GADGET">📦 Ulasan & Review Gadget</option>
+                    <option value="AI_OTOMASI">🤖 Kecerdasan Buatan (AI) & Tools</option>
+                    <option value="PEMROGRAMAN">💻 Pemrograman & IT (Coding)</option>
+                    <option value="GAMING">🎮 Gaming & Esports</option>
+                  </optgroup>
+                  <optgroup label="Fashion & Lifestyle">
+                    <option value="KECANTIKAN">✨ Kecantikan & Skincare</option>
+                    <option value="FASHION">🛍️ Fashion & Streetwear</option>
+                    <option value="GAYA_HIDUP">🍿 Gaya Hidup & Hiburan</option>
+                    <option value="WISATA_TRAVEL">✈️ Wisata (Travel) & Liburan</option>
+                  </optgroup>
+                  <optgroup label="Properti & Pengembangan Diri">
+                    <option value="PROPERTI_RUMAH">🏠 Properti & Desain Rumah</option>
+                    <option value="OTOMOTIF">🚗 Otomotif (Mobil & Motor)</option>
+                    <option value="PENDIDIKAN">🎓 Pendidikan & Beasiswa</option>
+                    <option value="PARENTING">👶 Parenting & Keluarga</option>
+                    <option value="MOTIVASI_MINDSET">🖋️ Motivasi & Pengembangan Diri</option>
+                  </optgroup>
+                </select>
               </div>
 
               {/* 2. Input Tema Utama */}

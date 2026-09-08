@@ -108,13 +108,54 @@ const AVAILABLE_STYLES_PRESET = [
   { id: 'BREAKING_NEWS', label: '⚡ Pengumuman Penting & Info Bisnis', color: '#EF4444' },
 ];
 
-export const NICHE_PRESETS = [
-  { id: 'CULINARY_RESTO', label: '🍲 Kuliner & Resto Padang', desc: 'Resto, Warung & Masakan Padang', defaultStyle: 'CULINARY' },
-  { id: 'FNB_CAFE', label: '☕ Cafe & Fore Aesthetic', desc: 'Coffee shop, Bakery & Minuman', defaultStyle: 'MINIMAL' },
-  { id: 'FASHION_RETAIL', label: '🛍️ Fashion & Distro', desc: 'Outfit, Streetwear & Clothing', defaultStyle: 'BRUTALIST_SALE' },
-  { id: 'BEAUTY_SKINCARE', label: '✨ Skincare & Beauty', desc: 'Produk glowing, Kosmetik & Klinik', defaultStyle: 'PRODUCT_CATALOG' },
-  { id: 'SERVICES_AGENCY', label: '💼 Jasa & Servis', desc: 'Studio, Salon, Konsultan & Layanan', defaultStyle: 'PRICE_TIER_TABLE' },
-  { id: 'GENERAL_BUSINESS', label: '🏢 Bisnis UMKM Umum', desc: 'Penjualan Produk & Edukasi Bisnis', defaultStyle: 'SHOPEE_PROMO' },
+export type NicheItem = {
+  id: string;
+  label: string;
+  group: string;
+  desc: string;
+  defaultStyle: string;
+  quickEmoji: string;
+};
+
+export const NICHE_PRESETS: NicheItem[] = [
+  // ─── BISNIS & KEUANGAN ───
+  { id: 'BISNIS', label: 'Bisnis & UMKM', group: 'Bisnis & Keuangan', desc: 'Strategi bisnis, operasional & scale-up', defaultStyle: 'PRICE_TIER_TABLE', quickEmoji: '💼' },
+  { id: 'KEUANGAN_PRIBADI', label: 'Keuangan Pribadi', group: 'Bisnis & Keuangan', desc: 'Money management, tips hemat & budgeting', defaultStyle: 'FINANCE', quickEmoji: '💰' },
+  { id: 'INVESTASI', label: 'Investasi & Saham', group: 'Bisnis & Keuangan', desc: 'Pasar modal, reksadana, crypto & trading', defaultStyle: 'TECH', quickEmoji: '📈' },
+  { id: 'BISNIS_DIGITAL', label: 'Bisnis Digital & E-Commerce', group: 'Bisnis & Keuangan', desc: 'Toko online, affiliate, dropship & olshop', defaultStyle: 'SHOPEE_PROMO', quickEmoji: '🛒' },
+  { id: 'PENGEMBANGAN_KARIR', label: 'Pengembangan Karir & HR', group: 'Bisnis & Keuangan', desc: 'Tips interview, resume CV & produktivitas kerja', defaultStyle: 'CORPORATE', quickEmoji: '👔' },
+  { id: 'MARKETING_BRANDING', label: 'Marketing & Branding', group: 'Bisnis & Keuangan', desc: 'Digital marketing, social media ads & copywriting', defaultStyle: 'SPOTLIGHT', quickEmoji: '📣' },
+
+  // ─── KULINER & F&B ───
+  { id: 'KULINER_MAKANAN', label: 'Kuliner & Makanan (Padang / Resto)', group: 'Kuliner & F&B', desc: 'Restoran, warung makan, masakan nusantara', defaultStyle: 'CULINARY', quickEmoji: '🍲' },
+  { id: 'CAFE_MINUMAN', label: 'Cafe, Kopi & Minuman (Fore style)', group: 'Kuliner & F&B', desc: 'Coffee shop, bakery, minuman kekinian & boba', defaultStyle: 'MINIMAL', quickEmoji: '☕' },
+  { id: 'RESEP_MASAKAN', label: 'Resep Masakan & Baking', group: 'Kuliner & F&B', desc: 'Resep rumahan, kue, bumbu dapur & tutorial masak', defaultStyle: 'STEP_BY_STEP_GUIDE', quickEmoji: '🍳' },
+
+  // ─── KESEHATAN & OLAHRAGA ───
+  { id: 'KESEHATAN', label: 'Kesehatan & Medis', group: 'Kesehatan & Olahraga', desc: 'Informasi medis, pola hidup sehat & imun', defaultStyle: 'BEFORE_AFTER', quickEmoji: '🩺' },
+  { id: 'OLAHRAGA', label: 'Olahraga & Fitness', group: 'Kesehatan & Olahraga', desc: 'Gym workout, lari, sepeda & latihan di rumah', defaultStyle: 'ATHLETIC', quickEmoji: '🏋️' },
+  { id: 'DIET_NUTRISI', label: 'Diet & Nutrisi', group: 'Kesehatan & Olahraga', desc: 'Pola makan sehat, defisit kalori & meal prep', defaultStyle: 'BEFORE_AFTER', quickEmoji: '🥗' },
+  { id: 'KESEHATAN_MENTAL', label: 'Kesehatan Mental & Self-Care', group: 'Kesehatan & Olahraga', desc: 'Mindfulness, stress relief, afirmasi & meditasi', defaultStyle: 'LIFESTYLE', quickEmoji: '🧘' },
+
+  // ─── TEKNOLOGI & GADGET ───
+  { id: 'TEKNOLOGI_GADGET', label: 'Teknologi & Gadget', group: 'Teknologi & AI', desc: 'Smartphone, laptop, hardware & inovasi tech', defaultStyle: 'TERMINAL', quickEmoji: '📱' },
+  { id: 'ULASAN_GADGET', label: 'Ulasan & Review Gadget', group: 'Teknologi & AI', desc: 'Spesifikasi, unboxing & perbandingan gadget', defaultStyle: 'UNBOXING_POLAROID', quickEmoji: '📦' },
+  { id: 'AI_OTOMASI', label: 'Kecerdasan Buatan (AI) & Tools', group: 'Teknologi & AI', desc: 'Prompt AI, ChatGPT, automation & produktivitas', defaultStyle: 'TERMINAL', quickEmoji: '🤖' },
+  { id: 'PEMROGRAMAN', label: 'Pemrograman & IT (Coding)', group: 'Teknologi & AI', desc: 'Web development, coding tutorial & tech career', defaultStyle: 'TERMINAL', quickEmoji: '💻' },
+  { id: 'GAMING', label: 'Gaming & Esports', group: 'Teknologi & AI', desc: 'Game review, tips gameplay, setup & berita game', defaultStyle: 'BOLD', quickEmoji: '🎮' },
+
+  // ─── LIFESTYLE, FASHION & BEAUTY ───
+  { id: 'KECANTIKAN', label: 'Kecantikan & Skincare', group: 'Fashion & Lifestyle', desc: 'Perawatan kulit glowing, makeup & kosmetik', defaultStyle: 'PRODUCT_CATALOG', quickEmoji: '✨' },
+  { id: 'FASHION', label: 'Fashion & Streetwear', group: 'Fashion & Lifestyle', desc: 'Outfit ideas, distro, tren busana & aksesoris', defaultStyle: 'BRUTALIST_SALE', quickEmoji: '🛍️' },
+  { id: 'GAYA_HIDUP', label: 'Gaya Hidup & Hiburan', group: 'Fashion & Lifestyle', desc: 'Pop culture, film, musik & hobi seru', defaultStyle: 'SPOTLIGHT', quickEmoji: '🍿' },
+  { id: 'WISATA_TRAVEL', label: 'Wisata (Travel) & Liburan', group: 'Fashion & Lifestyle', desc: 'Rekomendasi destinasi, hotel & itinerary jalan-jalan', defaultStyle: 'RED_COLLAGE', quickEmoji: '✈️' },
+
+  // ─── PROPERTI, PENDIDIKAN & LAINNYA ───
+  { id: 'PROPERTI_RUMAH', label: 'Properti & Desain Rumah', group: 'Properti & Hunian', desc: 'Dekorasi interior, rumah impian, arsitektur & kost', defaultStyle: 'MINIMAL', quickEmoji: '🏠' },
+  { id: 'OTOMOTIF', label: 'Otomotif (Mobil & Motor)', group: 'Otomotif & Servis', desc: 'Review mobil/motor, tips servis & modifikasi', defaultStyle: 'BOLD', quickEmoji: '🚗' },
+  { id: 'PENDIDIKAN', label: 'Pendidikan & Beasiswa', group: 'Edukasi & Pengembangan', desc: 'Tips belajar, info kampus, beasiswa & bahasa asing', defaultStyle: 'LIFESTYLE', quickEmoji: '🎓' },
+  { id: 'PARENTING', label: 'Parenting & Keluarga', group: 'Edukasi & Pengembangan', desc: 'Pola asuh anak, ibu & bayi, keharmonisan keluarga', defaultStyle: 'UNBOXING_POLAROID', quickEmoji: '👶' },
+  { id: 'MOTIVASI_MINDSET', label: 'Motivasi & Pengembangan Diri', group: 'Edukasi & Pengembangan', desc: 'Quotes inspiratif, buku filosofis & habit positif', defaultStyle: 'QUOTE_MINIMAL', quickEmoji: '🖋️' },
 ];
 
 export const CONTENT_TYPE_PRESETS = [
@@ -156,7 +197,7 @@ export function ContentCalendar({
   const [contentSourceMode, setContentSourceMode] = React.useState<ContentSourceMode>('AI_GENERATE');
   const [aiInputType, setAiInputType] = React.useState<'PROMPT' | 'URL'>('PROMPT');
   const [aiPromptOrUrl, setAiPromptOrUrl] = React.useState<string>('');
-  const [aiNiche, setAiNiche] = React.useState<string>('CULINARY_RESTO');
+  const [aiNiche, setAiNiche] = React.useState<string>('KULINER_MAKANAN');
   const [aiContentType, setAiContentType] = React.useState<string>('PROMOTION');
   const [aiSelectedStyle, setAiSelectedStyle] = React.useState<string>('CULINARY');
   const [aiSlidesCount, setAiSlidesCount] = React.useState<number>(5);
@@ -1246,33 +1287,72 @@ export function ContentCalendar({
                       </button>
                     </div>
 
-                    {/* 1. Pilih Kategori / Niche Bisnis */}
+                    {/* 1. Pilih Kategori / Niche Lengkap */}
                     <div>
-                      <label className="text-[11px] font-bold text-slate-800 dark:text-slate-200 mb-1.5 flex items-center justify-between">
-                        <span>1. Kategori / Niche Bisnis:</span>
-                        <span className="text-[10px] font-normal text-indigo-600 dark:text-indigo-400">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                          1. Kategori / Niche Konten:
+                        </label>
+                        <span className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 truncate max-w-[200px]">
                           {NICHE_PRESETS.find(n => n.id === aiNiche)?.desc}
                         </span>
-                      </label>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
-                        {NICHE_PRESETS.map((n) => {
-                          const isSel = aiNiche === n.id;
+                      </div>
+
+                      {/* Dropdown Select Lengkap dengan Pengelompokan Kategori */}
+                      <select
+                        value={aiNiche}
+                        onChange={(e) => {
+                          const found = NICHE_PRESETS.find(n => n.id === e.target.value);
+                          setAiNiche(e.target.value);
+                          if (found) setAiSelectedStyle(found.defaultStyle);
+                        }}
+                        className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-xs font-bold text-slate-900 dark:text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-2"
+                      >
+                        {Array.from(new Set(NICHE_PRESETS.map(n => n.group))).map(groupName => (
+                          <optgroup key={groupName} label={groupName} className="font-bold text-slate-500 dark:text-slate-400">
+                            {NICHE_PRESETS.filter(n => n.group === groupName).map(n => (
+                              <option key={n.id} value={n.id} className="text-slate-900 dark:text-white font-medium py-1">
+                                {n.quickEmoji} {n.label}
+                              </option>
+                            ))}
+                          </optgroup>
+                        ))}
+                      </select>
+
+                      {/* Quick Popular Shortcut Chips */}
+                      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+                        {[
+                          'KULINER_MAKANAN',
+                          'CAFE_MINUMAN',
+                          'BISNIS',
+                          'KEUANGAN_PRIBADI',
+                          'KECANTIKAN',
+                          'FASHION',
+                          'OLAHRAGA',
+                          'TEKNOLOGI_GADGET',
+                          'AI_OTOMASI',
+                          'WISATA_TRAVEL'
+                        ].map((nId) => {
+                          const item = NICHE_PRESETS.find(n => n.id === nId);
+                          if (!item) return null;
+                          const isSel = aiNiche === item.id;
                           return (
                             <button
-                              key={n.id}
+                              key={item.id}
                               type="button"
                               onClick={() => {
-                                setAiNiche(n.id);
-                                setAiSelectedStyle(n.defaultStyle);
+                                setAiNiche(item.id);
+                                setAiSelectedStyle(item.defaultStyle);
                               }}
                               className={cn(
-                                'px-2 py-1.5 rounded-xl border text-[10px] font-bold transition-all text-left truncate flex items-center gap-1',
+                                'shrink-0 px-2 py-1 rounded-lg text-[10px] font-bold transition-all border flex items-center gap-1',
                                 isSel
-                                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
-                                  : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-indigo-300'
+                                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm ring-1 ring-indigo-500'
+                                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-indigo-300'
                               )}
                             >
-                              <span className="truncate">{n.label}</span>
+                              <span>{item.quickEmoji}</span>
+                              <span>{item.label.split(' ')[0]}</span>
                             </button>
                           );
                         })}
@@ -1327,15 +1407,19 @@ export function ContentCalendar({
                         placeholder={
                           aiInputType === 'URL'
                             ? 'https://web-artikel.com/...'
-                            : aiNiche === 'CULINARY_RESTO'
-                              ? (aiContentType === 'PROMOTION' ? 'Contoh: Promo Paket Nasi Rendang Komplit Cuma 25rb Makan Siang' : 'Contoh: Rahasia bumbu rendang warisan nenek moyang yang dimasak 6 jam')
-                              : aiNiche === 'FNB_CAFE'
-                                ? (aiContentType === 'PROMOTION' ? 'Contoh: Promo Buy 1 Get 1 Kopi Pandan Creamy khusus hari Jumat' : 'Contoh: 3 Alasan kenapa biji kopi Arabica lebih ramah di lambung')
-                                : aiNiche === 'BEAUTY_SKINCARE'
-                                  ? 'Contoh: Urutan skincare malam yang benar biar bangun tidur glowing'
-                                  : aiNiche === 'FASHION_RETAIL'
-                                    ? 'Contoh: Launching Koleksi Hoodie Streetwear Oversized Edisi Terbatas'
-                                    : 'Contoh: 5 Strategi scale-up omset bisnis UMKM dengan media sosial'
+                            : ['KULINER_MAKANAN', 'CAFE_MINUMAN', 'RESEP_MASAKAN'].includes(aiNiche)
+                              ? (aiContentType === 'PROMOTION' ? 'Contoh: Promo Buy 1 Get 1 Menu Kopi Pandan Creamy / Paket Nasi Rendang Hemat' : 'Contoh: 3 Alasan kenapa bumbu rempah asli bikin masakan jauh lebih gurih & empuk')
+                              : ['BISNIS', 'BISNIS_DIGITAL', 'MARKETING_BRANDING'].includes(aiNiche)
+                                ? 'Contoh: 5 Strategi scale-up omset penjualan UMKM di media sosial'
+                                : ['KEUANGAN_PRIBADI', 'INVESTASI'].includes(aiNiche)
+                                  ? 'Contoh: Cara mengatur gaji 5 juta biar bisa nabung & investasi 30%'
+                                  : ['OLAHRAGA', 'DIET_NUTRISI', 'KESEHATAN'].includes(aiNiche)
+                                    ? 'Contoh: Panduan menu diet defisit kalori kenyang tanpa lemas'
+                                    : ['TEKNOLOGI_GADGET', 'AI_OTOMASI', 'ULASAN_GADGET'].includes(aiNiche)
+                                      ? 'Contoh: 5 Tools AI gratis yang wajib dicoba untuk otomatisasi kerjaan'
+                                      : ['KECANTIKAN', 'FASHION'].includes(aiNiche)
+                                        ? 'Contoh: Urutan skincare malam yang benar biar bangun tidur glowing'
+                                        : 'Contoh: Masukkan ide atau topik konten yang ingin dibuat...'
                         }
                         className="w-full rounded-xl border border-indigo-200 dark:border-indigo-900 bg-white dark:bg-slate-900 px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       />

@@ -210,8 +210,39 @@ export async function generateDirect(input: GenerateDirectInput) {
     }
 
     let contextDirectives = '';
+    const NICHE_GUIDELINES: Record<string, string> = {
+      'BISNIS': 'Bisnis, Manajemen & UMKM: Fokus pada strategi scale-up omset, efisiensi operasional, manajemen tim, dan tips praktis pemilik usaha.',
+      'KEUANGAN_PRIBADI': 'Keuangan Pribadi (Personal Finance): Fokus pada budgeting, cara menabung cerdas, pos pengeluaran, dana darurat, dan kebiasaan finansial sehat.',
+      'INVESTASI': 'Investasi & Saham: Fokus pada analisis pasar modal, reksadana, crypto, evaluasi risiko, dan strategi diversifikasi portofolio jangka panjang.',
+      'BISNIS_DIGITAL': 'Bisnis Digital & E-Commerce / Olshop: Fokus pada penjualan toko online, trik affiliate Shopee/TikTok Shop, dropship, dan konversi marketplace.',
+      'PENGEMBANGAN_KARIR': 'Pengembangan Karir & HR: Fokus pada tips lolos interview, penulisan CV ATS, personal branding LinkedIn, negosiasi gaji, dan produktivitas kerja.',
+      'MARKETING_BRANDING': 'Marketing & Branding: Fokus pada strategi digital marketing, formula copywriting jualan, pembuatan konten viral, dan manajemen media sosial.',
+      'KULINER_MAKANAN': 'Kuliner & Restoran (F&B / Rumah Makan Padang / Resto Nusantara): Fokus pada cita rasa rempah otentik, kelezatan menu favorit, porsi kenyang, dan pengalaman makan nikmat.',
+      'CAFE_MINUMAN': 'Cafe, Coffee Shop & Minuman Kekinian (ala Fore Coffee): Fokus pada estetika kopi modern, racikan minuman creamy/refreshing, aroma biji kopi Arabica, dan vibe nongkrong.',
+      'RESEP_MASAKAN': 'Resep Masakan Rumahan & Baking: Fokus pada takaran bumbu dapur presisi, langkah memasak anti-gagal, dan tips penyajian lezat.',
+      'KESEHATAN': 'Kesehatan & Medis: Fokus pada fakta kesehatan berbasis bukti, tips pencegahan penyakit, imunitas tubuh, dan pola hidup sehat.',
+      'OLAHRAGA': 'Olahraga & Fitness: Fokus pada rutinitas gym workout, latihan angkat beban, lari (running), olahraga di rumah, dan tips konsistensi fisik.',
+      'DIET_NUTRISI': 'Diet & Nutrisi: Fokus pada defisit kalori, pemenuhan protein, meal prep sehat, dan mitos vs fakta seputar makanan diet.',
+      'KESEHATAN_MENTAL': 'Kesehatan Mental & Self-Care: Fokus pada mengatasi overthinking, manajemen stres kerja, mindfulness, dan afirmasi positif.',
+      'TEKNOLOGI_GADGET': 'Teknologi & Gadget: Fokus pada inovasi smartphone, laptop, gadget produktivitas, dan fitur teknologi terkini.',
+      'ULASAN_GADGET': 'Ulasan Gadget & Unboxing: Fokus pada spesifikasi real-world, kelebihan & kekurangan, ketahanan baterai, dan rekomendasi beli.',
+      'AI_OTOMASI': 'Kecerdasan Buatan (AI) & Otomasi: Fokus pada prompt engineering praktis, tools AI produktivitas (ChatGPT, Midjourney, Claude, Automations), dan masa depan teknologi.',
+      'PEMROGRAMAN': 'Pemrograman & IT (Coding / Software): Fokus pada tips web development, framework modern, debugging, dan karir software engineer.',
+      'GAMING': 'Gaming & Esports: Fokus pada review game terbaru, tips gameplay, rekomendasi gear gaming, dan berita esports.',
+      'KECANTIKAN': 'Kecantikan & Skincare: Fokus pada tahapan skincare routine, kandungan bahan aktif aman (BPOM/Halal), tips kulit glowing, dan solusi masalah jerawat/kusam.',
+      'FASHION': 'Fashion, Distro & Streetwear: Fokus pada mix & match outfit, tren streetwear, racun pakaian kekinian, dan gaya berpakaian modis.',
+      'GAYA_HIDUP': 'Gaya Hidup & Hiburan: Fokus pada rekomendasi film/musik, tren pop culture, dan aktivitas hobi yang seru.',
+      'WISATA_TRAVEL': 'Wisata (Travel) & Liburan: Fokus pada rekomendasi destinasi wisata tersembunyi, itinerary liburan hemat, dan tips jalan-jalan seru.',
+      'PROPERTI_RUMAH': 'Properti & Desain Rumah: Fokus pada inspirasi dekorasi interior minimalis, tips membeli rumah pertama, renovasi hemat, dan tips hunian nyaman.',
+      'OTOMOTIF': 'Otomotif (Mobil & Motor): Fokus pada tips perawatan mesin kendaraan, komparasi mobil/motor, dan aksesoris otomotif.',
+      'PENDIDIKAN': 'Pendidikan & Beasiswa: Fokus pada tips belajar efektif, persiapan ujian/skripsi, info beasiswa kuliah dalam & luar negeri.',
+      'PARENTING': 'Parenting & Keluarga: Fokus pada pola asuh anak positif, stimulasi tumbuh kembang balita, dan keharmonisan rumah tangga.',
+      'MOTIVASI_MINDSET': 'Motivasi & Mindset: Fokus pada kutipan inspiratif mendalam, bedah buku filosofis (Stoikisme, Atomic Habits), dan pembentukan kebiasaan pemenang.',
+    };
+
     if (input.niche) {
-      contextDirectives += `\n- TARGET NICHE / INDUSTRI: ${input.niche}. Sesuaikan istilah, persona, dan daya tarik konten dengan target industri ini.`;
+      const guideline = NICHE_GUIDELINES[input.niche] || `Kategori: ${input.niche}`;
+      contextDirectives += `\n- TARGET NICHE / INDUSTRI: ${guideline}. Sesuaikan istilah, persona, dan daya tarik konten dengan target industri ini.`;
     }
     if (input.contentType) {
       contextDirectives += `\n- PILAR / TIPE KONTEN: ${input.contentType}.`;
