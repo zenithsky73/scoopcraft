@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panduan Lengkap Konfigurasi Meta Developer - Scoopcraft</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+    @page {
+      size: A4;
+      margin: 15mm 15mm 15mm 15mm;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #1e293b;
+      background: #ffffff;
+      line-height: 1.55;
+      font-size: 13px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 10px 0;
+    }
+
+    /* Header */
+    .header {
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-badge {
+      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+      color: white;
+      font-weight: 800;
+      font-size: 18px;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .title-area h1 {
+      font-size: 20px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+    }
+
+    .title-area p {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    .doc-meta {
+      text-align: right;
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .status-badge {
+      display: inline-block;
+      background: #ecfdf5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 10px;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    /* Info Grid */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .info-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+
+    .info-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .info-val {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-top: 2px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Section Styles */
+    .section-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 22px 0 10px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-number {
+      background: #4f46e5;
+      color: white;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      page-break-inside: avoid;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 8px;
+    }
+
+    .platform-title {
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .platform-ig { color: #d946ef; }
+    .platform-th { color: #000000; }
+    .platform-fb { color: #2563eb; }
+
+    ol.step-list {
+      padding-left: 20px;
+      margin: 8px 0;
+    }
+
+    ol.step-list li {
+      margin-bottom: 7px;
+      font-size: 12.5px;
+      color: #334155;
+    }
+
+    .code-box {
+      background: #0f172a;
+      color: #38bdf8;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      margin: 6px 0 8px 0;
+      word-break: break-all;
+      border-left: 3px solid #6366f1;
+    }
+
+    .alert {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #92400e;
+      margin-top: 10px;
+    }
+
+    .alert strong {
+      color: #78350f;
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 12px;
+    }
+
+    th, td {
+      border: 1px solid #e2e8f0;
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    th {
+      background: #f8fafc;
+      font-weight: 700;
+      color: #475569;
+    }
+
+    td.code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #0f172a;
+    }
+
+    .page-break {
+      page-break-after: always;
+    }
+
+    .footer {
+      margin-top: 24px;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 10px;
+      text-align: center;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="brand">
+      <div class="logo-badge">S</div>
+      <div class="title-area">
+        <h1>Panduan Konfigurasi Meta Developer API</h1>
+        <p>Dokumen Teknis Integrasi Otorisasi Instagram, Facebook & Threads untuk Scoopcraft</p>
+      </div>
+    </div>
+    <div class="doc-meta">
+      <div>Tanggal: 8 September 2026</div>
+      <div class="status-badge">Panduan Partner / Developer</div>
+    </div>
+  </div>
+
+  <!-- Identitas Kredensial -->
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="info-label">Meta App ID</div>
+      <div class="info-val">2739900363078048</div>
+    </div>
+    <div class="info-card">
+      <div class="info-label">Production Domain</div>
+      <div class="info-val">https://scoopcraft.vercel.app</div>
+    </div>
+  </div>
+
+  <p style="font-size: 12.5px; color: #475569; margin-bottom: 14px;">
+    Dokumen ini berisi panduan langkah demi langkah untuk mengaktifkan Use Case resmi per platform di dalam dashboard <strong>Meta for Developers</strong> agar masing-masing portal login (Instagram, Threads, Facebook) dapat beroperasi secara mandiri tanpa error <em>"Invalid platform app"</em> ataupun <em>"Tidak ada ID aplikasi"</em>.
+  </p>
+
+  <!-- LANGKAH 1: INSTAGRAM -->
+  <div class="card">
+    <div class="card-header">
+      <div class="platform-title platform-ig">
+        <span>📸 1. Konfigurasi Instagram Login for Business</span>
+      </div>
+      <span style="font-size: 11px; font-weight: 600; background: #fdf2f8; color: #db2777; padding: 2px 8px; border-radius: 4px;">Wajib</span>
+    </div>
+    <p style="font-size: 12px; color: #64748b; margin-bottom: 8px;">
+      Digunakan untuk mengotorisasi akun Instagram Bisnis & Kreator agar sistem dapat mempublikasikan carousel visual, gambar, dan caption secara otomatis.
+    </p>
+    <ol class="step-list">
+      <li>Buka dashboard aplikasi: <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #4f46e5;">https://developers.facebook.com/apps/2739900363078048/</span></li>
+      <li>Di menu sebelah kiri, klik <strong>Use Cases</strong> (Kasus Penggunaan) &gt; klik <strong>Add Use Case</strong> (atau <em>Tambahkan Produk</em>).</li>
+      <li>Pilih <strong>"Instagram Login for Business"</strong> atau <strong>"Instagram"</strong> &gt; klik <strong>Set up</strong>.</li>
+      <li>Di menu <strong>Instagram &gt; Settings / Pengaturan</strong>, masukkan URL berikut ke kolom <strong>Valid OAuth Redirect URIs</strong>:</li>
+    </ol>
+    <div class="code-box">
+      https://scoopcraft.vercel.app/api/social-accounts/oauth/instagram/callback<br>
+      http://localhost:3000/api/social-accounts/oauth/instagram/callback
+    </div>
+    <ol class="step-list" start="5">
+      <li>Klik <strong>Save Changes</strong> (Simpan Perubahan).</li>
+    </ol>
+  </div>
+
+  <!-- LANGKAH 2: THREADS -->
+  <div class="card">
+    <div class="card-header">
+      <div class="platform-title platform-th">
+        <span>🧵 2. Konfigurasi Threads API</span>
+      </div>
+      <span style="font-size: 11px; font-weight: 600; background: #f1f5f9; color: #0f172a; padding: 2px 8px; border-radius: 4px;">Wajib</span>
+    </div>
+    <p style="font-size: 12px; color: #64748b; margin-bottom: 8px;">
+      Digunakan agar portal resmi Threads (threads.net) mengenali App ID Anda dan mengizinkan posting teks utas berita / carousel.
+    </p>
+    <ol class="step-list">
+      <li>Di menu dashboard yang sama, klik <strong>Use Cases</strong> &gt; <strong>Add Use Case</strong>.</li>
+      <li>Pilih <strong>"Threads API"</strong> (Access the Threads API) &gt; klik <strong>Set up</strong>.</li>
+      <li>Di bagian <strong>Threads &gt; Settings</strong>, masukkan URL berikut ke kolom <strong>Redirect Callback URIs</strong>:</li>
+    </ol>
+    <div class="code-box">
+      https://scoopcraft.vercel.app/api/social-accounts/oauth/threads/callback<br>
+      http://localhost:3000/api/social-accounts/oauth/threads/callback
+    </div>
+    <ol class="step-list" start="4">
+      <li>Klik <strong>Save Changes</strong>.</li>
+    </ol>
+  </div>
+
+  <!-- LANGKAH 3: FACEBOOK -->
+  <div class="card">
+    <div class="card-header">
+      <div class="platform-title platform-fb">
+        <span>📘 3. Konfigurasi Facebook Login</span>
+      </div>
+      <span style="font-size: 11px; font-weight: 600; background: #eff6ff; color: #2563eb; padding: 2px 8px; border-radius: 4px;">Wajib</span>
+    </div>
+    <p style="font-size: 12px; color: #64748b; margin-bottom: 8px;">
+      Digunakan untuk mengelola postingan ke Halaman Facebook (Fanspage) bisnis.
+    </p>
+    <ol class="step-list">
+      <li>Masuk ke Use Case <strong>"Facebook Login"</strong> &gt; <strong>Settings</strong>.</li>
+      <li>Pada kolom <strong>Valid OAuth Redirect URIs</strong>, masukkan URL berikut:</li>
+    </ol>
+    <div class="code-box">
+      https://scoopcraft.vercel.app/api/social-accounts/oauth/meta/callback<br>
+      https://scoopcraft.vercel.app/api/social-accounts/oauth/facebook/callback<br>
+      http://localhost:3000/api/social-accounts/oauth/meta/callback<br>
+      http://localhost:3000/api/social-accounts/oauth/facebook/callback
+    </div>
+    <ol class="step-list" start="3">
+      <li>Klik <strong>Save Changes</strong>.</li>
+    </ol>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- LANGKAH 4: PENGATURAN DASAR & PRIVASI -->
+  <div class="card">
+    <div class="card-header">
+      <div class="platform-title" style="color: #0f172a;">
+        <span>🔒 4. Pengaturan Dasar Aplikasi (App Settings > Basic)</span>
+      </div>
+      <span style="font-size: 11px; font-weight: 600; background: #f8fafc; color: #475569; padding: 2px 8px; border-radius: 4px;">Syarat Mode Live</span>
+    </div>
+    <p style="font-size: 12px; color: #64748b; margin-bottom: 8px;">
+      Meta mewajibkan kolom-kolom berikut terisi agar aplikasi dapat diaktifkan ke <strong>Live Mode</strong> untuk publik.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 35%;">Kolom di Dashboard Meta</th>
+          <th>Nilai yang Harus Diisikan</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>App Domains</strong></td>
+          <td class="code">scoopcraft.vercel.app</td>
+        </tr>
+        <tr>
+          <td><strong>Privacy Policy URL</strong></td>
+          <td class="code">https://scoopcraft.vercel.app/privacy</td>
+        </tr>
+        <tr>
+          <td><strong>Terms of Service URL</strong></td>
+          <td class="code">https://scoopcraft.vercel.app/terms</td>
+        </tr>
+        <tr>
+          <td><strong>User Data Deletion</strong></td>
+          <td class="code">https://scoopcraft.vercel.app/privacy</td>
+        </tr>
+        <tr>
+          <td><strong>Category</strong></td>
+          <td>Business and Pages / Productivity</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- LANGKAH 5: MODE LIVE & TESTER -->
+  <div class="card">
+    <div class="card-header">
+      <div class="platform-title" style="color: #047857;">
+        <span>🚀 5. Mengubah ke Mode Live / Penambahan Akun Penguji</span>
+      </div>
+      <span style="font-size: 11px; font-weight: 600; background: #ecfdf5; color: #047857; padding: 2px 8px; border-radius: 4px;">Tahap Akhir</span>
+    </div>
+    <ol class="step-list">
+      <li>
+        <strong>Cara 1: Mode Live (Untuk Semua Pengguna Publik)</strong><br>
+        Di bagian header paling atas dashboard Meta, ubah toggle <strong>App Mode</strong> dari <span style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-weight: 700;">Development</span> menjadi <span style="background: #dcfce7; color: #15803d; padding: 2px 6px; border-radius: 4px; font-weight: 700;">Live</span>.
+      </li>
+      <li style="margin-top: 10px;">
+        <strong>Cara 2: Mode Development + Tester (Jika Masih Menunggu Review Meta)</strong><br>
+        Jika aplikasi masih dalam status Development, akun Instagram / Threads penguji harus didaftarkan di dashboard:
+        <ul style="margin-top: 6px; padding-left: 18px; color: #475569;">
+          <li>Masuk ke menu <strong>App Roles &gt; Roles</strong>.</li>
+          <li>Klik <strong>Add Instagram Testers</strong> &gt; Masukkan username Instagram penguji (misal: <code style="color: #4f46e5;">ibobatsuga</code>).</li>
+          <li>Buka Instagram di HP (Akun Penguji) &gt; <em>Settings &gt; Website Permissions &gt; Apps and Websites &gt; Tester Invitations</em> &gt; Klik <strong>Accept</strong>.</li>
+        </ul>
+      </li>
+    </ol>
+    <div class="alert">
+      <strong>💡 Catatan Penting:</strong> Setelah langkah 1 s/d 5 selesai, semua user di Scoopcraft dapat menghubungkan Instagram, Facebook, dan Threads mereka secara langsung melalui portal resmi masing-masing tanpa ada kendala izin.
+    </div>
+  </div>
+
+  <!-- RANGKUMAN CALLBACK TABLE -->
+  <div class="card" style="margin-top: 16px;">
+    <div class="card-header">
+      <div class="platform-title" style="color: #334155;">
+        <span>📑 Rangkuman Semua Endpoint Callback Otorisasi</span>
+      </div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Platform</th>
+          <th>Portal Login Tujuan</th>
+          <th>Endpoint Callback Scoopcraft</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Instagram</strong></td>
+          <td class="code">instagram.com / meta</td>
+          <td class="code">/api/social-accounts/oauth/instagram/callback</td>
+        </tr>
+        <tr>
+          <td><strong>Threads</strong></td>
+          <td class="code">threads.net</td>
+          <td class="code">/api/social-accounts/oauth/threads/callback</td>
+        </tr>
+        <tr>
+          <td><strong>Facebook</strong></td>
+          <td class="code">facebook.com</td>
+          <td class="code">/api/social-accounts/oauth/facebook/callback</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    Dokumen dibuat secara otomatis untuk Scoopcraft Platform &bull; Hak Cipta &copy; 2026 Scoopcraft
+  </div>
+
+</div>
+
+</body>
+</html>
