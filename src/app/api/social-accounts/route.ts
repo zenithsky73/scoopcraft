@@ -50,12 +50,14 @@ export async function POST(req: Request) {
       ? 'demo_token'
       : validated.accessToken || 'demo_token';
 
+    const uniqueExternalId = validated.externalId?.trim() || `acc_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+
     const account = await db.socialAccount.upsert({
       where: {
         userId_platform_externalId: {
           userId: viewer.user.id,
           platform: validated.platform as SocialPlatform,
-          externalId: validated.externalId || `demo_${validated.platform.toLowerCase()}`,
+          externalId: uniqueExternalId,
         },
       },
       update: {
@@ -70,7 +72,7 @@ export async function POST(req: Request) {
         accountName: validated.accountName,
         accountHandle: validated.accountHandle,
         accessToken: token,
-        externalId: validated.externalId || `demo_${validated.platform.toLowerCase()}`,
+        externalId: uniqueExternalId,
         isConnected: true,
       },
     });

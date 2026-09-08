@@ -896,26 +896,14 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                     type="button"
                     size="sm"
                     onClick={() => {
-                      notify.info('Membuka Otorisasi Instagram...', 'Mengalihkan ke dialog resmi Instagram.');
-                      window.location.href = '/api/social-accounts/oauth/instagram';
+                      setRealModalPlatform('INSTAGRAM');
+                      setShowConnectRealModal(true);
                     }}
                     className="w-full text-xs font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:opacity-95 text-white shadow-sm"
                   >
-                    <ShieldCheck className="size-3.5 mr-1" />
-                    ⚡ Hubungkan IG
+                    <Instagram className="size-3.5 mr-1" />
+                    + Hubungkan Instagram
                   </Button>
-                  <div className="flex items-center justify-center px-1 text-[10px]">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setRealModalPlatform('INSTAGRAM');
-                        setShowConnectRealModal(true);
-                      }}
-                      className="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold"
-                    >
-                      Input Token Manual
-                    </button>
-                  </div>
                 </div>
               </div>
 
@@ -942,26 +930,14 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                     type="button"
                     size="sm"
                     onClick={() => {
-                      notify.info('Membuka Otorisasi Facebook...', 'Mengalihkan ke dialog persetujuan Facebook.');
-                      window.location.href = '/api/social-accounts/oauth/meta?platform=facebook';
+                      setRealModalPlatform('FACEBOOK');
+                      setShowConnectRealModal(true);
                     }}
                     className="w-full text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-sm"
                   >
-                    <ShieldCheck className="size-3.5 mr-1" />
-                    ⚡ Hubungkan FB
+                    <Facebook className="size-3.5 mr-1" />
+                    + Hubungkan Facebook
                   </Button>
-                  <div className="flex items-center justify-center px-1 text-[10px]">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setRealModalPlatform('FACEBOOK');
-                        setShowConnectRealModal(true);
-                      }}
-                      className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
-                    >
-                      Input Token Manual
-                    </button>
-                  </div>
                 </div>
               </div>
 
@@ -988,26 +964,14 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                     type="button"
                     size="sm"
                     onClick={() => {
-                      notify.info('Membuka Otorisasi Threads...', 'Mengalihkan ke dialog resmi Threads.');
-                      window.location.href = '/api/social-accounts/oauth/threads';
+                      setRealModalPlatform('THREADS');
+                      setShowConnectRealModal(true);
                     }}
                     className="w-full text-xs font-bold bg-black hover:bg-neutral-800 text-white shadow-sm"
                   >
-                    <ShieldCheck className="size-3.5 mr-1" />
-                    ⚡ Hubungkan Threads
+                    <AtSign className="size-3.5 mr-1" />
+                    + Hubungkan Threads
                   </Button>
-                  <div className="flex items-center justify-center px-1 text-[10px]">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setRealModalPlatform('THREADS');
-                        setShowConnectRealModal(true);
-                      }}
-                      className="text-slate-700 dark:text-slate-300 hover:underline font-semibold"
-                    >
-                      Input Token Manual
-                    </button>
-                  </div>
                 </div>
               </div>
             </div>
