@@ -27,6 +27,8 @@ export type CampaignInput = {
   startDate?: string; // YYYY-MM-DD
   preferredTime?: string; // HH:mm (default "09:00")
   platform?: 'INSTAGRAM' | 'FACEBOOK' | 'THREADS';
+  niche?: string;
+  contentType?: string;
   style?: DesignStyle;
   format?: OutputFormat;
 };
@@ -59,34 +61,42 @@ export async function generateCampaignPlan(input: CampaignInput): Promise<Campai
     start.setDate(start.getDate() + 1);
   }
 
-  const prompt = `Anda adalah Direktur Konten Media Sosial dan Pakar Kalender Editorial Carousel Instagram/LinkedIn.
-Tugas Anda: Buatlah rencana kampanye konten terstruktur selama ${duration} HARI BERTURUT-TURUT untuk tema: "${input.topic}".
+  const prompt = `Anda adalah Direktur Konten Media Sosial dan Pakar Strategi Pertumbuhan Brand / UMKM di Instagram, Facebook & Threads.
+Tugas Anda: Buatlah rencana kampanye konten ${duration} HARI BERTURUT-TURUT untuk tema/bisnis: "${input.topic}".
+${input.niche ? `- Target Niche/Industri: ${input.niche}` : ''}
+${input.contentType ? `- Fokus Pilar Konten Utama: ${input.contentType}` : ''}
 
-=== ATURAN PENTING ===
-1. Harus ada persis ${duration} hari (Hari 1 sampai Hari ${duration}), masing-masing dengan topik variasi yang BERBEDA dan UNIK, tidak boleh ada yang berulang.
-2. Setiap hari adalah konten CAROUSEL 3-4 slide:
-   - Slide 0 (Cover): Judul menarik + pengantar rasa penasaran
-   - Slide 1 (Isi Utama/Poin 1): Bahan/langkah/poin penting pertama
-   - Slide 2 (Isi Pendukung/Poin 2): Tips rahasia, variasi, atau data penting
-   - Slide 3 (Outro/CTA): Ajakan simpan postingan & interaksi
-3. Format output WAJIB JSON persis seperti format berikut:
+=== ATURAN PENTING & PILAR KONTEN BISNIS ===
+1. Harus ada persis ${duration} hari (Hari 1 sampai Hari ${duration}), masing-masing dengan topik variasi yang BERBEDA dan UNIK.
+2. Campurkan variasi pilar konten secara proporsional:
+   - 📢 Promosi & Menu/Produk Unggulan (Penawaran spesial, harga promo, menu best seller)
+   - 📚 Edukasi & Tips Praktis (Panduan, Do's & Don'ts, trik memilih)
+   - 💡 Behind The Scenes & Storytelling (Kisah pembuatan, dedikasi bahan segar)
+   - 💬 Interaksi & Polling (Pancing voting, tebak-tebakan, diskusi seru)
+   - ⭐ Testimoni & Social Proof (Review jujur pelanggan puas)
+3. Setiap hari adalah konten CAROUSEL 3-4 slide terstruktur:
+   - Slide 0 (Cover): Hook judul memikat + visual pengantar
+   - Slide 1 (Isi Utama/Poin 1): Keunggulan utama, bahan/resep, atau tips pertama
+   - Slide 2 (Isi Pendukung/Poin 2): Detail mendalam, varian rasa/fitur, atau pro-tip
+   - Slide 3 (Outro/CTA): Call To Action yang relevan (Order sekarang / Simpan postingan / Tulis di komentar)
+4. Format output WAJIB JSON persis seperti format berikut:
 {
   "posts": [
     {
       "day": 1,
       "title": "Judul Menu / Topik Singkat",
       "headline": "Headline Menarik & Menggugah Selera untuk Cover",
-      "category": "KULINER",
+      "category": "BISNIS",
       "slides": [
-        { "index": 0, "title": "Headline Slide Cover", "body": "Pengantar ringkas fakta/menu.", "statHighlight": "Menu Hari ke-1" },
-        { "index": 1, "title": "Bahan & Bumbu Kunci", "body": "Daftar bahan utama dan bumbu rahasia.", "statHighlight": "Langkah 1" },
-        { "index": 2, "title": "Cara Masak Praktis", "body": "Instruksi singkat memasak anti gagal.", "statHighlight": "Pro-Tip" },
-        { "index": 3, "title": "Sajikan Hangat!", "body": "Cocok dinikmati bersama nasi pulen hangat.", "statHighlight": "Sajikan" }
+        { "index": 0, "title": "Headline Slide Cover", "body": "Pengantar ringkas fakta/menu.", "statHighlight": "Sorotan" },
+        { "index": 1, "title": "Keunggulan / Poin 1", "body": "Daftar bahan utama dan kelebihan.", "statHighlight": "Poin 1" },
+        { "index": 2, "title": "Detail Poin 2", "body": "Instruksi singkat atau varian rasa.", "statHighlight": "Poin 2" },
+        { "index": 3, "title": "Penutup & Cara Order", "body": "Info order dan ajakan bertindak.", "statHighlight": "Info Order" }
       ],
-      "caption": "Caption Instagram lengkap dengan hook emosional, resep ringkas, dan ajakan simpan postingan.",
-      "hashtags": ["#ResepMasakan", "#KulinerRumahan", "#MenuHarian", "#InspirasiMasak"],
-      "cta": "Simpan resep ini untuk menu besok & share ke keluarga ya!",
-      "photoQuery": "delicious indonesian food recipe"
+      "caption": "Caption Instagram lengkap dengan hook emosional, bahasan menarik, dan ajakan bertindak.",
+      "hashtags": ["#BrandBisnis", "#PromoSpesial", "#KulinerKekinian", "#TipsBisnis"],
+      "cta": "Simpan postingan ini & klik link di bio untuk order sekarang!",
+      "photoQuery": "${input.topic} high quality photography"
     }
   ]
 }`;

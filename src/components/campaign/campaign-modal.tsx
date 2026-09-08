@@ -38,6 +38,8 @@ const TOPIC_PRESETS = [
 
 export function CampaignModal({ open, onClose, onCampaignSuccess }: CampaignModalProps) {
   const [topic, setTopic] = React.useState('');
+  const [niche, setNiche] = React.useState('CULINARY_RESTO');
+  const [contentType, setContentType] = React.useState('MIXED');
   const [duration, setDuration] = React.useState<7 | 14 | 30>(30);
   const [platform, setPlatform] = React.useState<'INSTAGRAM' | 'FACEBOOK' | 'THREADS'>('INSTAGRAM');
 
@@ -84,6 +86,8 @@ export function CampaignModal({ open, onClose, onCampaignSuccess }: CampaignModa
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           topic: topic.trim(),
+          niche,
+          contentType: contentType === 'MIXED' ? undefined : contentType,
           durationDays: duration,
           startDate,
           preferredTime,
@@ -163,10 +167,41 @@ export function CampaignModal({ open, onClose, onCampaignSuccess }: CampaignModa
           {generatedDays.length === 0 ? (
             /* FORM STATE */
             <>
-              {/* Input Tema Utama */}
+              {/* 1. Pilih Niche Bisnis */}
               <div>
                 <label className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-1.5 block">
-                  Topik / Niche Kampanye
+                  1. Kategori / Niche Bisnis
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                  {[
+                    { id: 'CULINARY_RESTO', label: '🍲 Kuliner & Padang' },
+                    { id: 'FNB_CAFE', label: '☕ Cafe & Fore Style' },
+                    { id: 'FASHION_RETAIL', label: '🛍️ Fashion & Distro' },
+                    { id: 'BEAUTY_SKINCARE', label: '✨ Skincare & Beauty' },
+                    { id: 'SERVICES_AGENCY', label: '💼 Jasa & Servis' },
+                    { id: 'GENERAL_BUSINESS', label: '🏢 Bisnis UMKM' },
+                  ].map((n) => (
+                    <button
+                      key={n.id}
+                      type="button"
+                      onClick={() => setNiche(n.id)}
+                      className={cn(
+                        'px-2 py-1.5 rounded-xl border text-[11px] font-bold transition-all text-left truncate',
+                        niche === n.id
+                          ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                          : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800'
+                      )}
+                    >
+                      {n.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 2. Input Tema Utama */}
+              <div>
+                <label className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-1.5 block">
+                  2. Topik / Detail Brand Kampanye
                 </label>
                 <input
                   type="text"

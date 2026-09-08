@@ -14,6 +14,8 @@ const campaignRequestSchema = z.object({
   startDate: z.string().optional(),
   preferredTime: z.string().default('09:00'),
   platform: z.enum(['INSTAGRAM', 'FACEBOOK', 'THREADS']).default('INSTAGRAM'),
+  niche: z.string().optional(),
+  contentType: z.string().optional(),
   style: z.string().optional(),
   autoCommit: z.boolean().default(true),
 });
@@ -35,6 +37,8 @@ export async function POST(req: Request) {
       startDate: validated.startDate,
       preferredTime: validated.preferredTime,
       platform: validated.platform,
+      niche: validated.niche,
+      contentType: validated.contentType,
       style: validated.style as DesignStyle,
     });
 

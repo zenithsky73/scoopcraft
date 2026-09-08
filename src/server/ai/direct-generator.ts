@@ -18,6 +18,9 @@ export type GenerateDirectInput = {
   rawTitle?: string;
   prompt?: string;
   tone?: string;
+  niche?: string;
+  contentType?: string;
+  targetAudience?: string;
   style: DesignStyle;
   format?: OutputFormat;
   slides?: number;
@@ -206,6 +209,30 @@ export async function generateDirect(input: GenerateDirectInput) {
 5. Slide 4 (OUTRO / KESIMPULAN): Rangkuman 1 kalimat padat dan ajakan bertindak (CTA).`;
     }
 
+    let contextDirectives = '';
+    if (input.niche) {
+      contextDirectives += `\n- TARGET NICHE / INDUSTRI: ${input.niche}. Sesuaikan istilah, persona, dan daya tarik konten dengan target industri ini.`;
+    }
+    if (input.contentType) {
+      contextDirectives += `\n- PILAR / TIPE KONTEN: ${input.contentType}.`;
+      if (input.contentType === 'PROMOTION') {
+        contextDirectives += `\n  * Strategi Promosi: Sorot penawaran spesial / diskon / menu best seller, isi harga promo pada statHighlight, dan buat CTA langsung order / beli via Bio / Ojek Online.`;
+      } else if (input.contentType === 'EDUCATION') {
+        contextDirectives += `\n  * Strategi Edukasi: Bagikan panduan langkah demi langkah, tips praktis, atau rahasia yang berguna, dan buat CTA "Simpan postingan ini biar gak lupa!".`;
+      } else if (input.contentType === 'STORYTELLING') {
+        contextDirectives += `\n  * Strategi Storytelling / Behind the Scenes: Ceritakan kisah di balik produk, proses pembuatan dengan dedikasi, atau nilai brand, dan buat CTA share ke teman.`;
+      } else if (input.contentType === 'INTERACTION') {
+        contextDirectives += `\n  * Strategi Interaksi: Sajikan perbandingan seru (Pilihan A vs B) atau pertanyaan pancingan, dan buat CTA "Tulis pilihanmu di kolom komentar!".`;
+      } else if (input.contentType === 'ENTERTAINMENT') {
+        contextDirectives += `\n  * Strategi Hiburan: Sajikan situasi relatable dan humor halus yang sering dialami pelanggan, dan buat CTA "Tag temanmu yang kayak gini!".`;
+      } else if (input.contentType === 'TESTIMONIAL') {
+        contextDirectives += `\n  * Strategi Testimoni: Sajikan bukti kepuasan pelanggan, rating 5 bintang, dan review nyata, dan buat CTA "Klaim sekarang sebelum kehabisan!".`;
+      }
+    }
+    if (input.targetAudience) {
+      contextDirectives += `\n- TARGET AUDIENS: ${input.targetAudience}`;
+    }
+
     const prompt = `${systemRole}
 Tugas Anda: Buat naskah carousel ${slidesCount} slide dengan ritme visual bertingkat yang sangat nyambung dan akurat berdasarkan materi berikut:
 
@@ -216,6 +243,7 @@ Materi/Isi:
 ${articleContent.slice(0, 7000)}
 
 ${dynamicGuidelines}
+${contextDirectives}
 
 ${input.tone ? `- Gaya bahasa: ${input.tone}` : ''}
 

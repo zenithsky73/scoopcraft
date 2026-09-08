@@ -108,6 +108,24 @@ const AVAILABLE_STYLES_PRESET = [
   { id: 'BREAKING_NEWS', label: '⚡ Pengumuman Penting & Info Bisnis', color: '#EF4444' },
 ];
 
+export const NICHE_PRESETS = [
+  { id: 'CULINARY_RESTO', label: '🍲 Kuliner & Resto Padang', desc: 'Resto, Warung & Masakan Padang', defaultStyle: 'CULINARY' },
+  { id: 'FNB_CAFE', label: '☕ Cafe & Fore Aesthetic', desc: 'Coffee shop, Bakery & Minuman', defaultStyle: 'MINIMAL' },
+  { id: 'FASHION_RETAIL', label: '🛍️ Fashion & Distro', desc: 'Outfit, Streetwear & Clothing', defaultStyle: 'BRUTALIST_SALE' },
+  { id: 'BEAUTY_SKINCARE', label: '✨ Skincare & Beauty', desc: 'Produk glowing, Kosmetik & Klinik', defaultStyle: 'PRODUCT_CATALOG' },
+  { id: 'SERVICES_AGENCY', label: '💼 Jasa & Servis', desc: 'Studio, Salon, Konsultan & Layanan', defaultStyle: 'PRICE_TIER_TABLE' },
+  { id: 'GENERAL_BUSINESS', label: '🏢 Bisnis UMKM Umum', desc: 'Penjualan Produk & Edukasi Bisnis', defaultStyle: 'SHOPEE_PROMO' },
+];
+
+export const CONTENT_TYPE_PRESETS = [
+  { id: 'PROMOTION', label: '📢 Promosi & Jualan', desc: 'Diskon, menu baru, promo kilat' },
+  { id: 'EDUCATION', label: '📚 Edukasi & Tips', desc: 'Tutorial, tips praktis & panduan' },
+  { id: 'STORYTELLING', label: '💡 Cerita Brand / BTS', desc: 'Behind the scenes & proses pembuatan' },
+  { id: 'INTERACTION', label: '💬 Interaksi & Polling', desc: 'Pancing komentar & voting A vs B' },
+  { id: 'ENTERTAINMENT', label: '🎭 Hiburan & Relatable', desc: 'Meme & situasi lucu pelanggan' },
+  { id: 'TESTIMONIAL', label: '⭐ Testimoni Pembeli', desc: 'Bukti chat WA & review bintang 5' },
+];
+
 export function ContentCalendar({
   initialPosts,
   socialAccounts = [],
@@ -138,6 +156,8 @@ export function ContentCalendar({
   const [contentSourceMode, setContentSourceMode] = React.useState<ContentSourceMode>('AI_GENERATE');
   const [aiInputType, setAiInputType] = React.useState<'PROMPT' | 'URL'>('PROMPT');
   const [aiPromptOrUrl, setAiPromptOrUrl] = React.useState<string>('');
+  const [aiNiche, setAiNiche] = React.useState<string>('CULINARY_RESTO');
+  const [aiContentType, setAiContentType] = React.useState<string>('PROMOTION');
   const [aiSelectedStyle, setAiSelectedStyle] = React.useState<string>('CULINARY');
   const [aiSlidesCount, setAiSlidesCount] = React.useState<number>(5);
 
@@ -284,6 +304,8 @@ export function ContentCalendar({
             mode: aiInputType === 'URL' ? 'url' : 'prompt',
             url: aiInputType === 'URL' ? aiPromptOrUrl.trim() : undefined,
             prompt: aiInputType === 'PROMPT' ? aiPromptOrUrl.trim() : undefined,
+            niche: aiNiche,
+            contentType: aiContentType,
             style: aiSelectedStyle as DesignStyle,
             format: 'FEED_PORTRAIT',
             slides: aiSlidesCount,
@@ -1224,9 +1246,78 @@ export function ContentCalendar({
                       </button>
                     </div>
 
+                    {/* 1. Pilih Kategori / Niche Bisnis */}
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-800 dark:text-slate-200 mb-1.5 flex items-center justify-between">
+                        <span>1. Kategori / Niche Bisnis:</span>
+                        <span className="text-[10px] font-normal text-indigo-600 dark:text-indigo-400">
+                          {NICHE_PRESETS.find(n => n.id === aiNiche)?.desc}
+                        </span>
+                      </label>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                        {NICHE_PRESETS.map((n) => {
+                          const isSel = aiNiche === n.id;
+                          return (
+                            <button
+                              key={n.id}
+                              type="button"
+                              onClick={() => {
+                                setAiNiche(n.id);
+                                setAiSelectedStyle(n.defaultStyle);
+                              }}
+                              className={cn(
+                                'px-2 py-1.5 rounded-xl border text-[10px] font-bold transition-all text-left truncate flex items-center gap-1',
+                                isSel
+                                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                                  : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-indigo-300'
+                              )}
+                            >
+                              <span className="truncate">{n.label}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* 2. Pilih Tipe / Pilar Konten */}
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-800 dark:text-slate-200 mb-1.5 flex items-center justify-between">
+                        <span>2. Tipe / Pilar Konten:</span>
+                        <span className="text-[10px] font-normal text-indigo-600 dark:text-indigo-400">
+                          {CONTENT_TYPE_PRESETS.find(c => c.id === aiContentType)?.desc}
+                        </span>
+                      </label>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                        {CONTENT_TYPE_PRESETS.map((ct) => {
+                          const isSel = aiContentType === ct.id;
+                          return (
+                            <button
+                              key={ct.id}
+                              type="button"
+                              onClick={() => {
+                                setAiContentType(ct.id);
+                                if (ct.id === 'TESTIMONIAL') setAiSelectedStyle('TESTIMONIAL_CHAT');
+                                else if (ct.id === 'EDUCATION') setAiSelectedStyle('STEP_BY_STEP_GUIDE');
+                                else if (ct.id === 'PROMOTION' && aiNiche === 'GENERAL_BUSINESS') setAiSelectedStyle('SHOPEE_PROMO');
+                              }}
+                              className={cn(
+                                'px-2 py-1.5 rounded-xl border text-[10px] font-bold transition-all text-left truncate flex items-center gap-1',
+                                isSel
+                                  ? 'bg-purple-600 text-white border-purple-600 shadow-sm'
+                                  : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-purple-300'
+                              )}
+                            >
+                              <span className="truncate">{ct.label}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* 3. Input Prompt / URL Topik */}
                     <div>
                       <label className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-1 block">
-                        {aiInputType === 'PROMPT' ? 'Ketik Prompt / Ide Topik Konten:' : 'Tempelkan Link Berita / Artikel:'}
+                        {aiInputType === 'PROMPT' ? '3. Ketik Ide Topik / Produk / Menu Konten:' : '3. Tempelkan Link Berita / Artikel Web:'}
                       </label>
                       <input
                         type={aiInputType === 'URL' ? 'url' : 'text'}
@@ -1234,9 +1325,17 @@ export function ContentCalendar({
                         value={aiPromptOrUrl}
                         onChange={(e) => setAiPromptOrUrl(e.target.value)}
                         placeholder={
-                          aiInputType === 'PROMPT'
-                            ? 'Contoh: 5 Kebiasaan Finansial yang Bikin Tabungan Cepat Naik'
-                            : 'https://news.detik.com/berita/...'
+                          aiInputType === 'URL'
+                            ? 'https://web-artikel.com/...'
+                            : aiNiche === 'CULINARY_RESTO'
+                              ? (aiContentType === 'PROMOTION' ? 'Contoh: Promo Paket Nasi Rendang Komplit Cuma 25rb Makan Siang' : 'Contoh: Rahasia bumbu rendang warisan nenek moyang yang dimasak 6 jam')
+                              : aiNiche === 'FNB_CAFE'
+                                ? (aiContentType === 'PROMOTION' ? 'Contoh: Promo Buy 1 Get 1 Kopi Pandan Creamy khusus hari Jumat' : 'Contoh: 3 Alasan kenapa biji kopi Arabica lebih ramah di lambung')
+                                : aiNiche === 'BEAUTY_SKINCARE'
+                                  ? 'Contoh: Urutan skincare malam yang benar biar bangun tidur glowing'
+                                  : aiNiche === 'FASHION_RETAIL'
+                                    ? 'Contoh: Launching Koleksi Hoodie Streetwear Oversized Edisi Terbatas'
+                                    : 'Contoh: 5 Strategi scale-up omset bisnis UMKM dengan media sosial'
                         }
                         className="w-full rounded-xl border border-indigo-200 dark:border-indigo-900 bg-white dark:bg-slate-900 px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       />

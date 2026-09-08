@@ -17,7 +17,9 @@ const bodySchema = z.object({
   rawTitle: z.string().trim().max(500).optional(),
   prompt: z.string().trim().max(5000).optional(),
   tone: z.string().trim().max(100).optional(),
-  style: z.nativeEnum(DesignStyle).default('BREAKING_NEWS'),
+  niche: z.string().trim().max(100).optional(),
+  contentType: z.string().trim().max(100).optional(),
+  style: z.nativeEnum(DesignStyle).default('CULINARY'),
   format: z.nativeEnum(OutputFormat).default('FEED_PORTRAIT'),
   styles: z.array(z.nativeEnum(DesignStyle)).optional(),
   formats: z.array(z.nativeEnum(OutputFormat)).optional(),
@@ -94,7 +96,7 @@ export async function POST(req: Request) {
     }
 
     // 4. Determine style & format
-    const chosenStyle = data.styles?.[0] || data.style || 'BREAKING_NEWS';
+    const chosenStyle = data.styles?.[0] || data.style || 'CULINARY';
     const chosenFormat = data.formats?.[0] || data.format || 'FEED_PORTRAIT';
 
     // 5. Run Direct Synchronous Generation
@@ -106,6 +108,8 @@ export async function POST(req: Request) {
       rawTitle: data.rawTitle,
       prompt: data.prompt,
       tone: data.tone,
+      niche: data.niche,
+      contentType: data.contentType,
       style: chosenStyle,
       format: chosenFormat,
       slides: data.slides,
