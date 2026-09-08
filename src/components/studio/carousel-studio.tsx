@@ -32,6 +32,7 @@ import {
   LayoutGrid,
   ArrowRight,
   Calendar,
+  RefreshCw,
 } from 'lucide-react';
 import { STYLES, isProStyle, type StyleDef } from '@/config/styles';
 import { CanvasRenderer, type SlideData, type SlideLayoutVariant } from '@/components/studio/canvas-renderer';
@@ -39,7 +40,7 @@ import { StockPhotoModal } from '@/components/studio/stock-photo-modal';
 import { ScheduleModal } from '@/components/schedule/schedule-modal';
 import { Button } from '@/components/ui/button';
 import { Input, Label } from '@/components/ui/input';
-import { downloadSlideAsPng, exportSlidesToPdf, exportSlidesToZip } from '@/lib/export-client';
+import { downloadSlideAsPng, exportSlidesToPdf, exportSlidesToZip, renderElementToPngDataUrl } from '@/lib/export-client';
 import { UpgradeDialog } from '@/components/billing/upgrade-dialog';
 import { TemplatePreviewModal } from '@/components/generate/template-preview-modal';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
@@ -372,6 +373,46 @@ export function CarouselStudio({
     }
   };
 
+  const [renderedSlideUrls, setRenderedSlideUrls] = React.useState<string[]>([]);
+  const [isPreparingSchedule, setIsPreparingSchedule] = React.useState(false);
+
+  const handleOpenSchedule = async () => {
+    setIsPreparingSchedule(true);
+    notify.info('Merender Visual Carousel... 🎨', 'Menyiapkan slide berkualitas tinggi untuk dipublikasikan.');
+
+    try {
+      const uploadedUrls: string[] = [];
+      for (let i = 0; i < slides.length; i++) {
+        const dataUrl = await renderElementToPngDataUrl(`slide-canvas-${i}`).catch(() => null);
+        if (dataUrl) {
+          const res = await fetch('/api/media/upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ dataBase64: dataUrl }),
+          });
+          const json = await res.json();
+          if (json.url) {
+            uploadedUrls.push(json.url);
+          }
+        }
+      }
+
+      if (uploadedUrls.length > 0) {
+        setRenderedSlideUrls(uploadedUrls);
+      } else {
+        setRenderedSlideUrls(slides.map((s) => s.imageUrl).filter(Boolean) as string[]);
+      }
+
+      setShowScheduleModal(true);
+    } catch (err: any) {
+      console.error('Error preparing schedule slides:', err);
+      setRenderedSlideUrls(slides.map((s) => s.imageUrl).filter(Boolean) as string[]);
+      setShowScheduleModal(true);
+    } finally {
+      setIsPreparingSchedule(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col pb-24 lg:pb-12 transition-colors duration-200">
       {/* Hidden File Input for Custom Image Upload */}
@@ -460,11 +501,18 @@ export function CarouselStudio({
 
               <Button
                 size="sm"
-                onClick={() => setShowScheduleModal(true)}
+                disabled={isPreparingSchedule}
+                onClick={handleOpenSchedule}
                 className="flex items-center gap-1.5 text-xs font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:opacity-95 text-white shadow-md shadow-pink-600/20"
               >
-                <Calendar className="size-3.5" />
-                <span className="hidden sm:inline">Jadwalkan</span>
+                {isPreparingSchedule ? (
+                  <RefreshCw className="size-3.5 animate-spin" />
+                ) : (
+                  <Calendar className="size-3.5" />
+                )}
+                <span className="hidden sm:inline">
+                  {isPreparingSchedule ? 'Menyiapkan...' : 'Jadwalkan'}
+                </span>
                 <span className="sm:hidden">Post</span>
               </Button>
             </div>
@@ -1326,7 +1374,11 @@ export function CarouselStudio({
         headline={initialContent.headline}
         caption={initialContent.caption}
         hashtags={initialContent.hashtags}
-        slideImages={slides.map((s) => s.imageUrl).filter(Boolean) as string[]}
+        slideImages={
+          renderedSlideUrls.length > 0
+            ? renderedSlideUrls
+            : (slides.map((s) => s.imageUrl).filter(Boolean) as string[])
+        }
         totalSlides={slides.length}
         format={currentFormat}
         style={currentStyle}

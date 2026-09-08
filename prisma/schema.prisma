@@ -483,3 +483,12 @@ model ScheduledPost {
   @@index([status, scheduledAt])
 }
 
+model PublicMedia {
+  id         String   @id @default(cuid())
+  mimeType   String   @default("image/png")
+  dataBase64 String   @db.Text
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+}
+
