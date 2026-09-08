@@ -29,12 +29,16 @@ import {
   Share2,
   Check,
   ImageIcon,
+  Link2,
+  FileText,
+  Palette,
+  Wand2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CampaignModal } from '@/components/campaign/campaign-modal';
 import { notify } from '@/lib/notify';
 import { cn } from '@/lib/utils';
-import type { SocialPlatform, ScheduleStatus } from '@prisma/client';
+import type { SocialPlatform, ScheduleStatus, DesignStyle } from '@prisma/client';
 
 export type ScheduledPostItem = {
   id: string;
@@ -91,6 +95,15 @@ interface ContentCalendarProps {
 }
 
 type ViewMode = 'WEEK' | 'MONTH' | 'LIST';
+type ContentSourceMode = 'AI_GENERATE' | 'EXISTING' | 'CUSTOM';
+
+const AVAILABLE_STYLES_PRESET = [
+  { id: 'BREAKING_NEWS', label: 'Breaking News Standar', color: '#EF4444' },
+  { id: 'MODERN', label: 'Modern Clean Media', color: '#38BDF8' },
+  { id: 'EDITORIAL', label: 'Editorial Berita', color: '#B91C1C' },
+  { id: 'TECH_RADAR', label: 'Tech & Modern Slate', color: '#6366F1' },
+  { id: 'CREATIVE_STORY', label: 'Creative Magazine', color: '#EC4899' },
+];
 
 export function ContentCalendar({
   initialPosts,
@@ -117,12 +130,20 @@ export function ContentCalendar({
   const [formTime, setFormTime] = React.useState<string>('10:00');
   const [formPlatform, setFormPlatform] = React.useState<SocialPlatform>('INSTAGRAM');
   const [formSocialAccountId, setFormSocialAccountId] = React.useState<string>('');
-  const [formContentSource, setFormContentSource] = React.useState<'EXISTING' | 'CUSTOM'>('EXISTING');
+  
+  // Content Generation Modes
+  const [contentSourceMode, setContentSourceMode] = React.useState<ContentSourceMode>('AI_GENERATE');
+  const [aiInputType, setAiInputType] = React.useState<'PROMPT' | 'URL'>('PROMPT');
+  const [aiPromptOrUrl, setAiPromptOrUrl] = React.useState<string>('');
+  const [aiSelectedStyle, setAiSelectedStyle] = React.useState<string>('BREAKING_NEWS');
+  const [aiSlidesCount, setAiSlidesCount] = React.useState<number>(5);
+
   const [selectedContentId, setSelectedContentId] = React.useState<string>(recentContents[0]?.id || '');
   const [customHeadline, setCustomHeadline] = React.useState<string>('');
   const [customCaption, setCustomCaption] = React.useState<string>('');
   const [customMediaUrl, setCustomMediaUrl] = React.useState<string>('');
   const [isSubmittingSchedule, setIsSubmittingSchedule] = React.useState(false);
+  const [generatingProgressMessage, setGeneratingProgressMessage] = React.useState<string>('');
 
   // Edit Modal Form State
   const [editDate, setEditDate] = React.useState<string>('');
@@ -210,6 +231,8 @@ export function ContentCalendar({
     const dd = String(date.getDate()).padStart(2, '0');
     setFormDate(`${yyyy}-${mm}-${dd}`);
     setFormTime('10:00');
+    setContentSourceMode('AI_GENERATE');
+    setAiPromptOrUrl('');
     setShowCreateModal(true);
   };
 
@@ -228,27 +251,79 @@ export function ContentCalendar({
     setShowEditModal(true);
   };
 
-  // Handle Save New Scheduled Post
+  // Handle Save New Scheduled Post (Direct Schedule OR Auto-Generate AI & Schedule)
   const handleCreateSchedule = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmittingSchedule(true);
+    setGeneratingProgressMessage('Menyiapkan jadwal...');
 
     try {
       let finalMediaUrls: string[] = [];
       let finalCaption = customCaption.trim();
-      let selectedContentObj: RecentContentItem | null = null;
+      let generatedContentId: string | null = null;
+      let outputFormat = 'FEED_PORTRAIT';
+      let designStyle: string | null = aiSelectedStyle;
 
-      if (formContentSource === 'EXISTING') {
-        selectedContentObj = recentContents.find((c) => c.id === selectedContentId) || recentContents[0] || null;
+      // MODE 1: AUTO-GENERATE AI DARI LINK ATAU PROMPT
+      if (contentSourceMode === 'AI_GENERATE') {
+        if (!aiPromptOrUrl.trim()) {
+          notify.warning('Input Diperlukan', 'Masukkan link artikel atau prompt topik konten.');
+          setIsSubmittingSchedule(false);
+          return;
+        }
+
+        setGeneratingProgressMessage('✨ AI sedang merangkum materi & mendesain slide carousel...');
+
+        const genRes = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            mode: aiInputType === 'URL' ? 'url' : 'prompt',
+            url: aiInputType === 'URL' ? aiPromptOrUrl.trim() : undefined,
+            prompt: aiInputType === 'PROMPT' ? aiPromptOrUrl.trim() : undefined,
+            style: aiSelectedStyle as DesignStyle,
+            format: 'FEED_PORTRAIT',
+            slides: aiSlidesCount,
+          }),
+        });
+
+        const genData = await genRes.json();
+        if (!genRes.ok || !genData.success) {
+          throw new Error(genData?.error || 'Gagal menghasilkan carousel dengan AI.');
+        }
+
+        setGeneratingProgressMessage('📅 Menyimpan hasil carousel ke jadwal kalender...');
+
+        const contentObj = genData.content || genData.generatedContent;
+        generatedContentId = contentObj?.id || null;
+        
+        if (contentObj?.assets && contentObj.assets.length > 0) {
+          finalMediaUrls = contentObj.assets.map((a: any) => a.imageUrl).filter(Boolean);
+        } else if (contentObj?.visualUrl) {
+          finalMediaUrls = [contentObj.visualUrl];
+        }
+
+        if (!finalCaption) {
+          finalCaption = contentObj?.feedCopy || contentObj?.caption || `${contentObj?.headline}\\n\\n#newsly #carousel #ai`;
+        }
+      } 
+      // MODE 2: PILIH DARI RIWAYAT CAROUSEL YANG SUDAH ADA
+      else if (contentSourceMode === 'EXISTING') {
+        const selectedContentObj = recentContents.find((c) => c.id === selectedContentId) || recentContents[0] || null;
         if (selectedContentObj) {
+          generatedContentId = selectedContentObj.id;
           finalMediaUrls = selectedContentObj.mediaUrls.length > 0
             ? selectedContentObj.mediaUrls
             : (selectedContentObj.coverUrl ? [selectedContentObj.coverUrl] : []);
           if (!finalCaption) {
             finalCaption = `${selectedContentObj.headline}\\n\\n#newsly #carousel #ai`;
           }
+          outputFormat = selectedContentObj.format || 'FEED_PORTRAIT';
+          designStyle = selectedContentObj.style || null;
         }
-      } else {
+      } 
+      // MODE 3: KUSTOM MANUAL
+      else {
         if (customMediaUrl.trim()) {
           finalMediaUrls = [customMediaUrl.trim()];
         }
@@ -273,15 +348,16 @@ export function ContentCalendar({
           caption: finalCaption,
           hashtags: ['newsly', formPlatform.toLowerCase()],
           mediaUrls: finalMediaUrls,
-          format: selectedContentObj?.format || 'FEED_PORTRAIT',
-          generatedContentId: selectedContentObj?.id || undefined,
+          format: outputFormat,
+          style: designStyle,
+          generatedContentId: generatedContentId || undefined,
           socialAccountId: formSocialAccountId || undefined,
         }),
       });
 
       const data = await res.json();
       if (res.ok && data.success) {
-        notify.celebrate('Jadwal Disimpan! 📅', `Postingan berhasil dijadwalkan untuk ${formDate} pukul ${formTime} WIB.`);
+        notify.celebrate('Jadwal Berhasil Dibuat! 🚀', `Konten siap tayang otomatis pada ${formDate} pukul ${formTime} WIB.`);
         setShowCreateModal(false);
         await fetchPosts();
       } else {
@@ -291,6 +367,7 @@ export function ContentCalendar({
       notify.error('Gagal', err?.message);
     } finally {
       setIsSubmittingSchedule(false);
+      setGeneratingProgressMessage('');
     }
   };
 
@@ -340,7 +417,6 @@ export function ContentCalendar({
   const weekDays = React.useMemo(() => {
     const curr = new Date(currentDate);
     const dayOfWeek = curr.getDay(); // 0 is Sunday, 1 is Monday
-    // Distance to Monday (if Sunday (0), go back 6 days; if Monday (1), go back 0)
     const distanceToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
     
     const monday = new Date(curr);
@@ -361,8 +437,6 @@ export function ContentCalendar({
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-
     const dayOfWeek = firstDay.getDay();
     const distanceToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
 
@@ -468,7 +542,7 @@ export function ContentCalendar({
 
   return (
     <div className="space-y-4">
-      {/* ─── 1. TOP HEADER & NAVIGATION BAR (IDENTIK DENGAN REFERENSI SAAS) ─── */}
+      {/* ─── 1. TOP HEADER & NAVIGATION BAR ─── */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-5 shadow-sm">
         {/* Navigation & Month Selector */}
         <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
@@ -562,6 +636,8 @@ export function ContentCalendar({
             onClick={() => {
               setFormDate(new Date().toISOString().split('T')[0]);
               setFormTime('10:00');
+              setContentSourceMode('AI_GENERATE');
+              setAiPromptOrUrl('');
               setShowCreateModal(true);
             }}
             className="h-9 text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-sm"
@@ -862,7 +938,6 @@ export function ContentCalendar({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
               {filteredPosts.map((post) => {
                 const isProcessing = actionLoadingId === post.id;
-                const coverImg = post.mediaUrls?.[0] || post.generatedContent?.visualUrl;
 
                 return (
                   <div
@@ -948,14 +1023,14 @@ export function ContentCalendar({
         </div>
       )}
 
-      {/* ─── 4. MODAL: JADWALKAN POSTINGAN BARU ─── */}
+      {/* ─── 4. MODAL: JADWALKAN POSTINGAN BARU (DENGAN DUKUNGAN LINK / PROMPT AI OTOMATIS) ─── */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
           <div className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl animate-in zoom-in-95 max-h-[92vh] flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 px-5 py-4 bg-slate-50 dark:bg-slate-950 shrink-0">
               <div className="flex items-center gap-2.5">
-                <div className="size-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-pink-600 text-white flex items-center justify-center shadow-md">
+                <div className="size-8 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-600 text-white flex items-center justify-center shadow-md">
                   <CalendarIcon className="size-4" />
                 </div>
                 <div>
@@ -963,7 +1038,7 @@ export function ContentCalendar({
                     Jadwalkan Postingan Baru
                   </h3>
                   <p className="text-[11px] text-slate-500">
-                    Tentukan tanggal, jam, dan pilih carousel yang ingin diterbitkan
+                    Pilih tanggal &amp; jam, lalu masukkan Link Artikel atau Prompt AI untuk auto-generate carousel
                   </p>
                 </div>
               </div>
@@ -1061,54 +1136,221 @@ export function ContentCalendar({
                 </div>
               </div>
 
-              {/* Sumber Konten: Pilih dari Carousel yang Sudah Dibuat / Custom */}
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
-                  Pilih Konten Carousel
-                </label>
+              {/* ─── TAB SUMBER KONTEN: AI GENERATE DARI LINK/PROMPT vs RIWAYAT vs MANUAL ─── */}
+              <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+                    <Wand2 className="size-3.5 text-indigo-500" />
+                    <span>Sumber Konten Carousel</span>
+                  </label>
+                </div>
 
-                {recentContents.length > 0 ? (
-                  <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto p-1 border border-slate-200 dark:border-slate-800 rounded-2xl">
-                    {recentContents.map((content) => {
-                      const isSelected = selectedContentId === content.id;
-                      return (
-                        <div
-                          key={content.id}
-                          onClick={() => {
-                            setSelectedContentId(content.id);
-                            setFormContentSource('EXISTING');
-                          }}
-                          className={cn(
-                            'p-2 rounded-xl border flex items-center gap-2 cursor-pointer transition-all',
-                            isSelected
-                              ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 ring-2 ring-indigo-500/20'
-                              : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60'
-                          )}
+                {/* Switcher 3 Mode */}
+                <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                  <button
+                    type="button"
+                    onClick={() => setContentSourceMode('AI_GENERATE')}
+                    className={cn(
+                      'py-1.5 px-2 rounded-lg text-[11px] font-bold transition-all flex items-center justify-center gap-1',
+                      contentSourceMode === 'AI_GENERATE'
+                        ? 'bg-indigo-600 text-white shadow-sm'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                    )}
+                  >
+                    <Sparkles className="size-3" />
+                    <span>Generate AI</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setContentSourceMode('EXISTING')}
+                    className={cn(
+                      'py-1.5 px-2 rounded-lg text-[11px] font-bold transition-all flex items-center justify-center gap-1',
+                      contentSourceMode === 'EXISTING'
+                        ? 'bg-indigo-600 text-white shadow-sm'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                    )}
+                  >
+                    <Layers className="size-3" />
+                    <span>Riwayat</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setContentSourceMode('CUSTOM')}
+                    className={cn(
+                      'py-1.5 px-2 rounded-lg text-[11px] font-bold transition-all flex items-center justify-center gap-1',
+                      contentSourceMode === 'CUSTOM'
+                        ? 'bg-indigo-600 text-white shadow-sm'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                    )}
+                  >
+                    <FileText className="size-3" />
+                    <span>Manual</span>
+                  </button>
+                </div>
+
+                {/* ─── KONTEN A: GENERATE OTOMATIS DARI LINK ARTIKEL ATAU PROMPT AI ─── */}
+                {contentSourceMode === 'AI_GENERATE' && (
+                  <div className="space-y-3 p-3.5 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-200/80 dark:border-indigo-900/50">
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setAiInputType('PROMPT')}
+                        className={cn(
+                          'px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all border',
+                          aiInputType === 'PROMPT'
+                            ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                            : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800'
+                        )}
+                      >
+                        💡 Prompt / Ide Topik
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setAiInputType('URL')}
+                        className={cn(
+                          'px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all border',
+                          aiInputType === 'URL'
+                            ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                            : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800'
+                        )}
+                      >
+                        🔗 Link Berita / Artikel Web
+                      </button>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-1 block">
+                        {aiInputType === 'PROMPT' ? 'Ketik Prompt / Ide Topik Konten:' : 'Tempelkan Link Berita / Artikel:'}
+                      </label>
+                      <input
+                        type={aiInputType === 'URL' ? 'url' : 'text'}
+                        required={contentSourceMode === 'AI_GENERATE'}
+                        value={aiPromptOrUrl}
+                        onChange={(e) => setAiPromptOrUrl(e.target.value)}
+                        placeholder={
+                          aiInputType === 'PROMPT'
+                            ? 'Contoh: 5 Kebiasaan Finansial yang Bikin Tabungan Cepat Naik'
+                            : 'https://news.detik.com/berita/...'
+                        }
+                        className="w-full rounded-xl border border-indigo-200 dark:border-indigo-900 bg-white dark:bg-slate-900 px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+
+                    {/* Template Gaya & Jumlah Slide */}
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-1 block">
+                          Template Gaya Desain
+                        </label>
+                        <select
+                          value={aiSelectedStyle}
+                          onChange={(e) => setAiSelectedStyle(e.target.value)}
+                          className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-2.5 py-1.5 text-xs text-slate-900 dark:text-white font-medium focus:outline-none"
                         >
-                          <div className="size-10 rounded-lg bg-slate-950 overflow-hidden shrink-0">
-                            {content.coverUrl ? (
-                              <img src={content.coverUrl} alt="" className="w-full h-full object-cover" />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-white text-[9px]">
-                                {content.totalSlides}S
-                              </div>
-                            )}
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <h5 className="text-[11px] font-bold text-slate-900 dark:text-white truncate">
-                              {content.headline}
-                            </h5>
-                            <span className="text-[9px] text-slate-400">
-                              {content.totalSlides} Slide • {content.format}
-                            </span>
-                          </div>
-                        </div>
-                      );
-                    })}
+                          {AVAILABLE_STYLES_PRESET.map((st) => (
+                            <option key={st.id} value={st.id}>
+                              {st.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-1 block">
+                          Jumlah Slide Carousel
+                        </label>
+                        <select
+                          value={aiSlidesCount}
+                          onChange={(e) => setAiSlidesCount(parseInt(e.target.value, 10))}
+                          className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-2.5 py-1.5 text-xs text-slate-900 dark:text-white font-medium focus:outline-none"
+                        >
+                          <option value={3}>3 Slide Ringkas</option>
+                          <option value={5}>5 Slide Standar</option>
+                          <option value={7}>7 Slide Mendalam</option>
+                        </select>
+                      </div>
+                    </div>
                   </div>
-                ) : (
-                  <div className="p-3 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400">
-                    Belum ada carousel yang di-generate. Anda bisa mengisi caption di bawah ini.
+                )}
+
+                {/* ─── KONTEN B: PILIH DARI RIWAYAT CAROUSEL ─── */}
+                {contentSourceMode === 'EXISTING' && (
+                  <div className="space-y-2">
+                    {recentContents.length > 0 ? (
+                      <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto p-1 border border-slate-200 dark:border-slate-800 rounded-2xl">
+                        {recentContents.map((content) => {
+                          const isSelected = selectedContentId === content.id;
+                          return (
+                            <div
+                              key={content.id}
+                              onClick={() => setSelectedContentId(content.id)}
+                              className={cn(
+                                'p-2 rounded-xl border flex items-center gap-2 cursor-pointer transition-all',
+                                isSelected
+                                  ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 ring-2 ring-indigo-500/20'
+                                  : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60'
+                              )}
+                            >
+                              <div className="size-10 rounded-lg bg-slate-950 overflow-hidden shrink-0">
+                                {content.coverUrl ? (
+                                  <img src={content.coverUrl} alt="" className="w-full h-full object-cover" />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-white text-[9px]">
+                                    {content.totalSlides}S
+                                  </div>
+                                )}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <h5 className="text-[11px] font-bold text-slate-900 dark:text-white truncate">
+                                  {content.headline}
+                                </h5>
+                                <span className="text-[9px] text-slate-400">
+                                  {content.totalSlides} Slide • {content.format}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="p-3 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400">
+                        Belum ada riwayat carousel. Pilih opsi "Generate AI" di atas untuk membuat yang baru.
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* ─── KONTEN C: KUSTOM MANUAL ─── */}
+                {contentSourceMode === 'CUSTOM' && (
+                  <div className="space-y-2">
+                    <div>
+                      <label className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-1 block">
+                        Headline / Judul
+                      </label>
+                      <input
+                        type="text"
+                        value={customHeadline}
+                        onChange={(e) => setCustomHeadline(e.target.value)}
+                        placeholder="Ketik judul postingan..."
+                        className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-1 block">
+                        URL Gambar Cover (Opsional)
+                      </label>
+                      <input
+                        type="url"
+                        value={customMediaUrl}
+                        onChange={(e) => setCustomMediaUrl(e.target.value)}
+                        placeholder="https://images.unsplash.com/..."
+                        className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none"
+                      />
+                    </div>
                   </div>
                 )}
               </div>
@@ -1119,21 +1361,42 @@ export function ContentCalendar({
                   Caption &amp; Hashtag (Opsional)
                 </label>
                 <textarea
-                  rows={3}
+                  rows={2}
                   value={customCaption}
                   onChange={(e) => setCustomCaption(e.target.value)}
-                  placeholder="Ketik caption pengiring postingan atau biarkan kosong untuk memakai teks bawaan carousel..."
+                  placeholder="Ketik caption pengiring postingan (atau biarkan kosong untuk memakai caption otomatis AI)..."
                   className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
+
+              {/* Progress Indicator */}
+              {isSubmittingSchedule && (
+                <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-center space-y-1.5 animate-in fade-in">
+                  <div className="flex items-center justify-center gap-2 text-indigo-600 dark:text-indigo-400 text-xs font-bold">
+                    <RefreshCw className="size-4 animate-spin" />
+                    <span>{generatingProgressMessage || 'Memproses AI & Menjadwalkan...'}</span>
+                  </div>
+                  <p className="text-[10px] text-slate-500">Mohon tunggu beberapa detik...</p>
+                </div>
+              )}
 
               {/* Submit Button */}
               <Button
                 type="submit"
                 disabled={isSubmittingSchedule}
-                className="w-full h-11 text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-md transition-all"
+                className="w-full h-11 text-xs font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:opacity-95 text-white rounded-xl shadow-md transition-all"
               >
-                {isSubmittingSchedule ? 'Menyimpan Jadwal...' : '💾 Simpan & Jadwalkan Postingan'}
+                {isSubmittingSchedule ? (
+                  <span className="flex items-center gap-1.5">
+                    <RefreshCw className="size-3.5 animate-spin" /> Memproses...
+                  </span>
+                ) : contentSourceMode === 'AI_GENERATE' ? (
+                  <span className="flex items-center gap-1.5">
+                    <Sparkles className="size-3.5" /> 🚀 Buat Konten AI &amp; Pasang Jadwal
+                  </span>
+                ) : (
+                  '💾 Simpan &amp; Jadwalkan Postingan'
+                )}
               </Button>
             </form>
           </div>
