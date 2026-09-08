@@ -24,7 +24,6 @@ import {
   Info,
   Share2,
   Instagram,
-  Linkedin,
   Facebook,
   AtSign,
   ExternalLink,
@@ -34,7 +33,6 @@ import { Input, Label } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn, formatDate } from '@/lib/utils';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
-import { ConnectRealSocialModal } from '@/components/settings/connect-real-social-modal';
 import { notify } from '@/lib/notify';
 
 interface SettingsHubProps {
@@ -90,10 +88,6 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
   // Social Accounts State
   const [socialAccounts, setSocialAccounts] = React.useState<any[]>([]);
   const [socialLoading, setSocialLoading] = React.useState(false);
-  const [showConnectRealModal, setShowConnectRealModal] = React.useState(false);
-  const [realModalPlatform, setRealModalPlatform] = React.useState<
-    'INSTAGRAM' | 'FACEBOOK' | 'THREADS'
-  >('INSTAGRAM');
 
   const fetchSocialAccounts = React.useCallback(async () => {
     try {
@@ -136,27 +130,48 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
       const fb = parseInt(params.get('fb') || '0', 10);
       const platform = params.get('platform');
 
-      if (ig > 0) {
-        notify.celebrate(
-          'Instagram & Facebook Terhubung! 🎉',
-          `${ig} Akun Instagram Bisnis & ${fb} Halaman Facebook Anda siap digunakan.`
-        );
-      } else if (fb > 0) {
-        if (platform === 'instagram') {
-          notify.warning(
-            'Halaman FB Terhubung, IG Belum Tertaut ⚠️',
-            'Halaman Facebook Anda terhubung, tetapi belum ada Akun Instagram Bisnis yang ditautkan ke Halaman tersebut di pengaturan Facebook.'
+      if (platform === 'instagram') {
+        if (ig > 0) {
+          notify.celebrate(
+            'Instagram Terhubung! 🎉',
+            `${ig} Akun Instagram Bisnis Anda siap digunakan untuk publikasi carousel.`
           );
         } else {
-          notify.celebrate(
-            'Halaman Facebook Terhubung! 🎉',
-            `${fb} Halaman Facebook siap digunakan untuk posting.`
+          notify.warning(
+            'Akun Instagram Belum Terdeteksi ⚠️',
+            'Halaman Facebook Anda terhubung, namun akun Instagram Bisnis belum ditautkan ke Fanpage tersebut. Pastikan akun Instagram Anda berstatus Bisnis/Kreator dan sudah ditautkan ke Halaman Facebook Anda.'
           );
         }
+      } else if (platform === 'facebook') {
+        if (fb > 0) {
+          notify.celebrate(
+            'Halaman Facebook Terhubung! 🎉',
+            `${fb} Halaman Facebook siap digunakan untuk posting carousel.`
+          );
+        } else {
+          notify.warning(
+            'Halaman Facebook Tidak Ditemukan',
+            'Tidak ada Halaman Facebook yang dipilih saat otorisasi.'
+          );
+        }
+      } else {
+        notify.celebrate(
+          'Akun Meta Terhubung! 🎉',
+          `${ig} Akun Instagram & ${fb} Halaman Facebook siap digunakan.`
+        );
       }
+      window.history.replaceState({}, '', '/settings');
+    } else if (connected === 'threads') {
+      notify.celebrate(
+        'Akun Threads Terhubung! 🎉',
+        'Akun Threads resmi Anda berhasil disambungkan dan siap digunakan.'
+      );
       window.history.replaceState({}, '', '/settings');
     } else if (canceled === 'meta') {
       notify.info('Otorisasi Dibatalkan', 'Penyambungan akun Meta dibatalkan.');
+      window.history.replaceState({}, '', '/settings');
+    } else if (canceled === 'threads') {
+      notify.info('Otorisasi Dibatalkan', 'Penyambungan akun Threads dibatalkan.');
       window.history.replaceState({}, '', '/settings');
     } else if (warning === 'no_pages_found') {
       notify.warning(
@@ -165,40 +180,10 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
       );
       window.history.replaceState({}, '', '/settings');
     } else if (error) {
-      notify.error('Gagal Menghubungkan Meta', `Kendala: ${error}`);
+      notify.error('Gagal Menghubungkan', `Kendala otorisasi: ${error}`);
       window.history.replaceState({}, '', '/settings');
     }
   }, [fetchSocialAccounts]);
-
-  const handleConnectSocial = async (
-    platform: 'INSTAGRAM' | 'FACEBOOK' | 'THREADS',
-    handleName: string,
-    isDemo = true
-  ) => {
-    try {
-      setSocialLoading(true);
-      const res = await fetch('/api/social-accounts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          platform,
-          accountName: `${handleName} (${platform})`,
-          accountHandle: handleName.startsWith('@') ? handleName : `@${handleName}`,
-          isDemo,
-        }),
-      });
-      if (res.ok) {
-        notify.success('Akun Terhubung! 🎉', `Akun ${platform} berhasil disambungkan.`);
-        fetchSocialAccounts();
-      } else {
-        notify.error('Gagal', 'Tidak dapat menghubungkan akun.');
-      }
-    } catch (e: any) {
-      notify.error('Gagal', e?.message);
-    } finally {
-      setSocialLoading(false);
-    }
-  };
 
   const handleDisconnectSocial = async (id: string) => {
     if (!confirm('Putuskan koneksi akun ini?')) return;
@@ -859,7 +844,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                   Akun Media Sosial &amp; Auto-Post
                 </h3>
                 <p className="text-xs text-slate-500 mt-1">
-                  Hubungkan akun Instagram Business dan LinkedIn untuk mempublikasikan carousel terjadwal secara otomatis.
+                  Hubungkan akun Instagram Bisnis, Facebook Fanpage, atau Threads resmi untuk mempublikasikan konten carousel secara otomatis.
                 </p>
               </div>
 
@@ -887,7 +872,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                   <div>
                     <h4 className="text-xs font-bold text-slate-900 dark:text-white">Instagram Pro</h4>
                     <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">
-                      Posting carousel foto &amp; cover ke feed akun Bisnis / Kreator.
+                      Posting carousel foto &amp; cover ke feed akun Bisnis / Kreator Anda.
                     </p>
                   </div>
                 </div>
@@ -896,13 +881,12 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                     type="button"
                     size="sm"
                     onClick={() => {
-                      setRealModalPlatform('INSTAGRAM');
-                      setShowConnectRealModal(true);
+                      window.location.href = '/api/social-accounts/oauth/meta?platform=instagram';
                     }}
                     className="w-full text-xs font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:opacity-95 text-white shadow-sm"
                   >
                     <Instagram className="size-3.5 mr-1" />
-                    + Hubungkan Instagram
+                    Hubungkan Instagram
                   </Button>
                 </div>
               </div>
@@ -930,13 +914,12 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                     type="button"
                     size="sm"
                     onClick={() => {
-                      setRealModalPlatform('FACEBOOK');
-                      setShowConnectRealModal(true);
+                      window.location.href = '/api/social-accounts/oauth/meta?platform=facebook';
                     }}
                     className="w-full text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-sm"
                   >
                     <Facebook className="size-3.5 mr-1" />
-                    + Hubungkan Facebook
+                    Hubungkan Facebook
                   </Button>
                 </div>
               </div>
@@ -964,13 +947,12 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                     type="button"
                     size="sm"
                     onClick={() => {
-                      setRealModalPlatform('THREADS');
-                      setShowConnectRealModal(true);
+                      window.location.href = '/api/social-accounts/oauth/threads';
                     }}
                     className="w-full text-xs font-bold bg-black hover:bg-neutral-800 text-white shadow-sm"
                   >
                     <AtSign className="size-3.5 mr-1" />
-                    + Hubungkan Threads
+                    Hubungkan Threads
                   </Button>
                 </div>
               </div>
@@ -1001,7 +983,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                           ) : acc.platform === 'THREADS' ? (
                             <AtSign className="size-4 text-slate-900 dark:text-white" />
                           ) : (
-                            <Linkedin className="size-4 text-[#0A66C2]" />
+                            <Share2 className="size-4 text-primary" />
                           )}
                         </div>
                         <div>
@@ -1034,14 +1016,6 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
           </div>
         </div>
       )}
-
-      {/* Modal Hubungkan Akun Asli */}
-      <ConnectRealSocialModal
-        open={showConnectRealModal}
-        onClose={() => setShowConnectRealModal(false)}
-        onAccountConnected={fetchSocialAccounts}
-        defaultPlatform={realModalPlatform}
-      />
     </div>
   );
 }

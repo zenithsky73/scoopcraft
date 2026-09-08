@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { getViewer } from '@/server/viewer';
 
 export const runtime = 'nodejs';
 
@@ -18,5 +17,5 @@ function getBaseUrl(req: Request): string {
 
 export async function GET(req: Request) {
   const baseUrl = getBaseUrl(req);
-  return NextResponse.redirect(new URL('/api/social-accounts/oauth/meta?platform=instagram', baseUrl));
+  return NextResponse.redirect(new URL('/api/social-accounts/oauth/meta?platform=facebook', baseUrl));
 }
