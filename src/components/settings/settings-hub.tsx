@@ -92,7 +92,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
   const [socialLoading, setSocialLoading] = React.useState(false);
   const [showConnectRealModal, setShowConnectRealModal] = React.useState(false);
   const [realModalPlatform, setRealModalPlatform] = React.useState<
-    'INSTAGRAM' | 'FACEBOOK' | 'THREADS' | 'LINKEDIN'
+    'INSTAGRAM' | 'FACEBOOK' | 'THREADS'
   >('INSTAGRAM');
 
   const fetchSocialAccounts = React.useCallback(async () => {
@@ -171,7 +171,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
   }, [fetchSocialAccounts]);
 
   const handleConnectSocial = async (
-    platform: 'INSTAGRAM' | 'FACEBOOK' | 'THREADS' | 'LINKEDIN',
+    platform: 'INSTAGRAM' | 'FACEBOOK' | 'THREADS',
     handleName: string,
     isDemo = true
   ) => {
