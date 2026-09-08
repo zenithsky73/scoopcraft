@@ -13,7 +13,7 @@ const campaignRequestSchema = z.object({
   durationDays: z.number().int().min(7).max(30).default(30),
   startDate: z.string().optional(),
   preferredTime: z.string().default('09:00'),
-  platform: z.enum(['INSTAGRAM', 'LINKEDIN', 'FACEBOOK']).default('INSTAGRAM'),
+  platform: z.enum(['INSTAGRAM', 'FACEBOOK', 'THREADS']).default('INSTAGRAM'),
   style: z.string().optional(),
   autoCommit: z.boolean().default(true),
 });

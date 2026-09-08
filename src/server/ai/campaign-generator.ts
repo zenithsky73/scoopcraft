@@ -26,7 +26,7 @@ export type CampaignInput = {
   durationDays?: number; // 7, 14, or 30 (default 30)
   startDate?: string; // YYYY-MM-DD
   preferredTime?: string; // HH:mm (default "09:00")
-  platform?: 'INSTAGRAM' | 'LINKEDIN' | 'FACEBOOK';
+  platform?: 'INSTAGRAM' | 'FACEBOOK' | 'THREADS';
   style?: DesignStyle;
   format?: OutputFormat;
 };
@@ -34,7 +34,7 @@ export type CampaignInput = {
 export type CampaignResult = {
   topic: string;
   durationDays: number;
-  platform: 'INSTAGRAM' | 'LINKEDIN' | 'FACEBOOK';
+  platform: 'INSTAGRAM' | 'FACEBOOK' | 'THREADS';
   days: CampaignDayPost[];
 };
 
