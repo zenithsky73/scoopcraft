@@ -24,12 +24,8 @@ export async function GET(req: Request) {
     return NextResponse.redirect(new URL('/login?callbackUrl=/settings', baseUrl));
   }
 
-  const igAppId = process.env.INSTAGRAM_APP_ID || process.env.META_APP_ID;
-  if (!igAppId) {
-    return NextResponse.redirect(new URL('/settings?tab=social&error=instagram_app_not_configured', baseUrl));
-  }
-
-  const redirectUri = `${baseUrl}/api/social-accounts/oauth/instagram/callback`;
+  const appId = process.env.META_APP_ID || '1059971823315435';
+  const redirectUri = `${baseUrl}/api/social-accounts/oauth/meta/callback`;
   const statePayload = {
     userId: viewer.user.id,
     targetPlatform: 'INSTAGRAM',
@@ -38,10 +34,10 @@ export async function GET(req: Request) {
   };
   const state = Buffer.from(JSON.stringify(statePayload)).toString('base64url');
 
-  const authUrl = new URL('https://api.instagram.com/oauth/authorize');
-  authUrl.searchParams.set('client_id', igAppId);
+  const authUrl = new URL('https://www.facebook.com/v19.0/dialog/oauth');
+  authUrl.searchParams.set('client_id', appId);
   authUrl.searchParams.set('redirect_uri', redirectUri);
-  authUrl.searchParams.set('scope', 'instagram_business_basic,instagram_business_content_publish');
+  authUrl.searchParams.set('scope', 'public_profile,pages_show_list,pages_read_engagement,instagram_basic,instagram_content_publish');
   authUrl.searchParams.set('response_type', 'code');
   authUrl.searchParams.set('state', state);
 
