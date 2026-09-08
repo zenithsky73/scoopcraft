@@ -141,11 +141,15 @@ async function publishToSimulator(post: ScheduledPost & { socialAccount: SocialA
 
 function toAbsoluteMediaUrl(url: string): string {
   if (!url) return '';
-  if (url.startsWith('http://') || url.startsWith('https://')) {
-    return url;
+  let cleanUrl = url;
+  if (cleanUrl.includes('-zenithsky73s-projects.vercel.app')) {
+    cleanUrl = cleanUrl.replace(/https:\/\/[^/]+-zenithsky73s-projects\.vercel\.app/, 'https://scoopcraft.vercel.app');
   }
-  const appUrl = (process.env.NEXT_PUBLIC_APP_URL || process.env.AUTH_URL || 'https://newsly.ai').replace(/\/$/, '');
-  return `${appUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+  if (cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://')) {
+    return cleanUrl;
+  }
+  const appUrl = (process.env.NEXT_PUBLIC_APP_URL || process.env.AUTH_URL || 'https://scoopcraft.vercel.app').replace(/\/$/, '');
+  return `${appUrl}${cleanUrl.startsWith('/') ? '' : '/'}${cleanUrl}`;
 }
 
 /**
@@ -445,6 +449,7 @@ async function publishToFacebook(
       };
     } else if (mediaUrls.length > 1) {
       const photoIds: string[] = [];
+      let lastUploadError: string | null = null;
       for (const url of mediaUrls) {
         const pRes = await fetch(`https://graph.facebook.com/v19.0/${pageId}/photos`, {
           method: 'POST',
@@ -456,7 +461,15 @@ async function publishToFacebook(
           }),
         });
         const pData = await pRes.json();
-        if (pData.id) photoIds.push(pData.id);
+        if (pData.id) {
+          photoIds.push(pData.id);
+        } else if (pData?.error?.message) {
+          lastUploadError = pData.error.message;
+        }
+      }
+
+      if (photoIds.length === 0) {
+        throw new Error(lastUploadError || 'Gagal mengunggah foto slide ke Facebook.');
       }
 
       const feedRes = await fetch(`https://graph.facebook.com/v19.0/${pageId}/feed`, {

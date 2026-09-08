@@ -21,9 +21,10 @@ export async function POST(req: Request) {
       },
     });
 
-    const host = req.headers.get('x-forwarded-host') || req.headers.get('host') || 'scoopcraft.vercel.app';
-    const proto = req.headers.get('x-forwarded-proto') || (host.includes('localhost') ? 'http' : 'https');
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.AUTH_URL || `${proto}://${host}`;
+    let baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.AUTH_URL;
+    if (!baseUrl || baseUrl.includes('localhost') || baseUrl.includes('-zenithsky73s-projects.vercel.app')) {
+      baseUrl = 'https://scoopcraft.vercel.app';
+    }
     const cleanBase = baseUrl.replace(/\/$/, '');
     const url = `${cleanBase}/api/media/${media.id}`;
 
