@@ -139,8 +139,17 @@ async function publishToSimulator(post: ScheduledPost & { socialAccount: SocialA
   };
 }
 
+function toAbsoluteMediaUrl(url: string): string {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  const appUrl = (process.env.NEXT_PUBLIC_APP_URL || process.env.AUTH_URL || 'https://newsly.ai').replace(/\/$/, '');
+  return `${appUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+}
+
 /**
- * Meta Graph API: Publish Carousel to Instagram Business / Creator account
+ * Meta Graph API: Publish Single Image or Carousel to Instagram Business / Creator account
  * Docs: https://developers.facebook.com/docs/instagram-api/guides/content-publishing
  */
 async function publishToInstagram(
@@ -148,7 +157,7 @@ async function publishToInstagram(
   account: SocialAccount
 ): Promise<PublishResult> {
   const metadata = (account.metadata as any) || {};
-  const igUserId = metadata.instagram_business_account_id || account.externalId || process.env.META_INSTAGRAM_ACCOUNT_ID;
+  const igUserId = metadata.instagram_business_account_id || metadata.igUserId || account.externalId || process.env.META_INSTAGRAM_ACCOUNT_ID;
   const accessToken = account.accessToken || process.env.META_ACCESS_TOKEN;
 
   if (!igUserId || !accessToken) {
@@ -165,56 +174,79 @@ async function publishToInstagram(
     : '';
   const fullCaption = `${post.caption}${hashtagsFormatted}`;
 
-  const mediaUrls = post.mediaUrls || [];
+  const rawMediaUrls = post.mediaUrls || [];
+  const mediaUrls = rawMediaUrls.map(toAbsoluteMediaUrl).filter(Boolean);
+
   if (mediaUrls.length === 0) {
     return {
       success: false,
       isSimulated: false,
-      error: 'Tidak ada URL gambar slide carousel yang valid untuk diunggah.',
+      error: 'Tidak ada URL gambar slide yang valid untuk diunggah.',
     };
   }
 
   try {
-    // 1. Buat item container untuk tiap slide
-    const itemContainerIds: string[] = [];
-    for (const imgUrl of mediaUrls) {
-      const itemRes = await fetch(`https://graph.facebook.com/v19.0/${igUserId}/media`, {
+    let creationId = '';
+
+    if (mediaUrls.length === 1) {
+      // 1A. Single Image Container
+      const singleRes = await fetch(`https://graph.facebook.com/v19.0/${igUserId}/media`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          image_url: imgUrl,
-          is_carousel_item: true,
+          image_url: mediaUrls[0],
+          caption: fullCaption,
           access_token: accessToken,
         }),
       });
 
-      const itemData = await itemRes.json();
-      if (!itemRes.ok || !itemData.id) {
-        throw new Error(itemData?.error?.message || 'Gagal membuat container slide Instagram.');
+      const singleData = await singleRes.json();
+      if (!singleRes.ok || !singleData.id) {
+        throw new Error(singleData?.error?.message || 'Gagal membuat container gambar Instagram.');
       }
-      itemContainerIds.push(itemData.id);
+      creationId = singleData.id;
+    } else {
+      // 1B. Multi-slide Carousel Container
+      const itemContainerIds: string[] = [];
+      for (const imgUrl of mediaUrls) {
+        const itemRes = await fetch(`https://graph.facebook.com/v19.0/${igUserId}/media`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            image_url: imgUrl,
+            is_carousel_item: true,
+            access_token: accessToken,
+          }),
+        });
+
+        const itemData = await itemRes.json();
+        if (!itemRes.ok || !itemData.id) {
+          throw new Error(itemData?.error?.message || 'Gagal membuat container slide Instagram.');
+        }
+        itemContainerIds.push(itemData.id);
+      }
+
+      // Buat Carousel Container induk
+      const carouselRes = await fetch(`https://graph.facebook.com/v19.0/${igUserId}/media`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          media_type: 'CAROUSEL',
+          children: itemContainerIds.join(','),
+          caption: fullCaption,
+          access_token: accessToken,
+        }),
+      });
+
+      const carouselData = await carouselRes.json();
+      if (!carouselRes.ok || !carouselData.id) {
+        throw new Error(carouselData?.error?.message || 'Gagal membuat carousel container di Instagram.');
+      }
+
+      creationId = carouselData.id;
     }
 
-    // 2. Buat Carousel Container induk
-    const carouselRes = await fetch(`https://graph.facebook.com/v19.0/${igUserId}/media`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        media_type: 'CAROUSEL',
-        children: itemContainerIds.join(','),
-        caption: fullCaption,
-        access_token: accessToken,
-      }),
-    });
-
-    const carouselData = await carouselRes.json();
-    if (!carouselRes.ok || !carouselData.id) {
-      throw new Error(carouselData?.error?.message || 'Gagal membuat carousel container di Instagram.');
-    }
-
-    const creationId = carouselData.id;
-
-    // 3. Publikasikan Container Carousel
+    // 2. Publikasikan Container Media
     const publishRes = await fetch(`https://graph.facebook.com/v19.0/${igUserId}/media_publish`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -226,12 +258,12 @@ async function publishToInstagram(
 
     const publishData = await publishRes.json();
     if (!publishRes.ok || !publishData.id) {
-      throw new Error(publishData?.error?.message || 'Gagal mempublikasikan postingan carousel ke Instagram.');
+      throw new Error(publishData?.error?.message || 'Gagal mempublikasikan postingan ke Instagram.');
     }
 
     const publishedMediaId = publishData.id;
 
-    // 4. Ambil permalink postingan yang baru terbit
+    // 3. Ambil permalink postingan yang baru terbit
     let permalink = `https://www.instagram.com/p/${publishedMediaId}/`;
     try {
       const linkRes = await fetch(
@@ -352,7 +384,8 @@ async function publishToFacebook(
     ? '\n\n' + post.hashtags.map((h) => (h.startsWith('#') ? h : `#${h}`)).join(' ')
     : '';
   const fullCaption = `${post.caption}${hashtagsFormatted}`;
-  const mediaUrls = post.mediaUrls || [];
+  const rawMediaUrls = post.mediaUrls || [];
+  const mediaUrls = rawMediaUrls.map(toAbsoluteMediaUrl).filter(Boolean);
 
   try {
     if (mediaUrls.length === 1) {
@@ -462,7 +495,8 @@ async function publishToThreads(
     ? '\n\n' + post.hashtags.map((h) => (h.startsWith('#') ? h : `#${h}`)).join(' ')
     : '';
   const text = `${post.caption}${hashtagsFormatted}`;
-  const mediaUrls = post.mediaUrls || [];
+  const rawMediaUrls = post.mediaUrls || [];
+  const mediaUrls = rawMediaUrls.map(toAbsoluteMediaUrl).filter(Boolean);
 
   try {
     let creationId = '';

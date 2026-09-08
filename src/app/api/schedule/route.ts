@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getViewer } from '@/server/viewer';
 import { db } from '@/server/db';
+import { executeScheduledPost } from '@/server/social/publisher';
 import type { SocialPlatform, OutputFormat, DesignStyle } from '@prisma/client';
 
 export const runtime = 'nodejs';
@@ -10,13 +11,14 @@ const createScheduleSchema = z.object({
   generatedContentId: z.string().optional().nullable(),
   platform: z.enum(['INSTAGRAM', 'LINKEDIN', 'FACEBOOK', 'THREADS', 'PINTEREST', 'TELEGRAM']),
   scheduledAt: z.string().datetime(),
+  publishMode: z.enum(['now', 'schedule']).default('schedule'),
   caption: z.string().min(1, 'Caption tidak boleh kosong'),
   hashtags: z.array(z.string()).default([]),
   mediaUrls: z.array(z.string()).min(1, 'Minimal satu gambar carousel diperlukan'),
   format: z.enum(['FEED_SQUARE', 'FEED_PORTRAIT', 'STORY']).default('FEED_PORTRAIT'),
   style: z.string().optional().nullable(),
   socialAccountId: z.string().optional().nullable(),
-  isSimulated: z.boolean().default(false),
+  isSimulated: z.boolean().optional(),
 });
 
 // GET: Ambil daftar jadwal postingan user
@@ -84,7 +86,7 @@ export async function GET(req: Request) {
   }
 }
 
-// POST: Buat jadwal postingan baru
+// POST: Buat jadwal postingan baru atau publish langsung
 export async function POST(req: Request) {
   const viewer = await getViewer();
   if (!viewer?.user) {
@@ -95,13 +97,22 @@ export async function POST(req: Request) {
     const body = await req.json();
     const validated = createScheduleSchema.parse(body);
 
-    const scheduleDate = new Date(validated.scheduledAt);
+    const isPublishNow = validated.publishMode === 'now';
+    const scheduleDate = isPublishNow ? new Date() : new Date(validated.scheduledAt);
 
     // Cek apakah ada akun sosial yang ditentukan atau buat / gunakan akun default
     let accountId = validated.socialAccountId;
-    if (!accountId) {
+    let selectedAccount: any = null;
+
+    if (accountId) {
+      selectedAccount = await db.socialAccount.findFirst({
+        where: { id: accountId, userId: viewer.user.id },
+      });
+    }
+
+    if (!selectedAccount) {
       // Cari akun pertama user untuk platform tersebut
-      const existingAccount = await db.socialAccount.findFirst({
+      selectedAccount = await db.socialAccount.findFirst({
         where: {
           userId: viewer.user.id,
           platform: validated.platform as SocialPlatform,
@@ -109,11 +120,11 @@ export async function POST(req: Request) {
         },
       });
 
-      if (existingAccount) {
-        accountId = existingAccount.id;
+      if (selectedAccount) {
+        accountId = selectedAccount.id;
       } else {
         // Otomatis buat akun simulasi/demo jika belum ada akun terhubung
-        const newDemoAccount = await db.socialAccount.create({
+        selectedAccount = await db.socialAccount.create({
           data: {
             userId: viewer.user.id,
             platform: validated.platform as SocialPlatform,
@@ -123,9 +134,17 @@ export async function POST(req: Request) {
             isConnected: true,
           },
         });
-        accountId = newDemoAccount.id;
+        accountId = selectedAccount.id;
       }
     }
+
+    // Tentukan apakah simulasi
+    const hasRealToken = Boolean(
+      selectedAccount?.accessToken &&
+        !selectedAccount.accessToken.startsWith('demo_') &&
+        !selectedAccount.accessToken.startsWith('mock_')
+    );
+    const isSimulated = validated.isSimulated !== undefined ? validated.isSimulated : !hasRealToken;
 
     const scheduledPost = await db.scheduledPost.create({
       data: {
@@ -140,12 +159,30 @@ export async function POST(req: Request) {
         mediaUrls: validated.mediaUrls,
         format: validated.format as OutputFormat,
         style: (validated.style as DesignStyle) || null,
-        isSimulated: validated.isSimulated || true,
+        isSimulated,
       },
       include: {
         socialAccount: true,
       },
     });
+
+    // Jika mode publish sekarang (Publish Now), langsung eksekusi tanpa menunggu cron
+    if (isPublishNow) {
+      const publishResult = await executeScheduledPost(scheduledPost.id);
+      const updatedPost = await db.scheduledPost.findUnique({
+        where: { id: scheduledPost.id },
+        include: { socialAccount: true },
+      });
+
+      return NextResponse.json({
+        success: publishResult.success,
+        message: publishResult.success
+          ? 'Postingan berhasil dipublikasikan sekarang!'
+          : (publishResult.error || 'Gagal mempublikasikan postingan.'),
+        post: updatedPost,
+        result: publishResult,
+      });
+    }
 
     return NextResponse.json({
       success: true,

@@ -8,6 +8,7 @@ import {
   Instagram,
   Linkedin,
   Facebook,
+  AtSign,
   ExternalLink,
   Trash2,
   Zap,
@@ -84,13 +85,31 @@ export function ContentCalendar({ initialPosts }: ContentCalendarProps) {
   const handlePublishNow = async (id: string) => {
     setActionLoadingId(id);
     try {
-      const res = await fetch(`/api/schedule/${id}`, { method: 'POST' });
+      const res = await fetch(`/api/schedule/${id}/publish-now`, { method: 'POST' });
       const data = await res.json();
       if (res.ok && data.success) {
         notify.celebrate('Terbit! 🚀', 'Postingan berhasil dipublikasikan sekarang.');
         await fetchPosts();
       } else {
         notify.error('Gagal Menerbitkan', data?.error || 'Terjadi kesalahan');
+      }
+    } catch (e: any) {
+      notify.error('Gagal', e?.message);
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
+  const handleRetry = async (id: string) => {
+    setActionLoadingId(id);
+    try {
+      const res = await fetch(`/api/schedule/${id}/retry`, { method: 'POST' });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        notify.celebrate('Terbit! 🚀', 'Postingan berhasil dipublikasikan ulang.');
+        await fetchPosts();
+      } else {
+        notify.error('Gagal Mengulang', data?.error || 'Terjadi kesalahan');
       }
     } catch (e: any) {
       notify.error('Gagal', e?.message);
@@ -126,10 +145,12 @@ export function ContentCalendar({ initialPosts }: ContentCalendarProps) {
     switch (platform) {
       case 'INSTAGRAM':
         return <Instagram className="size-3.5 text-pink-500" />;
-      case 'LINKEDIN':
-        return <Linkedin className="size-3.5 text-blue-500" />;
       case 'FACEBOOK':
         return <Facebook className="size-3.5 text-indigo-500" />;
+      case 'THREADS':
+        return <AtSign className="size-3.5 text-slate-800 dark:text-slate-200" />;
+      case 'LINKEDIN':
+        return <Linkedin className="size-3.5 text-blue-500" />;
       default:
         return <CalendarIcon className="size-3.5 text-slate-500" />;
     }
@@ -377,6 +398,20 @@ export function ContentCalendar({ initialPosts }: ContentCalendarProps) {
                       >
                         <Zap className="size-3 mr-1 text-amber-500" />
                         Terbitkan Sekarang
+                      </Button>
+                    )}
+
+                    {post.status === 'FAILED' && (
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        disabled={isProcessing}
+                        onClick={() => handleRetry(post.id)}
+                        className="text-[11px] h-7 px-2.5 font-bold border-red-300 dark:border-red-800 text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/50"
+                      >
+                        <RefreshCw className={cn('size-3 mr-1 text-red-500', isProcessing && 'animate-spin')} />
+                        Coba Lagi
                       </Button>
                     )}
 

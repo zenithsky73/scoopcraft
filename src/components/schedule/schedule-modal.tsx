@@ -7,12 +7,15 @@ import {
   Instagram,
   Linkedin,
   Facebook,
+  AtSign,
   Send,
   Sparkles,
   X,
   CheckCircle2,
   AlertCircle,
   Zap,
+  Layers,
+  ArrowRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { notify } from '@/lib/notify';
@@ -43,20 +46,28 @@ const PLATFORMS = [
     color: 'text-pink-600 dark:text-pink-400',
   },
   {
-    id: 'LINKEDIN',
-    name: 'LinkedIn',
-    icon: Linkedin,
-    gradient: 'from-blue-600 to-cyan-600',
-    border: 'border-blue-500/30',
-    color: 'text-blue-600 dark:text-blue-400',
-  },
-  {
     id: 'FACEBOOK',
     name: 'Facebook',
     icon: Facebook,
     gradient: 'from-indigo-600 to-blue-500',
     border: 'border-indigo-500/30',
     color: 'text-indigo-600 dark:text-indigo-400',
+  },
+  {
+    id: 'THREADS',
+    name: 'Threads',
+    icon: AtSign,
+    gradient: 'from-slate-800 to-black',
+    border: 'border-slate-500/30',
+    color: 'text-slate-800 dark:text-slate-200',
+  },
+  {
+    id: 'LINKEDIN',
+    name: 'LinkedIn',
+    icon: Linkedin,
+    gradient: 'from-blue-600 to-cyan-600',
+    border: 'border-blue-500/30',
+    color: 'text-blue-600 dark:text-blue-400',
   },
 ] as const;
 
@@ -73,7 +84,8 @@ export function ScheduleModal({
   style,
   onScheduleSuccess,
 }: ScheduleModalProps) {
-  const [selectedPlatform, setSelectedPlatform] = React.useState<'INSTAGRAM' | 'LINKEDIN' | 'FACEBOOK'>('INSTAGRAM');
+  const [publishMode, setPublishMode] = React.useState<'now' | 'schedule'>('schedule');
+  const [selectedPlatform, setSelectedPlatform] = React.useState<'INSTAGRAM' | 'FACEBOOK' | 'THREADS' | 'LINKEDIN'>('INSTAGRAM');
 
   // Default waktu: 2 jam dari sekarang
   const defaultDate = React.useMemo(() => {
@@ -90,7 +102,6 @@ export function ScheduleModal({
   const [timeStr, setTimeStr] = React.useState(defaultTime);
   const [editableCaption, setEditableCaption] = React.useState(caption);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [isInstantTesting, setIsInstantTesting] = React.useState(false);
   const [accounts, setAccounts] = React.useState<any[]>([]);
   const [useRealPublish, setUseRealPublish] = React.useState(false);
 
@@ -138,12 +149,12 @@ export function ScheduleModal({
     }
   };
 
-  const handleScheduleOrPublish = async (isPublishNow = false) => {
+  const handleExecute = async () => {
     try {
-      if (isPublishNow) setIsInstantTesting(true);
-      else setIsSubmitting(true);
+      setIsSubmitting(true);
 
-      const targetIso = isPublishNow
+      const isNow = publishMode === 'now';
+      const targetIso = isNow
         ? new Date().toISOString()
         : new Date(`${dateStr}T${timeStr}:00`).toISOString();
 
@@ -161,6 +172,7 @@ export function ScheduleModal({
         body: JSON.stringify({
           generatedContentId: contentId || null,
           platform: selectedPlatform,
+          publishMode,
           scheduledAt: targetIso,
           caption: editableCaption,
           hashtags,
@@ -173,42 +185,27 @@ export function ScheduleModal({
 
       const data = await res.json();
       if (!res.ok || !data.success) {
-        throw new Error(data?.error || 'Gagal menyimpan jadwal postingan.');
+        throw new Error(data?.error || 'Gagal memproses postingan.');
       }
 
-      const createdPost = data.post;
-
-      if (isPublishNow) {
-        // Eksekusi publikasi instan
-        const pubRes = await fetch(`/api/schedule/${createdPost.id}`, {
-          method: 'POST',
-        });
-        const pubData = await pubRes.json();
-        if (pubRes.ok && pubData.success) {
-          notify.celebrate(
-            'Berhasil Dipublikasikan! 🚀',
-            `Postingan carousel langsung terbit (${selectedPlatform}).`
-          );
-        } else {
-          notify.info(
-            'Jadwal Tersimpan',
-            `Status: ${pubData?.result?.error || 'Menunggu antrean'}`
-          );
-        }
+      if (isNow) {
+        notify.celebrate(
+          'Berhasil Dipublikasikan! 🚀',
+          `Konten berhasil dikirim ke ${selectedPlatform}.`
+        );
       } else {
         notify.celebrate(
           'Jadwal Berhasil Dibuat! 🗓️',
-          `Carousel akan diposting otomatis pada ${dateStr} pukul ${timeStr}.`
+          `Konten akan diposting otomatis pada ${dateStr} pukul ${timeStr}.`
         );
       }
 
-      onScheduleSuccess?.(createdPost);
+      onScheduleSuccess?.(data.post);
       onClose();
     } catch (err: any) {
-      notify.error('Gagal Menjadwalkan', err?.message);
+      notify.error('Gagal Memproses', err?.message);
     } finally {
       setIsSubmitting(false);
-      setIsInstantTesting(false);
     }
   };
 
@@ -219,7 +216,7 @@ export function ScheduleModal({
         role="dialog"
         aria-modal="true"
       >
-        {/* Header Modal Ringkas */}
+        {/* Header Modal */}
         <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800/80 px-4 py-3 bg-slate-50/70 dark:bg-slate-950/40">
           <div className="flex items-center gap-2">
             <div className="size-7 rounded-lg bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
@@ -227,7 +224,7 @@ export function ScheduleModal({
             </div>
             <div>
               <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-tight">
-                Jadwalkan & Auto-Post
+                Auto-Publish & Penjadwalan
               </h3>
               <p className="text-[11px] text-slate-500 dark:text-slate-400">
                 {totalSlides} Slide Carousel • Siap Dipublikasikan
@@ -244,13 +241,43 @@ export function ScheduleModal({
         </div>
 
         {/* Body Modal */}
-        <div className="p-4 space-y-3.5 max-h-[80vh] overflow-y-auto">
+        <div className="p-4 space-y-4 max-h-[80vh] overflow-y-auto">
+          {/* Mode Switcher: Post Sekarang vs Jadwalkan */}
+          <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
+            <button
+              type="button"
+              onClick={() => setPublishMode('now')}
+              className={cn(
+                'flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-bold transition-all',
+                publishMode === 'now'
+                  ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              )}
+            >
+              <Zap className="size-3.5 text-amber-500" />
+              <span>Post Sekarang</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setPublishMode('schedule')}
+              className={cn(
+                'flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-bold transition-all',
+                publishMode === 'schedule'
+                  ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              )}
+            >
+              <CalendarIcon className="size-3.5 text-indigo-500" />
+              <span>Jadwalkan Waktu</span>
+            </button>
+          </div>
+
           {/* 1. Platform Selector */}
           <div>
             <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1.5 block">
               Pilih Media Sosial Tujuan
             </label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-4 gap-2">
               {PLATFORMS.map((platform) => {
                 const isSelected = selectedPlatform === platform.id;
                 const Icon = platform.icon;
@@ -258,9 +285,9 @@ export function ScheduleModal({
                   <button
                     key={platform.id}
                     type="button"
-                    onClick={() => setSelectedPlatform(platform.id)}
+                    onClick={() => setSelectedPlatform(platform.id as any)}
                     className={cn(
-                      'flex items-center justify-center gap-2 py-2 px-2.5 rounded-xl border text-xs font-bold transition-all',
+                      'flex flex-col items-center justify-center gap-1.5 py-2 px-1 rounded-xl border text-[11px] font-bold transition-all',
                       isSelected
                         ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 shadow-sm ring-1 ring-indigo-500/20'
                         : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60'
@@ -283,7 +310,7 @@ export function ScheduleModal({
                       Akun Asli: {currentAccount?.accountName}
                     </span>
                     <span className="text-[10px] text-slate-400 block">
-                      {currentAccount?.accountHandle} • Meta API Siap
+                      {currentAccount?.accountHandle || currentAccount?.accountName} • Meta API Siap
                     </span>
                   </div>
                 </div>
@@ -319,68 +346,70 @@ export function ScheduleModal({
                   target="_blank"
                   className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
                 >
-                  Hubungkan Akun Asli
+                  Hubungkan Akun
                 </a>
               )}
             </div>
           </div>
 
-          {/* 2. Tanggal & Jam Tayang */}
-          <div>
-            <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1.5 block">
-              Waktu Publikasi Otomatis
-            </label>
-            <div className="grid grid-cols-2 gap-2 mb-2">
-              <div className="relative">
-                <input
-                  type="date"
-                  value={dateStr}
-                  onChange={(e) => setDateStr(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 px-3 py-2 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                />
+          {/* 2. Tanggal & Jam Tayang (Hanya jika mode schedule) */}
+          {publishMode === 'schedule' && (
+            <div className="space-y-2 animate-in fade-in duration-150">
+              <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300 block">
+                Waktu Publikasi Otomatis
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <input
+                    type="date"
+                    value={dateStr}
+                    onChange={(e) => setDateStr(e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 px-3 py-2 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  />
+                </div>
+                <div>
+                  <input
+                    type="time"
+                    value={timeStr}
+                    onChange={(e) => setTimeStr(e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 px-3 py-2 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  />
+                </div>
               </div>
-              <div className="relative">
-                <input
-                  type="time"
-                  value={timeStr}
-                  onChange={(e) => setTimeStr(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 px-3 py-2 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                />
-              </div>
-            </div>
 
-            {/* Presets Chips */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] text-slate-400 font-medium">Pintas:</span>
-              <button
-                type="button"
-                onClick={() => setPreset('1h')}
-                className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors font-medium"
-              >
-                +1 Jam Lagi
-              </button>
-              <button
-                type="button"
-                onClick={() => setPreset('tomorrow_morning')}
-                className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors font-medium"
-              >
-                Besok Pagi (09:00)
-              </button>
-              <button
-                type="button"
-                onClick={() => setPreset('tomorrow_evening')}
-                className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors font-medium"
-              >
-                Besok Malam (19:30)
-              </button>
+              {/* Presets Chips */}
+              <div className="flex items-center gap-1.5 pt-0.5">
+                <span className="text-[10px] text-slate-400 font-medium">Pintas:</span>
+                <button
+                  type="button"
+                  onClick={() => setPreset('1h')}
+                  className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors font-medium"
+                >
+                  +1 Jam Lagi
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreset('tomorrow_morning')}
+                  className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors font-medium"
+                >
+                  Besok Pagi (09:00)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreset('tomorrow_evening')}
+                  className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors font-medium"
+                >
+                  Besok Malam (19:30)
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* 3. Ringkasan Caption & Hashtag */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300">
-                Caption & Hashtag Postingan
+                Caption & Hashtag
               </label>
               <span className="text-[10px] text-slate-400">
                 {editableCaption.length} karakter • {hashtags.length} tag
@@ -411,17 +440,9 @@ export function ScheduleModal({
               </div>
             )}
           </div>
-
-          {/* 4. Live Simulator Info Badge */}
-          <div className="rounded-xl border border-amber-200/80 dark:border-amber-900/50 bg-amber-50/60 dark:bg-amber-950/30 p-2.5 flex items-start gap-2 text-[11px] text-amber-800 dark:text-amber-300">
-            <Zap className="size-4 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
-            <div className="leading-snug">
-              <span className="font-bold">Live Auto-Publisher Aktif:</span> Konten carousel akan diproses dan dipublikasikan otomatis pada waktu yang Anda jadwalkan. Anda juga bisa mengujinya langsung detik ini.
-            </div>
-          </div>
         </div>
 
-        {/* Footer Actions Ringkas */}
+        {/* Footer Actions */}
         <div className="flex items-center justify-between border-t border-slate-200 dark:border-slate-800/80 px-4 py-3 bg-slate-50/70 dark:bg-slate-950/40 gap-2">
           <Button
             type="button"
@@ -433,30 +454,32 @@ export function ScheduleModal({
             Batal
           </Button>
 
-          <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              disabled={isSubmitting || isInstantTesting}
-              onClick={() => handleScheduleOrPublish(true)}
-              className="text-xs font-bold border-amber-300 dark:border-amber-800 text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-950/50"
-            >
-              <Zap className="size-3.5 mr-1 text-amber-500" />
-              <span>{isInstantTesting ? 'Menerbitkan...' : 'Tes Terbit Langsung'}</span>
-            </Button>
-
-            <Button
-              type="button"
-              size="sm"
-              disabled={isSubmitting || isInstantTesting}
-              onClick={() => handleScheduleOrPublish(false)}
-              className="text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/20"
-            >
-              <CalendarIcon className="size-3.5 mr-1" />
-              <span>{isSubmitting ? 'Menjadwalkan...' : 'Konfirmasi Jadwal'}</span>
-            </Button>
-          </div>
+          <Button
+            type="button"
+            size="sm"
+            disabled={isSubmitting}
+            onClick={handleExecute}
+            className={cn(
+              'text-xs font-bold text-white shadow-md transition-all',
+              publishMode === 'now'
+                ? 'bg-gradient-to-r from-amber-500 to-orange-600 hover:opacity-95 shadow-orange-500/20'
+                : 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-600/20'
+            )}
+          >
+            {isSubmitting ? (
+              publishMode === 'now' ? 'Mempublikasikan...' : 'Menyimpan Jadwal...'
+            ) : publishMode === 'now' ? (
+              <>
+                <Zap className="size-3.5 mr-1.5" />
+                <span>Publikasikan Sekarang</span>
+              </>
+            ) : (
+              <>
+                <CalendarIcon className="size-3.5 mr-1.5" />
+                <span>Simpan ke Kalender</span>
+              </>
+            )}
+          </Button>
         </div>
       </div>
     </div>
