@@ -11,10 +11,10 @@ export const metadata: Metadata = {
   description: APP.description,
   icons: {
     icon: [
-      { url: '/favicon.png?v=3', type: 'image/png' },
-      { url: '/favicon.ico?v=3' },
+      { url: '/favicon.png?v=instadeck', type: 'image/png' },
+      { url: '/favicon.ico?v=instadeck' },
     ],
-    apple: '/app-icon-dark.png?v=3',
+    apple: '/app-icon-dark.png?v=instadeck',
   },
 };
 
@@ -29,9 +29,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="id" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/favicon.png?v=3" type="image/png" />
-        <link rel="shortcut icon" href="/favicon.ico?v=3" />
-        <link rel="apple-touch-icon" href="/app-icon-dark.png?v=3" />
+        <link rel="icon" href="/favicon.png?v=instadeck" type="image/png" />
+        <link rel="shortcut icon" href="/favicon.ico?v=instadeck" />
+        <link rel="apple-touch-icon" href="/app-icon-dark.png?v=instadeck" />
         <link rel="stylesheet" href="/fonts/inter.css" />
       </head>
       <body>
