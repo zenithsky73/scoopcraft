@@ -60,9 +60,13 @@ export function ConnectRealSocialModal({
     const platformParam = platform.toLowerCase();
     notify.info(
       `Membuka Otorisasi ${platform}...`,
-      'Anda akan dialihkan ke dialog persetujuan resmi Meta Facebook.'
+      'Anda akan dialihkan ke dialog persetujuan resmi.'
     );
-    window.location.href = `/api/social-accounts/oauth/meta?platform=${platformParam}`;
+    if (platform === 'THREADS') {
+      window.location.href = '/api/social-accounts/oauth/threads';
+    } else {
+      window.location.href = `/api/social-accounts/oauth/meta?platform=${platformParam}`;
+    }
   };
 
   // Verifikasi manual token
