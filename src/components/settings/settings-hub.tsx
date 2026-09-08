@@ -888,7 +888,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                     <ShieldCheck className="size-3.5 mr-1" />
                     ⚡ Hubungkan IG
                   </Button>
-                  <div className="flex items-center justify-between px-1 text-[10px]">
+                  <div className="flex items-center justify-center px-1 text-[10px]">
                     <button
                       type="button"
                       onClick={() => {
@@ -897,15 +897,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                       }}
                       className="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold"
                     >
-                      Token Manual
-                    </button>
-                    <button
-                      type="button"
-                      disabled={socialLoading}
-                      onClick={() => handleConnectSocial('INSTAGRAM', '@newsly.creatives', true)}
-                      className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 font-medium"
-                    >
-                      Demo
+                      Input Token Manual
                     </button>
                   </div>
                 </div>
@@ -942,7 +934,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                     <ShieldCheck className="size-3.5 mr-1" />
                     ⚡ Hubungkan FB
                   </Button>
-                  <div className="flex items-center justify-between px-1 text-[10px]">
+                  <div className="flex items-center justify-center px-1 text-[10px]">
                     <button
                       type="button"
                       onClick={() => {
@@ -951,15 +943,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                       }}
                       className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
                     >
-                      Token Manual
-                    </button>
-                    <button
-                      type="button"
-                      disabled={socialLoading}
-                      onClick={() => handleConnectSocial('FACEBOOK', 'Newsly Community', true)}
-                      className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 font-medium"
-                    >
-                      Demo
+                      Input Token Manual
                     </button>
                   </div>
                 </div>
@@ -996,7 +980,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                     <ShieldCheck className="size-3.5 mr-1" />
                     ⚡ Hubungkan Threads
                   </Button>
-                  <div className="flex items-center justify-between px-1 text-[10px]">
+                  <div className="flex items-center justify-center px-1 text-[10px]">
                     <button
                       type="button"
                       onClick={() => {
@@ -1005,15 +989,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                       }}
                       className="text-slate-700 dark:text-slate-300 hover:underline font-semibold"
                     >
-                      Token Manual
-                    </button>
-                    <button
-                      type="button"
-                      disabled={socialLoading}
-                      onClick={() => handleConnectSocial('THREADS', '@newsly_threads', true)}
-                      className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 font-medium"
-                    >
-                      Demo
+                      Input Token Manual
                     </button>
                   </div>
                 </div>
@@ -1050,7 +1026,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                     <ShieldCheck className="size-3.5 mr-1" />
                     ⚡ Hubungkan LinkedIn
                   </Button>
-                  <div className="flex items-center justify-between px-1 text-[10px]">
+                  <div className="flex items-center justify-center px-1 text-[10px]">
                     <button
                       type="button"
                       onClick={() => {
@@ -1059,15 +1035,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                       }}
                       className="text-[#0A66C2] dark:text-sky-400 hover:underline font-semibold"
                     >
-                      Token Manual
-                    </button>
-                    <button
-                      type="button"
-                      disabled={socialLoading}
-                      onClick={() => handleConnectSocial('LINKEDIN', 'Newsly Official', true)}
-                      className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 font-medium"
-                    >
-                      Demo
+                      Input URN &amp; Token
                     </button>
                   </div>
                 </div>
@@ -1107,15 +1075,9 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                             <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
                               {acc.accountName}
                             </span>
-                            {acc.accessToken && !acc.accessToken.startsWith('demo_') ? (
-                              <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold border border-emerald-300 dark:border-emerald-800">
-                                🟢 Akun Asli (Live)
-                              </span>
-                            ) : (
-                              <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 font-bold border border-amber-300 dark:border-amber-800">
-                                🟡 Simulator Demo
-                              </span>
-                            )}
+                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold border border-emerald-300 dark:border-emerald-800">
+                              🟢 Terhubung &amp; Siap Posting
+                            </span>
                           </div>
                           <span className="text-[11px] text-slate-400">{acc.accountHandle}</span>
                         </div>

@@ -307,10 +307,10 @@ export function ScheduleModal({
                   <span className="size-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
                   <div>
                     <span className="font-bold text-slate-800 dark:text-slate-200 block text-[11px]">
-                      Akun Asli: {currentAccount?.accountName}
+                      Akun Aktif: {currentAccount?.accountName}
                     </span>
                     <span className="text-[10px] text-slate-400 block">
-                      {currentAccount?.accountHandle || currentAccount?.accountName} • Meta API Siap
+                      {currentAccount?.accountHandle || currentAccount?.accountName} • Auto-Post Siap
                     </span>
                   </div>
                 </div>
@@ -319,34 +319,26 @@ export function ScheduleModal({
                   <span className="size-2 rounded-full bg-amber-500 shrink-0" />
                   <div>
                     <span className="font-bold text-slate-800 dark:text-slate-200 block text-[11px]">
-                      Mode Simulator Aktif
+                      Belum Ada Akun {selectedPlatform}
                     </span>
                     <span className="text-[10px] text-slate-400 block">
-                      Belum terhubung akun asli {selectedPlatform}
+                      Hubungkan akun Anda untuk posting otomatis
                     </span>
                   </div>
                 </div>
               )}
 
               {isRealAccount ? (
-                <label className="flex items-center gap-1.5 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={useRealPublish}
-                    onChange={(e) => setUseRealPublish(e.target.checked)}
-                    className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
-                  />
-                  <span className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400">
-                    Post ke Akun Asli
-                  </span>
-                </label>
+                <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                  ✓ Siap Terbit
+                </span>
               ) : (
                 <a
                   href="/settings"
                   target="_blank"
-                  className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
+                  className="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition-colors"
                 >
-                  Hubungkan Akun
+                  Hubungkan Sekarang ➔
                 </a>
               )}
             </div>
