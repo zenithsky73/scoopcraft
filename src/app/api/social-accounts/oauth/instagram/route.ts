@@ -17,6 +17,33 @@ function getBaseUrl(req: Request): string {
 }
 
 export async function GET(req: Request) {
+  const viewer = await getViewer();
   const baseUrl = getBaseUrl(req);
-  return NextResponse.redirect(new URL('/api/social-accounts/oauth/meta?platform=instagram', baseUrl));
+
+  if (!viewer?.user) {
+    return NextResponse.redirect(new URL('/login?callbackUrl=/settings', baseUrl));
+  }
+
+  const appId = process.env.INSTAGRAM_APP_ID || process.env.META_APP_ID;
+  if (!appId) {
+    return NextResponse.redirect(new URL('/settings?tab=social&error=instagram_not_configured', baseUrl));
+  }
+
+  const redirectUri = `${baseUrl}/api/social-accounts/oauth/instagram/callback`;
+  const statePayload = {
+    userId: viewer.user.id,
+    targetPlatform: 'INSTAGRAM',
+    timestamp: Date.now(),
+    nonce: Math.random().toString(36).substring(2, 12),
+  };
+  const state = Buffer.from(JSON.stringify(statePayload)).toString('base64url');
+
+  const authUrl = new URL('https://api.instagram.com/oauth/authorize');
+  authUrl.searchParams.set('client_id', appId);
+  authUrl.searchParams.set('redirect_uri', redirectUri);
+  authUrl.searchParams.set('scope', 'user_profile,user_media');
+  authUrl.searchParams.set('response_type', 'code');
+  authUrl.searchParams.set('state', state);
+
+  return NextResponse.redirect(authUrl.toString());
 }

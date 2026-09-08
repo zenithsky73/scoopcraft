@@ -881,7 +881,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                     type="button"
                     size="sm"
                     onClick={() => {
-                      window.location.href = '/api/social-accounts/oauth/meta?platform=instagram';
+                      window.location.href = '/api/social-accounts/oauth/instagram';
                     }}
                     className="w-full text-xs font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:opacity-95 text-white shadow-sm"
                   >
@@ -914,7 +914,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                     type="button"
                     size="sm"
                     onClick={() => {
-                      window.location.href = '/api/social-accounts/oauth/meta?platform=facebook';
+                      window.location.href = '/api/social-accounts/oauth/facebook';
                     }}
                     className="w-full text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-sm"
                   >
