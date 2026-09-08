@@ -162,7 +162,9 @@ async function publishToInstagram(
 ): Promise<PublishResult> {
   const metadata = (account.metadata as any) || {};
   let igUserId = metadata.instagram_business_account_id || metadata.igUserId || account.externalId || process.env.META_INSTAGRAM_ACCOUNT_ID;
-  let accessToken = account.accessToken || process.env.META_ACCESS_TOKEN;
+  let accessToken = (account.accessToken && account.accessToken !== 'demo_token')
+    ? account.accessToken
+    : (process.env.META_SYSTEM_USER_TOKEN || process.env.META_ACCESS_TOKEN);
 
   // Auto-resolve Instagram Business Account ID & Page Access Token jika belum ada di metadata
   if (accessToken && account.externalId) {
@@ -394,7 +396,9 @@ async function publishToFacebook(
   account: SocialAccount
 ): Promise<PublishResult> {
   const pageId = account.externalId;
-  let accessToken = account.accessToken;
+  let accessToken = (account.accessToken && account.accessToken !== 'demo_token')
+    ? account.accessToken
+    : (process.env.META_SYSTEM_USER_TOKEN || process.env.META_ACCESS_TOKEN);
 
   if (!pageId || !accessToken) {
     return {
