@@ -246,6 +246,13 @@ export async function generateDirect(input: GenerateDirectInput) {
       const guideline = NICHE_GUIDELINES[input.niche] || `Kategori: ${input.niche}`;
       contextDirectives += `\n- TARGET NICHE / INDUSTRI: ${guideline}. Sesuaikan istilah, persona, dan daya tarik konten dengan target industri ini.`;
     }
+    if (input.aiVisualTheme && input.aiVisualTheme !== 'AUTO') {
+      const themeDef = getAIThemeDef(input.aiVisualTheme);
+      if (themeDef) {
+        contextDirectives += `\n- TEMA VISUAL SENI GAMBAR AI: "${themeDef.label}" (${themeDef.description}). Selaraskan konteks visual ilustrasi slide dengan tema seni ini.`;
+      }
+    }
+
     if (input.contentType) {
       contextDirectives += `\n- PILAR / TIPE KONTEN: ${input.contentType}.`;
       if (input.contentType === 'PROMOTION') {

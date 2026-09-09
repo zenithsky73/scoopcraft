@@ -107,6 +107,7 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
           style: selectedStyle,
           format: selectedFormat,
           slides,
+          aiVisualTheme,
         }),
       });
 
