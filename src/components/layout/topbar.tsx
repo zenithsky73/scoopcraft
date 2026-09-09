@@ -49,8 +49,8 @@ export function Topbar({
             <span>Tamu ({quota.remaining}x)</span>
           </div>
         ) : (
-          <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-indigo-100 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 text-[11px] font-bold">
-            <Sparkles className="size-3 text-indigo-600 dark:text-indigo-400" />
+          <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 text-[11px] font-bold">
+            <Sparkles className="size-3 text-primary" />
             <span>{quota?.remaining ?? 20} Kuota</span>
           </div>
         )}

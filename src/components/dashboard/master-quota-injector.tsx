@@ -101,7 +101,7 @@ export function MasterQuotaInjector() {
                 onClick={() => handlePlanChange('STARTER')}
                 className={`py-2 px-1 text-[11px] font-bold rounded-lg border transition-all ${
                   selectedPlan === 'STARTER'
-                    ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                    ? 'bg-primary text-white border-primary shadow-sm shadow-primary/25'
                     : 'bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800'
                 }`}
               >
@@ -112,7 +112,7 @@ export function MasterQuotaInjector() {
                 onClick={() => handlePlanChange('PRO')}
                 className={`py-2 px-1 text-[11px] font-bold rounded-lg border transition-all ${
                   selectedPlan === 'PRO'
-                    ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                    ? 'bg-primary text-white border-primary shadow-sm shadow-primary/25'
                     : 'bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800'
                 }`}
               >
@@ -123,7 +123,7 @@ export function MasterQuotaInjector() {
                 onClick={() => handlePlanChange('AGENCY')}
                 className={`py-2 px-1 text-[11px] font-bold rounded-lg border transition-all ${
                   selectedPlan === 'AGENCY'
-                    ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                    ? 'bg-primary text-white border-primary shadow-sm shadow-primary/25'
                     : 'bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800'
                 }`}
               >

@@ -46,7 +46,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const valid = await bcrypt.compare(password, hash);
           if (!user || !user.passwordHash || !valid) return null;
 
-          return { id: user.id, email: user.email, name: user.name, image: user.image };
+          return { id: user.id, email: user.email, name: user.name, image: user.image, role: user.role };
         } catch (err) {
           console.error('[auth] error in authorize', err);
           return null;

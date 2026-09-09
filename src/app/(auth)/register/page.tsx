@@ -6,8 +6,8 @@ import { RegisterForm } from '@/components/auth/register-form';
 import { LogIn, UserPlus } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Daftar Akun Baru — Newsly AI',
-  description: 'Daftar akun Newsly AI gratis dan dapatkan kuota pembuatan konten langsung.',
+  title: 'Daftar Akun Baru — InstaDeck PRO',
+  description: 'Daftar akun InstaDeck PRO gratis dan dapatkan kuota pembuatan konten langsung.',
 };
 
 export default async function RegisterPage() {

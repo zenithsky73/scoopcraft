@@ -6,8 +6,8 @@ import { LoginForm } from '@/components/auth/login-form';
 import { LogIn, UserPlus } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Masuk Akun — Newsly AI',
-  description: 'Masuk ke akun Newsly AI Anda dan mulai buat konten carousel viral.',
+  title: 'Masuk Akun — InstaDeck PRO',
+  description: 'Masuk ke akun InstaDeck PRO Anda dan mulai buat konten carousel viral.',
 };
 
 export default async function LoginPage() {

@@ -1,25 +1,27 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import { auth } from '@/server/auth';
+import { getViewer } from '@/server/viewer';
 import { db } from '@/server/db';
 import { APP } from '@/config/app';
 
 export async function POST(req: Request) {
   try {
-    const session = await auth();
-    const userEmail = session?.user?.email;
+    const viewer = await getViewer();
+    const user = viewer?.user;
 
     const isOwner =
-      userEmail === APP.ownerEmail ||
-      (userEmail && APP.ownerEmail.toLowerCase() === userEmail.toLowerCase()) ||
-      (session?.user as any)?.role === 'OWNER';
+      user?.role === 'OWNER' ||
+      user?.email === 'zenoalvaro75@gmail.com' ||
+      user?.email === APP.ownerEmail ||
+      (user?.email && APP.ownerEmail.toLowerCase() === user.email.toLowerCase()) ||
+      (process.env.OWNER_EMAIL && user?.email && process.env.OWNER_EMAIL.toLowerCase() === user.email.toLowerCase());
 
-    if (!session?.user || !isOwner) {
+    if (!user || !isOwner) {
       return NextResponse.json({ error: 'Akses ditolak. Hanya untuk Owner.' }, { status: 403 });
     }
 
     const body = await req.json();
-    const { targetUserId, newPassword = 'Newsly12345' } = body;
+    const { targetUserId, newPassword = 'Instadeck123' } = body;
 
     if (!targetUserId) {
       return NextResponse.json({ error: 'User ID target wajib diisi.' }, { status: 400 });
@@ -27,7 +29,7 @@ export async function POST(req: Request) {
 
     const passwordHash = await bcrypt.hash(newPassword, 10);
 
-    const user = await db.user.update({
+    const updatedUser = await db.user.update({
       where: { id: targetUserId },
       data: { passwordHash },
       select: { email: true, name: true },
@@ -35,7 +37,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      message: `Password untuk ${user.email} berhasil direset menjadi: "${newPassword}".`,
+      message: `Password untuk ${updatedUser.email} berhasil direset menjadi: "${newPassword}".`,
       newPassword,
     });
   } catch (error: any) {

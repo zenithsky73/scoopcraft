@@ -1,20 +1,22 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/server/auth';
+import { getViewer } from '@/server/viewer';
 import { db } from '@/server/db';
 import { APP } from '@/config/app';
 
 export async function POST(req: Request) {
   try {
-    const session = await auth();
-    const userEmail = session?.user?.email;
+    const viewer = await getViewer();
+    const user = viewer?.user;
 
     // Pastikan hanya Owner yang bisa mengeksekusi
     const isOwner =
-      userEmail === APP.ownerEmail ||
-      (userEmail && APP.ownerEmail.toLowerCase() === userEmail.toLowerCase()) ||
-      (session?.user as any)?.role === 'OWNER';
+      user?.role === 'OWNER' ||
+      user?.email === 'zenoalvaro75@gmail.com' ||
+      user?.email === APP.ownerEmail ||
+      (user?.email && APP.ownerEmail.toLowerCase() === user.email.toLowerCase()) ||
+      (process.env.OWNER_EMAIL && user?.email && process.env.OWNER_EMAIL.toLowerCase() === user.email.toLowerCase());
 
-    if (!session?.user || !isOwner) {
+    if (!user || !isOwner) {
       return NextResponse.json(
         { error: 'Akses ditolak. Fitur ini hanya untuk Owner / Master Admin.' },
         { status: 403 }

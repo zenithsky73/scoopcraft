@@ -123,7 +123,7 @@ export function NewslyAssistantWidget() {
         id: String(Date.now() + 1),
         role: 'assistant',
         content:
-          'Maaf, terjadi kendala teknis saat menghubungi server Newsly Copilot. Silakan tanyakan kembali beberapa saat lagi!',
+          'Maaf, terjadi kendala teknis saat menghubungi server InstaDeck Copilot. Silakan tanyakan kembali beberapa saat lagi!',
         timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages((prev) => [...prev, errorReply]);
@@ -138,7 +138,7 @@ export function NewslyAssistantWidget() {
         id: String(Date.now()),
         role: 'assistant',
         content:
-          'Obrolan telah direset! ✨\n\nAda pertanyaan lain seputar platform Newsly AI yang bisa saya bantu jawab?',
+          'Obrolan telah direset! ✨\n\nAda pertanyaan lain seputar platform InstaDeck PRO yang bisa saya bantu jawab?',
         timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
       },
     ]);
@@ -163,7 +163,7 @@ export function NewslyAssistantWidget() {
           const formattedLine = parts.map((part, pIdx) => {
             if (part.startsWith('**') && part.endsWith('**')) {
               return (
-                <strong key={pIdx} className="font-semibold text-indigo-300 dark:text-indigo-200">
+                <strong key={pIdx} className="font-semibold text-primary">
                   {part.slice(2, -2)}
                 </strong>
               );
@@ -174,7 +174,7 @@ export function NewslyAssistantWidget() {
           if (isBullet) {
             return (
               <div key={idx} className="flex items-start gap-1.5 pl-2">
-                <span className="text-indigo-400 select-none">•</span>
+                <span className="text-primary select-none">•</span>
                 <span>{formattedLine}</span>
               </div>
             );
@@ -202,7 +202,7 @@ export function NewslyAssistantWidget() {
           {/* Header */}
           <div className="flex items-center justify-between px-3.5 py-2.5 bg-slate-900 border-b border-slate-800">
             <div className="flex items-center gap-2 min-w-0">
-              <div className="size-6 rounded-lg bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center text-indigo-300 shrink-0">
+              <div className="size-6 rounded-lg bg-primary/20 border border-primary/40 flex items-center justify-center text-primary shrink-0">
                 <Bot className="size-3.5" />
               </div>
               <div className="min-w-0">
@@ -237,7 +237,7 @@ export function NewslyAssistantWidget() {
               <button
                 key={idx}
                 onClick={() => handleSend(item.query)}
-                className="whitespace-nowrap px-2 py-0.5 rounded-full bg-slate-800/70 hover:bg-indigo-900/40 border border-slate-700/50 hover:border-indigo-500/40 text-[10px] text-slate-300 hover:text-indigo-200 transition-all flex-shrink-0"
+                className="whitespace-nowrap px-2 py-0.5 rounded-full bg-slate-800/70 hover:bg-primary/20 border border-slate-700/50 hover:border-primary/40 text-[10px] text-slate-300 hover:text-primary transition-all flex-shrink-0"
               >
                 {item.label}
               </button>
@@ -260,7 +260,7 @@ export function NewslyAssistantWidget() {
                     className={cn(
                       'rounded-xl px-3 py-2 shadow-sm',
                       isUser
-                        ? 'bg-gradient-to-tr from-indigo-600 to-purple-600 text-white rounded-br-none font-medium'
+                        ? 'bg-gradient-to-tr from-primary to-orange-500 text-white rounded-br-none font-medium'
                         : 'bg-slate-800/90 border border-slate-700/60 text-slate-200 rounded-bl-none'
                     )}
                   >
@@ -282,13 +282,13 @@ export function NewslyAssistantWidget() {
             {isLoading && (
               <div className="flex items-center gap-1.5 max-w-[80%] mr-auto">
                 <div className="bg-slate-800/90 border border-slate-700/60 rounded-xl rounded-bl-none px-3 py-2 flex items-center gap-1">
-                  <span className="size-1.5 rounded-full bg-indigo-400 animate-bounce" />
+                  <span className="size-1.5 rounded-full bg-primary animate-bounce" />
                   <span
-                    className="size-1.5 rounded-full bg-purple-400 animate-bounce"
+                    className="size-1.5 rounded-full bg-orange-400 animate-bounce"
                     style={{ animationDelay: '0.2s' }}
                   />
                   <span
-                    className="size-1.5 rounded-full bg-pink-400 animate-bounce"
+                    className="size-1.5 rounded-full bg-amber-400 animate-bounce"
                     style={{ animationDelay: '0.4s' }}
                   />
                 </div>
@@ -312,20 +312,20 @@ export function NewslyAssistantWidget() {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Tanya seputar Newsly..."
-                className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-all"
+                placeholder="Tanya seputar InstaDeck..."
+                className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-primary transition-all"
                 disabled={isLoading}
               />
               <button
                 type="submit"
                 disabled={isLoading || !input.trim()}
-                className="p-1.5 rounded-xl bg-indigo-600 text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-indigo-500 active:scale-95 transition-all shadow-sm flex-shrink-0"
+                className="p-1.5 rounded-xl bg-primary text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary/90 active:scale-95 transition-all shadow-sm flex-shrink-0"
               >
                 <Send className="size-3.5" />
               </button>
             </form>
             <p className="text-[9px] text-center text-slate-500 mt-1">
-              Khusus topik Newsly AI
+              Khusus topik InstaDeck PRO
             </p>
           </div>
         </div>
@@ -340,7 +340,7 @@ export function NewslyAssistantWidget() {
             'relative flex items-center justify-center size-11 sm:size-12 rounded-full text-white shadow-lg transition-all duration-200 border border-white/20 active:scale-90',
             isOpen
               ? 'bg-slate-800 hover:bg-slate-700 shadow-black/40'
-              : 'bg-gradient-to-tr from-indigo-600 to-purple-600 hover:scale-105 shadow-indigo-500/30'
+              : 'bg-gradient-to-tr from-primary to-orange-500 hover:scale-105 shadow-primary/30'
           )}
         >
           {isOpen ? (

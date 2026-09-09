@@ -115,7 +115,7 @@ export function QuotaMeter({ quota, compact = false }: { quota: QuotaState; comp
           className={cn(
             'text-xs font-bold rounded-xl shrink-0 h-8',
             compact
-              ? 'w-auto px-3.5 bg-gradient-to-r from-primary/10 to-indigo-500/10 dark:from-primary/20 dark:to-indigo-500/20 border border-primary/30 text-primary hover:bg-primary hover:text-white shadow-sm'
+              ? 'w-auto px-3.5 bg-gradient-to-r from-primary/10 to-orange-500/10 dark:from-primary/20 dark:to-orange-500/20 border border-primary/30 text-primary hover:bg-primary hover:text-white shadow-sm'
               : 'w-full mt-2'
           )}
         >

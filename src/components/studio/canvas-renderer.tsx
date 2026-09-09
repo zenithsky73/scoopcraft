@@ -97,8 +97,8 @@ export function CanvasRenderer({
   slide,
   style,
   format = 'FEED_PORTRAIT',
-  handle = '@newsly.ai',
-  brandName = 'NEWSLY AI',
+  handle = '@instadeck.id',
+  brandName = 'INSTADECK PRO',
   logoUrl = null,
   hideNewslyWatermark = false,
   totalSlides = 5,
@@ -1444,7 +1444,7 @@ export function CanvasRenderer({
 
         {!hideNewslyWatermark && (
           <span className="uppercase tracking-widest text-[9px] font-bold shrink-0 ml-2" style={{ color: textMuted }}>
-            {slide.source || 'Newsly AI'}
+            {slide.source || 'InstaDeck PRO'}
           </span>
         )}
       </div>

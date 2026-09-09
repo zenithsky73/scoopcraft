@@ -54,14 +54,19 @@ export default async function DashboardPage() {
             </div>
 
             <div>
-              <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white flex items-center justify-center md:justify-start gap-2">
-                Newsly<span className="bg-gradient-to-r from-cyan-500 via-pink-500 to-amber-500 bg-clip-text text-transparent">AI</span>
-              </h1>
-              <p className="text-sm sm:text-base font-semibold text-slate-700 dark:text-slate-300 mt-1">
-                From News to Stunning Content
+              <div className="flex items-center justify-center md:justify-start gap-2">
+                <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
+                  InstaDeck
+                </h1>
+                <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full bg-[#fff0ec] dark:bg-[#ff4526]/20 text-[#ff4526] text-xs font-black tracking-wider border border-[#ffd4ca] dark:border-[#ff4526]/40">
+                  PRO
+                </span>
+              </div>
+              <p className="text-sm sm:text-base font-semibold text-[#ff4526] mt-1">
+                AI Content Automation untuk Carousel &amp; Story
               </p>
               <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-xl mt-1 leading-relaxed">
-                Ubah link berita portal, press release, atau ide topik menjadi slide carousel Instagram & LinkedIn berkelas dalam hitungan detik.
+                Ubah ide topik, materi edukasi, naskah bisnis, atau link artikel menjadi carousel media sosial berkelas dalam hitungan detik.
               </p>
             </div>
 

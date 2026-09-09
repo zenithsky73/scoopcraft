@@ -201,27 +201,27 @@ export function MasterUsersTable() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="p-4 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
           <span className="text-[11px] font-mono uppercase font-black text-slate-700 dark:text-slate-400 flex items-center gap-1.5">
-            <Users className="size-3.5 text-indigo-600 dark:text-indigo-400" /> Pengguna Asli
+            <Users className="size-3.5 text-primary" /> Pengguna Asli
           </span>
           <span className="text-2xl font-black text-slate-900 dark:text-white mt-1">
             {registeredUsersCount} <span className="text-xs font-normal text-slate-400 font-mono">({totalUsersCount} total)</span>
           </span>
         </div>
 
-        <div className="p-4 rounded-2xl bg-indigo-50/70 dark:bg-slate-900/80 border border-indigo-200 dark:border-indigo-800/60 shadow-sm flex flex-col justify-between">
-          <span className="text-[11px] font-mono uppercase font-black text-indigo-800 dark:text-indigo-400 flex items-center gap-1.5">
-            <Sparkles className="size-3.5 text-indigo-600" /> Pengguna PRO
+        <div className="p-4 rounded-2xl bg-primary/5 dark:bg-slate-900/80 border border-primary/20 dark:border-primary/30 shadow-sm flex flex-col justify-between">
+          <span className="text-[11px] font-mono uppercase font-black text-primary flex items-center gap-1.5">
+            <Sparkles className="size-3.5 text-primary" /> Pengguna PRO
           </span>
-          <span className="text-2xl font-black text-indigo-700 dark:text-indigo-400 mt-1">
+          <span className="text-2xl font-black text-primary mt-1">
             {proUsersCount}
           </span>
         </div>
 
-        <div className="p-4 rounded-2xl bg-cyan-50/70 dark:bg-slate-900/80 border border-cyan-200 dark:border-cyan-800/60 shadow-sm flex flex-col justify-between">
-          <span className="text-[11px] font-mono uppercase font-black text-cyan-800 dark:text-cyan-400 flex items-center gap-1.5">
-            <TrendingUp className="size-3.5 text-cyan-600" /> Total Generate
+        <div className="p-4 rounded-2xl bg-amber-500/5 dark:bg-slate-900/80 border border-amber-500/20 dark:border-amber-500/30 shadow-sm flex flex-col justify-between">
+          <span className="text-[11px] font-mono uppercase font-black text-amber-700 dark:text-amber-400 flex items-center gap-1.5">
+            <TrendingUp className="size-3.5 text-amber-600" /> Total Generate
           </span>
-          <span className="text-2xl font-black text-cyan-700 dark:text-cyan-400 mt-1">
+          <span className="text-2xl font-black text-amber-700 dark:text-amber-400 mt-1">
             {totalGenerationsCount}x
           </span>
         </div>
@@ -262,7 +262,7 @@ export function MasterUsersTable() {
             onClick={() => setFilter('REGISTERED')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
               filter === 'REGISTERED'
-                ? 'bg-indigo-600 text-white shadow-sm'
+                ? 'bg-primary text-white shadow-sm shadow-primary/25'
                 : 'bg-slate-100 dark:bg-slate-950 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
@@ -273,7 +273,7 @@ export function MasterUsersTable() {
             onClick={() => setFilter('ALL')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
               filter === 'ALL'
-                ? 'bg-indigo-600 text-white shadow-sm'
+                ? 'bg-primary text-white shadow-sm shadow-primary/25'
                 : 'bg-slate-100 dark:bg-slate-950 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
@@ -284,7 +284,7 @@ export function MasterUsersTable() {
             onClick={() => setFilter('PRO')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
               filter === 'PRO'
-                ? 'bg-indigo-600 text-white shadow-sm'
+                ? 'bg-primary text-white shadow-sm shadow-primary/25'
                 : 'bg-slate-100 dark:bg-slate-950 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
@@ -295,7 +295,7 @@ export function MasterUsersTable() {
             onClick={() => setFilter('GUEST')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
               filter === 'GUEST'
-                ? 'bg-indigo-600 text-white shadow-sm'
+                ? 'bg-primary text-white shadow-sm shadow-primary/25'
                 : 'bg-slate-100 dark:bg-slate-950 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
@@ -317,7 +317,7 @@ export function MasterUsersTable() {
       <div className="rounded-3xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden">
         {loading ? (
           <div className="p-12 text-center text-slate-500 text-xs font-semibold flex flex-col items-center gap-2">
-            <RefreshCw className="size-6 animate-spin text-indigo-600" />
+            <RefreshCw className="size-6 animate-spin text-primary" />
             <span>Memuat daftar pengguna...</span>
           </div>
         ) : filteredUsers.length === 0 ? (
@@ -344,7 +344,7 @@ export function MasterUsersTable() {
                         isOwnerUser
                           ? 'bg-amber-500 text-white'
                           : isPro
-                          ? 'bg-indigo-600 text-white'
+                          ? 'bg-primary text-white shadow-primary/20'
                           : 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
                       }`}
                     >
@@ -366,7 +366,7 @@ export function MasterUsersTable() {
                             AGENCY
                           </span>
                         ) : user.plan === 'PRO' ? (
-                          <span className="px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-[9px] font-black uppercase">
+                          <span className="px-2 py-0.5 rounded-full bg-primary/10 dark:bg-primary/20 text-primary border border-primary/20 text-[9px] font-black uppercase">
                             PRO
                           </span>
                         ) : (
@@ -406,8 +406,8 @@ export function MasterUsersTable() {
                           onClick={() => handleInject(user, 'PRO')}
                           className={`h-8 px-3 text-xs font-bold rounded-xl shadow-sm transition-all ${
                             user.plan === 'PRO'
-                              ? 'bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-300'
-                              : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-indigo-600 hover:text-white'
+                              ? 'bg-primary/10 dark:bg-primary/20 text-primary border border-primary/30'
+                              : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-primary hover:text-white'
                           }`}
                         >
                           <Zap className="size-3 mr-1 fill-current" />

@@ -8,8 +8,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200 relative overflow-hidden selection:bg-primary/20">
       {/* ─── AMBIENT BACKGROUND GLOWS (NO SPLIT BORDER) ─── */}
-      <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 size-[600px] rounded-full bg-gradient-to-tr from-indigo-500/15 via-purple-500/10 to-cyan-500/15 dark:from-indigo-600/15 dark:via-purple-600/10 dark:to-cyan-500/10 blur-[140px]" />
-      <div className="pointer-events-none absolute -bottom-40 left-1/2 -translate-x-1/2 size-[500px] rounded-full bg-gradient-to-br from-cyan-500/15 via-indigo-500/10 to-pink-500/15 dark:from-cyan-600/10 dark:via-indigo-600/10 dark:to-pink-600/10 blur-[140px]" />
+      <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 size-[600px] rounded-full bg-gradient-to-tr from-primary/15 via-orange-500/10 to-amber-500/15 dark:from-primary/15 dark:via-orange-600/10 dark:to-amber-500/10 blur-[140px]" />
+      <div className="pointer-events-none absolute -bottom-40 left-1/2 -translate-x-1/2 size-[500px] rounded-full bg-gradient-to-br from-amber-500/15 via-primary/10 to-rose-500/15 dark:from-amber-600/10 dark:via-primary/10 dark:to-rose-600/10 blur-[140px]" />
 
       {/* Grid Pattern Overlay */}
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px] dark:bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)]" />
@@ -20,9 +20,14 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <div className="size-9 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
             <NewslyLogo size={28} />
           </div>
-          <span className="text-base font-black tracking-tight text-slate-900 dark:text-white">
-            Newsly<span className="bg-gradient-to-r from-cyan-500 via-pink-500 to-amber-500 bg-clip-text text-transparent">AI</span>
-          </span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-base font-black tracking-tight text-slate-900 dark:text-white">
+              InstaDeck
+            </span>
+            <span className="inline-flex items-center justify-center px-1.5 py-0.2 rounded-full bg-[#fff0ec] dark:bg-[#ff4526]/20 text-[#ff4526] text-[10px] font-black tracking-wider border border-[#ffd4ca] dark:border-[#ff4526]/40">
+              PRO
+            </span>
+          </div>
         </Link>
 
         <div className="flex items-center gap-3">
@@ -45,7 +50,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             {/* Integrated Brandmark Header */}
             <div className="flex flex-col items-center justify-center mb-6 text-center">
               <div className="relative mb-3 group">
-                <div className="absolute -inset-1.5 rounded-full bg-gradient-to-r from-cyan-500 via-indigo-500 to-pink-500 opacity-70 blur-md group-hover:opacity-100 transition duration-300 animate-pulse" />
+                <div className="absolute -inset-1.5 rounded-full bg-gradient-to-r from-orange-500 via-primary to-amber-500 opacity-70 blur-md group-hover:opacity-100 transition duration-300 animate-pulse" />
                 <div className="relative size-16 sm:size-18 rounded-2xl bg-gradient-to-b from-slate-900 to-[#0c1222] p-2.5 border border-slate-700/80 flex items-center justify-center shadow-lg">
                   <NewslyLogo size={42} />
                 </div>
@@ -59,16 +64,16 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           {/* Feature Highlight Pills (Seamless & Compact) */}
           <div className="flex flex-wrap items-center justify-center gap-2 pt-1 text-[11px] font-bold text-slate-500 dark:text-slate-400">
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm backdrop-blur-md">
-              <Layers className="size-3 text-indigo-600 dark:text-indigo-400" />
-              <span>20 Template Desain</span>
+              <Layers className="size-3 text-primary" />
+              <span>20+ Template Desain</span>
             </div>
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm backdrop-blur-md">
-              <Zap className="size-3 text-cyan-600 dark:text-cyan-400" />
+              <Zap className="size-3 text-amber-500" />
               <span>Gemini 2.5 Turbo</span>
             </div>
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm backdrop-blur-md">
               <Download className="size-3 text-emerald-600 dark:text-emerald-400" />
-              <span>Ekspor PDF &amp; ZIP</span>
+              <span>Ekspor PDF &amp; PNG</span>
             </div>
           </div>
 

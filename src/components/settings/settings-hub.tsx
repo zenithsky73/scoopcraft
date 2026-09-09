@@ -515,14 +515,14 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
-                        <Sparkles className="size-3.5 text-primary" /> Sembunyikan Watermark Newsly AI
+                        <Sparkles className="size-3.5 text-primary" /> Sembunyikan Watermark InstaDeck PRO
                       </span>
                       <span className="px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-800 dark:text-amber-300 border border-amber-400/40 text-[9px] font-black uppercase">
                         PRO EXCLUSIVE
                       </span>
                     </div>
                     <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
-                      Hilangkan tulisan bawaan <span className="font-mono text-slate-800 dark:text-slate-200 font-bold">&quot;⚡ Dibuat dengan Newsly AI&quot;</span> dari slide Anda. Hasil konten menjadi 100% murni brand milik Anda sendiri!
+                      Hilangkan tulisan bawaan <span className="font-mono text-slate-800 dark:text-slate-200 font-bold">&quot;⚡ Dibuat dengan InstaDeck PRO&quot;</span> dari slide Anda. Hasil konten menjadi 100% murni brand milik Anda sendiri!
                     </p>
                   </div>
 
@@ -552,7 +552,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
               {/* Live Preview Card */}
               <div className="p-5 rounded-3xl bg-slate-950 border border-slate-800 text-white space-y-3 relative overflow-hidden shadow-xl">
                 <div className="flex items-center justify-between text-[10px] text-slate-400 border-b border-slate-800 pb-2">
-                  <span className="font-mono font-bold uppercase tracking-wider text-indigo-400">Pratinjau Footer Slide</span>
+                  <span className="font-mono font-bold uppercase tracking-wider text-primary">Pratinjau Footer Slide</span>
                   <span>Ukuran Skala 1:1</span>
                 </div>
 
@@ -570,7 +570,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
 
                     {!hideNewslyWatermark && (
                       <span className="text-[10px] font-semibold text-slate-500 font-mono">
-                        ⚡ Made with Newsly AI
+                        ⚡ Made with InstaDeck PRO
                       </span>
                     )}
                   </div>
@@ -787,7 +787,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
             <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-1">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Status Watermark</span>
               <p className="text-base font-black text-emerald-600 dark:text-emerald-400">
-                {hideNewslyWatermark ? '✓ 100% Clean Brand' : 'Standar Newsly AI'}
+                {hideNewslyWatermark ? '✓ 100% Clean Brand' : 'Standar InstaDeck PRO'}
               </p>
             </div>
           </div>
@@ -824,9 +824,9 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
               <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
                 <div>
                   <h4 className="text-xs font-bold text-slate-900 dark:text-white">Versi Platform</h4>
-                  <p className="text-[11px] text-slate-500">Newsly AI Content Studio — Build 2026.08.29</p>
+                  <p className="text-[11px] text-slate-500">InstaDeck PRO Content Studio — Build 2026.09.09</p>
                 </div>
-                <span className="font-mono text-xs font-bold text-slate-400">v2.5 Pro</span>
+                <span className="font-mono text-xs font-bold text-primary">v2.5 Pro</span>
               </div>
             </div>
           </div>

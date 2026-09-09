@@ -10,17 +10,20 @@ import { Button } from '@/components/ui/button';
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'Master Pengguna & Injector Kuota',
-  description: 'Pusat kendali dan manajemen pengguna terdaftar Newsly AI.',
+  description: 'Pusat kendali dan manajemen pengguna terdaftar InstaDeck PRO.',
 };
 
 export default async function AdminUsersPage() {
   const viewer = await getViewer();
   if (!viewer) redirect('/login');
 
+  const user = viewer.user;
   const isOwner =
-    viewer.user.email === APP.ownerEmail ||
-    (viewer.user.email && APP.ownerEmail.toLowerCase() === viewer.user.email.toLowerCase()) ||
-    viewer.user.role === 'OWNER';
+    user.role === 'OWNER' ||
+    user.email === 'zenoalvaro75@gmail.com' ||
+    user.email === APP.ownerEmail ||
+    (user.email && APP.ownerEmail.toLowerCase() === user.email.toLowerCase()) ||
+    (process.env.OWNER_EMAIL && user.email && process.env.OWNER_EMAIL.toLowerCase() === user.email.toLowerCase());
 
   if (!isOwner) {
     redirect('/dashboard');
@@ -38,11 +41,11 @@ export default async function AdminUsersPage() {
           </div>
 
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
-            <Users className="size-7 text-indigo-600" /> Master Pengguna Platform
+            <Users className="size-7 text-primary" /> Master Pengguna Platform
           </h1>
 
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-            Daftar lengkap pengguna yang terdaftar di Newsly AI. Anda dapat melihat metrik penggunaan dan menyuntikkan kuota langganan secara instan 1-klik.
+            Daftar lengkap pengguna yang terdaftar di InstaDeck PRO. Anda dapat melihat metrik penggunaan dan menyuntikkan kuota langganan secara instan 1-klik.
           </p>
         </div>
 

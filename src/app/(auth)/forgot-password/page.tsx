@@ -52,14 +52,14 @@ export default function ForgotPasswordPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-1">
-        <div className="size-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center text-primary mb-2 shadow-sm">
+        <div className="size-10 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-2 shadow-sm">
           <KeyRound className="size-5" />
         </div>
         <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white">
           Lupa Kata Sandi? 🔑
         </h1>
         <p className="text-xs text-slate-500 dark:text-slate-400">
-          Masukkan email akun Newsly AI Anda untuk membuat kata sandi baru.
+          Masukkan email akun InstaDeck PRO Anda untuk membuat kata sandi baru.
         </p>
       </div>
 
@@ -95,7 +95,7 @@ export default function ForgotPasswordPage() {
             type="submit"
             block
             loading={loading}
-            className="h-11 rounded-xl bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-primary/25 transition-all"
+            className="h-11 rounded-xl bg-gradient-to-r from-primary to-orange-500 hover:from-primary/90 hover:to-orange-600 text-white font-bold text-xs shadow-lg shadow-primary/25 transition-all"
           >
             <span className="flex items-center justify-center gap-1.5">
               Verifikasi &amp; Buat Sandi Baru <ArrowRight className="size-4" />

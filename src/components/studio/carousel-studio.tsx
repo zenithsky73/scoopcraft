@@ -98,8 +98,8 @@ export function CarouselStudio({
   const [upgradeReason, setUpgradeReason] = React.useState<'PRO_STYLE' | 'PDF_EXPORT'>('PRO_STYLE');
   const [upgradeTitle, setUpgradeTitle] = React.useState('Buka Template Eksklusif Pro');
   const [selectedPreviewStyle, setSelectedPreviewStyle] = React.useState<StyleDef | null>(null);
-  const [handle, setHandle] = React.useState(initialBrandKit?.handle || '@newsly.ai');
-  const [brandName, setBrandName] = React.useState(initialBrandKit?.brandName || 'NEWSLY AI');
+  const [handle, setHandle] = React.useState(initialBrandKit?.handle || '@instadeck.id');
+  const [brandName, setBrandName] = React.useState(initialBrandKit?.brandName || 'INSTADECK PRO');
   const [logoUrl, setLogoUrl] = React.useState<string | null>(initialBrandKit?.logoUrl || null);
   const [hideNewslyWatermark, setHideNewslyWatermark] = React.useState<boolean>(
     initialBrandKit?.hideNewslyWatermark ?? false

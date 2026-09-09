@@ -197,7 +197,7 @@ export function RegisterForm() {
             type="submit"
             block
             loading={loading}
-            className="h-11 rounded-xl bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-primary/25 transition-all"
+            className="h-11 rounded-xl bg-gradient-to-r from-primary to-orange-500 hover:from-primary/90 hover:to-orange-600 text-white font-bold text-xs shadow-lg shadow-primary/25 transition-all"
           >
             <span className="flex items-center justify-center gap-1.5">
               <Sparkles className="size-4" /> Daftar &amp; Dapatkan Kuota Gratis
