@@ -20,6 +20,17 @@ export type FastScrapedArticle = {
   price?: string;
 };
 
+function extractMetaTag(html: string, propertyName: string): string | null {
+  const p = propertyName.replace(':', '\\:');
+  const regex1 = new RegExp(`<meta[^>]+content=["']([^"']+)["'][^>]+(?:property|name)=["']${p}["']`, 'i');
+  const regex2 = new RegExp(`<meta[^>]+(?:property|name)=["']${p}["'][^>]+content=["']([^"']+)["']`, 'i');
+  const m1 = html.match(regex1);
+  if (m1?.[1]) return m1[1];
+  const m2 = html.match(regex2);
+  if (m2?.[1]) return m2[1];
+  return null;
+}
+
 export async function scrapeArticleFast(targetUrl: string): Promise<FastScrapedArticle> {
   const cleanUrl = targetUrl.trim();
   const urlObj = new URL(cleanUrl.startsWith('http') ? cleanUrl : `https://${cleanUrl}`);
@@ -158,36 +169,74 @@ export async function scrapeArticleFast(targetUrl: string): Promise<FastScrapedA
     }
   }
 
-  // ─── B. WEB UMUM, E-COMMERCE / MARKETPLACE (SHOPEE, TOKOPEDIA, TIKTOK SHOP, DLL) ───
+  // ─── B. WEB UMUM & E-COMMERCE / MARKETPLACE (SHOPEE, TOKOPEDIA, TIKTOK SHOP, DLL) ───
   let html = '';
   let finalUrl = urlObj.href;
-
-  try {
-    const res = await fetch(urlObj.href, {
-      redirect: 'follow',
-      headers: {
-        'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-        Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
-        'Cache-Control': 'no-cache',
-      },
-      signal: AbortSignal.timeout(6500),
-    });
-
-    if (res.ok) {
-      html = await res.text();
-      finalUrl = res.url || urlObj.href;
-    }
-  } catch (err: any) {
-    console.warn('[FastScraper] Fetch warning (proceeding with fallback):', err?.message);
-  }
 
   const isShopee = domain.includes('shopee') || finalUrl.includes('shopee');
   const isTokopedia = domain.includes('tokopedia') || finalUrl.includes('tokopedia');
   const isTikTokShop = domain.includes('tiktok') || finalUrl.includes('tiktok');
   const isLazada = domain.includes('lazada') || finalUrl.includes('lazada');
   const isMarketplace = isShopee || isTokopedia || isTikTokShop || isLazada || domain.includes('blibli') || domain.includes('bukalapak') || domain.includes('shopify');
+
+  // Multi-UA Fast Parallel Fetch
+  const candidateUAs = isMarketplace
+    ? [
+        'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)',
+        'WhatsApp/2.21.12.21 A',
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Mobile/15E148 Safari/604.1',
+      ]
+    : [
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+        'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)',
+      ];
+
+  const fetchPromises = candidateUAs.map(async (ua) => {
+    try {
+      const res = await fetch(urlObj.href, {
+        redirect: 'follow',
+        headers: {
+          'User-Agent': ua,
+          Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+          'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
+          'Cache-Control': 'no-cache',
+        },
+        signal: AbortSignal.timeout(6000),
+      });
+      if (res.ok) {
+        const text = await res.text();
+        if (text && text.length > 500) {
+          return { html: text, url: res.url || urlObj.href, ua };
+        }
+      }
+    } catch (e) {}
+    throw new Error('UA failed: ' + ua);
+  });
+
+  try {
+    const fastest = await Promise.any(fetchPromises);
+    html = fastest.html;
+    finalUrl = fastest.url;
+  } catch (err) {
+    // Fallback single fetch jika Promise.any gagal
+    try {
+      const res = await fetch(urlObj.href, {
+        redirect: 'follow',
+        headers: {
+          'User-Agent': 'WhatsApp/2.21.12.21 A',
+          Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept-Language': 'id-ID,id;q=0.9',
+        },
+        signal: AbortSignal.timeout(8000),
+      });
+      if (res.ok) {
+        html = await res.text();
+        finalUrl = res.url || urlObj.href;
+      }
+    } catch (e2) {
+      console.warn('[FastScraper] Fetch warning (proceeding with fallback):', e2);
+    }
+  }
 
   let extractedTitle = '';
   let extractedDesc = '';
@@ -275,32 +324,29 @@ export async function scrapeArticleFast(targetUrl: string): Promise<FastScrapedA
   }
 
   // 3. Fallback Meta Tags (og:title, og:image, twitter:image, meta description)
-  const ogTitleMatch = html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i)
-    || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:title["']/i);
+  const ogTitle = extractMetaTag(html, 'og:title');
+  const twitterTitle = extractMetaTag(html, 'twitter:title');
   const titleTagMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
 
-  const ogImageMatch = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i)
-    || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
-  const twitterImageMatch = html.match(/<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i);
+  const ogImage = extractMetaTag(html, 'og:image');
+  const twitterImage = extractMetaTag(html, 'twitter:image');
 
-  const ogDescMatch = html.match(/<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i)
-    || html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i);
+  const ogDesc = extractMetaTag(html, 'og:description');
+  const metaDesc = extractMetaTag(html, 'description');
+  const ogSiteName = extractMetaTag(html, 'og:site_name');
 
-  const ogSiteMatch = html.match(/<meta[^>]+property=["']og:site_name["'][^>]+content=["']([^"']+)["']/i);
-
-  // Tambahkan og:image & twitter:image ke daftar gambar
-  const primaryImg = ogImageMatch?.[1] || twitterImageMatch?.[1] || null;
+  const primaryImg = ogImage || twitterImage || null;
   if (primaryImg) {
     try {
       const resolved = new URL(primaryImg, urlObj.origin).href;
       if (!productImages.includes(resolved)) {
-        productImages.unshift(resolved); // Letakkan di urutan pertama (Cover)
+        productImages.unshift(resolved);
       }
     } catch {}
   }
 
-  // Ekstrak tag <img> lainnya
-  if (html) {
+  // Ekstrak tag <img> lainnya jika daftar gambar masih kosong
+  if (html && productImages.length === 0) {
     const imgMatches = html.matchAll(/<img[^>]+src=["']([^"']+)["'][^>]*>/gi);
     for (const match of imgMatches) {
       const src = match[1];
@@ -323,22 +369,44 @@ export async function scrapeArticleFast(targetUrl: string): Promise<FastScrapedA
   }
 
   // 4. Resolve Judul Akhir
-  let title = extractedTitle || (ogTitleMatch?.[1] || titleTagMatch?.[1] || '').trim();
+  let title = extractedTitle || ogTitle || twitterTitle || titleTagMatch?.[1] || '';
+  title = title
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .trim();
+  if (title.startsWith('Jual ')) title = title.replace(/^Jual\s+/, '');
   if (title.includes(' | ')) title = title.split(' | ')[0].trim();
   if (title.includes(' - ')) title = title.split(' - ')[0].trim();
 
-  // Jika title kosong, gunakan URL slug
-  if (!title) {
+  // Jika title kosong atau cuma nama platform, gunakan URL slug
+  if (!title || title.toLowerCase() === 'shopee' || title.toLowerCase() === 'tokopedia') {
     const segments = urlObj.pathname.split('/').filter(Boolean);
     const last = segments.pop() || domain;
-    title = decodeURIComponent(last).replace(/[-_]/g, ' ');
+    title = decodeURIComponent(last).replace(/[-_]/g, ' ').replace(/\bi\.\d+\.\d+\b/g, '').trim();
     title = title.charAt(0).toUpperCase() + title.slice(1);
   }
 
   // 5. Ekstraksi Paragraf Teks Deskripsi
-  let paragraphs: string[] = [];
-  if (extractedDesc) {
-    paragraphs.push(extractedDesc);
+  const paragraphs: string[] = [];
+  if (extractedDesc) paragraphs.push(extractedDesc);
+  if (ogDesc) {
+    const cleanOgDesc = ogDesc
+      .replace(/&amp;/g, '&')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .trim();
+    if (!paragraphs.includes(cleanOgDesc)) paragraphs.push(cleanOgDesc);
+  }
+  if (metaDesc) {
+    const cleanMetaDesc = metaDesc
+      .replace(/&amp;/g, '&')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .trim();
+    if (!paragraphs.includes(cleanMetaDesc)) paragraphs.push(cleanMetaDesc);
   }
 
   if (html) {
@@ -353,16 +421,20 @@ export async function scrapeArticleFast(targetUrl: string): Promise<FastScrapedA
     for (const match of pMatches) {
       const text = match[1].replace(/&[a-z]+;/gi, ' ').replace(/\s+/g, ' ').trim();
       if (text.length > 30 && !text.toLowerCase().includes('baca juga') && !text.toLowerCase().includes('copyright')) {
-        paragraphs.push(text);
+        if (!paragraphs.includes(text)) paragraphs.push(text);
       }
     }
   }
 
-  if (paragraphs.length === 0 && ogDescMatch?.[1]) {
-    paragraphs.push(ogDescMatch[1].trim());
+  // Coba cari harga di teks deskripsi jika belum dapat
+  if (!extractedPrice && paragraphs.length > 0) {
+    const fullText = paragraphs.join(' ');
+    const priceMatch = fullText.match(/(?:Rp\s*|IDR\s*)([0-9.,]+)/i);
+    if (priceMatch?.[1]) {
+      extractedPrice = 'Rp ' + priceMatch[1];
+    }
   }
 
-  // 6. Susun format konten kaya untuk Gemini AI
   const platformName = isShopee
     ? 'Shopee Indonesia'
     : isTokopedia
@@ -371,7 +443,7 @@ export async function scrapeArticleFast(targetUrl: string): Promise<FastScrapedA
     ? 'TikTok Shop'
     : isLazada
     ? 'Lazada'
-    : ogSiteMatch?.[1] || domain.toUpperCase();
+    : ogSiteName || domain.toUpperCase();
 
   let formattedContent = '';
   if (isMarketplace) {
@@ -380,7 +452,7 @@ export async function scrapeArticleFast(targetUrl: string): Promise<FastScrapedA
       `PLATFORM: ${platformName}\n` +
       `URL PRODUK: ${urlObj.href}\n\n` +
       `DESKRIPSI PRODUK & FITUR KEUNGGULAN:\n` +
-      (paragraphs.length > 0 ? paragraphs.slice(0, 8).join('\n\n') : 'Produk berkualitas tinggi siap dipesan.') +
+      (paragraphs.length > 0 ? paragraphs.slice(0, 8).join('\n\n') : 'Produk original berkualitas tinggi siap dipesan.') +
       `\n\nFOTO PRODUK TERSEDIA: Ditemukan ${productImages.length} foto produk asli untuk slide carousel.\n` +
       `INSTRUKSI AI: Buatlah naskah promosi / review produk yang memikat, sebutkan keunggulan spesifik produk, buat hook penasaran, dan sertakan CTA jelas untuk order.`;
   } else {
