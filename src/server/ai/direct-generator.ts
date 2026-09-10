@@ -471,12 +471,13 @@ Kembalikan HANYA format JSON valid berikut:
       ? 'OUTRO'
       : activePattern[(idx - 1) % activePattern.length];
 
-    // SETIAP slide selalu mendapatkan foto unik, berkualitas dan kontekstual!
+    // SETIAP slide selalu mendapatkan foto produk asli (jika dari marketplace/link) atau foto kontekstual!
     let photoUrl: string | null = null;
     if (isCover && (articleImages[0] || articleImageUrl)) {
       photoUrl = articleImages[0] || articleImageUrl;
-    } else if (articleImages.length > idx && articleImages[idx]) {
-      photoUrl = articleImages[idx];
+    } else if (articleImages.length > 0) {
+      // Jika dari link produk / marketplace, gunakan foto-foto produk asli secara berurutan untuk setiap slide!
+      photoUrl = articleImages[idx % articleImages.length];
     } else {
       photoUrl = getContextualPhotoForSlide(
         detectedCategory,
