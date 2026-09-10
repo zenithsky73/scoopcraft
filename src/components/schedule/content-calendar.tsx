@@ -36,6 +36,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CampaignModal } from '@/components/campaign/campaign-modal';
+import { ConnectAccountModal } from '@/components/schedule/connect-account-modal';
 import { notify } from '@/lib/notify';
 import { cn } from '@/lib/utils';
 import type { SocialPlatform, ScheduleStatus, DesignStyle } from '@prisma/client';
@@ -186,6 +187,9 @@ export function ContentCalendar({
   const [showCreateModal, setShowCreateModal] = React.useState(false);
   const [showEditModal, setShowEditModal] = React.useState(false);
   const [selectedPostToEdit, setSelectedPostToEdit] = React.useState<ScheduledPostItem | null>(null);
+  const [accountsList, setAccountsList] = React.useState<SocialAccountItem[]>(socialAccounts);
+  const [showConnectModal, setShowConnectModal] = React.useState(false);
+  const [connectDefaultPlatform, setConnectDefaultPlatform] = React.useState<SocialPlatform>('INSTAGRAM');
   
   // Create Modal Form State
   const [formDate, setFormDate] = React.useState<string>(new Date().toISOString().split('T')[0]);
@@ -215,7 +219,20 @@ export function ContentCalendar({
   const [editCaption, setEditCaption] = React.useState<string>('');
   const [isSubmittingEdit, setIsSubmittingEdit] = React.useState(false);
 
+  const fetchAccounts = async () => {
+    try {
+      const res = await fetch('/api/social-accounts');
+      if (res.ok) {
+        const data = await res.json();
+        setAccountsList(data.accounts || []);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const fetchPosts = async () => {
+    fetchAccounts();
     setIsLoading(true);
     try {
       const res = await fetch('/api/schedule');
@@ -714,6 +731,47 @@ export function ContentCalendar({
         </div>
       </div>
 
+      {/* ─── 1.5. CONNECTED ACCOUNTS STATUS BAR ─── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 sm:px-4.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-1.5 text-xs font-black text-slate-800 dark:text-slate-200">
+            <Share2 className="size-4 text-[#ff4526]" />
+            <span>Akun Medsos Terhubung ({accountsList.length}):</span>
+          </div>
+
+          {accountsList.length === 0 ? (
+            <span className="text-xs text-slate-500 italic">
+              Belum ada akun terhubung (Instagram / TikTok / Threads).
+            </span>
+          ) : (
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {accountsList.map((acc) => (
+                <div
+                  key={acc.id}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-900 dark:text-white"
+                >
+                  {getPlatformIcon(acc.platform, "size-3.5")}
+                  <span>{acc.accountHandle || acc.accountName}</span>
+                  <span className="size-1.5 rounded-full bg-emerald-500 inline-block ml-0.5" />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <Button
+          size="sm"
+          onClick={() => {
+            setConnectDefaultPlatform('INSTAGRAM');
+            setShowConnectModal(true);
+          }}
+          className="h-8 px-3 text-xs font-bold rounded-xl bg-gradient-to-r from-[#ff4526] to-amber-500 hover:opacity-95 text-white shadow-sm shrink-0 self-start sm:self-auto"
+        >
+          <Plus className="size-3.5 mr-1" />
+          + Hubungkan Akun Medsos
+        </Button>
+      </div>
+
       {/* ─── 2. FILTER CHIPS (PLATFORM & STATUS) ─── */}
       <div className="flex items-center justify-between gap-3 overflow-x-auto pb-1 text-xs">
         {/* Platform filter */}
@@ -1174,24 +1232,45 @@ export function ContentCalendar({
                 ))}
               </div>
 
-              {/* Pilih Platform */}
-              <div>
-                <label className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-1.5 block">
-                  Platform Tujuan
-                </label>
+              {/* Pilih Platform & Akun */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                    Platform Tujuan
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setConnectDefaultPlatform(formPlatform);
+                      setShowConnectModal(true);
+                    }}
+                    className="text-[11px] font-bold text-[#ff4526] hover:underline flex items-center gap-1"
+                  >
+                    <Plus className="size-3" /> + Hubungkan Akun {formPlatform}
+                  </button>
+                </div>
+
                 <div className="grid grid-cols-3 gap-2">
-                  {(['INSTAGRAM', 'FACEBOOK', 'THREADS'] as const).map((plt) => {
+                  {(['INSTAGRAM', 'TIKTOK', 'THREADS'] as const).map((plt) => {
                     const isSelected = formPlatform === plt;
                     return (
                       <button
                         key={plt}
                         type="button"
-                        onClick={() => setFormPlatform(plt)}
+                        onClick={() => {
+                          setFormPlatform(plt);
+                          const matchingAcc = accountsList.find((a) => a.platform === plt);
+                          if (matchingAcc) {
+                            setFormSocialAccountId(matchingAcc.id);
+                          } else {
+                            setFormSocialAccountId('');
+                          }
+                        }}
                         className={cn(
                           'flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border text-xs font-bold transition-all',
                           isSelected
-                            ? 'border-primary bg-orange-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 ring-2 ring-primary/20'
-                            : 'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'
+                            ? 'border-[#ff4526] bg-orange-50/60 dark:bg-orange-950/40 text-[#ff4526] ring-2 ring-[#ff4526]/20 shadow-sm'
+                            : 'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50'
                         )}
                       >
                         {getPlatformIcon(plt, "size-3.5")}
@@ -1200,6 +1279,52 @@ export function ContentCalendar({
                     );
                   })}
                 </div>
+
+                {/* Dropdown Akun Pengirim */}
+                {(() => {
+                  const platformAccounts = accountsList.filter((a) => a.platform === formPlatform);
+                  if (platformAccounts.length === 0) {
+                    return (
+                      <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 text-amber-900 dark:text-amber-300 text-xs flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-1.5">
+                          <AlertCircle className="size-4 shrink-0 text-amber-600" />
+                          <span>Belum ada akun <strong>{formPlatform}</strong> yang terhubung.</span>
+                        </div>
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => {
+                            setConnectDefaultPlatform(formPlatform);
+                            setShowConnectModal(true);
+                          }}
+                          className="h-7 text-[10px] font-bold rounded-lg bg-[#ff4526] text-white shrink-0"
+                        >
+                          + Hubungkan
+                        </Button>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">
+                        Pilih Akun {formPlatform} Pengirim:
+                      </label>
+                      <select
+                        value={formSocialAccountId}
+                        onChange={(e) => setFormSocialAccountId(e.target.value)}
+                        className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#ff4526]"
+                      >
+                        <option value="">-- Gunakan Akun Default Repliz Gold --</option>
+                        {platformAccounts.map((acc) => (
+                          <option key={acc.id} value={acc.id}>
+                            {acc.accountHandle || acc.accountName} ({acc.accountName})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* ─── TAB SUMBER KONTEN: AI GENERATE DARI LINK/PROMPT vs RIWAYAT vs MANUAL ─── */}
@@ -1718,6 +1843,19 @@ export function ContentCalendar({
         open={showCampaignModal}
         onClose={() => setShowCampaignModal(false)}
         onCampaignSuccess={fetchPosts}
+      />
+
+      {/* ─── 7. CONNECT SOCIAL ACCOUNT MODAL ─── */}
+      <ConnectAccountModal
+        isOpen={showConnectModal}
+        onClose={() => setShowConnectModal(false)}
+        defaultPlatform={connectDefaultPlatform}
+        onAccountConnected={(newAcc) => {
+          setAccountsList((prev) => [newAcc, ...prev.filter((a) => a.id !== newAcc.id)]);
+          if (newAcc.platform === formPlatform) {
+            setFormSocialAccountId(newAcc.id);
+          }
+        }}
       />
     </div>
   );

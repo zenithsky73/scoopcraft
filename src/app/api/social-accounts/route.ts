@@ -7,9 +7,10 @@ import type { SocialPlatform } from '@prisma/client';
 export const runtime = 'nodejs';
 
 const connectSchema = z.object({
-  platform: z.enum(['INSTAGRAM', 'LINKEDIN', 'FACEBOOK', 'THREADS', 'PINTEREST', 'TELEGRAM']),
-  accountName: z.string().min(1),
-  accountHandle: z.string().optional(),
+  platform: z.enum(['INSTAGRAM', 'TIKTOK', 'THREADS', 'LINKEDIN', 'FACEBOOK', 'PINTEREST', 'TELEGRAM']),
+  accountName: z.string().min(1, 'Nama akun wajib diisi'),
+  accountHandle: z.string().min(1, 'Username/handle wajib diisi'),
+  avatarUrl: z.string().optional(),
   accessToken: z.string().optional(),
   externalId: z.string().optional(),
   isDemo: z.boolean().default(false),
@@ -46,11 +47,16 @@ export async function POST(req: Request) {
     const body = await req.json();
     const validated = connectSchema.parse(body);
 
+    let cleanHandle = validated.accountHandle.trim();
+    if (!cleanHandle.startsWith('@')) {
+      cleanHandle = `@${cleanHandle}`;
+    }
+
     const token = validated.isDemo
       ? 'demo_token'
-      : validated.accessToken || 'demo_token';
+      : validated.accessToken || 'repliz_gold_token';
 
-    const uniqueExternalId = validated.externalId?.trim() || `acc_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    const uniqueExternalId = validated.externalId?.trim() || `repliz_${validated.platform.toLowerCase()}_${cleanHandle.replace('@', '')}_${viewer.user.id.substring(0, 6)}`;
 
     const account = await db.socialAccount.upsert({
       where: {
@@ -61,19 +67,33 @@ export async function POST(req: Request) {
         },
       },
       update: {
-        accountName: validated.accountName,
-        accountHandle: validated.accountHandle,
+        accountName: validated.accountName.trim(),
+        accountHandle: cleanHandle,
+        avatarUrl: validated.avatarUrl || null,
         accessToken: token,
         isConnected: true,
+        metadata: {
+          replizLinked: true,
+          handle: cleanHandle,
+          platform: validated.platform,
+          connectedAt: new Date().toISOString(),
+        },
       },
       create: {
         userId: viewer.user.id,
         platform: validated.platform as SocialPlatform,
-        accountName: validated.accountName,
-        accountHandle: validated.accountHandle,
+        accountName: validated.accountName.trim(),
+        accountHandle: cleanHandle,
+        avatarUrl: validated.avatarUrl || null,
         accessToken: token,
         externalId: uniqueExternalId,
         isConnected: true,
+        metadata: {
+          replizLinked: true,
+          handle: cleanHandle,
+          platform: validated.platform,
+          connectedAt: new Date().toISOString(),
+        },
       },
     });
 

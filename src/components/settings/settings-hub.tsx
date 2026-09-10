@@ -34,6 +34,8 @@ import { Button } from '@/components/ui/button';
 import { cn, formatDate } from '@/lib/utils';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
 import { notify } from '@/lib/notify';
+import { ConnectAccountModal } from '@/components/schedule/connect-account-modal';
+import type { SocialPlatform } from '@prisma/client';
 
 interface SettingsHubProps {
   user: {
@@ -88,6 +90,8 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
   // Social Accounts State
   const [socialAccounts, setSocialAccounts] = React.useState<any[]>([]);
   const [socialLoading, setSocialLoading] = React.useState(false);
+  const [showConnectModal, setShowConnectModal] = React.useState(false);
+  const [connectPlatform, setConnectPlatform] = React.useState<SocialPlatform>('INSTAGRAM');
 
   const fetchSocialAccounts = React.useCallback(async () => {
     try {
@@ -856,102 +860,105 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
               </Link>
             </div>
 
-            {/* Quick Connect Actions: 3 Dedicated Cards (Instagram, Facebook, Threads) */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+            {/* Quick Connect Actions: 3 Dedicated Cards (Instagram, TikTok, Threads) */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 mb-6">
               {/* 1. INSTAGRAM */}
-              <div className="p-4 rounded-2xl border border-pink-200 dark:border-pink-900/50 bg-pink-50/40 dark:bg-pink-950/20 flex flex-col justify-between">
+              <div className="p-4.5 rounded-2xl border border-pink-200 dark:border-pink-900/50 bg-pink-50/30 dark:bg-pink-950/20 flex flex-col justify-between shadow-sm">
                 <div className="space-y-2 mb-3">
                   <div className="flex items-center justify-between">
-                    <div className="p-2 rounded-xl bg-gradient-to-tr from-pink-500 via-purple-600 to-indigo-600 text-white shadow-sm">
-                      <Instagram className="size-4" />
+                    <div className="size-9 rounded-xl bg-gradient-to-tr from-pink-500 via-purple-600 to-orange-500 text-white flex items-center justify-center shadow-md shadow-pink-500/20">
+                      <Instagram className="size-4.5" />
                     </div>
-                    <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-pink-100 dark:bg-pink-950 text-pink-700 dark:text-pink-300">
-                      Instagram
+                    <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-pink-100 dark:bg-pink-950 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-900">
+                      Instagram Pro
                     </span>
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">Instagram Pro</h4>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">
-                      Posting carousel foto &amp; cover ke feed akun Bisnis / Kreator Anda.
+                    <h4 className="text-xs font-black text-slate-900 dark:text-white">Instagram Feed</h4>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
+                      Posting carousel foto slide &amp; cover produk ke feed akun Instagram Anda.
                     </p>
                   </div>
                 </div>
-                <div className="space-y-1.5">
+                <div>
                   <Button
                     type="button"
                     size="sm"
                     onClick={() => {
-                      window.location.href = '/api/social-accounts/oauth/instagram';
+                      setConnectPlatform('INSTAGRAM');
+                      setShowConnectModal(true);
                     }}
-                    className="w-full text-xs font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:opacity-95 text-white shadow-sm"
+                    className="w-full text-xs font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-orange-500 hover:opacity-95 text-white rounded-xl shadow-sm"
                   >
-                    <Instagram className="size-3.5 mr-1" />
+                    <Plus className="size-3.5 mr-1" />
                     Hubungkan Instagram
                   </Button>
                 </div>
               </div>
 
-              {/* 2. FACEBOOK */}
-              <div className="p-4 rounded-2xl border border-blue-200 dark:border-blue-900/50 bg-blue-50/40 dark:bg-blue-950/20 flex flex-col justify-between">
+              {/* 2. TIKTOK */}
+              <div className="p-4.5 rounded-2xl border border-cyan-200 dark:border-cyan-900/50 bg-cyan-50/30 dark:bg-cyan-950/20 flex flex-col justify-between shadow-sm">
                 <div className="space-y-2 mb-3">
                   <div className="flex items-center justify-between">
-                    <div className="p-2 rounded-xl bg-blue-600 text-white shadow-sm">
-                      <Facebook className="size-4" />
+                    <div className="size-9 rounded-xl bg-slate-950 text-cyan-300 border border-slate-700 flex items-center justify-center shadow-md">
+                      <Sparkles className="size-4.5" />
                     </div>
-                    <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
-                      Facebook
+                    <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-900">
+                      TikTok Studio
                     </span>
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">Facebook Page</h4>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">
-                      Posting album slide &amp; update status ke Halaman Facebook Anda.
+                    <h4 className="text-xs font-black text-slate-900 dark:text-white">TikTok Carousel</h4>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
+                      Posting photo carousel affiliate &amp; rekomendasi produk viral ke feed TikTok.
                     </p>
                   </div>
                 </div>
-                <div className="space-y-1.5">
+                <div>
                   <Button
                     type="button"
                     size="sm"
                     onClick={() => {
-                      window.location.href = '/api/social-accounts/oauth/facebook';
+                      setConnectPlatform('TIKTOK');
+                      setShowConnectModal(true);
                     }}
-                    className="w-full text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-sm"
+                    className="w-full text-xs font-bold bg-slate-950 hover:bg-slate-900 text-cyan-300 border border-cyan-500/30 rounded-xl shadow-sm"
                   >
-                    <Facebook className="size-3.5 mr-1" />
-                    Hubungkan Facebook
+                    <Plus className="size-3.5 mr-1" />
+                    Hubungkan TikTok
                   </Button>
                 </div>
               </div>
 
               {/* 3. THREADS */}
-              <div className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/40 flex flex-col justify-between">
+              <div className="p-4.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/40 flex flex-col justify-between shadow-sm">
                 <div className="space-y-2 mb-3">
                   <div className="flex items-center justify-between">
-                    <div className="p-2 rounded-xl bg-black text-white shadow-sm">
-                      <AtSign className="size-4" />
+                    <div className="size-9 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center shadow-md">
+                      <AtSign className="size-4.5" />
                     </div>
-                    <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200">
-                      Threads
+                    <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700">
+                      Threads Meta
                     </span>
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">Threads Meta</h4>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">
-                      Posting teks utas berita &amp; carousel microblog ke Threads.
+                    <h4 className="text-xs font-black text-slate-900 dark:text-white">Threads Utas</h4>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
+                      Posting carousel microblog &amp; teks utas insight ke akun Threads resmi Anda.
                     </p>
                   </div>
                 </div>
-                <div className="space-y-1.5">
+                <div>
                   <Button
                     type="button"
                     size="sm"
                     onClick={() => {
-                      window.location.href = '/api/social-accounts/oauth/threads';
+                      setConnectPlatform('THREADS');
+                      setShowConnectModal(true);
                     }}
-                    className="w-full text-xs font-bold bg-black hover:bg-neutral-800 text-white shadow-sm"
+                    className="w-full text-xs font-bold bg-slate-900 dark:bg-white dark:text-slate-900 hover:bg-slate-800 text-white rounded-xl shadow-sm"
                   >
-                    <AtSign className="size-3.5 mr-1" />
+                    <Plus className="size-3.5 mr-1" />
                     Hubungkan Threads
                   </Button>
                 </div>
@@ -978,8 +985,8 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                         <div className="p-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
                           {acc.platform === 'INSTAGRAM' ? (
                             <Instagram className="size-4 text-pink-500" />
-                          ) : acc.platform === 'FACEBOOK' ? (
-                            <Facebook className="size-4 text-blue-600" />
+                          ) : acc.platform === 'TIKTOK' ? (
+                            <Sparkles className="size-4 text-cyan-400" />
                           ) : acc.platform === 'THREADS' ? (
                             <AtSign className="size-4 text-slate-900 dark:text-white" />
                           ) : (
@@ -1016,6 +1023,15 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
           </div>
         </div>
       )}
+      {/* Connect Social Account Modal */}
+      <ConnectAccountModal
+        isOpen={showConnectModal}
+        onClose={() => setShowConnectModal(false)}
+        defaultPlatform={connectPlatform}
+        onAccountConnected={() => {
+          fetchSocialAccounts();
+        }}
+      />
     </div>
   );
 }
