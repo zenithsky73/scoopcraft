@@ -176,7 +176,7 @@ export function ContentCalendar({
   const [currentDate, setCurrentDate] = React.useState<Date>(new Date());
   const [viewMode, setViewMode] = React.useState<ViewMode>('WEEK');
   const [statusFilter, setStatusFilter] = React.useState<'ALL' | 'PENDING' | 'PUBLISHED' | 'FAILED'>('ALL');
-  const [platformFilter, setPlatformFilter] = React.useState<'ALL' | 'INSTAGRAM' | 'FACEBOOK' | 'THREADS'>('ALL');
+  const [platformFilter, setPlatformFilter] = React.useState<'ALL' | 'INSTAGRAM' | 'TIKTOK' | 'THREADS'>('ALL');
   
   const [isLoading, setIsLoading] = React.useState(false);
   const [actionLoadingId, setActionLoadingId] = React.useState<string | null>(null);
@@ -573,12 +573,12 @@ export function ContentCalendar({
     switch (platform) {
       case 'INSTAGRAM':
         return <Instagram className={cn(className, "text-pink-500")} />;
-      case 'FACEBOOK':
-        return <Facebook className={cn(className, "text-blue-600")} />;
+      case 'TIKTOK':
+        return <Sparkles className={cn(className, "text-cyan-400")} />;
       case 'THREADS':
         return <AtSign className={cn(className, "text-slate-900 dark:text-white")} />;
       default:
-        return <Share2 className={cn(className, "text-indigo-500")} />;
+        return <Share2 className={cn(className, "text-primary")} />;
     }
   };
 
@@ -639,7 +639,7 @@ export function ContentCalendar({
           </div>
 
           <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white capitalize tracking-tight flex items-center gap-2">
-            <CalendarIcon className="size-4 text-indigo-500" />
+            <CalendarIcon className="size-4 text-primary" />
             <span>{monthYearLabel}</span>
           </h2>
         </div>
@@ -706,7 +706,7 @@ export function ContentCalendar({
               setAiPromptOrUrl('');
               setShowCreateModal(true);
             }}
-            className="h-9 text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-sm"
+            className="h-9 text-xs font-bold bg-primary hover:bg-primary/90 text-white rounded-xl shadow-sm"
           >
             <Plus className="size-3.5 mr-1" />
             + Jadwalkan Post
@@ -721,7 +721,7 @@ export function ContentCalendar({
           <span className="text-[11px] font-bold text-slate-400 mr-1 flex items-center gap-1">
             <SlidersHorizontal className="size-3" /> Platform:
           </span>
-          {(['ALL', 'INSTAGRAM', 'FACEBOOK', 'THREADS'] as const).map((p) => (
+          {(['ALL', 'INSTAGRAM', 'TIKTOK', 'THREADS'] as const).map((p) => (
             <button
               key={p}
               onClick={() => setPlatformFilter(p)}
@@ -733,7 +733,7 @@ export function ContentCalendar({
               )}
             >
               {p === 'INSTAGRAM' && <Instagram className="size-3 text-pink-500" />}
-              {p === 'FACEBOOK' && <Facebook className="size-3 text-blue-600" />}
+              {p === 'TIKTOK' && <Sparkles className="size-3 text-cyan-400" />}
               {p === 'THREADS' && <AtSign className="size-3 text-slate-800 dark:text-white" />}
               <span>{p === 'ALL' ? 'Semua Platform' : p}</span>
             </button>
@@ -749,7 +749,7 @@ export function ContentCalendar({
               className={cn(
                 'px-2.5 py-1 rounded-lg font-bold transition-all border',
                 statusFilter === st
-                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                  ? 'bg-primary text-white border-primary shadow-sm'
                   : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:bg-slate-50'
               )}
             >
@@ -775,7 +775,7 @@ export function ContentCalendar({
                 className={cn(
                   'rounded-2xl border flex flex-col min-h-[500px] transition-all',
                   isDayToday
-                    ? 'border-indigo-500/80 bg-indigo-50/20 dark:bg-indigo-950/20 shadow-md ring-1 ring-indigo-500/30'
+                    ? 'border-primary/80 bg-orange-50/20 dark:bg-indigo-950/20 shadow-md ring-1 ring-primary/30'
                     : 'border-slate-200 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/40'
                 )}
               >
@@ -789,7 +789,7 @@ export function ContentCalendar({
                       className={cn(
                         'text-xs font-black px-1.5 py-0.2 rounded-md',
                         isDayToday
-                          ? 'bg-indigo-600 text-white'
+                          ? 'bg-primary text-white'
                           : 'text-slate-500 dark:text-slate-400'
                       )}
                     >
@@ -802,7 +802,7 @@ export function ContentCalendar({
 
                   <button
                     onClick={() => openCreateForDate(day)}
-                    className="p-1 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-slate-800 transition-colors"
+                    className="p-1 rounded-lg text-slate-400 hover:text-primary hover:bg-orange-50 dark:hover:bg-slate-800 transition-colors"
                     title={`Tambah jadwal untuk ${dayName} ${dayNum}`}
                   >
                     <Plus className="size-3.5" />
@@ -814,9 +814,9 @@ export function ContentCalendar({
                   {dayPosts.length === 0 ? (
                     <div
                       onClick={() => openCreateForDate(day)}
-                      className="h-32 rounded-xl border border-dashed border-slate-200 dark:border-slate-800/80 flex flex-col items-center justify-center text-center p-3 text-slate-400 hover:border-indigo-400 hover:bg-white dark:hover:bg-slate-900 cursor-pointer transition-all group"
+                      className="h-32 rounded-xl border border-dashed border-slate-200 dark:border-slate-800/80 flex flex-col items-center justify-center text-center p-3 text-slate-400 hover:border-primary hover:bg-white dark:hover:bg-slate-900 cursor-pointer transition-all group"
                     >
-                      <Plus className="size-4 mb-1 text-slate-300 group-hover:text-indigo-500 group-hover:scale-110 transition-all" />
+                      <Plus className="size-4 mb-1 text-slate-300 group-hover:text-primary group-hover:scale-110 transition-all" />
                       <span className="text-[10px] font-bold text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300">
                         + Tambah Post
                       </span>
@@ -830,7 +830,7 @@ export function ContentCalendar({
                         <div
                           key={post.id}
                           onClick={() => openEditPost(post)}
-                          className="group relative rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md hover:border-indigo-400 dark:hover:border-indigo-600 transition-all cursor-pointer overflow-hidden flex flex-col"
+                          className="group relative rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md hover:border-primary dark:hover:border-primary transition-all cursor-pointer overflow-hidden flex flex-col"
                         >
                           {/* Card Top: Platform & Handle */}
                           <div className="p-2.5 pb-1.5 flex items-center justify-between border-b border-slate-100 dark:border-slate-800/60 bg-slate-50/60 dark:bg-slate-950/40">
@@ -878,7 +878,7 @@ export function ContentCalendar({
                             {/* Card Footer: Status & Time */}
                             <div className="flex items-center justify-between pt-1.5 border-t border-slate-100 dark:border-slate-800/80 text-[10px]">
                               <div className="flex items-center gap-1 text-slate-500 dark:text-slate-400 font-mono font-bold">
-                                <Clock className="size-3 text-indigo-500" />
+                                <Clock className="size-3 text-primary" />
                                 <span>{formatPostTime(post.scheduledAt)}</span>
                               </div>
 
@@ -943,7 +943,7 @@ export function ContentCalendar({
                   className={cn(
                     'min-h-[110px] p-2 flex flex-col justify-between transition-colors cursor-pointer group hover:bg-slate-50 dark:hover:bg-slate-800/40',
                     !isCurrentMonth && 'opacity-40 bg-slate-50/50 dark:bg-slate-950/20',
-                    isDayToday && 'bg-indigo-50/40 dark:bg-indigo-950/30'
+                    isDayToday && 'bg-orange-50/40 dark:bg-indigo-950/30'
                   )}
                 >
                   <div className="flex items-center justify-between">
@@ -951,7 +951,7 @@ export function ContentCalendar({
                       className={cn(
                         'size-6 flex items-center justify-center rounded-full text-xs font-black',
                         isDayToday
-                          ? 'bg-indigo-600 text-white'
+                          ? 'bg-primary text-white'
                           : 'text-slate-700 dark:text-slate-300'
                       )}
                     >
@@ -974,7 +974,7 @@ export function ContentCalendar({
                           e.stopPropagation();
                           openEditPost(post);
                         }}
-                        className="px-1.5 py-1 rounded-md text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 truncate flex items-center gap-1 hover:ring-1 hover:ring-indigo-500"
+                        className="px-1.5 py-1 rounded-md text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 truncate flex items-center gap-1 hover:ring-1 hover:ring-primary"
                       >
                         {getPlatformIcon(post.platform, "size-2.5")}
                         <span className="truncate">{post.generatedContent?.headline || post.caption}</span>
@@ -1024,7 +1024,7 @@ export function ContentCalendar({
                       </div>
 
                       <div className="rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-100 dark:border-slate-800/80 px-2.5 py-1.5 flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 mb-2.5">
-                        <Clock className="size-3.5 text-indigo-500 shrink-0" />
+                        <Clock className="size-3.5 text-primary shrink-0" />
                         <span className="font-semibold">
                           {new Date(post.scheduledAt).toLocaleDateString('id-ID', {
                             weekday: 'short',
@@ -1064,7 +1064,7 @@ export function ContentCalendar({
                             size="sm"
                             disabled={isProcessing}
                             onClick={() => handlePublishNow(post.id)}
-                            className="text-xs h-8 px-3 font-bold bg-indigo-600 text-white"
+                            className="text-xs h-8 px-3 font-bold bg-primary text-white"
                           >
                             <Zap className="size-3 mr-1" />
                             Terbitkan
@@ -1122,7 +1122,7 @@ export function ContentCalendar({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-1 flex items-center gap-1">
-                    <CalendarIcon className="size-3.5 text-indigo-500" />
+                    <CalendarIcon className="size-3.5 text-primary" />
                     <span>Tanggal Publikasi *</span>
                   </label>
                   <input
@@ -1136,7 +1136,7 @@ export function ContentCalendar({
 
                 <div>
                   <label className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-1 flex items-center gap-1">
-                    <Clock className="size-3.5 text-indigo-500" />
+                    <Clock className="size-3.5 text-primary" />
                     <span>Jam Publikasi *</span>
                   </label>
                   <input
@@ -1165,7 +1165,7 @@ export function ContentCalendar({
                     className={cn(
                       'px-2 py-0.5 rounded-lg text-[10px] font-bold transition-all border',
                       formTime === chip.time
-                        ? 'bg-indigo-600 text-white border-indigo-600'
+                        ? 'bg-primary text-white border-primary'
                         : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'
                     )}
                   >
@@ -1190,7 +1190,7 @@ export function ContentCalendar({
                         className={cn(
                           'flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border text-xs font-bold transition-all',
                           isSelected
-                            ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 ring-2 ring-indigo-500/20'
+                            ? 'border-primary bg-orange-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 ring-2 ring-primary/20'
                             : 'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'
                         )}
                       >
@@ -1206,7 +1206,7 @@ export function ContentCalendar({
               <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5">
-                    <Wand2 className="size-3.5 text-indigo-500" />
+                    <Wand2 className="size-3.5 text-primary" />
                     <span>Sumber Konten Carousel</span>
                   </label>
                 </div>
@@ -1219,7 +1219,7 @@ export function ContentCalendar({
                     className={cn(
                       'py-1.5 px-2 rounded-lg text-[11px] font-bold transition-all flex items-center justify-center gap-1',
                       contentSourceMode === 'AI_GENERATE'
-                        ? 'bg-indigo-600 text-white shadow-sm'
+                        ? 'bg-primary text-white shadow-sm'
                         : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
                     )}
                   >
@@ -1233,7 +1233,7 @@ export function ContentCalendar({
                     className={cn(
                       'py-1.5 px-2 rounded-lg text-[11px] font-bold transition-all flex items-center justify-center gap-1',
                       contentSourceMode === 'EXISTING'
-                        ? 'bg-indigo-600 text-white shadow-sm'
+                        ? 'bg-primary text-white shadow-sm'
                         : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
                     )}
                   >
@@ -1247,7 +1247,7 @@ export function ContentCalendar({
                     className={cn(
                       'py-1.5 px-2 rounded-lg text-[11px] font-bold transition-all flex items-center justify-center gap-1',
                       contentSourceMode === 'CUSTOM'
-                        ? 'bg-indigo-600 text-white shadow-sm'
+                        ? 'bg-primary text-white shadow-sm'
                         : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
                     )}
                   >
@@ -1258,7 +1258,7 @@ export function ContentCalendar({
 
                 {/* ─── KONTEN A: GENERATE OTOMATIS DARI LINK ARTIKEL ATAU PROMPT AI ─── */}
                 {contentSourceMode === 'AI_GENERATE' && (
-                  <div className="space-y-3 p-3.5 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-200/80 dark:border-indigo-900/50">
+                  <div className="space-y-3 p-3.5 rounded-2xl bg-orange-50/50 dark:bg-indigo-950/30 border border-indigo-200/80 dark:border-indigo-900/50">
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
@@ -1266,7 +1266,7 @@ export function ContentCalendar({
                         className={cn(
                           'px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all border',
                           aiInputType === 'PROMPT'
-                            ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                            ? 'bg-primary text-white border-primary shadow-sm'
                             : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800'
                         )}
                       >
@@ -1279,7 +1279,7 @@ export function ContentCalendar({
                         className={cn(
                           'px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all border',
                           aiInputType === 'URL'
-                            ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                            ? 'bg-primary text-white border-primary shadow-sm'
                             : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800'
                         )}
                       >
@@ -1293,7 +1293,7 @@ export function ContentCalendar({
                         <label className="text-xs font-bold text-slate-800 dark:text-slate-200">
                           1. Kategori / Niche Konten:
                         </label>
-                        <span className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 truncate max-w-[200px]">
+                        <span className="text-[11px] font-semibold text-primary dark:text-indigo-400 truncate max-w-[200px]">
                           {NICHE_PRESETS.find(n => n.id === aiNiche)?.desc}
                         </span>
                       </div>
@@ -1306,7 +1306,7 @@ export function ContentCalendar({
                           setAiNiche(e.target.value);
                           if (found) setAiSelectedStyle(found.defaultStyle);
                         }}
-                        className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-xs font-bold text-slate-900 dark:text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-2"
+                        className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-xs font-bold text-slate-900 dark:text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-primary mb-2"
                       >
                         {Array.from(new Set(NICHE_PRESETS.map(n => n.group))).map(groupName => (
                           <optgroup key={groupName} label={groupName} className="font-bold text-slate-500 dark:text-slate-400">
@@ -1347,7 +1347,7 @@ export function ContentCalendar({
                               className={cn(
                                 'shrink-0 px-2 py-1 rounded-lg text-[10px] font-bold transition-all border flex items-center gap-1',
                                 isSel
-                                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm ring-1 ring-indigo-500'
+                                  ? 'bg-primary text-white border-primary shadow-sm ring-1 ring-primary'
                                   : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-indigo-300'
                               )}
                             >
@@ -1363,7 +1363,7 @@ export function ContentCalendar({
                     <div>
                       <label className="text-[11px] font-bold text-slate-800 dark:text-slate-200 mb-1.5 flex items-center justify-between">
                         <span>2. Tipe / Pilar Konten:</span>
-                        <span className="text-[10px] font-normal text-indigo-600 dark:text-indigo-400">
+                        <span className="text-[10px] font-normal text-primary dark:text-indigo-400">
                           {CONTENT_TYPE_PRESETS.find(c => c.id === aiContentType)?.desc}
                         </span>
                       </label>
@@ -1421,7 +1421,7 @@ export function ContentCalendar({
                                         ? 'Contoh: Urutan skincare malam yang benar biar bangun tidur glowing'
                                         : 'Contoh: Masukkan ide atau topik konten yang ingin dibuat...'
                         }
-                        className="w-full rounded-xl border border-indigo-200 dark:border-indigo-900 bg-white dark:bg-slate-900 px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full rounded-xl border border-indigo-200 dark:border-indigo-900 bg-white dark:bg-slate-900 px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary"
                       />
                     </div>
 
@@ -1476,7 +1476,7 @@ export function ContentCalendar({
                               className={cn(
                                 'p-2 rounded-xl border flex items-center gap-2 cursor-pointer transition-all',
                                 isSelected
-                                  ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 ring-2 ring-indigo-500/20'
+                                  ? 'border-primary bg-orange-50 dark:bg-indigo-950/60 ring-2 ring-primary/20'
                                   : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60'
                               )}
                             >
@@ -1551,14 +1551,14 @@ export function ContentCalendar({
                   value={customCaption}
                   onChange={(e) => setCustomCaption(e.target.value)}
                   placeholder="Ketik caption pengiring postingan (atau biarkan kosong untuk memakai caption otomatis AI)..."
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
 
               {/* Progress Indicator */}
               {isSubmittingSchedule && (
-                <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-center space-y-1.5 animate-in fade-in">
-                  <div className="flex items-center justify-center gap-2 text-indigo-600 dark:text-indigo-400 text-xs font-bold">
+                <div className="p-3 rounded-xl bg-orange-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-center space-y-1.5 animate-in fade-in">
+                  <div className="flex items-center justify-center gap-2 text-primary dark:text-indigo-400 text-xs font-bold">
                     <RefreshCw className="size-4 animate-spin" />
                     <span>{generatingProgressMessage || 'Memproses AI & Menjadwalkan...'}</span>
                   </div>
@@ -1677,7 +1677,7 @@ export function ContentCalendar({
                 <Button
                   type="submit"
                   disabled={isSubmittingEdit}
-                  className="w-full h-10 text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-sm"
+                  className="w-full h-10 text-xs font-bold bg-primary hover:bg-primary/90 text-white rounded-xl shadow-sm"
                 >
                   {isSubmittingEdit ? 'Menyimpan...' : '💾 Simpan Perubahan Jadwal'}
                 </Button>

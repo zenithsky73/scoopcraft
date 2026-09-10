@@ -1,3 +1,4 @@
+import { createReplizSchedule } from './repliz-client';
 import { db } from '@/server/db';
 import type { SocialAccount, ScheduledPost, SocialPlatform } from '@prisma/client';
 
@@ -13,6 +14,67 @@ export type PublishResult = {
  * Publish a scheduled post to the selected platform.
  * Supports real Meta Graph API, LinkedIn API, and an instant Simulator for demo/testing.
  */
+
+/**
+ * Repliz Master Engine Publisher (Instagram, TikTok & Threads)
+ */
+async function publishToRepliz(post: ScheduledPost & { socialAccount: SocialAccount | null }): Promise<PublishResult> {
+  try {
+    const replizAccountId = (post.socialAccount?.metadata as any)?.replizAccountId || post.socialAccount?.externalId || 'default';
+    const platform = post.platform.toLowerCase();
+
+    let mediaUrls: string[] = [];
+    if (post.mediaUrls && Array.isArray(post.mediaUrls) && post.mediaUrls.length > 0) {
+      mediaUrls = post.mediaUrls;
+    } else if (post.generatedContentId) {
+      const gen = await db.generatedContent.findUnique({
+        where: { id: post.generatedContentId },
+        select: { visualUrl: true, slides: true },
+      });
+      if (gen) {
+        if (Array.isArray(gen.slides)) {
+          const slideImages = gen.slides.map((s: any) => s.imageUrl).filter(Boolean);
+          if (slideImages.length > 0) mediaUrls = slideImages;
+        }
+        if (mediaUrls.length === 0 && gen.visualUrl) {
+          mediaUrls = [gen.visualUrl];
+        }
+      }
+    }
+
+    const caption = `${post.caption || ''}\n\n${(post.hashtags || []).join(' ')}`.trim();
+
+    const replizRes = await createReplizSchedule({
+      accountId: replizAccountId,
+      platform,
+      caption,
+      mediaUrls,
+      scheduledAt: post.scheduledAt,
+    });
+
+    if (!replizRes.success) {
+      return {
+        success: false,
+        isSimulated: false,
+        error: replizRes.error || `Gagal menjadwalkan ke Repliz ${post.platform}`,
+      };
+    }
+
+    return {
+      success: true,
+      isSimulated: false,
+      externalPostId: replizRes.scheduleId,
+      externalPostUrl: 'https://app.repliz.com/schedule',
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      isSimulated: false,
+      error: err?.message || 'Gagal menghubungi server Repliz.',
+    };
+  }
+}
+
 export async function executeScheduledPost(postId: string): Promise<PublishResult> {
   const post = await db.scheduledPost.findUnique({
     where: { id: postId },
@@ -54,15 +116,21 @@ export async function executeScheduledPost(postId: string): Promise<PublishResul
     if (isSimulationMode) {
       result = await publishToSimulator(post);
     } else {
+      // Prioritaskan Repliz Engine jika kredensial terpasang (Instagram, TikTok, Threads)
+      const hasRepliz = Boolean(process.env.REPLIZ_ACCESS_KEY);
+
       switch (post.platform) {
         case 'INSTAGRAM':
-          result = await publishToInstagram(post, post.socialAccount!);
+        case 'TIKTOK':
+        case 'THREADS':
+          if (hasRepliz) {
+            result = await publishToRepliz(post);
+          } else {
+            result = await publishToSimulator(post);
+          }
           break;
         case 'FACEBOOK':
           result = await publishToFacebook(post, post.socialAccount!);
-          break;
-        case 'THREADS':
-          result = await publishToThreads(post, post.socialAccount!);
           break;
         case 'LINKEDIN':
           result = await publishToLinkedIn(post, post.socialAccount!);

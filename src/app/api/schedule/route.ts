@@ -9,7 +9,7 @@ export const runtime = 'nodejs';
 
 const createScheduleSchema = z.object({
   generatedContentId: z.string().optional().nullable(),
-  platform: z.enum(['INSTAGRAM', 'LINKEDIN', 'FACEBOOK', 'THREADS', 'PINTEREST', 'TELEGRAM']),
+  platform: z.enum(['INSTAGRAM', 'TIKTOK', 'THREADS', 'LINKEDIN', 'FACEBOOK', 'PINTEREST', 'TELEGRAM']),
   scheduledAt: z.string().datetime(),
   publishMode: z.enum(['now', 'schedule']).default('schedule'),
   caption: z.string().min(1, 'Caption tidak boleh kosong'),

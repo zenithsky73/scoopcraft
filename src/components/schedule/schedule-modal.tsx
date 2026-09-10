@@ -44,14 +44,16 @@ const PLATFORMS = [
     gradient: 'from-pink-500 via-purple-500 to-amber-500',
     border: 'border-pink-500/30',
     color: 'text-pink-600 dark:text-pink-400',
+    badge: 'Carousel & Feed',
   },
   {
-    id: 'FACEBOOK',
-    name: 'Facebook',
-    icon: Facebook,
-    gradient: 'from-indigo-600 to-blue-500',
-    border: 'border-indigo-500/30',
-    color: 'text-indigo-600 dark:text-indigo-400',
+    id: 'TIKTOK',
+    name: 'TikTok',
+    icon: Sparkles,
+    gradient: 'from-slate-950 via-slate-900 to-cyan-500',
+    border: 'border-cyan-500/40',
+    color: 'text-cyan-600 dark:text-cyan-400',
+    badge: 'Photo Mode / FYP',
   },
   {
     id: 'THREADS',
@@ -60,14 +62,7 @@ const PLATFORMS = [
     gradient: 'from-slate-800 to-black',
     border: 'border-slate-500/30',
     color: 'text-slate-800 dark:text-slate-200',
-  },
-  {
-    id: 'LINKEDIN',
-    name: 'LinkedIn',
-    icon: Linkedin,
-    gradient: 'from-blue-600 to-cyan-600',
-    border: 'border-blue-500/30',
-    color: 'text-blue-600 dark:text-blue-400',
+    badge: 'Meta Threads',
   },
 ] as const;
 
@@ -85,7 +80,7 @@ export function ScheduleModal({
   onScheduleSuccess,
 }: ScheduleModalProps) {
   const [publishMode, setPublishMode] = React.useState<'now' | 'schedule'>('schedule');
-  const [selectedPlatform, setSelectedPlatform] = React.useState<'INSTAGRAM' | 'FACEBOOK' | 'THREADS' | 'LINKEDIN'>('INSTAGRAM');
+  const [selectedPlatform, setSelectedPlatform] = React.useState<'INSTAGRAM' | 'TIKTOK' | 'THREADS'>('INSTAGRAM');
 
   // Default waktu: 2 jam dari sekarang
   const defaultDate = React.useMemo(() => {

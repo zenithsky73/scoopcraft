@@ -410,9 +410,10 @@ model BrandKit {
 
 enum SocialPlatform {
   INSTAGRAM
+  TIKTOK
+  THREADS
   LINKEDIN
   FACEBOOK
-  THREADS
   PINTEREST
   TELEGRAM
 }
