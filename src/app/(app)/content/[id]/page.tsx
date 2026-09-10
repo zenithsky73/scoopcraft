@@ -68,7 +68,7 @@ export default async function ContentDetailPage({ params }: { params: { id: stri
       ? rawSlides
       : [];
 
-    const requestedStyle = content.run?.requestedStyles?.[0] || 'BREAKING_NEWS';
+    const requestedStyle = content.run?.requestedStyles?.[0] || 'MODERN';
     const requestedFormat = content.run?.requestedFormats?.[0] || 'FEED_PORTRAIT';
 
     return (
@@ -83,18 +83,18 @@ export default async function ContentDetailPage({ params }: { params: { id: stri
         }}
         article={{
           title: content.article?.title || content.headline,
-          source: content.article?.source || 'Newsly AI',
+          source: content.article?.source || 'InstaDeck PRO',
           url: content.article?.url,
           imageUrl: content.visualUrl || content.article?.imageUrl,
-          author: content.article?.author || 'Redaksi',
+          author: content.article?.author || 'Kreator',
         }}
         initialStyle={requestedStyle}
         initialFormat={requestedFormat}
         isProUser={isProUser}
         contentId={content.id}
         initialBrandKit={{
-          handle: user?.brandKit?.handle ?? '@newsly.ai',
-          brandName: user?.brandKit?.displayName ?? 'NEWSLY AI',
+          handle: user?.brandKit?.handle ?? '@instadeck.id',
+          brandName: user?.brandKit?.displayName ?? 'INSTADECK PRO',
           logoUrl: user?.brandKit?.logoUrl ?? null,
           hideNewslyWatermark: isProUser ? (user?.brandKit?.hideNewslyWatermark ?? false) : false,
         }}

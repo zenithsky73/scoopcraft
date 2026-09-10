@@ -74,12 +74,12 @@ export function ContentClientLoader({ id }: { id: string }) {
       }}
       article={{
         title: data.article?.title || data.content.headline,
-        source: data.article?.source || 'Newsly AI',
+        source: data.article?.source || 'InstaDeck PRO',
         url: data.article?.url,
         imageUrl: data.article?.imageUrl || data.content.visualUrl,
-        author: data.article?.author || 'Redaksi',
+        author: data.article?.author || 'Kreator',
       }}
-      initialStyle={data.style || 'BREAKING_NEWS'}
+      initialStyle={data.style || 'MODERN'}
       initialFormat={data.format || 'FEED_PORTRAIT'}
       isProUser={true}
     />

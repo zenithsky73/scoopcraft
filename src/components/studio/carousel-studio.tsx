@@ -82,7 +82,7 @@ export type CarouselStudioProps = {
 export function CarouselStudio({
   initialContent,
   article,
-  initialStyle = 'BREAKING_NEWS',
+  initialStyle = 'MODERN',
   initialFormat = 'FEED_PORTRAIT',
   isProUser = false,
   contentId,
@@ -366,7 +366,7 @@ export function CarouselStudio({
   const handleDownloadZip = async () => {
     setIsExportingZip(true);
     try {
-      await exportSlidesToZip(slides.length, initialContent.headline || 'newsly-carousel');
+      await exportSlidesToZip(slides.length, initialContent.headline || 'instadeck-carousel');
       notify.celebrate('Paket ZIP Siap! 📦', `Semua ${slides.length} slide berhasil diekspor resolusi tinggi.`);
     } catch (err: any) {
       notify.error('Gagal Ekspor ZIP', err?.message);

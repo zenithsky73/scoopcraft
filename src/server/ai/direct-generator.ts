@@ -56,11 +56,12 @@ export async function generateDirect(input: GenerateDirectInput) {
   const slidesCount = Math.min(Math.max(input.slides ?? 5, SLIDES.min), SLIDES.max);
   let articleTitle = '';
   let articleContent = '';
-  let articleSource = 'Newsly AI';
-  let articleUrl = input.url || `https://newsly.ai/generated/${Date.now()}`;
+  let articleSource = 'InstaDeck PRO';
+  let articleUrl = input.url || `https://instadeck.id/c/${Date.now()}`;
   let articleImageUrl: string | null = null;
   let articleImages: string[] = [];
-  let articleAuthor = 'Redaksi';
+  let articleAuthor = 'Kreator';
+  let articlePrice = '';
 
   // 1. Resolve Content based on Mode
   if (input.mode === 'url' && input.url) {
@@ -68,11 +69,12 @@ export async function generateDirect(input: GenerateDirectInput) {
       const scraped = await scrapeArticleFast(input.url);
       articleTitle = scraped.title;
       articleContent = scraped.content;
-      articleSource = scraped.source || 'Portal Berita';
+      articleSource = scraped.source || 'Website';
       articleUrl = scraped.url;
       articleImageUrl = scraped.imageUrl || null;
       articleImages = scraped.images || (scraped.imageUrl ? [scraped.imageUrl] : []);
-      articleAuthor = scraped.author || 'Redaksi';
+      articleAuthor = scraped.author || 'Kreator';
+      articlePrice = scraped.price || '';
     } catch (scrapeErr: any) {
       console.warn('[Direct Generator Scraper Fallback]:', scrapeErr?.message);
       const cleanUrl = input.url.replace(/^https?:\/\//, '').split(/[?#]/)[0];
@@ -80,20 +82,20 @@ export async function generateDirect(input: GenerateDirectInput) {
       const slug = decodeURIComponent(segments.pop() || cleanUrl).replace(/[-_]/g, ' ');
 
       articleTitle = slug.charAt(0).toUpperCase() + slug.slice(1);
-      articleContent = `Artikel berita dari sumber tautan: ${input.url}. Buatkan ulasan dan analisis komprehensif mengenai berita ini dalam bahasa Indonesia.`;
-      articleSource = segments[0] ? segments[0].replace('www.', '') : 'Portal Berita';
+      articleContent = `Materi dari tautan: ${input.url}. Rangkumlah poin-poin wawasan penting dan menarik ke dalam 5 slide carousel media sosial.`;
+      articleSource = segments[0] ? segments[0].replace('www.', '') : 'Web';
     }
   } else if (input.mode === 'text' && input.rawText) {
-    articleTitle = input.rawTitle || input.rawText.split('\n')[0].slice(0, 120) || 'Berita & Informasi Terkini';
+    articleTitle = input.rawTitle || input.rawText.split('\n')[0].slice(0, 120) || 'Wawasan Pilihan';
     articleContent = input.rawText;
     articleSource = 'Teks Langsung';
   } else if (input.mode === 'prompt' && input.prompt) {
     articleTitle = input.prompt.slice(0, 100);
-    articleContent = `Topik/Ide Konten: "${input.prompt}".\nGaya Bahasa/Tone: "${input.tone || 'Informatif & Berwibawa'}".`;
-    articleSource = 'AI Generator';
+    articleContent = `Topik/Ide Konten: "${input.prompt}".\nGaya Bahasa/Tone: "${input.tone || 'Inspiratif & Praktis'}".`;
+    articleSource = 'InstaDeck AI';
   } else {
-    articleTitle = 'Wawasan & Analisis Terkini';
-    articleContent = 'Rangkuman wawasan dan tren terkini untuk konten carousel.';
+    articleTitle = 'Wawasan & Rekomendasi Pilihan';
+    articleContent = 'Rangkuman wawasan menarik dan bernilai praktis untuk konten carousel media sosial.';
   }
 
   // 2. Direct Gemini 2.5 Flash Turbo JSON Generation with Dynamic Slide Roles
@@ -114,9 +116,26 @@ export async function generateDirect(input: GenerateDirectInput) {
     input.style === 'CULINARY' ||
     /fore|kopi|coffee|cafe|kafe|padang|rendang|resto|restoran|warung|kuliner|f&b|catering|bakery|roti|boba|matcha|minuman|makanan|snack|jajanan|sambal|ayam goreng|bebek|mie|nasi/i.test(fullText);
 
+  const isMarketplaceProduct =
+    articleSource.toLowerCase().includes('shopee') ||
+    articleSource.toLowerCase().includes('tokopedia') ||
+    articleSource.toLowerCase().includes('tiktok') ||
+    articleSource.toLowerCase().includes('lazada') ||
+    articleUrl.includes('shopee') ||
+    articleUrl.includes('tokopedia') ||
+    articleUrl.includes('tiktok') ||
+    articleUrl.includes('lazada') ||
+    Boolean(articlePrice);
+
   const isEcommerce =
+    isMarketplaceProduct ||
     ['SHOPEE_PROMO', 'RACUN_SHOPEE', 'PRODUCT_CATALOG', 'BRUTALIST_SALE', 'BEFORE_AFTER', 'TESTIMONIAL_CHAT', 'PRICE_TIER_TABLE', 'UNBOXING_POLAROID'].includes(input.style) ||
     /jual|promo|diskon|shopee|tokopedia|affiliate|produk|baju|sepatu|skincare|serum|harga|toko|olshop|review|racun|katalog|sale|paket|ongkir|order|checkout|beli|gamis|hoodie|tas|parfum|gadget|laptop|hp|casing|makeup|lipstik/i.test(fullText);
+
+  let effectiveStyle = input.style || 'MODERN';
+  if ((effectiveStyle === 'BREAKING_NEWS' || effectiveStyle === 'MODERN') && isMarketplaceProduct) {
+    effectiveStyle = 'SHOPEE_PROMO';
+  }
 
   const isRecipe = /resep|masak|bumbu|dapur|kue|baking|rebus|tumis/i.test(fullText) && !isFnB;
 
@@ -134,7 +153,18 @@ export async function generateDirect(input: GenerateDirectInput) {
     let systemRole = `Anda adalah Executive Creative Director & Growth Marketer untuk promosi dan konten UMKM / Bisnis di Instagram, Facebook & Threads.`;
     let dynamicGuidelines = '';
 
-    if (isFnB) {
+    if (isEcommerce) {
+      systemRole = `Anda adalah Top Carousel Content Creator & Affiliate Marketer No. 1 Indonesia (Shopee, TikTok Shop & Tokopedia). Anda sangat ahli membuat slide carousel viral bergaya "Racun Belanja", review jujur produk, rekomendasi hemat, dan promosi konversi tinggi. GAYA BAHASA HARUS 100% KONTEN SOSMED / INSTAGRAM CREATOR (LUWES, MENARIK, BIKIN PENASARAN), BUKAN BERITA/REDAKSI JURNALISTIK!`;
+      dynamicGuidelines = `PANDUAN KHUSUS RACUN PRODUK & PROMOSI E-COMMERCE:
+- Target Produk: "${articleTitle}" ${articlePrice ? `(Harga: ${articlePrice})` : ''} dari platform ${articleSource || 'Marketplace'}.
+- JANGAN GUNAKAN gaya bahasa kaku, formal, atau berita redaksi. Gunakan bahasa creator media sosial yang akrab, persuasif, dan memicu interaksi/pembelian!
+- Formula 5 Slide:
+  * Slide 0 (COVER): Hook viral bikin penasaran / racun belanja seru (contoh: "Wajib Punya! ${articleTitle.slice(0, 35)}... Bikin Ketagihan! 🔥", "Spill Rekomendasi Paling Worth It Cuma ${articlePrice || 'Puluhan Ribuan'}!"). Tag: "🛍️ RACUN SHOPEE" atau "🔥 PROMO VIRAL". Lead: Buat 1 kalimat pembuka yang bikin orang langsung ingin geser slide berikutnya!
+  * Slide 1 (KEUNGGULAN / SOLUSI): Kenapa produk ini wajib dibeli? Bahas rasa/kualitas/manfaat utamanya. Pada "statHighlight", isi dengan harga promo atau keunggulan utama (contoh: "${articlePrice || 'Hemat Banget'}", "100% Original", "Paling Laris"). Tag: "✨ KEUNGGULAN".
+  * Slide 2 (DETAIL VARIAN & SPESIFIKASI): Kupas isi kemasan, varian rasa/warna, kenyamanan pakai, atau keamanan (BPOM/Halal/Garansi). Pada "statHighlight", isi dengan porsi/benefit (contoh: "Isi Ekstra", "Kemasan Praktis", "Material Premium"). Tag: "📦 DETAIL PRODUK".
+  * Slide 3 (REVIEW & BUKTI KEPUASAN): Review jujur pemakaian, kepuasan pelanggan, atau rating tinggi. Pada "statHighlight", isi dengan rating (contoh: "Rating 4.9⭐", "Ribuan Terjual"). Tag: "⭐ REVIEW JUJUR".
+  * Slide 4 (OUTRO / CARA ORDER): Ajakan checkout sekarang mumpung ada promo diskon & gratis ongkir! Pada "statHighlight", isi "Order Sekarang". Tag: "🛒 CHECKOUT". CTA: "Klik link di bio toko untuk order & klaim voucher diskonnya 👉".`;
+    } else if (isFnB) {
       systemRole = `Anda adalah Senior F&B Marketer & Food Storyteller handal yang ahli mempromosikan Cafe (ala Fore Coffee), Restoran (ala Rumah Makan Padang), dan Bisnis Kuliner UMKM.`;
       dynamicGuidelines = `PANDUAN KHUSUS BISNIS F&B, CAFE & KULINER RESTO:
 - Materi ini adalah promosi bisnis kuliner / cafe / restoran / F&B.
@@ -144,34 +174,6 @@ export async function generateDirect(input: GenerateDirectInput) {
   * Slide 2 (DETAIL MENU & VARIAN FAVORIT): Pilihan varian favorit, topping, paket combo hemat, atau level kepedasan. Pada "statHighlight", cantumkan promo/harga (contoh: "Diskon 20%", "Harga Mulai 18rb", "Best Seller").
   * Slide 3 (SOCIAL PROOF / REVIEW PELANGGAN): Bukti kepuasan pelanggan, tekstur lembut daging / kesegaran minuman, atau review bintang 5. Pada "statHighlight", isi "Rating 4.9⭐" atau "1000+ Terjual".
   * Slide 4 (OUTRO / CARA ORDER & LOKASI): Info pemesanan mudah (tersedia di GoFood, GrabFood, ShopeeFood, Dine-In), jam buka & lokasi, serta ajakan "Klik link di bio untuk order sekarang & tag teman makan barengmu!".`;
-    } else if (isYouTube) {
-      systemRole = `Anda adalah Video Content Curator & Educator profesional.`;
-      dynamicGuidelines = `PANDUAN KHUSUS VIDEO YOUTUBE:
-- Sumber ini adalah konten video YouTube berjudul "${articleTitle}" dari kreator "${articleAuthor}".
-- Tugas Anda: Bedah isi dan topik video ini menjadi 5 slide edukatif yang padat wawasan dan bernilai tinggi!
-- JANGAN PERNAH mengembalikan judul umum seperti "Poin Pembahasan #1" atau "Metrik & Fakta Kunci".
-- Manfaatkan transkrip/deskripsi yang ada untuk menjabarkan fakta nyata, mekanisme cara kerja, tips praktis, data penting, dan kesimpulan bernas yang sesuai dengan video tersebut.`;
-    } else if (isListicle) {
-      systemRole = `Anda adalah Top Carousel Content Creator yang ahli membuat postingan DAFTAR / REKOMENDASI / TOOLS / TIPS viral di Instagram & LinkedIn.`;
-      dynamicGuidelines = `PANDUAN KHUSUS DAFTAR / LISTICLE / REKOMENDASI (${listCount ? `${listCount} Item` : 'Kumpulan Poin'}):
-- Materi ini adalah daftar/rekomendasi alat, tips, cara, atau ide konkret.
-- SLIDE-SLIDE KONTEN (Slide 1, 2, 3...) WAJIB BERISI ITEM-ITEM NYATA DENGAN NAMA SPESIFIK!
-  * Slide 0 (COVER): Hook headline memikat, sebutkan jumlah dan manfaat besar (contoh: "${articleTitle} yang Wajib Kamu Coba!").
-  * Slide 1: Sebutkan item 1 & 2 secara jelas di title dan statHighlight (contoh: title: "01. Tool/Tip Pertama", statHighlight: "Tool #01"), jelaskan fungsi dan benefit konkret di body.
-  * Slide 2: Sebutkan item 3 & 4 secara jelas.
-  * Slide 3: Sebutkan item 5 & 6 secara jelas.
-  * Slide 4 (OUTRO): Sebutkan item terakhir (jika ada) + rangkuman rekomendasi terbaik & ajakan simpan/share!
-- PENTING: JANGAN PERNAH membuat kutipan pakar fiktif ("quote") atau angka metrik abstrak. Pengguna ingin tahu NAMA ALAT / TIPS NYATA beserta fungsinya!`;
-    } else if (isEcommerce) {
-      systemRole = `Anda adalah E-Commerce Copywriter & Top Affiliate Creator Indonesia (Shopee, Tokopedia, TikTok Shop).`;
-      dynamicGuidelines = `PANDUAN KHUSUS E-COMMERCE & PROMOSI PRODUK JUALAN:
-- Materi ini bertema promosi jualan / review produk e-commerce / affiliate Shopee.
-- Susun 5 slide dengan formula copywriting jualan konversi tinggi:
-  * Slide 0 (COVER): Hook masalah konsumen atau spill produk viral (contoh: "Spill Serum Paling Ampuh Cerahkan Bekas Jerawat!", "Celana Cargo Waterproof Cuma 70 Ribuan!").
-  * Slide 1 (KEY USP / SOLUSI): Keunggulan utama produk, bahan/material terbaik, atau penawaran harga diskon. Pada "statHighlight", isi harga promo atau klaim utama (contoh: "Diskon 50%", "Rp 79.000", "Viral 10k+ Terjual").
-  * Slide 2 (FITUR & SPESIFIKASI): Rincian spesifikasi, kenyamanan pakai, sertifikasi (BPOM, Halal, Garansi Resmi, 100% Original).
-  * Slide 3 (REVIEW & TESTIMONI): Bukti review pembeli puas, rating 4.9/5 bintang, atau hasil pemakaian nyata 7 hari.
-  * Slide 4 (OUTRO / CTA): Ajakan langsung untuk checkout di Shopee, klaim voucher diskon, atau klik link bio toko sebelum stok habis!`;
     } else if (isRecipe) {
       systemRole = `Anda adalah Chef & Food Content Creator terkemuka pembuat konten resep masakan viral Indonesia.`;
       dynamicGuidelines = `PANDUAN KHUSUS RESEP MAKANAN & KULINER:
@@ -202,12 +204,13 @@ export async function generateDirect(input: GenerateDirectInput) {
   * Slide 3 (TWEET 4): Refleksi mendalam dan pelajaran penting yang bisa dipetik.
   * Slide 4 (TWEET 5 / OUTRO): Cuitan penutup, kesimpulan bernas, dan ajakan Retweet tweet pertama serta Follow akun.`;
     } else {
-      dynamicGuidelines = `ATURAN STRUKTUR 5 SLIDE DINAMIS:
+      dynamicGuidelines = `ATURAN STRUKTUR 5 SLIDE SOSMED & CAROUSEL VIRAL:
+- PENTING: JANGAN gunakan format siaran berita atau redaksi jurnalistik. Buatlah konten carousel Instagram / LinkedIn yang memikat, bernilai wawasan praktis, dan memicu interaksi!
 1. Slide 0 (COVER): Headline hook memikat, mengundang rasa penasaran, relevan dengan inti topik.
-2. Slide 1 (BIG METRIC / KEY PROBLEM): Sorot 1 angka/metrik/fakta terpenting (contoh: "6.000 mAh", "+40% Efisiensi", "Rp 15 Juta") pada "statHighlight" dengan penjelasan padat.
-3. Slide 2 (DEEP DIVE / DETAIL): Penjelasan mendalam mengenai mekanisme, spesifikasi, atau langkah implementasi nyata.
-4. Slide 3 (GOLDEN QUOTE / INSIGHT): Kutipan tokoh/analisis berbobot ("quote") atau aturan emas (Golden Rule) yang berwibawa.
-5. Slide 4 (OUTRO / KESIMPULAN): Rangkuman 1 kalimat padat dan ajakan bertindak (CTA).`;
+2. Slide 1 (POIN KUNCI / METRIK UTAMA): Sorot 1 wawasan penting, ide utama, atau angka/fakta terpenting pada "statHighlight" dengan penjelasan padat.
+3. Slide 2 (PEMBAHASAN MENDALAM): Penjelasan praktis mengenai mekanisme, tips penerapan, atau langkah implementasi nyata.
+4. Slide 3 (GOLDEN RULE / INSIGHT): Wawasan emas berbobot atau aturan penting yang menginspirasi pembaca.
+5. Slide 4 (OUTRO / KESIMPULAN): Rangkuman 1 kalimat padat dan ajakan bertindak (CTA simpan & bagikan).`;
     }
 
     let contextDirectives = '';
@@ -490,11 +493,11 @@ Kembalikan HANYA format JSON valid berikut:
 
     // Tag badge kontekstual sesuai varian tata letak & intent
     const slideTag = isCover
-      ? detectedCategory || 'HEADLINE'
+      ? (isEcommerce ? '🛍️ RACUN SHOPEE' : detectedCategory || '✨ REKOMENDASI')
       : isOutro
-      ? 'KESIMPULAN'
+      ? (isEcommerce ? '🛒 CARA ORDER' : '📌 KESIMPULAN')
       : isEcommerce
-      ? (['KEUNGGULAN', 'DETAIL PRODUK', 'REVIEW PEMBELI', 'PENAWARAN'][idx - 1] || 'PRODUK')
+      ? (['✨ KEUNGGULAN', '📦 DETAIL PRODUK', '⭐ REVIEW JUJUR', '🔥 PROMO SPESIAL'][idx - 1] || 'PRODUK')
       : isRecipe
       ? (['BAHAN-BAHAN', 'LANGKAH 01', 'LANGKAH 02', 'PENYAJIAN'][idx - 1] || 'RESEP')
       : isTutorial
@@ -504,14 +507,14 @@ Kembalikan HANYA format JSON valid berikut:
       : isListicle
       ? `POIN 0${idx}`
       : layoutVariant === 'STAT_HERO'
-      ? 'METRIK & FAKTA'
+      ? '💡 FAKTA KUNCI'
       : layoutVariant === 'QUOTE_CARD'
-      ? 'INSIGHT UTAMA'
+      ? '✨ INSIGHT'
       : layoutVariant === 'TEXT_CENTER'
-      ? 'POIN FOKUS'
+      ? '🎯 POIN FOKUS'
       : layoutVariant === 'SPLIT_TWO_COL'
-      ? 'ANALISIS POIN'
-      : 'PEMBAHASAN';
+      ? '⚡ ANALISIS'
+      : '📌 PEMBAHASAN';
 
     return {
       index: idx,
@@ -575,7 +578,7 @@ Kembalikan HANYA format JSON valid berikut:
           caption: deck.caption || '',
           hashtags: deck.hashtags || [],
           cta: deck.cta || 'Simpan & Bagikan!',
-          angle: 'Jurnalisme Mendalam',
+          angle: isEcommerce ? 'Promosi Produk & Racun Shopee' : 'Edukasi & Social Carousel',
           analysis: { topic: articleTitle, category: detectedCategory } as any,
           slides: enrichedSlides as any,
           visualUrl: coverImageUrl,
@@ -627,7 +630,7 @@ Kembalikan HANYA format JSON valid berikut:
       angle: 'Jurnalisme Mendalam',
       slides: enrichedSlides,
     },
-    style: input.style,
+    style: effectiveStyle,
     format: input.format || 'FEED_PORTRAIT',
   };
 }

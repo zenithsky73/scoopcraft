@@ -67,7 +67,7 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
   const [aiVisualTheme, setAiVisualTheme] = React.useState<AIImageThemeId>('AUTO');
 
   // Single Initial Style Selection (Default: BREAKING_NEWS Free)
-  const [selectedStyle, setSelectedStyle] = React.useState<DesignStyle>('BREAKING_NEWS');
+  const [selectedStyle, setSelectedStyle] = React.useState<DesignStyle>('MODERN');
   const [selectedFormat, setSelectedFormat] = React.useState<OutputFormat>('FEED_PORTRAIT');
   const [slides, setSlides] = React.useState<number>(5);
 

@@ -325,7 +325,7 @@ export function CanvasRenderer({
               <span className="size-2 rounded-full bg-red-500 inline-block" />
               <span className="size-2 rounded-full bg-yellow-500 inline-block" />
               <span className="size-2 rounded-full bg-emerald-500 inline-block" />
-              <span className="font-mono text-[9px] text-cyan-400 ml-1.5 font-bold">newsly.sh</span>
+              <span className="font-mono text-[9px] text-cyan-400 ml-1.5 font-bold">instadeck.sh</span>
             </div>
           ) : style === 'EDITORIAL' || style === 'POLICY' ? (
             <div className="flex items-center gap-2">
@@ -489,7 +489,7 @@ export function CanvasRenderer({
               )}
               <div className="pt-1 flex items-center justify-between text-[10px] font-bold text-black border-t border-black/20">
                 <span>GESER ➔</span>
-                <span className="font-mono">#NEWSLY</span>
+                <span className="font-mono">#INSTADECK</span>
               </div>
             </div>
           ) : (
@@ -1419,7 +1419,7 @@ export function CanvasRenderer({
               </>
             ) : (
               <>
-                <span>{slide.ctaText || 'Ikuti untuk analisis harian'}</span>
+                <span>{slide.ctaText || 'Ikuti untuk tips & wawasan menarik harian'}</span>
                 <ArrowRight className="size-3.5" />
               </>
             )}

@@ -543,7 +543,7 @@ export const STYLES: StyleDef[] = [
 export const AVAILABLE_STYLES = STYLES.filter((s) => s.available);
 export const FREE_STYLES = AVAILABLE_STYLES.filter((s) => s.tier === 'FREE');
 export const PRO_STYLES = AVAILABLE_STYLES.filter((s) => s.tier === 'PRO');
-export const DEFAULT_STYLE: DesignStyle = 'BREAKING_NEWS';
+export const DEFAULT_STYLE: DesignStyle = 'MODERN';
 
 export function isProStyle(style: DesignStyle): boolean {
   const def = STYLES.find((s) => s.id === style);
