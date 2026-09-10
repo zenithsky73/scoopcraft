@@ -380,7 +380,7 @@ export function ConnectAccountModal({
                   asChild
                   className="w-full h-10 text-xs font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:opacity-95 text-white rounded-xl shadow-md"
                 >
-                  <a href="https://app.repliz.com/account" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-1.5">
+                  <a href="https://repliz.com/account" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-1.5">
                     <span>🔐 Buka Portal Otorisasi Resmi Repliz</span>
                     <ExternalLink className="size-3.5" />
                   </a>

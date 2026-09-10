@@ -64,7 +64,7 @@ async function publishToRepliz(post: ScheduledPost & { socialAccount: SocialAcco
       success: true,
       isSimulated: false,
       externalPostId: replizRes.scheduleId,
-      externalPostUrl: 'https://app.repliz.com/schedule',
+      externalPostUrl: 'https://repliz.com/schedule',
     };
   } catch (err: any) {
     return {
