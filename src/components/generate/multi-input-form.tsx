@@ -167,7 +167,7 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
             }`}
           >
             <Link2 className="size-3.5 sm:size-4" />
-            <span>Link Berita</span>
+            <span>Link Web / Video</span>
           </button>
 
           <button
@@ -215,10 +215,10 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
               <div className="flex items-center justify-between">
                 <Label className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
                   <Globe className="size-4 text-cyan-600 dark:text-cyan-400" />
-                  <span>Tempelkan Link Berita / YouTube:</span>
+                  <span>Tempelkan Link Web, Artikel, Blog, atau YouTube:</span>
                 </Label>
                 <span className="text-[10px] font-mono text-cyan-700 dark:text-cyan-400 font-bold bg-cyan-100 dark:bg-cyan-950/60 px-2 py-0.5 rounded-full border border-cyan-300 dark:border-cyan-800/40">
-                  Auto-Scrape
+                  Auto-Scrape AI
                 </span>
               </div>
               <div className="relative">
@@ -227,14 +227,20 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
                   type="url"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
-                  placeholder="https://news.detik.com/... atau https://youtube.com/..."
+                  placeholder="https://youtube.com/..., https://medium.com/..., atau link website lainnya"
                   className="h-11 sm:h-12 pl-10 sm:pl-11 text-xs sm:text-sm bg-slate-50 dark:bg-slate-950/90 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:border-primary rounded-xl"
                   required
                 />
               </div>
               <div className="flex flex-wrap items-center gap-1.5 pt-1">
                 <span className="text-[10px] text-slate-500 font-semibold">Mendukung:</span>
-                {['Detik', 'Kompas', 'CNN', 'Kumparan', 'Antara', 'YouTube'].map((site) => (
+                {[
+                  'YouTube & Shorts',
+                  'Blog & Medium',
+                  'Website Bisnis / Toko',
+                  'Portal Artikel / Berita',
+                  'Landing Page',
+                ].map((site) => (
                   <span
                     key={site}
                     className="text-[9px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400"
