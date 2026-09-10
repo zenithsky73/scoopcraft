@@ -96,7 +96,14 @@ export function CampaignModal({ open, onClose, onCampaignSuccess }: CampaignModa
         }),
       });
 
-      const data = await res.json();
+      let data: any = {};
+      try {
+        const text = await res.text();
+        data = JSON.parse(text);
+      } catch {
+        data = { error: 'Server mengalami timeout atau kendala teknis saat memproses 30 hari. Silakan coba kembali.' };
+      }
+
       if (!res.ok || !data.success) {
         throw new Error(data?.error || 'Gagal menghasilkan kampanye konten.');
       }
