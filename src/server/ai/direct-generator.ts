@@ -115,7 +115,6 @@ export async function generateDirect(input: GenerateDirectInput) {
     /fore|kopi|coffee|cafe|kafe|padang|rendang|resto|restoran|warung|kuliner|f&b|catering|bakery|roti|boba|matcha|minuman|makanan|snack|jajanan|sambal|ayam goreng|bebek|mie|nasi/i.test(fullText);
 
   const isEcommerce =
-    styleCategory === 'ECOMMERCE' ||
     ['SHOPEE_PROMO', 'RACUN_SHOPEE', 'PRODUCT_CATALOG', 'BRUTALIST_SALE', 'BEFORE_AFTER', 'TESTIMONIAL_CHAT', 'PRICE_TIER_TABLE', 'UNBOXING_POLAROID'].includes(input.style) ||
     /jual|promo|diskon|shopee|tokopedia|affiliate|produk|baju|sepatu|skincare|serum|harga|toko|olshop|review|racun|katalog|sale|paket|ongkir|order|checkout|beli|gamis|hoodie|tas|parfum|gadget|laptop|hp|casing|makeup|lipstik/i.test(fullText);
 

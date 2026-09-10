@@ -110,7 +110,7 @@ export function CarouselStudio({
   const [isExportingZip, setIsExportingZip] = React.useState(false);
   const [viralHooks, setViralHooks] = React.useState<string[]>([]);
   const [activeTab, setActiveTab] = React.useState<'styles' | 'editor' | 'caption'>('styles');
-  const [styleCategory, setStyleCategory] = React.useState<'ALL' | 'FREE' | 'PRO' | 'NEWS' | 'BIZ' | 'MODERN'>('ALL');
+  const [styleCategory, setStyleCategory] = React.useState<'ALL' | 'FREE' | 'PRO' | 'MINIMALIST' | 'BOLD' | 'DARK_MODE' | 'EDITORIAL' | 'SOCIAL'>('ALL');
   const [aiVisualTheme, setAiVisualTheme] = React.useState<AIImageThemeId>('AUTO');
 
   const handleApplyAITheme = (newTheme: AIImageThemeId) => {
@@ -145,15 +145,11 @@ export function CarouselStudio({
     return STYLES.filter((style) => {
       if (styleCategory === 'FREE') return style.tier === 'FREE';
       if (styleCategory === 'PRO') return style.tier === 'PRO';
-      if (styleCategory === 'NEWS') {
-        return ['EDITORIAL', 'BOLD', 'CORPORATE', 'POLICY', 'SPOTLIGHT', 'RED_COLLAGE'].includes(style.id);
-      }
-      if (styleCategory === 'BIZ') {
-        return ['FINANCE', 'BLOOMBERG', 'CORPORATE', 'MINIMAL'].includes(style.id);
-      }
-      if (styleCategory === 'MODERN') {
-        return ['STREETWEAR', 'ATHLETIC', 'TERMINAL', 'TECH', 'COSMIC', 'PODCAST', 'CULINARY', 'LIFESTYLE', 'MODERN'].includes(style.id);
-      }
+      if (styleCategory === 'MINIMALIST') return style.category === 'MINIMALIST';
+      if (styleCategory === 'BOLD') return style.category === 'BOLD';
+      if (styleCategory === 'DARK_MODE') return style.category === 'DARK_MODE';
+      if (styleCategory === 'EDITORIAL') return style.category === 'EDITORIAL';
+      if (styleCategory === 'SOCIAL') return style.category === 'SOCIAL';
       return true;
     });
   }, [styleCategory]);
@@ -778,12 +774,14 @@ export function CarouselStudio({
               {/* Horizontal Category Filter Pills */}
               <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5 -mx-1 px-1">
                 {[
-                  { id: 'ALL', label: '⭐ Semua' },
-                  { id: 'FREE', label: '🆓 Gratis' },
+                  { id: 'ALL', label: '⭐ Semua (32)' },
+                  { id: 'FREE', label: '🆓 Gratis (3)' },
                   { id: 'PRO', label: '👑 PRO' },
-                  { id: 'NEWS', label: '📰 Berita' },
-                  { id: 'BIZ', label: '💼 Bisnis' },
-                  { id: 'MODERN', label: '⚡ Gen-Z' },
+                  { id: 'MINIMALIST', label: '✨ Clean' },
+                  { id: 'BOLD', label: '⚡ Bold' },
+                  { id: 'DARK_MODE', label: '🌙 Dark' },
+                  { id: 'EDITORIAL', label: '📰 Editorial' },
+                  { id: 'SOCIAL', label: '💬 Social' },
                 ].map((cat) => (
                   <button
                     key={cat.id}

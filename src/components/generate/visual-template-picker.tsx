@@ -15,15 +15,15 @@ export interface VisualTemplatePickerProps {
   onRequireUpgrade?: (style: StyleDef) => void;
 }
 
-type CategoryFilter = 'ALL' | 'ECOMMERCE' | 'SOCIAL' | 'LINKEDIN' | 'NEWS' | 'TECH';
+type CategoryFilter = 'ALL' | 'MINIMALIST' | 'BOLD' | 'DARK_MODE' | 'EDITORIAL' | 'SOCIAL';
 
 const CATEGORIES: { id: CategoryFilter; label: string; icon: string; count: number }[] = [
-  { id: 'ALL', label: 'Semua', icon: '🌟', count: 32 },
-  { id: 'ECOMMERCE', label: 'E-Commerce & Jualan', icon: '🛍️', count: 8 },
-  { id: 'SOCIAL', label: 'Sosmed & Kreator', icon: '📸', count: 8 },
-  { id: 'LINKEDIN', label: 'Bisnis & LinkedIn', icon: '💼', count: 7 },
-  { id: 'NEWS', label: 'Berita & Editorial', icon: '📰', count: 5 },
-  { id: 'TECH', label: 'Tech & Edukasi', icon: '⚡', count: 4 },
+  { id: 'ALL', label: 'Semua Gaya', icon: '🌟', count: 32 },
+  { id: 'MINIMALIST', label: 'Minimalist & Clean', icon: '✨', count: 8 },
+  { id: 'BOLD', label: 'Bold & High Contrast', icon: '⚡', count: 7 },
+  { id: 'DARK_MODE', label: 'Dark Mode & Sleek', icon: '🌙', count: 6 },
+  { id: 'EDITORIAL', label: 'Editorial & Classic', icon: '📰', count: 6 },
+  { id: 'SOCIAL', label: 'Social & Interactive', icon: '💬', count: 5 },
 ];
 
 export function VisualTemplatePicker({
@@ -53,46 +53,8 @@ export function VisualTemplatePicker({
       }
 
       // 2. Category Filter
-      if (activeCategory === 'ECOMMERCE') {
-        return [
-          'SHOPEE_PROMO',
-          'RACUN_SHOPEE',
-          'PRODUCT_CATALOG',
-          'BRUTALIST_SALE',
-          'BEFORE_AFTER',
-          'TESTIMONIAL_CHAT',
-          'PRICE_TIER_TABLE',
-          'UNBOXING_POLAROID',
-        ].includes(style.id);
-      }
-      if (activeCategory === 'SOCIAL') {
-        return [
-          'CULINARY',
-          'STREETWEAR',
-          'SPOTLIGHT',
-          'RED_COLLAGE',
-          'TWITTER_THREAD',
-          'QUOTE_MINIMAL',
-          'STEP_BY_STEP_GUIDE',
-          'LIFESTYLE',
-        ].includes(style.id);
-      }
-      if (activeCategory === 'LINKEDIN') {
-        return [
-          'CORPORATE',
-          'PODCAST',
-          'FINANCE',
-          'BLOOMBERG',
-          'MINIMAL',
-          'EVENT_WEBINAR',
-          'POLICY',
-        ].includes(style.id);
-      }
-      if (activeCategory === 'NEWS') {
-        return ['BREAKING_NEWS', 'EDITORIAL', 'MODERN', 'POLICY', 'BOLD'].includes(style.id);
-      }
-      if (activeCategory === 'TECH') {
-        return ['TERMINAL', 'COSMIC', 'TECH', 'ATHLETIC'].includes(style.id);
+      if (activeCategory !== 'ALL' && style.category !== activeCategory) {
+        return false;
       }
 
       return true;
@@ -117,7 +79,7 @@ export function VisualTemplatePicker({
               </span>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Pilih sampul layout visual yang sesuai dengan nuansa konten Anda.
+              Template tata letak visual universal — cocok untuk segala topik, industri & jenis konten Anda.
             </p>
           </div>
         </div>
@@ -184,7 +146,7 @@ export function VisualTemplatePicker({
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Cari template..."
+            placeholder="Cari gaya layout..."
             className="w-full h-9 pl-9 pr-3 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-primary"
           />
         </div>
@@ -234,7 +196,7 @@ export function VisualTemplatePicker({
                 {/* Mockup Top Header */}
                 <div className="relative z-10 flex items-center justify-between text-[8px] font-bold opacity-80">
                   <span className="px-1.5 py-0.2 rounded font-mono uppercase truncate max-w-[65%]" style={{ backgroundColor: `${style.accentColor}25`, color: style.isLight ? '#0f172a' : '#ffffff' }}>
-                    {style.instagramRef || '@kreator'}
+                    {style.instagramRef || '@instadeck'}
                   </span>
                   <span className="font-mono text-[8px]">01/05</span>
                 </div>
@@ -267,7 +229,7 @@ export function VisualTemplatePicker({
                       color: '#FFFFFF',
                     }}
                   >
-                    {style.id === 'BREAKING_NEWS' ? 'BREAKING' : style.id.replace('_', ' ').slice(0, 10)}
+                    {style.category || 'LAYOUT'}
                   </span>
 
                   {/* Mockup Headline Box */}
@@ -296,8 +258,8 @@ export function VisualTemplatePicker({
                   {style.label}
                 </p>
                 <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 truncate font-medium">
-                  <span className="text-primary font-bold">{style.platformBadge || `⚡ Ref ${idx + 1}`}</span>
-                  <span className="truncate max-w-[50%]">{style.subLabel?.replace(/^ala /, '') || style.instagramRef || 'Visual'}</span>
+                  <span className="text-primary font-bold">{style.platformBadge || '⚡ Layout'}</span>
+                  <span className="truncate max-w-[50%]">{style.subLabel || 'Universal'}</span>
                 </div>
               </div>
             </div>
