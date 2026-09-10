@@ -11,6 +11,12 @@ import {
   Plus,
   Zap,
   ShieldCheck,
+  ExternalLink,
+  RefreshCw,
+  ArrowRight,
+  Check,
+  Globe,
+  Radio,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input, Label } from '@/components/ui/input';
@@ -40,7 +46,7 @@ const PLATFORMS: {
     id: 'INSTAGRAM',
     label: 'Instagram Pro',
     badge: 'Feed & Carousel',
-    desc: 'Posting carousel slide promosi & katalog produk otomatis ke Instagram.',
+    desc: 'Posting carousel foto promosi & katalog produk otomatis ke Instagram.',
     color: '#E1306C',
     gradient: 'from-pink-500 via-purple-600 to-orange-500',
     icon: Instagram,
@@ -78,6 +84,15 @@ export function ConnectAccountModal({
   defaultPlatform = 'INSTAGRAM',
 }: ConnectAccountModalProps) {
   const [selectedPlatform, setSelectedPlatform] = React.useState<SocialPlatform>(defaultPlatform);
+  const [connectMode, setConnectMode] = React.useState<'OFFICIAL_SYNC' | 'MANUAL_INPUT'>('OFFICIAL_SYNC');
+  
+  // Sync state
+  const [isSyncing, setIsSyncing] = React.useState(false);
+  const [syncedAccounts, setSyncedAccounts] = React.useState<any[]>([]);
+  const [hasSyncedOnce, setHasSyncedOnce] = React.useState(false);
+  const [claimingId, setClaimingId] = React.useState<string | null>(null);
+
+  // Manual input state
   const [handle, setHandle] = React.useState('');
   const [accountName, setAccountName] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -89,11 +104,83 @@ export function ConnectAccountModal({
     }
   }, [defaultPlatform, isOpen]);
 
+  // Fetch Repliz accounts when modal opens
+  const fetchReplizAccounts = React.useCallback(async () => {
+    setIsSyncing(true);
+    setErrorMsg(null);
+    try {
+      const res = await fetch('/api/social-accounts/sync');
+      const data = await res.json();
+      if (res.ok && data.accounts) {
+        setSyncedAccounts(data.accounts);
+        setHasSyncedOnce(true);
+      } else {
+        setErrorMsg(data?.error || 'Gagal mengambil data akun dari Repliz.');
+      }
+    } catch (e: any) {
+      setErrorMsg(e?.message || 'Gagal terhubung ke server sinkronisasi.');
+    } finally {
+      setIsSyncing(false);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (isOpen) {
+      fetchReplizAccounts();
+    }
+  }, [isOpen, fetchReplizAccounts]);
+
   if (!isOpen) return null;
 
   const currentPlatformInfo = PLATFORMS.find((p) => p.id === selectedPlatform) || PLATFORMS[0];
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Filter accounts for the currently selected platform
+  const filteredReplizAccounts = syncedAccounts.filter(
+    (a) => a.platform === selectedPlatform
+  );
+
+  // Handle Claim Repliz Account
+  const handleClaimAccount = async (acc: any) => {
+    setClaimingId(acc.id);
+    setErrorMsg(null);
+    try {
+      const res = await fetch('/api/social-accounts/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          replizAccountId: acc.id,
+          platform: acc.platform,
+          accountName: acc.name,
+          accountHandle: acc.username,
+          avatarUrl: acc.avatar,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Gagal menautkan akun.');
+      }
+
+      notify.celebrate(
+        'Akun Berhasil Ditautkan! 🎉',
+        `${acc.username} (${currentPlatformInfo.label}) berhasil dihubungkan ke profil InstaDeck Anda dan siap untuk Auto-Post.`
+      );
+
+      if (onAccountConnected) {
+        onAccountConnected(data.account);
+      }
+
+      onClose();
+    } catch (err: any) {
+      setErrorMsg(err?.message || 'Terjadi kesalahan saat menautkan akun.');
+      notify.error('Gagal Menautkan', err?.message);
+    } finally {
+      setClaimingId(null);
+    }
+  };
+
+  // Handle Manual Submission
+  const handleManualSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
 
@@ -147,12 +234,12 @@ export function ConnectAccountModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in overflow-y-auto">
       <div
-        className="relative w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl overflow-hidden animate-scale-up"
+        className="relative w-full max-w-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl overflow-hidden animate-scale-up my-8"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header with Coral-Orange accent */}
+        {/* Header */}
         <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-gradient-to-br from-slate-50 to-white dark:from-slate-900 dark:to-slate-950">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -161,10 +248,10 @@ export function ConnectAccountModal({
               </div>
               <div>
                 <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">
-                  Hubungkan Akun Medsos
+                  Hubungkan Akun Sosial Media
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                  InstaDeck PRO • Multi-Channel Auto-Post Engine
+                  InstaDeck PRO • Multi-Channel Auto-Post via Repliz Gold (200 Akun)
                 </p>
               </div>
             </div>
@@ -180,7 +267,7 @@ export function ConnectAccountModal({
         </div>
 
         {/* Modal Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+        <div className="p-6 space-y-5">
           {errorMsg && (
             <div className="p-3.5 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 text-red-700 dark:text-red-300 text-xs font-bold flex items-center gap-2">
               <AlertCircle className="size-4 shrink-0" />
@@ -188,10 +275,10 @@ export function ConnectAccountModal({
             </div>
           )}
 
-          {/* 1. Platform Selector */}
+          {/* 1. Pilih Platform */}
           <div>
             <Label className="text-xs font-black text-slate-800 dark:text-slate-200 mb-2 block">
-              1. Pilih Platform Media Sosial
+              1. Pilih Platform Media Sosial:
             </Label>
             <div className="grid grid-cols-3 gap-2.5">
               {PLATFORMS.map((plat) => {
@@ -240,77 +327,226 @@ export function ConnectAccountModal({
             </div>
           </div>
 
-          {/* 2. Account Details Form */}
-          <div className="space-y-3.5 bg-slate-50 dark:bg-slate-950/60 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
-            <div>
-              <Label htmlFor="accountHandle" className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                Username / Handle Akun <span className="text-red-500">*</span>
-              </Label>
-              <div className="relative mt-1">
-                <Input
-                  id="accountHandle"
-                  required
-                  value={handle}
-                  onChange={(e) => setHandle(e.target.value)}
-                  placeholder={currentPlatformInfo.placeholder}
-                  className="h-10 text-xs rounded-xl bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 font-mono font-bold text-slate-900 dark:text-white"
-                />
-              </div>
-              <p className="text-[10px] text-slate-500 mt-1">
-                Contoh: <span className="font-mono font-semibold">{currentPlatformInfo.example}</span>
-              </p>
-            </div>
-
-            <div>
-              <Label htmlFor="accountName" className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                Nama Brand / Toko (Opsional)
-              </Label>
-              <div className="relative mt-1">
-                <Input
-                  id="accountName"
-                  value={accountName}
-                  onChange={(e) => setAccountName(e.target.value)}
-                  placeholder="Contoh: Toko Hijab Cantik Official"
-                  className="h-10 text-xs rounded-xl bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
-                />
-              </div>
-              <p className="text-[10px] text-slate-500 mt-1">
-                Label nama untuk memudahkan Anda memilih akun saat membuat jadwal postingan.
-              </p>
-            </div>
-          </div>
-
-          {/* Security & Multi-Tenant Info */}
-          <div className="p-3.5 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/60 text-emerald-900 dark:text-emerald-300 text-[11px] space-y-1">
-            <div className="flex items-center gap-1.5 font-bold">
-              <ShieldCheck className="size-4 text-emerald-600 shrink-0" />
-              <span>Privasi Multi-Tenant Terisolasi Aman</span>
-            </div>
-            <p className="text-[10px] text-emerald-700 dark:text-emerald-400 pl-5 leading-relaxed">
-              Akun ini hanya dapat dilihat dan digunakan oleh Anda. Postingan carousel akan diproses melalui Repliz Gold Publisher berkecepatan tinggi.
-            </p>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex items-center justify-end gap-2.5 pt-2">
-            <Button
+          {/* Mode Switcher: Portal Resmi (Solusi A) vs Input Manual */}
+          <div className="flex items-center p-1 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+            <button
               type="button"
-              variant="secondary"
-              onClick={onClose}
-              className="h-10 px-4 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-800"
+              onClick={() => setConnectMode('OFFICIAL_SYNC')}
+              className={cn(
+                'flex-1 py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5',
+                connectMode === 'OFFICIAL_SYNC'
+                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm'
+                  : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+              )}
             >
-              Batal
-            </Button>
-            <Button
-              type="submit"
-              loading={isSubmitting}
-              className="h-10 px-6 text-xs font-bold rounded-xl bg-[#ff4526] hover:bg-[#e03d22] text-white shadow-lg shadow-[#ff4526]/25"
+              <Globe className="size-3.5 text-[#ff4526]" />
+              <span>Login Portal Resmi Repliz (Rekomendasi)</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setConnectMode('MANUAL_INPUT')}
+              className={cn(
+                'py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5',
+                connectMode === 'MANUAL_INPUT'
+                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm'
+                  : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+              )}
             >
-              <Plus className="size-4 mr-1.5" />
-              Hubungkan Sekarang
-            </Button>
+              <span>Input Handle Cepat</span>
+            </button>
           </div>
-        </form>
+
+          {/* ─── MODE A: PORTAL RESMI REPLIZ (SOLUSI A) ─── */}
+          {connectMode === 'OFFICIAL_SYNC' && (
+            <div className="space-y-4">
+              {/* Langkah 1 Card */}
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-50/60 to-purple-50/40 dark:from-indigo-950/30 dark:to-slate-950 border border-indigo-200/80 dark:border-indigo-900/50 space-y-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400 font-mono">
+                      LANGKAH 1 DARI 2
+                    </span>
+                    <h4 className="text-xs font-black text-slate-900 dark:text-white">
+                      Otorisasi di Portal Resmi {currentPlatformInfo.label}
+                    </h4>
+                    <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+                      Klik tombol di bawah untuk membuka halaman login resmi. Klik <strong>Connect {selectedPlatform}</strong> dan izinkan Repliz mempublikasikan postingan.
+                    </p>
+                  </div>
+                </div>
+
+                <Button
+                  asChild
+                  className="w-full h-10 text-xs font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:opacity-95 text-white rounded-xl shadow-md"
+                >
+                  <a href="https://app.repliz.com/account" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-1.5">
+                    <span>🔐 Buka Portal Otorisasi Resmi Repliz</span>
+                    <ExternalLink className="size-3.5" />
+                  </a>
+                </Button>
+              </div>
+
+              {/* Langkah 2 Card: Sinkronisasi */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-mono">
+                      LANGKAH 2 DARI 2
+                    </span>
+                    <h4 className="text-xs font-black text-slate-900 dark:text-white">
+                      Tarik Akun ke Profil InstaDeck
+                    </h4>
+                  </div>
+
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="secondary"
+                    onClick={fetchReplizAccounts}
+                    disabled={isSyncing}
+                    className="h-8 text-xs font-bold border border-slate-200 dark:border-slate-800 rounded-xl"
+                  >
+                    <RefreshCw className={cn("size-3.5 mr-1.5", isSyncing && "animate-spin text-[#ff4526]")} />
+                    <span>{isSyncing ? 'Mengecek...' : 'Cek Akun Terbaru'}</span>
+                  </Button>
+                </div>
+
+                {/* List Akun yang Terdeteksi dari Repliz */}
+                {isSyncing ? (
+                  <div className="p-6 text-center text-xs text-slate-500 flex flex-col items-center justify-center gap-2">
+                    <RefreshCw className="size-5 text-[#ff4526] animate-spin" />
+                    <span>Sedang menghubungkan ke server Repliz Gold...</span>
+                  </div>
+                ) : filteredReplizAccounts.length > 0 ? (
+                  <div className="space-y-2">
+                    <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400">
+                      Akun {currentPlatformInfo.label} yang terdeteksi di Repliz:
+                    </span>
+                    {filteredReplizAccounts.map((acc) => (
+                      <div
+                        key={acc.id}
+                        className="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <div className="size-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-bold text-xs">
+                            {acc.username.substring(0, 2).toUpperCase()}
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-xs font-bold text-slate-900 dark:text-white">
+                                {acc.username}
+                              </span>
+                              <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold">
+                                🟢 Siap
+                              </span>
+                            </div>
+                            <span className="text-[10px] text-slate-400">{acc.name}</span>
+                          </div>
+                        </div>
+
+                        {acc.isClaimedByCurrentUser ? (
+                          <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+                            <Check className="size-3.5" /> Sudah Terhubung
+                          </span>
+                        ) : acc.isClaimedByOther ? (
+                          <span className="text-[11px] font-bold text-slate-400">
+                            Digunakan User Lain
+                          </span>
+                        ) : (
+                          <Button
+                            type="button"
+                            size="sm"
+                            disabled={claimingId === acc.id}
+                            onClick={() => handleClaimAccount(acc)}
+                            className="h-8 text-xs font-bold bg-[#ff4526] hover:bg-[#e03d22] text-white rounded-xl shadow-sm"
+                          >
+                            {claimingId === acc.id ? 'Menghubungkan...' : 'Tautkan Akun Ini'}
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-dashed border-slate-200 dark:border-slate-800 text-center space-y-1">
+                    <p className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                      Belum ada akun {currentPlatformInfo.label} yang terhubung di Repliz
+                    </p>
+                    <p className="text-[11px] text-slate-500">
+                      Silakan klik tombol <strong>Langkah 1</strong> di atas, lakukan login di portal Repliz, lalu klik <strong>Cek Akun Terbaru</strong>.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ─── MODE B: MANUAL INPUT CEPAT ─── */}
+          {connectMode === 'MANUAL_INPUT' && (
+            <form onSubmit={handleManualSubmit} className="space-y-4">
+              <div className="space-y-3 bg-slate-50 dark:bg-slate-950/60 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
+                <div>
+                  <Label htmlFor="accountHandle" className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                    Username / Handle Akun <span className="text-red-500">*</span>
+                  </Label>
+                  <div className="relative mt-1">
+                    <Input
+                      id="accountHandle"
+                      required
+                      value={handle}
+                      onChange={(e) => setHandle(e.target.value)}
+                      placeholder={currentPlatformInfo.placeholder}
+                      className="h-10 text-xs rounded-xl bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 font-mono font-bold text-slate-900 dark:text-white"
+                    />
+                  </div>
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    Contoh: <span className="font-mono font-semibold">{currentPlatformInfo.example}</span>
+                  </p>
+                </div>
+
+                <div>
+                  <Label htmlFor="accountName" className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                    Nama Brand / Toko (Opsional)
+                  </Label>
+                  <div className="relative mt-1">
+                    <Input
+                      id="accountName"
+                      value={accountName}
+                      onChange={(e) => setAccountName(e.target.value)}
+                      placeholder="Contoh: Toko Hijab Cantik Official"
+                      className="h-10 text-xs rounded-xl bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2.5">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={onClose}
+                  className="h-10 px-4 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-800"
+                >
+                  Batal
+                </Button>
+                <Button
+                  type="submit"
+                  loading={isSubmitting}
+                  className="h-10 px-6 text-xs font-bold rounded-xl bg-[#ff4526] hover:bg-[#e03d22] text-white shadow-lg shadow-[#ff4526]/25"
+                >
+                  <Plus className="size-4 mr-1.5" />
+                  Hubungkan Sekarang
+                </Button>
+              </div>
+            </form>
+          )}
+
+          {/* Footer Security Note */}
+          <div className="p-3 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/60 text-emerald-900 dark:text-emerald-300 text-[11px] flex items-center gap-2">
+            <ShieldCheck className="size-4 text-emerald-600 shrink-0" />
+            <span>Privasi Multi-Tenant Terjamin: Akun Anda aman dan tidak dapat dilihat pengguna lain.</span>
+          </div>
+        </div>
       </div>
     </div>
   );
