@@ -474,12 +474,21 @@ Kembalikan HANYA format JSON valid berikut:
       ? 'OUTRO'
       : activePattern[(idx - 1) % activePattern.length];
 
-    // SETIAP slide selalu mendapatkan foto produk asli (jika dari marketplace/link) atau foto kontekstual!
+    // SETIAP slide selalu mendapatkan foto produk asli (jika dari marketplace/link) atau tema seni AI kontekstual!
     let photoUrl: string | null = null;
-    if (isCover && (articleImages[0] || articleImageUrl)) {
+    if (input.aiVisualTheme && input.aiVisualTheme !== 'AUTO') {
+      // Jika pengguna secara spesifik memilih Tema Visual AI (misal: 3D Cute Pixar, Cyberpunk, Ghibli, dsb), gunakan tema visual seni tersebut
+      photoUrl = getContextualPhotoForSlide(
+        detectedCategory,
+        idx,
+        `${s.title || ''} ${s.body || ''} ${articleTitle}`,
+        isCover ? articleImageUrl : null,
+        input.aiVisualTheme
+      );
+    } else if (isCover && (articleImages[0] || articleImageUrl)) {
       photoUrl = articleImages[0] || articleImageUrl;
     } else if (articleImages.length > 0) {
-      // Jika dari link produk / marketplace, gunakan foto-foto produk asli secara berurutan untuk setiap slide!
+      // Jika dari link produk / marketplace dan tema AUTO, gunakan foto-foto produk asli secara berurutan untuk setiap slide!
       photoUrl = articleImages[idx % articleImages.length];
     } else {
       photoUrl = getContextualPhotoForSlide(

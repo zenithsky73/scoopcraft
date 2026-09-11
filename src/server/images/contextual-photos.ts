@@ -282,12 +282,7 @@ export function getContextualPhotoForSlide(
   articleImageUrl?: string | null,
   aiVisualTheme?: string,
 ): string {
-  // Slide 0 (Cover): Jika ada gambar asli dari URL artikel, selalu utamakan
-  if (slideIndex === 0 && articleImageUrl) {
-    return articleImageUrl;
-  }
-
-  // Jika pengguna memilih Tema Visual Seni AI khusus (bukan AUTO), gunakan koleksi visual dari tema tersebut
+  // 1. Jika pengguna memilih Tema Visual Seni AI khusus (bukan AUTO), terapkan ke SEMUA slide (termasuk Cover slide 0)
   if (aiVisualTheme && aiVisualTheme !== 'AUTO') {
     const themeDef = getAIThemeDef(aiVisualTheme);
     if (themeDef && themeDef.curatedPhotos && themeDef.curatedPhotos.length > 0) {
@@ -296,7 +291,12 @@ export function getContextualPhotoForSlide(
     }
   }
 
-  // Deteksi kategori spesifik dari teks slide ini terlebih dahulu
+  // 2. Slide 0 (Cover): Jika mode AUTO dan ada gambar asli dari URL artikel / produk, utamakan gambar URL asli
+  if (slideIndex === 0 && articleImageUrl) {
+    return articleImageUrl;
+  }
+
+  // 3. Deteksi kategori spesifik dari teks slide ini terlebih dahulu
   const detectedCategory = detectCategoryFromText(slideText || category || '');
   const pool = TOPIC_PHOTO_COLLECTION[detectedCategory] || TOPIC_PHOTO_COLLECTION.BERITA;
 

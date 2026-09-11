@@ -1045,32 +1045,69 @@ export function CarouselStudio({
                 )}
               </div>
 
-              {/* Photo Replacement: Unsplash Search & Manual Upload */}
-              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2 min-w-0">
-                  <ImageIcon className="size-4 text-cyan-600 dark:text-cyan-400 shrink-0" />
-                  <div className="min-w-0">
-                    <p className="text-xs font-bold text-slate-900 dark:text-white truncate">Foto Latar Slide #{activeSlideIndex + 1}</p>
-                    <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">Cari Unsplash atau unggah manual</p>
+              {/* Photo Replacement: Unsplash Search, Manual Upload, and Original Link Photo */}
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2.5">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <ImageIcon className="size-4 text-cyan-600 dark:text-cyan-400 shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-slate-900 dark:text-white truncate">Foto Latar Slide #{activeSlideIndex + 1}</p>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                        {currentSlide.imageUrl ? 'Foto aktif terpasang' : 'Tanpa foto latar'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <Button
+                      size="sm"
+                      type="button"
+                      onClick={() => setIsStockModalOpen(true)}
+                      className="h-8 px-2.5 text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm flex items-center gap-1 rounded-xl"
+                    >
+                      <Search className="size-3" /> Cari Foto
+                    </Button>
+                    <Button
+                      size="sm"
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="h-8 px-2.5 text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl shadow-sm"
+                    >
+                      <Upload className="size-3 mr-1" /> Unggah
+                    </Button>
                   </div>
                 </div>
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <Button
-                    size="sm"
-                    type="button"
-                    onClick={() => setIsStockModalOpen(true)}
-                    className="h-8 px-2.5 text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm flex items-center gap-1 rounded-xl"
-                  >
-                    <Search className="size-3" /> Cari Foto
-                  </Button>
-                  <Button
-                    size="sm"
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="h-8 px-2.5 text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl shadow-sm"
-                  >
-                    <Upload className="size-3 mr-1" /> Unggah
-                  </Button>
+
+                {/* Quick Actions: Original Link Photo & Remove Photo */}
+                <div className="flex items-center gap-1.5 flex-wrap pt-2 border-t border-slate-200 dark:border-slate-800/80">
+                  {article.imageUrl && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        updateActiveSlide({ imageUrl: article.imageUrl });
+                        notify.success(
+                          'Foto Asli Link Diterapkan! 📸',
+                          'Slide ini kini menggunakan foto asli hasil scraping tautan / produk.'
+                        );
+                      }}
+                      className="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/60 flex items-center gap-1 transition-all"
+                      title="Gunakan foto asli hasil scraper produk / link artikel"
+                    >
+                      <Sparkles className="size-2.5" /> Pakai Foto Asli Link
+                    </button>
+                  )}
+                  {currentSlide.imageUrl && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        updateActiveSlide({ imageUrl: undefined });
+                        notify.info('Foto Dihapus', 'Slide ini sekarang bersih tanpa gambar latar belakang.');
+                      }}
+                      className="px-2 py-1 rounded-lg text-[10px] font-semibold text-slate-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 border border-transparent hover:border-red-200 dark:hover:border-red-900/60 flex items-center gap-1 transition-all ml-auto"
+                      title="Hapus foto dari slide ini"
+                    >
+                      <Trash2 className="size-2.5" /> Hapus Foto
+                    </button>
+                  )}
                 </div>
               </div>
 
