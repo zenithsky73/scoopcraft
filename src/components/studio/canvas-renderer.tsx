@@ -164,7 +164,7 @@ export function CanvasRenderer({
     <div
       id={`slide-canvas-${slide.index}`}
       data-slide-index={slide.index}
-      className={`relative w-full overflow-hidden rounded-2xl shadow-2xl flex flex-col justify-between select-none transition-all duration-300 ${aspectClass} ${fontClass} ${className}`}
+      className={`relative w-full overflow-hidden rounded-none shadow-2xl flex flex-col justify-between select-none transition-all duration-300 ${aspectClass} ${fontClass} ${className}`}
       style={{
         backgroundColor: styleDef.bgColor,
         color: textPrimary,
@@ -176,7 +176,7 @@ export function CanvasRenderer({
       {style === 'BREAKING_NEWS' && (
         <>
           <div className="absolute top-0 left-0 right-0 h-3 bg-red-600 z-30 shadow-[0_0_20px_rgba(239,68,68,0.9)]" />
-          <div className="absolute -top-24 -right-24 w-72 h-72 bg-red-600/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -top-24 -right-24 w-72 h-72 bg-red-600/15 blur-3xl pointer-events-none" />
         </>
       )}
 
@@ -186,8 +186,8 @@ export function CanvasRenderer({
 
       {style === 'FINANCE' && (
         <>
-          <div className="absolute top-0 right-0 w-72 h-72 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-0 right-0 w-72 h-72 bg-emerald-500/15 blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-teal-500/10 blur-3xl pointer-events-none" />
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98108_1px,transparent_1px),linear-gradient(to_bottom,#10b98108_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
         </>
       )}
@@ -195,14 +195,14 @@ export function CanvasRenderer({
       {style === 'TECH' && (
         <>
           <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,#38bdf80f_1px,transparent_1px),linear-gradient(to_bottom,#38bdf80f_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
-          <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/15 blur-3xl pointer-events-none" />
         </>
       )}
 
       {style === 'LIFESTYLE' && (
         <>
-          <div className="absolute top-0 right-0 w-64 h-64 bg-rose-200/40 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-100/50 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-rose-200/40 blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-100/50 blur-3xl pointer-events-none" />
         </>
       )}
 
@@ -211,7 +211,7 @@ export function CanvasRenderer({
       )}
 
       {style === 'MINIMAL' && (
-        <div className="absolute inset-3 border-2 border-slate-900 pointer-events-none rounded-xl" />
+        <div className="absolute inset-3 border-2 border-slate-900 pointer-events-none rounded-none" />
       )}
 
       {style === 'STREETWEAR' && (
@@ -220,8 +220,8 @@ export function CanvasRenderer({
 
       {style === 'BLOOMBERG' && (
         <>
-          <div className="absolute top-0 right-0 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-0 right-0 w-80 h-80 bg-blue-600/10 blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/10 blur-3xl pointer-events-none" />
         </>
       )}
 
@@ -235,8 +235,8 @@ export function CanvasRenderer({
 
       {style === 'COSMIC' && (
         <>
-          <div className="absolute top-1/4 right-1/4 w-80 h-80 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-1/4 right-1/4 w-80 h-80 bg-amber-500/15 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-indigo-600/20 blur-3xl pointer-events-none" />
         </>
       )}
 
@@ -244,25 +244,25 @@ export function CanvasRenderer({
       {style === 'SHOPEE_PROMO' && (
         <>
           <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-orange-500 via-amber-400 to-red-500 z-30 shadow-[0_0_20px_rgba(238,77,45,0.8)]" />
-          <div className="absolute -top-20 -right-20 w-72 h-72 bg-orange-600/25 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-red-600/20 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -top-20 -right-20 w-72 h-72 bg-orange-600/25 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-red-600/20 blur-3xl pointer-events-none" />
         </>
       )}
 
       {style === 'RACUN_SHOPEE' && (
         <>
-          <div className="absolute top-0 right-0 w-64 h-64 bg-pink-500/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-60 h-60 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-pink-500/15 blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-60 h-60 bg-rose-500/10 blur-3xl pointer-events-none" />
         </>
       )}
 
       {style === 'PRODUCT_CATALOG' && (
-        <div className="absolute inset-3 border border-[#C5A880]/40 pointer-events-none rounded-2xl" />
+        <div className="absolute inset-3 border border-[#C5A880]/40 pointer-events-none rounded-none" />
       )}
 
       {style === 'BRUTALIST_SALE' && (
         <>
-          <div className="absolute inset-2 border-2 border-black pointer-events-none rounded-xl" />
+          <div className="absolute inset-2 border-2 border-black pointer-events-none rounded-none" />
           <div className="absolute inset-0 bg-[radial-gradient(#00000015_1px,transparent_1px)] [background-size:12px_12px] pointer-events-none" />
         </>
       )}
@@ -272,13 +272,13 @@ export function CanvasRenderer({
       )}
 
       {style === 'TESTIMONIAL_CHAT' && (
-        <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 blur-3xl pointer-events-none" />
       )}
 
       {style === 'PRICE_TIER_TABLE' && (
         <>
-          <div className="absolute top-0 right-0 w-72 h-72 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-0 right-0 w-72 h-72 bg-amber-500/15 blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/15 blur-3xl pointer-events-none" />
         </>
       )}
 
@@ -307,8 +307,8 @@ export function CanvasRenderer({
 
       {style === 'EVENT_WEBINAR' && (
         <>
-          <div className="absolute top-0 right-0 w-80 h-80 bg-pink-500/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-0 right-0 w-80 h-80 bg-pink-500/15 blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-600/20 blur-3xl pointer-events-none" />
         </>
       )}
 
@@ -321,10 +321,10 @@ export function CanvasRenderer({
         <div className="flex items-center gap-2 min-w-0">
           {/* Custom Header: TERMINAL macOS Window */}
           {style === 'TERMINAL' ? (
-            <div className="flex items-center gap-1.5 bg-slate-900 px-2 py-1 rounded-lg border border-slate-700">
-              <span className="size-2 rounded-full bg-red-500 inline-block" />
-              <span className="size-2 rounded-full bg-yellow-500 inline-block" />
-              <span className="size-2 rounded-full bg-emerald-500 inline-block" />
+            <div className="flex items-center gap-1.5 bg-slate-900 px-2 py-1 rounded-none border border-slate-700">
+              <span className="size-2 bg-red-500 inline-block" />
+              <span className="size-2 bg-yellow-500 inline-block" />
+              <span className="size-2 bg-emerald-500 inline-block" />
               <span className="font-mono text-[9px] text-cyan-400 ml-1.5 font-bold">instadeck.sh</span>
             </div>
           ) : style === 'EDITORIAL' || style === 'POLICY' ? (
@@ -334,64 +334,64 @@ export function CanvasRenderer({
               </span>
             </div>
           ) : style === 'MINIMAL' ? (
-            <span className="px-2 py-0.5 text-[9px] font-mono font-black tracking-widest uppercase border-2 border-black bg-black text-white">
+            <span className="px-2 py-0.5 text-[9px] font-mono font-black tracking-widest uppercase border-2 border-black bg-black text-white rounded-none">
               {slide.tag || (isCover ? 'OVERVIEW' : isOutro ? 'SUMMARY' : `POINT 0${slide.index}`)}
             </span>
           ) : style === 'STREETWEAR' ? (
-            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase bg-black text-white shadow-[3px_3px_0px_0px_#FFF] border border-black">
+            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase bg-black text-white shadow-[3px_3px_0px_0px_#FFF] border border-black rounded-none">
               {slide.tag || 'URBAN DISPATCH'}
             </span>
           ) : style === 'PODCAST' ? (
-            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase bg-indigo-600 text-white rounded-md flex items-center gap-1">
+            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase bg-indigo-600 text-white rounded-none flex items-center gap-1">
               <Mic className="size-3" /> {slide.tag || 'INTERVIEW'}
             </span>
           ) : style === 'CULINARY' ? (
-            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase bg-orange-600 text-white rounded-md flex items-center gap-1 shadow-sm">
+            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase bg-orange-600 text-white rounded-none flex items-center gap-1 shadow-sm">
               <Utensils className="size-3" /> {slide.tag || 'KULINER VIRAL'}
             </span>
           ) : style === 'ATHLETIC' ? (
-            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase italic bg-yellow-400 text-black -skew-x-12 shadow-md">
+            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase italic bg-yellow-400 text-black -skew-x-12 shadow-md rounded-none">
               ⚡ {slide.tag || 'SPEED REPORT'}
             </span>
           ) : style === 'BLOOMBERG' ? (
-            <span className="px-2.5 py-0.5 text-[10px] font-mono font-black uppercase bg-blue-600 text-white rounded">
+            <span className="px-2.5 py-0.5 text-[10px] font-mono font-black uppercase bg-blue-600 text-white rounded-none">
               MARKETS LIVE
             </span>
           ) : style === 'SHOPEE_PROMO' ? (
-            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase bg-[#EE4D2D] text-white flex items-center gap-1 shadow-sm rounded-md">
+            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase bg-[#EE4D2D] text-white flex items-center gap-1 shadow-sm rounded-none">
               <Zap className="size-3 fill-current text-yellow-300" /> {slide.tag || 'FLASH SALE'}
             </span>
           ) : style === 'RACUN_SHOPEE' ? (
-            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase bg-gradient-to-r from-pink-500 to-rose-500 text-white flex items-center gap-1 shadow-sm rounded-md">
+            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase bg-gradient-to-r from-pink-500 to-rose-500 text-white flex items-center gap-1 shadow-sm rounded-none">
               <Sparkles className="size-3" /> {slide.tag || 'RACUN SHOPEE'}
             </span>
           ) : style === 'PRODUCT_CATALOG' ? (
-            <span className="px-3 py-0.5 text-[9px] font-serif tracking-widest uppercase border border-[#C5A880] text-[#8C6D46] rounded-full">
+            <span className="px-3 py-0.5 text-[9px] font-serif tracking-widest uppercase border border-[#C5A880] text-[#8C6D46] rounded-none">
               {slide.tag || 'OFFICIAL BOUTIQUE'}
             </span>
           ) : style === 'BRUTALIST_SALE' ? (
-            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase bg-[#CCFF00] text-black border-2 border-black shadow-[2px_2px_0px_#000] -rotate-1">
+            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase bg-[#CCFF00] text-black border-2 border-black shadow-[2px_2px_0px_#000] -rotate-1 rounded-none">
               <Tag className="size-3 inline mr-1" /> {slide.tag || 'DROP ALERT'}
             </span>
           ) : style === 'BEFORE_AFTER' ? (
-            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase bg-emerald-600 text-white flex items-center gap-1 rounded-md shadow-sm">
+            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase bg-emerald-600 text-white flex items-center gap-1 rounded-none shadow-sm">
               ✨ {slide.tag || 'TRANSFORMASI'}
             </span>
           ) : style === 'TESTIMONIAL_CHAT' ? (
-            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase bg-[#25D366] text-white flex items-center gap-1 rounded-md shadow-sm">
+            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase bg-[#25D366] text-white flex items-center gap-1 rounded-none shadow-sm">
               <MessageSquare className="size-3" /> {slide.tag || 'VERIFIED BUYER'}
             </span>
           ) : style === 'PRICE_TIER_TABLE' ? (
-            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase bg-amber-500 text-slate-950 font-mono flex items-center gap-1 rounded-md shadow-sm">
+            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase bg-amber-500 text-slate-950 font-mono flex items-center gap-1 rounded-none shadow-sm">
               <Tag className="size-3" /> {slide.tag || 'PRICE LIST'}
             </span>
           ) : style === 'UNBOXING_POLAROID' ? (
-            <span className="px-2.5 py-0.5 text-[10px] font-bold text-slate-700 bg-amber-100 border border-amber-300 rounded shadow-sm rotate-1">
+            <span className="px-2.5 py-0.5 text-[10px] font-bold text-slate-700 bg-amber-100 border border-amber-300 rounded-none shadow-sm rotate-1">
               <Bookmark className="size-3 text-pink-500 inline mr-1" /> {slide.tag || 'UNBOXING DIARY'}
             </span>
           ) : style === 'TWITTER_THREAD' ? (
             <div className="flex items-center gap-1.5">
-              <div className="size-4.5 rounded-full bg-slate-800 flex items-center justify-center text-[9px] font-bold text-white border border-white/20">
+              <div className="size-4.5 rounded-none bg-slate-800 flex items-center justify-center text-[9px] font-bold text-white border border-white/20">
                 𝕏
               </div>
               <span className="text-[10px] font-bold text-white flex items-center gap-1">
@@ -404,7 +404,7 @@ export function CanvasRenderer({
             </span>
           ) : style === 'STEP_BY_STEP_GUIDE' ? (
             <div className="flex items-center gap-1.5">
-              <span className="size-4 rounded-full bg-purple-600 text-[9px] font-black text-white flex items-center justify-center">
+              <span className="size-4 rounded-none bg-purple-600 text-[9px] font-black text-white flex items-center justify-center">
                 {slide.index + 1}
               </span>
               <span className="text-[10px] font-black text-purple-400 uppercase tracking-wider">
@@ -412,12 +412,12 @@ export function CanvasRenderer({
               </span>
             </div>
           ) : style === 'EVENT_WEBINAR' ? (
-            <span className="px-2.5 py-0.5 text-[10px] font-mono font-black uppercase bg-gradient-to-r from-pink-600 to-purple-600 text-white rounded-md flex items-center gap-1 shadow-sm">
+            <span className="px-2.5 py-0.5 text-[10px] font-mono font-black uppercase bg-gradient-to-r from-pink-600 to-purple-600 text-white rounded-none flex items-center gap-1 shadow-sm">
               <Ticket className="size-3" /> {slide.tag || 'ADMISSION PASS'}
             </span>
           ) : (
             <span
-              className="px-2.5 py-0.5 text-[10px] font-black tracking-wider uppercase rounded-md shadow-sm shrink-0"
+              className="px-2.5 py-0.5 text-[10px] font-black tracking-wider uppercase rounded-none shadow-sm shrink-0"
               style={{
                 backgroundColor: accent,
                 color: '#FFFFFF',
@@ -437,7 +437,7 @@ export function CanvasRenderer({
 
         {/* Slide Counter */}
         <div
-          className={`text-[10px] font-mono font-black px-2.5 py-0.5 rounded-full border shrink-0 ${
+          className={`text-[10px] font-mono font-black px-2.5 py-0.5 rounded-none border shrink-0 ${
             isLight
               ? 'bg-white border-slate-300 text-slate-800 shadow-sm'
               : 'bg-white/10 border-white/20 text-slate-100 backdrop-blur-md'
@@ -475,7 +475,7 @@ export function CanvasRenderer({
 
           {/* STREETWEAR SPECIAL: NEO-BRUTALIST OFFSET HARD CARD */}
           {style === 'STREETWEAR' ? (
-            <div className="relative z-10 p-5 rounded-2xl bg-white border-2 border-black shadow-[6px_6px_0px_0px_#000] text-black space-y-3">
+            <div className="relative z-10 p-5 rounded-none bg-white border-2 border-black shadow-[6px_6px_0px_0px_#000] text-black space-y-3">
               <div className="inline-block px-2.5 py-0.5 bg-black text-white text-[10px] font-black uppercase tracking-wider">
                 {slide.tag || 'URBAN DISPATCH'}
               </div>
@@ -495,36 +495,36 @@ export function CanvasRenderer({
           ) : (
             <div
               className={`relative z-10 space-y-3 ${
-                isLight ? 'p-4 rounded-2xl bg-white/80 backdrop-blur-md border border-white/60 shadow-lg' : ''
+                isLight ? 'p-4 rounded-none bg-white/80 backdrop-blur-md border border-white/60 shadow-lg' : ''
               }`}
             >
               {/* Live Ticker for BLOOMBERG */}
               {style === 'BLOOMBERG' && (
-                <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-950/90 border border-emerald-500/50 text-emerald-300 font-mono text-[9px] font-bold shadow-sm">
-                  <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-none bg-emerald-950/90 border border-emerald-500/50 text-emerald-300 font-mono text-[9px] font-bold shadow-sm">
+                  <span className="size-1.5 rounded-none bg-emerald-400 animate-pulse" />
                   <span>▲ IHSG +1.4% • BTC $94.2K</span>
                 </div>
               )}
 
               {/* Spotlight Tag for SPOTLIGHT */}
               {style === 'SPOTLIGHT' && (
-                <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-fuchsia-600/40 border border-fuchsia-400/50 text-fuchsia-100 text-[10px] font-black uppercase shadow-sm">
+                <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-none bg-fuchsia-600/40 border border-fuchsia-400/50 text-fuchsia-100 text-[10px] font-black uppercase shadow-sm">
                   <Star className="size-3 text-amber-400 fill-amber-400" /> TOP TRENDING #1
                 </div>
               )}
 
               {/* Special Cover: SHOPEE_PROMO */}
               {style === 'SHOPEE_PROMO' && (
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-orange-950/90 border border-orange-500/60 text-xs shadow-md">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-none bg-orange-950/90 border border-orange-500/60 text-xs shadow-md">
                   <span className="line-through text-slate-400 text-[11px]">Rp 189.000</span>
                   <span className="font-black text-yellow-300 text-sm">🔥 Rp 79.000</span>
-                  <span className="px-1.5 py-0.5 bg-red-600 text-white text-[9px] font-black rounded-md uppercase">DISKON 60%</span>
+                  <span className="px-1.5 py-0.5 bg-red-600 text-white text-[9px] font-black rounded-none uppercase">DISKON 60%</span>
                 </div>
               )}
 
               {/* Special Cover: RACUN_SHOPEE */}
               {style === 'RACUN_SHOPEE' && (
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-slate-900/90 border border-pink-500/40 text-xs shadow-md">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-none bg-slate-900/90 border border-pink-500/40 text-xs shadow-md">
                   <span className="text-amber-400 text-xs font-black">★★★★★</span>
                   <span className="text-white text-[11px] font-bold">4.9/5 (1.8k+ Ulasan)</span>
                   <span className="text-[10px] text-pink-400 font-mono">#ViralAffiliate</span>
@@ -534,7 +534,7 @@ export function CanvasRenderer({
               {/* Special Cover: PRODUCT_CATALOG */}
               {style === 'PRODUCT_CATALOG' && (
                 <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                  <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#C5A880]/20 border border-[#C5A880] text-[#8C6D46]">100% Halal</span>
+                  <span className="px-2 py-0.5 rounded-none text-[9px] font-bold bg-[#C5A880]/20 border border-[#C5A880] text-[#8C6D46]">100% Halal</span>
                   <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#C5A880]/20 border border-[#C5A880] text-[#8C6D46]">BPOM Certified</span>
                   <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#C5A880]/20 border border-[#C5A880] text-[#8C6D46]">Original</span>
                 </div>
@@ -550,14 +550,14 @@ export function CanvasRenderer({
               {/* Special Cover: BEFORE_AFTER */}
               {style === 'BEFORE_AFTER' && (
                 <div className="grid grid-cols-2 gap-2 text-center text-xs font-bold pt-1">
-                  <div className="p-1.5 rounded-xl bg-red-950/80 border border-red-500/40 text-red-300">❌ SEBELUM (Masalah)</div>
-                  <div className="p-1.5 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-300">✨ SESUDAH (Solusi)</div>
+                  <div className="p-1.5 rounded-none bg-red-950/80 border border-red-500/40 text-red-300">❌ SEBELUM (Masalah)</div>
+                  <div className="p-1.5 rounded-none bg-emerald-950/80 border border-emerald-500/40 text-emerald-300">✨ SESUDAH (Solusi)</div>
                 </div>
               )}
 
               {/* Special Cover: TESTIMONIAL_CHAT */}
               {style === 'TESTIMONIAL_CHAT' && (
-                <div className="p-2.5 rounded-2xl bg-[#005c4b]/90 border border-emerald-400/30 text-emerald-50 text-xs shadow-lg space-y-1">
+                <div className="p-2.5 rounded-none bg-[#005c4b]/90 border border-emerald-400/30 text-emerald-50 text-xs shadow-lg space-y-1">
                   <div className="flex items-center justify-between text-[10px] text-emerald-300">
                     <span className="font-bold flex items-center gap-1"><MessageSquare className="size-3" /> WhatsApp Review</span>
                     <span>14:32 ✓✓</span>
@@ -568,9 +568,9 @@ export function CanvasRenderer({
 
               {/* Special Cover: TWITTER_THREAD */}
               {style === 'TWITTER_THREAD' && (
-                <div className="flex items-center justify-between p-2 rounded-xl bg-slate-900/80 border border-slate-700 text-xs text-slate-300">
+                <div className="flex items-center justify-between p-2 rounded-none bg-slate-900/80 border border-slate-700 text-xs text-slate-300">
                   <div className="flex items-center gap-2">
-                    <div className="size-6 rounded-full bg-slate-700 flex items-center justify-center text-[10px] font-bold text-white">𝕏</div>
+                    <div className="size-6 rounded-none bg-slate-700 flex items-center justify-center text-[10px] font-bold text-white">𝕏</div>
                     <div>
                       <p className="text-[11px] font-bold text-white flex items-center gap-1">{brandName} <BadgeCheck className="size-3 text-sky-400 fill-sky-400" /></p>
                       <p className="text-[9px] text-slate-400">{handle}</p>
@@ -584,7 +584,7 @@ export function CanvasRenderer({
 
               {/* Special Cover: PRICE_TIER_TABLE */}
               {style === 'PRICE_TIER_TABLE' && (
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-amber-950/80 border border-amber-500/40 text-xs font-mono text-amber-300">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-none bg-amber-950/80 border border-amber-500/40 text-xs font-mono text-amber-300">
                   <Tag className="size-3" />
                   <span>PAKET BEST SELLER • MULAI DARI Rp 49.000</span>
                 </div>
@@ -592,7 +592,7 @@ export function CanvasRenderer({
 
               {/* Special Cover: EVENT_WEBINAR */}
               {style === 'EVENT_WEBINAR' && (
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-pink-950/80 border border-pink-500/40 text-xs font-mono text-pink-300">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-none bg-pink-950/80 border border-pink-500/40 text-xs font-mono text-pink-300">
                   <Calendar className="size-3" />
                   <span>ONLINE WORKSHOP • SLOT TERBATAS</span>
                 </div>
@@ -650,11 +650,11 @@ export function CanvasRenderer({
           {/* KHUSUS 1: TWITTER_THREAD (Cuitan Utas X Asli Dark Mode) */}
           {style === 'TWITTER_THREAD' ? (
             <div className="relative z-10 flex-1 flex flex-col justify-between p-4 sm:p-6 overflow-hidden text-[#E7E9EA]">
-              <div className="relative flex-1 flex flex-col justify-between rounded-2xl bg-black/95 border border-white/15 p-5 shadow-2xl backdrop-blur-md">
+              <div className="relative flex-1 flex flex-col justify-between rounded-none bg-black/95 border border-white/15 p-5 shadow-2xl backdrop-blur-md">
                 {/* Twitter Header */}
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-2.5">
-                    <div className="size-9 rounded-full bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-md border border-white/20 shrink-0">
+                    <div className="size-9 rounded-none bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-md border border-white/20 shrink-0">
                       {brandName.slice(0, 2).toUpperCase()}
                     </div>
                     <div className="leading-tight">
@@ -665,7 +665,7 @@ export function CanvasRenderer({
                       <span className="text-[10px] text-slate-400 font-mono">{handle} · 2h</span>
                     </div>
                   </div>
-                  <div className="px-2 py-0.5 rounded-full bg-white/10 text-[9px] font-mono font-bold text-sky-400 border border-white/15">
+                  <div className="px-2 py-0.5 rounded-none bg-white/10 text-[9px] font-mono font-bold text-sky-400 border border-white/15">
                     {slide.index + 1}/{totalSlides} 🧵
                   </div>
                 </div>
@@ -703,18 +703,18 @@ export function CanvasRenderer({
             /* KHUSUS 2: SHOPEE_PROMO & RACUN_SHOPEE (E-Commerce Product Card) */
             <div className="relative z-10 flex-1 flex flex-col justify-between p-4 sm:p-6 space-y-3 overflow-hidden">
               {slide.imageUrl ? (
-                <div className="relative w-full h-36 sm:h-44 rounded-2xl overflow-hidden border-2 border-orange-500/40 shadow-xl shrink-0">
+                <div className="relative w-full h-36 sm:h-44 rounded-none overflow-hidden border-2 border-orange-500/40 shadow-xl shrink-0">
                   <img src={slide.imageUrl} alt="Product Detail" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                   <div className="absolute bottom-2.5 left-3.5 right-3.5 flex items-center justify-between">
-                    <span className="px-2 py-0.5 bg-[#EE4D2D] text-white text-[10px] font-black uppercase rounded shadow">
+                    <span className="px-2 py-0.5 bg-[#EE4D2D] text-white text-[10px] font-black uppercase rounded-none shadow">
                       {style === 'RACUN_SHOPEE' ? '✨ RACUN VIRAL' : '🔥 FLASH DEAL'}
                     </span>
                     <span className="text-xs font-black text-yellow-300">★★★★★ 4.9/5</span>
                   </div>
                 </div>
               ) : (
-                <div className="p-4 rounded-2xl bg-gradient-to-r from-orange-600/30 to-rose-600/30 border border-orange-500/50 flex items-center justify-between shadow-lg">
+                <div className="p-4 rounded-none bg-gradient-to-r from-orange-600/30 to-rose-600/30 border border-orange-500/50 flex items-center justify-between shadow-lg">
                   <div className="space-y-0.5">
                     <span className="text-[10px] font-mono font-black text-orange-400 uppercase tracking-wider">
                       {slide.tag || (slide.index === 1 ? 'KEUNGGULAN UTAMA' : slide.index === 2 ? 'SPESIFIKASI & LEGALITAS' : 'REVIEW PEMBELI')}
@@ -729,7 +729,7 @@ export function CanvasRenderer({
                 </div>
               )}
 
-              <div className={`p-4 rounded-2xl space-y-2.5 flex-1 flex flex-col justify-center border ${isLight ? 'bg-white border-orange-200 shadow-md' : 'bg-slate-900/80 border-orange-500/30'}`}>
+              <div className={`p-4 rounded-none space-y-2.5 flex-1 flex flex-col justify-center border ${isLight ? 'bg-white border-orange-200 shadow-md' : 'bg-slate-900/80 border-orange-500/30'}`}>
                 <h2 className="font-black text-base sm:text-lg tracking-tight text-white leading-snug">
                   {cleanTakeaway}
                 </h2>
@@ -758,17 +758,17 @@ export function CanvasRenderer({
                 {Array.from({ length: Math.min(totalSlides - 2, 5) }).map((_, stepIdx) => (
                   <div
                     key={stepIdx}
-                    className={`h-1.5 flex-1 rounded-full transition-all ${
+                    className={`h-1.5 flex-1 rounded-none transition-all ${
                       stepIdx <= slide.index - 1 ? 'bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.8)]' : 'bg-white/20'
                     }`}
                   />
                 ))}
               </div>
 
-              <div className="p-5 rounded-3xl bg-slate-900/90 border border-purple-500/40 shadow-2xl flex-1 flex flex-col justify-between space-y-3">
+              <div className="p-5 rounded-none bg-slate-900/90 border border-purple-500/40 shadow-2xl flex-1 flex flex-col justify-between space-y-3">
                 <div className="flex items-center justify-between">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-600/30 border border-purple-500/50 text-purple-300 font-mono text-xs font-black">
-                    <span className="size-2 rounded-full bg-purple-400 animate-pulse" />
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-none bg-purple-600/30 border border-purple-500/50 text-purple-300 font-mono text-xs font-black">
+                    <span className="size-2 rounded-none bg-purple-400 animate-pulse" />
                     <span>LANGKAH 0{slide.index}</span>
                   </div>
                   <span className="text-[10px] font-mono text-slate-400">Tahap {slide.index} dari {totalSlides - 2}</span>
@@ -785,7 +785,7 @@ export function CanvasRenderer({
                   )}
                 </div>
 
-                <div className="p-3 rounded-xl bg-purple-950/50 border border-purple-500/30 flex items-start gap-2.5 text-xs text-purple-200">
+                <div className="p-3 rounded-none bg-purple-950/50 border border-purple-500/30 flex items-start gap-2.5 text-xs text-purple-200">
                   <Lightbulb className="size-4 shrink-0 text-amber-400 mt-0.5" />
                   <span className="text-[11px] leading-relaxed">
                     {slide.statHighlight ? `Tips: ${slide.statHighlight}` : 'Lakukan langkah ini dengan teliti agar hasil optimal.'}
@@ -796,9 +796,9 @@ export function CanvasRenderer({
           ) : style === 'TESTIMONIAL_CHAT' ? (
             /* KHUSUS 4: TESTIMONIAL_CHAT (WhatsApp / DM Chat Screenshot) */
             <div className="relative z-10 flex-1 flex flex-col justify-between p-4 sm:p-6 space-y-3 overflow-hidden">
-              <div className="p-3 rounded-2xl bg-[#1F2C34] border border-white/10 flex items-center justify-between shadow-lg">
+              <div className="p-3 rounded-none bg-[#1F2C34] border border-white/10 flex items-center justify-between shadow-lg">
                 <div className="flex items-center gap-2.5">
-                  <div className="size-8 rounded-full bg-emerald-700 flex items-center justify-center text-white font-bold text-xs">
+                  <div className="size-8 rounded-none bg-emerald-700 flex items-center justify-center text-white font-bold text-xs">
                     {slide.author ? slide.author.slice(0, 2).toUpperCase() : 'PB'}
                   </div>
                   <div className="leading-tight">
@@ -815,7 +815,7 @@ export function CanvasRenderer({
               </div>
 
               <div className="flex-1 flex flex-col justify-center space-y-2.5 px-1">
-                <div className="self-start max-w-[95%] p-4 rounded-2xl rounded-tl-sm bg-[#005C4B] text-white shadow-xl space-y-2 border border-emerald-600/30">
+                <div className="self-start max-w-[95%] p-4 rounded-none bg-[#005C4B] text-white shadow-xl space-y-2 border border-emerald-600/30">
                   <p className="text-xs sm:text-sm leading-relaxed font-medium">
                     "{cleanTakeaway}"
                   </p>
@@ -831,16 +831,16 @@ export function CanvasRenderer({
                 </div>
               </div>
 
-              <div className="p-2 rounded-xl bg-slate-900/60 border border-white/10 text-center text-[10px] font-mono text-slate-400">
+              <div className="p-2 rounded-none bg-slate-900/60 border border-white/10 text-center text-[10px] font-mono text-slate-400">
                 💬 Ulasan Nyata Pelanggan Terverifikasi
               </div>
             </div>
           ) : style === 'PRODUCT_CATALOG' ? (
             /* KHUSUS 5: PRODUCT_CATALOG (Luxury Boutique Card) */
             <div className="relative z-10 flex-1 flex flex-col justify-between p-4 sm:p-6 space-y-3 overflow-hidden text-[#26211C]">
-              <div className="relative flex-1 flex flex-col justify-between p-5 rounded-3xl bg-white border border-[#C5A880]/40 shadow-xl space-y-2.5">
+              <div className="relative flex-1 flex flex-col justify-between p-5 rounded-none bg-white border border-[#C5A880]/40 shadow-xl space-y-2.5">
                 {slide.imageUrl && (
-                  <div className="relative w-full h-32 sm:h-40 rounded-2xl overflow-hidden border border-[#C5A880]/30 shadow-md shrink-0">
+                  <div className="relative w-full h-32 sm:h-40 rounded-none overflow-hidden border border-[#C5A880]/30 shadow-md shrink-0">
                     <img src={slide.imageUrl} alt="Catalog" className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                   </div>
@@ -873,7 +873,7 @@ export function CanvasRenderer({
           ) : style === 'BEFORE_AFTER' ? (
             /* KHUSUS 6: BEFORE_AFTER (Split Problem vs Solution) */
             <div className="relative z-10 flex-1 flex flex-col justify-center p-4 sm:p-6 space-y-3 overflow-hidden">
-              <div className="p-4 rounded-2xl bg-rose-950/40 border border-rose-500/40 space-y-1 shadow-md">
+              <div className="p-4 rounded-none bg-rose-950/40 border border-rose-500/40 space-y-1 shadow-md">
                 <span className="text-[9px] font-black text-rose-400 uppercase tracking-wider block">
                   ❌ SEBELUM (MASALAH)
                 </span>
@@ -882,7 +882,7 @@ export function CanvasRenderer({
                 </h3>
               </div>
 
-              <div className="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 space-y-1 shadow-md">
+              <div className="p-4 rounded-none bg-emerald-950/40 border border-emerald-500/40 space-y-1 shadow-md">
                 <span className="text-[9px] font-black text-emerald-400 uppercase tracking-wider block">
                   ✅ SESUDAH (HASIL NYATA)
                 </span>
@@ -892,7 +892,7 @@ export function CanvasRenderer({
               </div>
 
               {slide.statHighlight && (
-                <div className="text-center p-2 rounded-xl bg-white/5 border border-white/10 text-xs font-mono font-bold text-yellow-300">
+                <div className="text-center p-2 rounded-none bg-white/5 border border-white/10 text-xs font-mono font-bold text-yellow-300">
                   ⚡ {slide.statHighlight}
                 </div>
               )}
@@ -900,7 +900,7 @@ export function CanvasRenderer({
           ) : style === 'QUOTE_MINIMAL' ? (
             /* KHUSUS 7: QUOTE_MINIMAL (Ultra Clean Typographic Quote) */
             <div className="relative z-10 flex-1 flex flex-col justify-center p-5 sm:p-7 space-y-4 overflow-hidden text-white">
-              <div className="relative p-6 sm:p-8 rounded-3xl bg-zinc-950 border border-zinc-800 shadow-2xl space-y-4">
+              <div className="relative p-6 sm:p-8 rounded-none bg-zinc-950 border border-zinc-800 shadow-2xl space-y-4">
                 <Quote className="size-8 text-zinc-600 opacity-60" />
                 <h2 className="font-serif italic text-base sm:text-lg font-bold leading-relaxed text-zinc-100">
                   "{cleanTakeaway}"
@@ -919,12 +919,12 @@ export function CanvasRenderer({
           ) : style === 'PRICE_TIER_TABLE' ? (
             /* KHUSUS 8: PRICE_TIER_TABLE */
             <div className="relative z-10 flex-1 flex flex-col justify-center p-4 sm:p-6 space-y-3 overflow-hidden">
-              <div className="p-5 rounded-3xl bg-slate-900/90 border border-amber-500/40 space-y-2.5 shadow-xl">
+              <div className="p-5 rounded-none bg-slate-900/90 border border-amber-500/40 space-y-2.5 shadow-xl">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-wider">
                     {slide.tag || `PAKET #${slide.index}`}
                   </span>
-                  <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-mono font-black border border-amber-500/40">
+                  <span className="px-2 py-0.5 rounded-none bg-amber-500/20 text-amber-300 text-[10px] font-mono font-black border border-amber-500/40">
                     BEST VALUE
                   </span>
                 </div>
@@ -944,7 +944,7 @@ export function CanvasRenderer({
           ) : style === 'BRUTALIST_SALE' ? (
             /* KHUSUS 9: BRUTALIST_SALE */
             <div className="relative z-10 flex-1 flex flex-col justify-center p-4 sm:p-6 space-y-3 overflow-hidden">
-              <div className="p-5 rounded-2xl bg-white text-black border-4 border-black shadow-[6px_6px_0px_#000] space-y-3">
+              <div className="p-5 rounded-none bg-white text-black border-4 border-black shadow-[6px_6px_0px_#000] space-y-3">
                 <div className="inline-block px-2 py-0.5 bg-[#CCFF00] text-black font-black text-[10px] uppercase border-2 border-black -rotate-2">
                   {slide.tag || 'SPEC SPOTLIGHT'}
                 </div>
@@ -965,7 +965,7 @@ export function CanvasRenderer({
           ) : style === 'UNBOXING_POLAROID' ? (
             /* KHUSUS 10: UNBOXING_POLAROID */
             <div className="relative z-10 flex-1 flex flex-col justify-center p-4 sm:p-6 space-y-3 overflow-hidden text-slate-800">
-              <div className="relative p-5 rounded-2xl bg-white border-2 border-slate-200 shadow-xl rotate-1 space-y-2.5">
+              <div className="relative p-5 rounded-none bg-white border-2 border-slate-200 shadow-xl rotate-1 space-y-2.5">
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-5 bg-pink-200/80 border border-pink-300/60 rotate-2 shadow-sm pointer-events-none" />
                 <span className="text-[10px] font-bold text-pink-500 uppercase tracking-wider block text-center pt-1">
                   ♡ {slide.tag || 'DIARY NOTE'} ♡
@@ -987,7 +987,7 @@ export function CanvasRenderer({
           ) : style === 'EVENT_WEBINAR' ? (
             /* KHUSUS 11: EVENT_WEBINAR */
             <div className="relative z-10 flex-1 flex flex-col justify-center p-4 sm:p-6 space-y-3 overflow-hidden text-white">
-              <div className="p-5 rounded-3xl bg-slate-900/90 border border-pink-500/40 shadow-xl space-y-3">
+              <div className="p-5 rounded-none bg-slate-900/90 border border-pink-500/40 shadow-xl space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-mono font-bold text-pink-400 uppercase tracking-wider">
                     {slide.tag || `SESI MATERI #${slide.index}`}
@@ -1017,11 +1017,11 @@ export function CanvasRenderer({
               {activeVariant === 'STAT_HERO' && (
                 <div className="relative z-10 flex-1 flex flex-col justify-between p-4 sm:p-6 space-y-3 overflow-hidden">
                   {slide.imageUrl ? (
-                    <div className="relative w-full h-28 sm:h-36 rounded-2xl overflow-hidden shadow-md shrink-0 border border-white/15">
+                    <div className="relative w-full h-28 sm:h-36 rounded-none overflow-hidden shadow-md shrink-0 border border-white/15">
                       <img src={slide.imageUrl} alt="Visual" className="w-full h-full object-cover filter contrast-105" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                       <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between">
-                        <span className="text-[9px] font-mono font-bold text-white uppercase bg-black/60 px-2 py-0.5 rounded">
+                        <span className="text-[9px] font-mono font-bold text-white uppercase bg-black/60 px-2 py-0.5 rounded-none">
                           {slide.tag || 'METRIK UTAMA'}
                         </span>
                         <span className="text-sm sm:text-base font-black text-yellow-300 font-mono">
@@ -1031,7 +1031,7 @@ export function CanvasRenderer({
                     </div>
                   ) : (
                     <div
-                      className={`p-4 sm:p-5 rounded-2xl border text-center space-y-1.5 shadow-md ${
+                      className={`p-4 sm:p-5 rounded-none border text-center space-y-1.5 shadow-md ${
                         isLight
                           ? 'bg-gradient-to-br from-white to-slate-50 border-slate-200'
                           : 'bg-gradient-to-br from-slate-900/90 to-slate-950/90 border-white/15'
@@ -1050,7 +1050,7 @@ export function CanvasRenderer({
                   )}
 
                   <div
-                    className={`p-4 rounded-2xl space-y-2 flex-1 flex flex-col justify-center ${
+                    className={`p-4 rounded-none space-y-2 flex-1 flex flex-col justify-center ${
                       isLight ? 'bg-white border border-slate-200 shadow-md' : 'bg-slate-900/70 border border-white/10'
                     }`}
                   >
@@ -1077,7 +1077,7 @@ export function CanvasRenderer({
                 <div className="relative z-10 flex-1 flex flex-col justify-between p-4 sm:p-6 space-y-3.5 overflow-hidden">
                   {slide.imageUrl ? (
                     <div
-                      className={`relative w-full h-36 sm:h-44 rounded-2xl overflow-hidden shadow-md shrink-0 ${
+                      className={`relative w-full h-36 sm:h-44 rounded-none overflow-hidden shadow-md shrink-0 ${
                         isLight ? 'border-2 border-slate-200 shadow-lg' : 'border border-white/15'
                       }`}
                     >
@@ -1091,14 +1091,14 @@ export function CanvasRenderer({
                         <span className="text-[10px] font-bold text-white drop-shadow truncate max-w-[220px]">
                           {cleanTakeaway}
                         </span>
-                        <span className="text-[9px] font-mono font-black bg-black/80 px-2 py-0.5 rounded text-white border border-white/20">
+                        <span className="text-[9px] font-mono font-black bg-black/80 px-2 py-0.5 rounded-none text-white border border-white/20">
                           #{slide.index + 1}
                         </span>
                       </div>
                     </div>
                   ) : (
                     <div
-                      className={`p-4 rounded-2xl border space-y-2 ${
+                      className={`p-4 rounded-none border space-y-2 ${
                         isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-900/70 border-white/10'
                       }`}
                     >
@@ -1116,11 +1116,11 @@ export function CanvasRenderer({
 
                   <div
                     className={`space-y-2.5 flex-1 flex flex-col justify-center ${
-                      isLight ? 'p-4 rounded-2xl bg-white border border-slate-200 shadow-md' : 'p-3.5 rounded-2xl bg-slate-900/60 border border-white/10'
+                      isLight ? 'p-4 rounded-none bg-white border border-slate-200 shadow-md' : 'p-3.5 rounded-none bg-slate-900/60 border border-white/10'
                     }`}
                   >
                     <div className="flex items-start gap-2">
-                      <div className="w-1.5 self-stretch rounded-full shrink-0" style={{ backgroundColor: accent }} />
+                      <div className="w-1.5 self-stretch rounded-none shrink-0" style={{ backgroundColor: accent }} />
                       <h2
                         className={`font-black tracking-tight text-base sm:text-lg leading-snug ${
                           style === 'EDITORIAL' || style === 'POLICY' ? 'font-serif' : 'font-sans'
@@ -1144,13 +1144,13 @@ export function CanvasRenderer({
               {activeVariant === 'TEXT_CENTER' && (
                 <div className="relative z-10 flex-1 flex flex-col justify-center p-5 sm:p-7 overflow-hidden">
                   <div
-                    className={`p-6 sm:p-8 rounded-3xl border shadow-2xl space-y-4 text-center relative overflow-hidden ${
+                    className={`p-6 sm:p-8 rounded-none border shadow-2xl space-y-4 text-center relative overflow-hidden ${
                       isLight
                         ? 'bg-white border-slate-200 shadow-lg'
                         : 'bg-slate-900/90 border-white/15 backdrop-blur-xl'
                     }`}
                   >
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider mx-auto" style={{ backgroundColor: `${accent}20`, color: accent }}>
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-none text-[10px] font-black uppercase tracking-wider mx-auto" style={{ backgroundColor: `${accent}20`, color: accent }}>
                       <Sparkles className="size-3" />
                       <span>{slide.tag || 'POIN PENTING'}</span>
                     </div>
@@ -1164,7 +1164,7 @@ export function CanvasRenderer({
                       {cleanTakeaway}
                     </h2>
 
-                    <div className="h-0.5 w-12 mx-auto rounded-full" style={{ backgroundColor: accent }} />
+                    <div className="h-0.5 w-12 mx-auto rounded-none" style={{ backgroundColor: accent }} />
 
                     {slide.supportingText && (
                       <p className="text-xs sm:text-sm font-medium leading-relaxed" style={{ color: textSecondary }}>
@@ -1179,11 +1179,11 @@ export function CanvasRenderer({
               {activeVariant === 'TEXT_BOTTOM' && (
                 <div className="relative z-10 flex-1 flex flex-col justify-between p-4 sm:p-6 space-y-3 overflow-hidden">
                   {slide.imageUrl && (
-                    <div className="relative w-full h-32 sm:h-40 rounded-2xl overflow-hidden shadow-md shrink-0 border border-white/15">
+                    <div className="relative w-full h-32 sm:h-40 rounded-none overflow-hidden shadow-md shrink-0 border border-white/15">
                       <img src={slide.imageUrl} alt="Visual" className="w-full h-full object-cover" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                       <div className="absolute bottom-2 left-3">
-                        <span className="text-[10px] font-mono font-bold text-white bg-black/60 px-2 py-0.5 rounded">
+                        <span className="text-[10px] font-mono font-bold text-white bg-black/60 px-2 py-0.5 rounded-none">
                           0{slide.index + 1} / {totalSlides}
                         </span>
                       </div>
@@ -1191,7 +1191,7 @@ export function CanvasRenderer({
                   )}
 
                   <div
-                    className={`p-4 sm:p-5 rounded-2xl border space-y-2.5 shadow-xl flex-1 flex flex-col justify-center ${
+                    className={`p-4 sm:p-5 rounded-none border space-y-2.5 shadow-xl flex-1 flex flex-col justify-center ${
                       isLight ? 'bg-white border-slate-200 shadow-md' : 'bg-slate-900/80 border-white/10 backdrop-blur-md'
                     }`}
                   >
@@ -1222,7 +1222,7 @@ export function CanvasRenderer({
               {activeVariant === 'QUOTE_CARD' && (
                 <div className="relative z-10 flex-1 flex flex-col justify-center p-5 sm:p-7 space-y-4 overflow-hidden">
                   <div
-                    className={`p-6 rounded-3xl border shadow-xl relative overflow-hidden space-y-3.5 ${
+                    className={`p-6 rounded-none border shadow-xl relative overflow-hidden space-y-3.5 ${
                       isLight
                         ? 'bg-gradient-to-br from-white via-slate-50 to-slate-100 border-slate-200 shadow-md'
                         : 'bg-gradient-to-br from-slate-900/95 to-slate-950/95 border-white/15'
@@ -1264,7 +1264,7 @@ export function CanvasRenderer({
                 <div className="relative z-10 flex-1 flex flex-col justify-center p-4 sm:p-6 space-y-3 overflow-hidden">
                   {/* Card 1: Main Takeaway */}
                   <div
-                    className={`p-4 rounded-2xl border space-y-1.5 shadow-md ${
+                    className={`p-4 rounded-none border space-y-1.5 shadow-md ${
                       isLight ? 'bg-white border-slate-200' : 'bg-slate-900/70 border-white/10'
                     }`}
                   >
@@ -1278,7 +1278,7 @@ export function CanvasRenderer({
 
                   {/* Card 2: Explanation */}
                   <div
-                    className={`p-4 rounded-2xl border space-y-1.5 shadow-md ${
+                    className={`p-4 rounded-none border space-y-1.5 shadow-md ${
                       isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/80 border-white/10'
                     }`}
                   >
@@ -1301,7 +1301,7 @@ export function CanvasRenderer({
         <div className="relative z-10 flex-1 flex flex-col justify-center items-center p-6 sm:p-8 text-center space-y-5">
           {/* Outro Graphic Indicator */}
           <div
-            className={`size-16 rounded-3xl flex items-center justify-center shadow-xl border ${
+            className={`size-16 rounded-none flex items-center justify-center shadow-xl border ${
               isLight ? 'bg-white border-slate-200 shadow-md' : 'border-white/20'
             }`}
             style={{
@@ -1348,7 +1348,7 @@ export function CanvasRenderer({
           {/* Social Action Grid */}
           <div className="w-full max-w-xs grid grid-cols-2 gap-2 pt-2 text-[10px] font-bold">
             <div
-              className={`rounded-xl p-2.5 flex items-center justify-center gap-1.5 border shadow-sm ${
+              className={`rounded-none p-2.5 flex items-center justify-center gap-1.5 border shadow-sm ${
                 isLight ? 'bg-white border-slate-200 text-slate-900 font-bold' : 'bg-white/5 border-white/10 text-slate-100'
               }`}
             >
@@ -1363,7 +1363,7 @@ export function CanvasRenderer({
               )}
             </div>
             <div
-              className={`rounded-xl p-2.5 flex items-center justify-center gap-1.5 border shadow-sm ${
+              className={`rounded-none p-2.5 flex items-center justify-center gap-1.5 border shadow-sm ${
                 isLight ? 'bg-white border-slate-200 text-slate-900 font-bold' : 'bg-white/5 border-white/10 text-slate-100'
               }`}
             >
@@ -1381,7 +1381,7 @@ export function CanvasRenderer({
 
           {/* CTA Button Badge */}
           <div
-            className="w-full max-w-xs py-3 px-4 rounded-2xl font-black text-xs shadow-xl flex items-center justify-center gap-2"
+            className="w-full max-w-xs py-3 px-4 rounded-none font-black text-xs shadow-xl flex items-center justify-center gap-2"
             style={{
               backgroundColor: accent,
               color: style === 'STREETWEAR' || style === 'MINIMAL' || style === 'BOLD' || style === 'BRUTALIST_SALE' ? '#000000' : '#FFFFFF',
@@ -1435,7 +1435,7 @@ export function CanvasRenderer({
       >
         <div className="flex items-center gap-1.5 min-w-0">
           {logoUrl && (
-            <img src={logoUrl} alt="Brand Logo" className="size-4 object-contain shrink-0 rounded-sm" />
+            <img src={logoUrl} alt="Brand Logo" className="size-4 object-contain shrink-0 rounded-none" />
           )}
           <span className="font-bold tracking-wide truncate" style={{ color: textMuted }}>
             {handle}

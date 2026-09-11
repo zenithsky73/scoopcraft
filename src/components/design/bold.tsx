@@ -41,7 +41,7 @@ export function BoldTemplate(data: RenderData) {
             fontWeight: 900,
             letterSpacing: '0.08em',
             padding: `${Math.round((l.badge?.size ?? 22) * 0.45)}px ${Math.round((l.badge?.size ?? 22) * 0.85)}px`,
-            borderRadius: 6,
+            borderRadius: 0,
             boxShadow: '0 4px 20px rgba(250,204,21,.4)',
             textTransform: 'uppercase',
           }}
@@ -52,7 +52,7 @@ export function BoldTemplate(data: RenderData) {
           <div
             style={{
               padding: '6px 14px',
-              borderRadius: 6,
+              borderRadius: 0,
               background: 'rgba(0,0,0,0.8)',
               border: '1px solid rgba(255,255,255,0.2)',
               color: '#FFFFFF',
@@ -97,7 +97,7 @@ export function BoldTemplate(data: RenderData) {
             width: 100,
             height: 6,
             background: t.accent,
-            borderRadius: 3,
+            borderRadius: 0,
             margin: `${l.gap}px 0`,
           }}
         />
@@ -130,7 +130,7 @@ export function BoldTemplate(data: RenderData) {
                 fontWeight: 800,
                 background: 'rgba(0,0,0,0.6)',
                 padding: '4px 12px',
-                borderRadius: 6,
+                borderRadius: 0,
                 border: '1px solid rgba(250,204,21,0.4)',
               }}
             >

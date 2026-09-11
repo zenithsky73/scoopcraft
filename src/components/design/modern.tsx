@@ -39,7 +39,7 @@ export function ModernTemplate(data: RenderData) {
           <div
             style={{
               padding: '6px 14px',
-              borderRadius: 8,
+              borderRadius: 0,
               background: t.accent,
               color: t.accentFg,
               fontSize: 15,

@@ -51,7 +51,7 @@ export function FinanceTemplate(data: RenderData) {
           <div
             style={{
               padding: '6px 14px',
-              borderRadius: 6,
+              borderRadius: 0,
               background: '#047857',
               color: '#FFFFFF',
               fontSize: 15,

@@ -42,7 +42,7 @@ export function BreakingNewsTemplate(data: RenderData) {
             fontWeight: 900,
             letterSpacing: '0.08em',
             padding: `${Math.round((l.badge?.size ?? 22) * 0.45)}px ${Math.round((l.badge?.size ?? 22) * 0.85)}px`,
-            borderRadius: 8,
+            borderRadius: 0,
             boxShadow: '0 4px 20px rgba(239,68,68,.45)',
             textTransform: 'uppercase',
           }}
@@ -53,7 +53,7 @@ export function BreakingNewsTemplate(data: RenderData) {
           <div
             style={{
               padding: '6px 14px',
-              borderRadius: 8,
+              borderRadius: 0,
               background: 'rgba(15,23,42,0.75)',
               backdropFilter: 'blur(8px)',
               border: '1px solid rgba(255,255,255,0.15)',
@@ -121,7 +121,7 @@ export function BreakingNewsTemplate(data: RenderData) {
                 fontWeight: 800,
                 background: 'rgba(255,255,255,0.12)',
                 padding: '4px 12px',
-                borderRadius: 6,
+                borderRadius: 0,
                 border: '1px solid rgba(255,255,255,0.2)',
               }}
             >

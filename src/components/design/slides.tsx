@@ -35,7 +35,7 @@ export function SlideFooter({ data, t, size }: { data: RenderData; t: StyleToken
             fontWeight: 700,
             background: 'rgba(128,128,128,0.15)',
             padding: '2px 8px',
-            borderRadius: 6,
+            borderRadius: 0,
           }}
         >
           {data.slide.index + 1} / {data.slide.total}
@@ -122,7 +122,7 @@ export function PointSlide({ data, t }: { data: RenderData; t: StyleTokens }) {
                   color: t.accent,
                   letterSpacing: '-0.04em',
                   ...(overImage
-                    ? { background: t.accent, color: t.accentFg, padding: '2px 14px 4px', borderRadius: 8 }
+                    ? { background: t.accent, color: t.accentFg, padding: '2px 14px 4px', borderRadius: 0 }
                     : {}),
                 }}
               >
@@ -205,7 +205,7 @@ export function OutroSlide({ data, t }: { data: RenderData; t: StyleTokens }) {
         }}
       >
         {/* Accent Bar */}
-        <div style={{ width: 64, height: 6, background: t.accent, borderRadius: 3, marginBottom: l.gap }} />
+        <div style={{ width: 64, height: 6, background: t.accent, borderRadius: 0, marginBottom: l.gap }} />
 
         {/* CTA Hook Headline */}
         <h2
@@ -245,7 +245,7 @@ export function OutroSlide({ data, t }: { data: RenderData; t: StyleTokens }) {
             width: '100%',
             background: 'rgba(128,128,128,0.08)',
             border: `1px solid ${t.rule}`,
-            borderRadius: 16,
+            borderRadius: 0,
             padding: '20px 24px',
             display: 'flex',
             flexDirection: 'column',

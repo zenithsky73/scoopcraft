@@ -50,7 +50,7 @@ export function CorporateTemplate(data: RenderData) {
           <div
             style={{
               padding: '6px 14px',
-              borderRadius: 6,
+              borderRadius: 0,
               background: t.accent,
               color: '#FFFFFF',
               fontSize: 15,

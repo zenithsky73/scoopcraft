@@ -39,7 +39,7 @@ export function LifestyleTemplate(data: RenderData) {
           <div
             style={{
               padding: '6px 14px',
-              borderRadius: 20,
+              borderRadius: 0,
               background: t.accent,
               color: '#FFFFFF',
               fontSize: 14,
