@@ -9,6 +9,19 @@ import './globals.css';
 export const metadata: Metadata = {
   title: { default: `${APP.name} — ${APP.tagline}`, template: `%s · ${APP.name}` },
   description: APP.description,
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://scoopcraft.vercel.app'),
+  openGraph: {
+    title: `${APP.name} — ${APP.tagline}`,
+    description: APP.description,
+    siteName: APP.name,
+    locale: 'id_ID',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `${APP.name} — ${APP.tagline}`,
+    description: APP.description,
+  },
   icons: {
     icon: [
       { url: '/favicon.png?v=instadeck', type: 'image/png' },

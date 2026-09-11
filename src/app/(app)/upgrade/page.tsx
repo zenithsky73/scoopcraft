@@ -8,7 +8,7 @@ import { QuotaMeter } from '@/components/billing/quota-meter';
 import { formatDate } from '@/lib/utils';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'Pilihan Paket & Kuota — Newsly AI' };
+export const metadata: Metadata = { title: 'Pilihan Paket & Kuota — InstaDeck PRO' };
 
 export default async function UpgradePage() {
   const viewer = await getViewer();

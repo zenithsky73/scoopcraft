@@ -6,7 +6,7 @@ import { ContentCalendar } from '@/components/schedule/content-calendar';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
-  title: 'Kalender & Auto-Schedule | Newsly AI',
+  title: 'Kalender & Auto-Schedule | InstaDeck PRO',
   description: 'Jadwalkan dan publikasikan postingan carousel media sosial otomatis tepat waktu.',
 };
 

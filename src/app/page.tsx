@@ -243,13 +243,38 @@ export default function LandingPage() {
       </main>
 
       {/* ─── FOOTER ─── */}
-      <footer className="border-t border-slate-200 dark:border-slate-800/80 py-8 px-4 text-center text-xs text-slate-500 bg-white/50 dark:bg-slate-950 transition-colors duration-200">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <NewslyLogo size={24} showText showProBadge textClassName="text-xs font-black text-slate-700 dark:text-slate-300" />
-            <span className="text-slate-400 dark:text-slate-500">— AI Content Automation untuk Carousel &amp; Story</span>
+      <footer className="border-t border-slate-200 dark:border-slate-800/80 py-10 px-4 text-xs text-slate-500 bg-white/50 dark:bg-slate-950 transition-colors duration-200">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex flex-col sm:flex-row items-center gap-3 text-center sm:text-left">
+            <NewslyLogo size={26} showText showProBadge textClassName="text-sm font-black text-slate-800 dark:text-slate-200" />
+            <span className="hidden sm:inline text-slate-300 dark:text-slate-700">|</span>
+            <span className="text-slate-500 dark:text-slate-400">
+              AI Content Automation untuk Carousel, Story &amp; Social Media
+            </span>
           </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-5 text-slate-600 dark:text-slate-400 font-medium">
+            <Link href="/templates" className="hover:text-primary transition-colors">
+              Template
+            </Link>
+            <Link href="/login" className="hover:text-primary transition-colors">
+              Masuk
+            </Link>
+            <Link href="/privacy" className="hover:text-primary transition-colors">
+              Kebijakan Privasi
+            </Link>
+            <Link href="/terms" className="hover:text-primary transition-colors">
+              Ketentuan Layanan
+            </Link>
+            <Link href="/data-deletion" className="hover:text-primary transition-colors">
+              Hapus Data
+            </Link>
+          </div>
+        </div>
+
+        <div className="max-w-6xl mx-auto mt-6 pt-6 border-t border-slate-200/60 dark:border-slate-800/60 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-400">
           <p>© {new Date().getFullYear()} InstaDeck PRO. All rights reserved.</p>
+          <p className="font-mono">Created with high-precision engineering</p>
         </div>
       </footer>
     </div>

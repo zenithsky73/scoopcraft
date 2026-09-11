@@ -6,7 +6,7 @@ import { getQuotaState } from '@/server/billing/quota';
 import { SettingsHub } from '@/components/settings/settings-hub';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'Pengaturan & Brand Kit — Newsly AI' };
+export const metadata: Metadata = { title: 'Pengaturan & Brand Kit — InstaDeck PRO' };
 
 export default async function SettingsPage() {
   const viewer = await getViewer();
