@@ -50,10 +50,35 @@ export async function PUT(req: Request) {
   const rawHandle = parsed.data.handle?.replace(/^@+/, '') ?? '';
   const handle = rawHandle ? `@${rawHandle}` : null;
   const displayName = parsed.data.displayName || null;
-  const logoUrl = parsed.data.logoUrl || null;
+  let logoUrl = parsed.data.logoUrl || null;
   const tagline = parsed.data.tagline || null;
 
-  // Hanya user PRO/Owner yang bisa mengaktifkan sembunyikan watermark Newsly AI
+  // Jika logo dikirim sebagai base64 data URL, simpan ke PublicMedia agar ringan dan permanen
+  if (logoUrl && logoUrl.startsWith('data:image/')) {
+    try {
+      const mimeMatch = logoUrl.match(/^data:(image\/\w+);base64,/);
+      const mimeType = mimeMatch ? mimeMatch[1] : 'image/png';
+      const cleanBase64 = logoUrl.replace(/^data:image\/\w+;base64,/, '');
+
+      const media = await db.publicMedia.create({
+        data: {
+          dataBase64: cleanBase64,
+          mimeType,
+        },
+      });
+
+      let baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.AUTH_URL;
+      if (!baseUrl || baseUrl.includes('localhost') || baseUrl.includes('-zenithsky73s-projects.vercel.app')) {
+        baseUrl = 'https://scoopcraft.vercel.app';
+      }
+      const cleanBase = baseUrl.replace(/\/$/, '');
+      logoUrl = `${cleanBase}/api/media/${media.id}`;
+    } catch (mediaErr) {
+      console.error('[BrandKit API] Error converting base64 logo to media URL:', mediaErr);
+    }
+  }
+
+  // Hanya user PRO/Owner yang bisa mengaktifkan sembunyikan watermark InstaDeck PRO
   let hideNewslyWatermark = false;
   if (parsed.data.hideNewslyWatermark !== undefined) {
     hideNewslyWatermark = isPro ? parsed.data.hideNewslyWatermark : false;

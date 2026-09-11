@@ -388,7 +388,7 @@ model BrandKit {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  logoUrl     String?
+  logoUrl     String? @db.Text
   primary     String  @default("#4F46E5")
   secondary   String  @default("#0F172A")
   fontHead    String?
