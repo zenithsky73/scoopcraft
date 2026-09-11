@@ -386,7 +386,7 @@ export function CarouselStudio({
     setIsExportingPdf(true);
     try {
       await exportSlidesToPdf(slides.length, initialContent.headline || 'carousel');
-      notify.celebrate('Dokumen PDF Siap! 📄', 'Carousel siap dibagikan ke LinkedIn.');
+      notify.celebrate('Dokumen PDF Siap! 📄', 'File PDF carousel siap disimpan & dibagikan.');
     } catch (err: any) {
       notify.error('Gagal Ekspor PDF', err?.message);
     } finally {
@@ -1369,7 +1369,7 @@ export function CarouselStudio({
             <div className="space-y-4 bg-white dark:bg-slate-900/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
               <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
                 <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                  Naskah Caption Instagram & LinkedIn
+                  Naskah Caption Instagram & Media Sosial
                 </span>
                 <Button
                   size="sm"

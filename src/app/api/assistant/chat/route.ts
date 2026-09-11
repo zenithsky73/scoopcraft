@@ -16,7 +16,7 @@ const chatRequestSchema = z.object({
     .max(30),
 });
 
-const SYSTEM_PROMPT = `Kamu adalah "InstaDeck Copilot" — Asisten AI Resmi & Eksklusif dari platform InstaDeck PRO (platform generator carousel media sosial bertenaga kecerdasan buatan untuk Instagram, LinkedIn, dan Story).
+const SYSTEM_PROMPT = `Kamu adalah "InstaDeck Copilot" — Asisten AI Resmi & Eksklusif dari platform InstaDeck PRO (platform generator carousel media sosial bertenaga kecerdasan buatan untuk Instagram Feed & Story).
 
 === ATURAN UTAMA & GUARDRAIL KETAT (CRITICAL) ===
 1. Kamu HANYA BOLEH DAN WAJIB HANYA menjawab pertanyaan seputar platform InstaDeck PRO:
@@ -27,11 +27,11 @@ const SYSTEM_PROMPT = `Kamu adalah "InstaDeck Copilot" — Asisten AI Resmi & Ek
    - Desain & 20 Template Visual (Modern, Minimalist, Bold, Dark Mode, Editorial, Social, dll).
    - Format & Rasio kanvas (Square 1:1, Portrait 4:5 yang optimal di feed Instagram, Story 9:16).
    - Fitur Brand Kit & Watermark (kustomisasi @handle akun, upload logo brand, sembunyikan watermark InstaDeck untuk paket Pro/Business).
-   - Pilihan Ekspor (unduh 1 slide PNG HD, unduh semua slide ZIP, ekspor Dokumen PDF Carousel LinkedIn multi-halaman, salin caption + hashtag).
+   - Pilihan Ekspor (unduh 1 slide PNG HD, unduh semua slide ZIP, ekspor Dokumen PDF Multi-Slide HD, salin caption + hashtag).
    - Paket Langganan, Harga & Kuota:
      * Free Trial: gratis saat mendaftar untuk mencoba fitur dasar (10 kuota, 14 hari).
      * Paket Lite / Pemula (Basic): Rp 49.000/bulan (30 generate konten AI/bulan, 20 template, ekspor PNG, kalender konten & simulator jadwal).
-     * Paket Kreator Pro: Rp 99.000/bulan (100 generate konten AI/bulan, Auto-Post Instagram & LinkedIn Live, AI Campaign 30 Hari Sekali Klik, hubungkan hingga 3 akun medsos, watermark brand sendiri, ekspor PDF LinkedIn, input YouTube, unduh ZIP batch, prioritas AI).
+     * Paket Kreator Pro: Rp 99.000/bulan (100 generate konten AI/bulan, Auto-Post Instagram Live, AI Campaign 30 Hari Sekali Klik, hubungkan hingga 3 akun medsos, watermark brand sendiri, ekspor PDF & ZIP batch, prioritas AI).
      * Paket Sultan / Agensi (Business): Rp 199.000/bulan (Unlimited FUP 500/bulan, semua fitur Pro, Auto-Post Multi-Akun hingga 10 akun medsos klien, Multi-Brand Campaign 30 Hari, full Brand Kit logo/warna/font, render prioritas tertinggi).
    - Tips praktis membuat konten carousel yang berpotensi viral & punya engagement tinggi di media sosial.
    - Bantuan kendala teknis atau panduan pemakaian tombol di aplikasi InstaDeck PRO.
@@ -78,7 +78,6 @@ function getSmartFallbackReply(userMessage: string): string {
     q.includes('business') ||
     q.includes('trial') ||
     q.includes('pdf') ||
-    q.includes('linkedin') ||
     q.includes('png') ||
     q.includes('zip') ||
     q.includes('unduh') ||
@@ -92,6 +91,8 @@ function getSmartFallbackReply(userMessage: string): string {
     q.includes('story') ||
     q.includes('rasio') ||
     q.includes('feed') ||
+    q.includes('tiktok') ||
+    q.includes('threads') ||
     q.includes('halo') ||
     q.includes('hai') ||
     q.includes('siapa') ||
@@ -115,7 +116,8 @@ function getSmartFallbackReply(userMessage: string): string {
       '2. **Paket Kreator Pro — Rp 49.000/bln (Paling Laris ⭐)**\n' +
       '   - 100 Generate konten per bulan\n' +
       '   - Kustomisasi Watermark (@akun brand sendiri)\n' +
-      '   - Ekspor Dokumen PDF Carousel LinkedIn\n' +
+      '   - Ekspor Dokumen PDF Multi-Slide HD\n' +
+      '   - Auto-Post & Jadwal Posting Instagram\n' +
       '   - Input Link Video YouTube & Prompt AI\n' +
       '   - Unduh batch ZIP semua slide\n\n' +
       '3. **Paket Sultan / Agensi (Business) — Rp 99.000/bln 👑**\n' +
@@ -133,15 +135,15 @@ function getSmartFallbackReply(userMessage: string): string {
       '4. Klik **Simpan Identitas Brand**, dan seluruh slide yang kamu buat otomatis menggunakan watermark barumu.';
   }
 
-  if (q.includes('pdf') || q.includes('linkedin') || q.includes('zip') || q.includes('unduh') || q.includes('download')) {
+  if (q.includes('pdf') || q.includes('zip') || q.includes('unduh') || q.includes('download')) {
     return '**Pilihan Ekspor di InstaDeck PRO 🚀:**\n\n' +
       '- **Unduh PNG**: Mengunduh slide aktif yang sedang dilihat dalam format gambar HD.\n' +
-      '- **Unduh ZIP (Batch)**: Mengunduh semua slide sekaligus dalam 1 folder arsip ZIP siap pakai.\n' +
-      '- **Ekspor PDF LinkedIn**: Menggabungkan seluruh slide menjadi file PDF interaktif multi-halaman yang langsung bisa kamu upload sebagai dokumen carousel di LinkedIn!\n' +
+      '- **Unduh ZIP (Batch)**: Mengunduh semua slide sekaligus dalam 1 folder arsip ZIP siap pakai untuk Instagram.\n' +
+      '- **Ekspor Dokumen PDF**: Menggabungkan seluruh slide menjadi file PDF resolusi tinggi multi-halaman.\n' +
       '- **Salin Caption**: Menyalin naskah caption lengkap beserta hashtag relevan yang dibuatkan AI ke clipboard kamu.';
   }
 
-  return 'Halo! Saya **InstaDeck Copilot**, asisten AI resmi InstaDeck. 🚀\n\nSaya siap membantu kamu menguasai seluruh fitur InstaDeck PRO, seperti:\n- ⚡ **Membuat Carousel Otomatis** dari Topik, Naskah, Link Produk/Web, atau Video YouTube\n- 🎨 **Memilih dari 20 Template Desain** (Modern, Bold, Minimalist, Dark Mode, dll)\n- 💎 **Info Paket Langganan & Kuota** (Basic Rp49rb, Pro Rp99rb, Business Rp199rb)\n- 🏷️ **Kustomisasi Brand & Watermark** akunmu\n- 📄 **Ekspor Carousel ke PDF LinkedIn & ZIP**\n\nAda yang ingin kamu tanyakan atau butuh bantuan saat ini?';
+  return 'Halo! Saya **InstaDeck Copilot**, asisten AI resmi InstaDeck. 🚀\n\nSaya siap membantu kamu menguasai seluruh fitur InstaDeck PRO, seperti:\n- ⚡ **Membuat Carousel Otomatis** dari Topik, Naskah, Link Produk/Web, atau Video YouTube\n- 🎨 **Memilih dari 20 Template Desain** (Modern, Bold, Minimalist, Dark Mode, dll)\n- 💎 **Info Paket Langganan & Kuota** (Basic Rp49rb, Pro Rp99rb, Business Rp199rb)\n- 🏷️ **Kustomisasi Brand & Watermark** akunmu\n- 📄 **Ekspor Carousel ke Gambar HD, ZIP & PDF**\n\nAda yang ingin kamu tanyakan atau butuh bantuan saat ini?';
 }
 
 export async function POST(req: Request) {

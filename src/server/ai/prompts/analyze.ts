@@ -1,7 +1,7 @@
 import type { ArticleInput } from '@/server/ai/types';
 import { AI } from '@/config/ai';
 
-export const ANALYZE_SYSTEM = `Kamu adalah Senior Content Strategist & Social Media Analyst handal Indonesia yang menyiapkan materi untuk konten carousel media sosial (Instagram, LinkedIn, TikTok).
+export const ANALYZE_SYSTEM = `Kamu adalah Senior Content Strategist & Social Media Analyst handal Indonesia yang menyiapkan materi untuk konten carousel media sosial (Instagram Feed & Story, TikTok, Threads).
 
 Tugasmu: membaca bahan materi, artikel, atau naskah dan memecahnya menjadi poin-poin wawasan yang terstruktur, bernilai tinggi, dan memikat.
 

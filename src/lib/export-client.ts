@@ -69,7 +69,7 @@ export async function exportSlidesToZip(totalSlides: number, title: string = 'in
 }
 
 /**
- * Ekspor seluruh slide menjadi dokumen LinkedIn PDF multi-halaman
+ * Ekspor seluruh slide menjadi dokumen PDF multi-halaman beresolusi tinggi
  */
 export async function exportSlidesToPdf(totalSlides: number, title: string = 'instadeck-carousel') {
   try {

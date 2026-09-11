@@ -212,7 +212,7 @@ export function VisualPanel({
             className="text-xs"
           >
             <Eye className="size-3.5 mr-1" />
-            {showPreviewMockup ? 'Sembunyikan Mockup' : 'Pratinjau IG / LinkedIn'}
+            {showPreviewMockup ? 'Sembunyikan Mockup' : 'Pratinjau Instagram'}
           </Button>
         )}
       </div>
@@ -246,10 +246,10 @@ export function VisualPanel({
         </Button>
       </div>
 
-      {/* LinkedIn Carousel PDF Export */}
-      <Button asChild variant="secondary" className="w-full border-blue-500/30 hover:bg-blue-500/10 text-blue-400">
+      {/* Multi-Slide PDF Export */}
+      <Button asChild variant="secondary" className="w-full border-primary/30 hover:bg-primary/10 text-primary">
         <a href={`/api/content/${contentId}/pdf?style=${style}&format=${format}`} download>
-          <FileText className="size-4 mr-1.5 text-blue-500" /> Unduh Dokumen Carousel LinkedIn (PDF)
+          <FileText className="size-4 mr-1.5 text-primary" /> Unduh Dokumen Carousel Multi-Slide (PDF)
         </a>
       </Button>
 

@@ -150,7 +150,7 @@ export async function generateDirect(input: GenerateDirectInput) {
   try {
     const ai = getGeminiClient();
 
-    let systemRole = `Anda adalah Executive Creative Director & Top Social Media Content Strategist handal Indonesia yang ahli menyusun konten carousel Instagram, LinkedIn, dan Threads berbobot tinggi untuk brand, kreator, dan bisnis.`;
+    let systemRole = `Anda adalah Executive Creative Director & Top Social Media Content Strategist handal Indonesia yang ahli menyusun konten carousel Instagram (Feed & Story), TikTok, dan Threads berbobot tinggi untuk brand, kreator, dan bisnis.`;
     let dynamicGuidelines = '';
 
     if (isEcommerce) {
@@ -219,7 +219,7 @@ export async function generateDirect(input: GenerateDirectInput) {
       'KEUANGAN_PRIBADI': 'Keuangan Pribadi (Personal Finance): Fokus pada budgeting, cara menabung cerdas, pos pengeluaran, dana darurat, dan kebiasaan finansial sehat.',
       'INVESTASI': 'Investasi & Saham: Fokus pada analisis pasar modal, reksadana, crypto, evaluasi risiko, dan strategi diversifikasi portofolio jangka panjang.',
       'BISNIS_DIGITAL': 'Bisnis Digital & E-Commerce / Olshop: Fokus pada penjualan toko online, trik affiliate Shopee/TikTok Shop, dropship, dan konversi marketplace.',
-      'PENGEMBANGAN_KARIR': 'Pengembangan Karir & HR: Fokus pada tips lolos interview, penulisan CV ATS, personal branding LinkedIn, negosiasi gaji, dan produktivitas kerja.',
+      'PENGEMBANGAN_KARIR': 'Pengembangan Karir & HR: Fokus pada tips lolos interview, penulisan CV ATS, personal branding media sosial profesional, negosiasi gaji, dan produktivitas kerja.',
       'MARKETING_BRANDING': 'Marketing & Branding: Fokus pada strategi digital marketing, formula copywriting jualan, pembuatan konten viral, dan manajemen media sosial.',
       'KULINER_MAKANAN': 'Kuliner & Restoran (F&B / Rumah Makan Padang / Resto Nusantara): Fokus pada cita rasa rempah otentik, kelezatan menu favorit, porsi kenyang, dan pengalaman makan nikmat.',
       'CAFE_MINUMAN': 'Cafe, Coffee Shop & Minuman Kekinian (ala Fore Coffee): Fokus pada estetika kopi modern, racikan minuman creamy/refreshing, aroma biji kopi Arabica, dan vibe nongkrong.',

@@ -8,8 +8,8 @@ import { readAsset, slugify } from '@/server/storage/asset-file';
 export const runtime = 'nodejs';
 
 /**
- * Endpoint untuk mengekspor carousel sebagai LinkedIn Document Post (PDF multi-halaman).
- * LinkedIn menyukai format dokumen multi-halaman untuk carousel interaktif (rasio 1:1 atau 4:5).
+ * Endpoint untuk mengekspor carousel sebagai Dokumen PDF Multi-Halaman HD.
+ * Format PDF multi-halaman beresolusi tinggi cocok untuk arsip, cetak, maupun presentasi (rasio 1:1 atau 4:5).
  *
  * Query params: ?style=BOLD&format=FEED_SQUARE
  */
@@ -91,7 +91,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       headers: {
         'content-type': 'application/pdf',
         'content-length': String(pdfBytes.length),
-        'content-disposition': `attachment; filename="${slugify(content.headline)}-linkedin-carousel.pdf"`,
+        'content-disposition': `attachment; filename="${slugify(content.headline)}-carousel.pdf"`,
       },
     });
   } catch (err) {

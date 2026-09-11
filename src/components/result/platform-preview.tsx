@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Image from 'next/image';
-import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal, ChevronLeft, ChevronRight, Share2, ThumbsUp } from 'lucide-react';
+import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { RunAsset, RunContent } from '@/lib/run-status';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -21,7 +21,7 @@ export function PlatformPreview({
   activeSlide: number;
   onSelectSlide: (idx: number) => void;
 }) {
-  const [platform, setPlatform] = React.useState<'INSTAGRAM' | 'LINKEDIN'>('INSTAGRAM');
+  const [platform, setPlatform] = React.useState<'FEED' | 'STORY'>('FEED');
   const [expandedCaption, setExpandedCaption] = React.useState(false);
 
   const prevSlide = () => onSelectSlide(Math.max(0, activeSlide - 1));
@@ -30,16 +30,16 @@ export function PlatformPreview({
   return (
     <div className="space-y-3 rounded-xl border border-border bg-surface p-4">
       <div className="flex items-center justify-between">
-        <h4 className="text-xs font-semibold uppercase tracking-wider text-muted">Platform Mockup Preview</h4>
-        <Tabs value={platform} onValueChange={(val) => setPlatform(val as 'INSTAGRAM' | 'LINKEDIN')}>
+        <h4 className="text-xs font-semibold uppercase tracking-wider text-muted">Pratinjau Mockup Instagram</h4>
+        <Tabs value={platform} onValueChange={(val) => setPlatform(val as 'FEED' | 'STORY')}>
           <TabsList className="h-8">
-            <TabsTrigger value="INSTAGRAM" className="text-xs px-3">Instagram</TabsTrigger>
-            <TabsTrigger value="LINKEDIN" className="text-xs px-3">LinkedIn</TabsTrigger>
+            <TabsTrigger value="FEED" className="text-xs px-3">Instagram Feed</TabsTrigger>
+            <TabsTrigger value="STORY" className="text-xs px-3">Instagram Story</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
 
-      {platform === 'INSTAGRAM' ? (
+      {platform === 'FEED' ? (
         /* Instagram Feed Post Mockup */
         <div className="mx-auto max-w-[380px] overflow-hidden rounded-xl border border-border/80 bg-black text-white shadow-xl">
           {/* Header */}
@@ -47,12 +47,12 @@ export function PlatformPreview({
             <div className="flex items-center gap-2.5">
               <div className="size-8 rounded-full bg-gradient-to-tr from-yellow-500 via-rose-500 to-purple-600 p-[2px]">
                 <div className="size-full rounded-full bg-black flex items-center justify-center text-2xs font-bold text-white uppercase">
-                  {(content.headline[0] || 'S').toUpperCase()}
+                  {(content.headline[0] || 'I').toUpperCase()}
                 </div>
               </div>
               <div>
-                <p className="text-xs font-semibold leading-tight">scoopcraft.news</p>
-                <p className="text-[10px] text-zinc-400">Sponsored</p>
+                <p className="text-xs font-semibold leading-tight">instadeck.id</p>
+                <p className="text-[10px] text-zinc-400">Audio Asli · Trending</p>
               </div>
             </div>
             <MoreHorizontal className="size-4 text-zinc-400" />
@@ -108,9 +108,9 @@ export function PlatformPreview({
           <div className="px-3 pt-2.5 pb-1">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3.5">
-                <Heart className="size-5 text-white hover:text-rose-500 cursor-pointer" />
-                <MessageCircle className="size-5 text-white hover:text-zinc-300 cursor-pointer" />
-                <Send className="size-5 text-white hover:text-zinc-300 cursor-pointer" />
+                <Heart className="size-5 text-white hover:text-rose-500 cursor-pointer transition-colors" />
+                <MessageCircle className="size-5 text-white hover:text-zinc-300 cursor-pointer transition-colors" />
+                <Send className="size-5 text-white hover:text-zinc-300 cursor-pointer transition-colors" />
               </div>
               {/* Dots indicator */}
               {deck.length > 1 && (
@@ -125,15 +125,15 @@ export function PlatformPreview({
                   ))}
                 </div>
               )}
-              <Bookmark className="size-5 text-white hover:text-zinc-300 cursor-pointer" />
+              <Bookmark className="size-5 text-white hover:text-zinc-300 cursor-pointer transition-colors" />
             </div>
 
             {/* Likes */}
-            <p className="mt-2 text-xs font-semibold">1.420 suka</p>
+            <p className="mt-2 text-xs font-semibold">2.480 suka</p>
 
             {/* Caption Preview */}
             <div className="mt-1 text-xs text-zinc-200">
-              <span className="font-semibold text-white mr-1.5">scoopcraft.news</span>
+              <span className="font-semibold text-white mr-1.5">instadeck.id</span>
               <span>
                 {expandedCaption ? content.caption : `${content.caption.slice(0, 80)}…`}
               </span>
@@ -155,80 +155,82 @@ export function PlatformPreview({
           </div>
         </div>
       ) : (
-        /* LinkedIn Document Post Mockup */
-        <div className="mx-auto max-w-[380px] overflow-hidden rounded-xl border border-border bg-white text-zinc-900 shadow-xl">
-          {/* Header */}
-          <div className="flex items-center justify-between p-3 border-b border-zinc-100">
-            <div className="flex items-center gap-2.5">
-              <div className="size-9 rounded-full bg-blue-700 flex items-center justify-center text-xs font-bold text-white">
-                IN
-              </div>
-              <div>
-                <p className="text-xs font-bold leading-tight">Redaksi Scoopcraft</p>
-                <p className="text-[10px] text-zinc-500">2.840 pengikut · 1 jam yang lalu</p>
-              </div>
+        /* Instagram Story Mockup */
+        <div className="mx-auto max-w-[340px] overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950 text-white shadow-2xl relative aspect-[9/16] flex flex-col justify-between p-3">
+          {/* Top Story Bars */}
+          <div className="space-y-2 z-10">
+            <div className="flex items-center gap-1">
+              {deck.map((_, idx) => (
+                <div
+                  key={idx}
+                  className="h-1 flex-1 rounded-full overflow-hidden bg-white/30"
+                >
+                  <div
+                    className={`h-full transition-all duration-300 ${
+                      idx < activeSlide
+                        ? 'w-full bg-white'
+                        : idx === activeSlide
+                        ? 'w-full bg-white animate-pulse'
+                        : 'w-0'
+                    }`}
+                  />
+                </div>
+              ))}
             </div>
-            <MoreHorizontal className="size-4 text-zinc-400" />
+
+            {/* Story Header */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="size-7 rounded-full bg-gradient-to-tr from-yellow-500 via-rose-500 to-purple-600 p-[1.5px]">
+                  <div className="size-full rounded-full bg-black flex items-center justify-center text-[10px] font-bold text-white">
+                    {(content.headline[0] || 'I').toUpperCase()}
+                  </div>
+                </div>
+                <span className="text-xs font-semibold text-white drop-shadow">instadeck.id</span>
+                <span className="text-[10px] text-white/70">1j</span>
+              </div>
+              <MoreHorizontal className="size-4 text-white/80" />
+            </div>
           </div>
 
-          {/* Post Text */}
-          <div className="px-3 py-2 text-xs text-zinc-700 leading-relaxed">
-            <p className="font-semibold text-zinc-900 mb-1">{content.headline}</p>
-            <p>{expandedCaption ? content.caption : `${content.caption.slice(0, 95)}…`}</p>
-          </div>
-
-          {/* Document Carousel Container */}
-          <div className="relative aspect-square w-full bg-zinc-100 border-y border-zinc-200 overflow-hidden">
+          {/* Background Visual Asset */}
+          <div className="absolute inset-0 z-0 flex items-center justify-center bg-zinc-900">
             {currentAsset?.imageUrl ? (
               <Image
                 src={currentAsset.imageUrl}
-                alt="LinkedIn Document Preview"
+                alt="Instagram Story Preview"
                 fill
-                className="object-cover"
+                className="object-contain"
                 unoptimized
               />
             ) : (
-              <div className="flex size-full items-center justify-center text-xs text-zinc-400">
-                Memuat dokumen…
-              </div>
+              <div className="text-xs text-zinc-500">Memuat slide story…</div>
             )}
 
-            {/* Document page indicator bar */}
-            <div className="absolute bottom-2 inset-x-3 flex items-center justify-between rounded-md bg-black/75 px-3 py-1.5 text-xs text-white backdrop-blur-sm">
-              <span className="text-[11px] font-medium truncate max-w-[200px]">{content.headline}</span>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={prevSlide}
-                  disabled={activeSlide === 0}
-                  className="disabled:opacity-30 hover:text-blue-300"
-                >
-                  <ChevronLeft className="size-4" />
-                </button>
-                <span className="text-[11px] font-bold">
-                  {activeSlide + 1} / {deck.length}
-                </span>
-                <button
-                  onClick={nextSlide}
-                  disabled={activeSlide === deck.length - 1}
-                  className="disabled:opacity-30 hover:text-blue-300"
-                >
-                  <ChevronRight className="size-4" />
-                </button>
-              </div>
-            </div>
+            {/* Tap Navigation Overlays */}
+            <div
+              onClick={prevSlide}
+              className="absolute left-0 top-12 bottom-16 w-1/3 cursor-pointer z-10"
+              title="Slide Sebelumnya"
+            />
+            <div
+              onClick={nextSlide}
+              className="absolute right-0 top-12 bottom-16 w-2/3 cursor-pointer z-10"
+              title="Slide Berikutnya"
+            />
           </div>
 
-          {/* LinkedIn Action Bar */}
-          <div className="flex items-center justify-around border-t border-zinc-100 py-2 text-zinc-600 text-xs font-semibold">
-            <div className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer">
-              <ThumbsUp className="size-4" /> Suka
+          {/* Story Footer */}
+          <div className="z-10 flex items-center gap-2 pt-2">
+            <div className="flex-1 rounded-full border border-white/40 bg-black/40 px-3.5 py-2 text-xs text-white/80 backdrop-blur-md">
+              Kirim pesan...
             </div>
-            <div className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer">
-              <MessageCircle className="size-4" /> Komentar
-            </div>
-            <div className="flex items-center gap-1.5 hover:text-blue-600 cursor-pointer">
-              <Share2 className="size-4" /> Bagikan
-            </div>
+            <button className="p-1.5 text-white hover:text-rose-500 transition-colors">
+              <Heart className="size-6" />
+            </button>
+            <button className="p-1.5 text-white hover:text-zinc-300 transition-colors">
+              <Send className="size-6" />
+            </button>
           </div>
         </div>
       )}

@@ -7,14 +7,14 @@ import { STYLES, isProStyle, type StyleDef } from '@/config/styles';
 import { Button } from '@/components/ui/button';
 import { TemplatePreviewModal } from '@/components/generate/template-preview-modal';
 
-type CategoryFilter = 'ALL' | 'ECOMMERCE' | 'SOCIAL' | 'LINKEDIN' | 'NEWS' | 'TECH' | 'FREE' | 'PRO';
+type CategoryFilter = 'ALL' | 'ECOMMERCE' | 'SOCIAL' | 'BUSINESS' | 'EDITORIAL' | 'TECH' | 'FREE' | 'PRO';
 
 const CATEGORIES: { id: CategoryFilter; label: string; count: number }[] = [
   { id: 'ALL', label: '⭐ Semua', count: 32 },
   { id: 'ECOMMERCE', label: '🛍️ E-Commerce & Jualan', count: 8 },
   { id: 'SOCIAL', label: '📸 Sosmed & Kreator', count: 8 },
-  { id: 'LINKEDIN', label: '💼 Bisnis & LinkedIn', count: 7 },
-  { id: 'NEWS', label: '📰 Media Berita', count: 5 },
+  { id: 'BUSINESS', label: '💼 Bisnis & Karir', count: 7 },
+  { id: 'EDITORIAL', label: '📰 Editorial & Wawasan', count: 5 },
   { id: 'TECH', label: '⚡ Tech & Edukasi', count: 4 },
   { id: 'FREE', label: '🆓 Gratis', count: 3 },
   { id: 'PRO', label: '👑 PRO Exclusive', count: 29 },
@@ -52,7 +52,7 @@ export default function TemplatesPage() {
           'LIFESTYLE',
         ].includes(style.id);
       }
-      if (activeCategory === 'LINKEDIN') {
+      if (activeCategory === 'BUSINESS') {
         return [
           'CORPORATE',
           'PODCAST',
@@ -63,7 +63,7 @@ export default function TemplatesPage() {
           'POLICY',
         ].includes(style.id);
       }
-      if (activeCategory === 'NEWS') {
+      if (activeCategory === 'EDITORIAL') {
         return ['BREAKING_NEWS', 'EDITORIAL', 'MODERN', 'POLICY', 'BOLD'].includes(style.id);
       }
       if (activeCategory === 'TECH') {
@@ -84,7 +84,7 @@ export default function TemplatesPage() {
           Katalog Gaya Visual E-Commerce &amp; Media Sosial
         </h1>
         <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-2xl">
-          Eksplorasi 32 gaya visual carousel kelas dunia: dari Shopee flash sale, review produk, konten LinkedIn, hingga portal berita. Klik pada template untuk melihat preview 5-slide!
+          Eksplorasi 32 gaya visual carousel kelas dunia: dari Shopee flash sale, review produk, tips bisnis & karir, hingga konten edukasi viral. Klik pada template untuk melihat preview 5-slide!
         </p>
       </div>
 

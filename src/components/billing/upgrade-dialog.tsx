@@ -65,7 +65,7 @@ export function UpgradeDialog({
           </div>
           <div className="flex items-center gap-2.5 font-medium text-slate-800 dark:text-slate-200">
             <FileText className="size-4 text-cyan-600 dark:text-cyan-400 shrink-0" />
-            <span>Ekspor Carousel LinkedIn PDF & Unduh PNG HD</span>
+            <span>Ekspor Dokumen PDF Multi-Slide & Unduh PNG/ZIP HD</span>
           </div>
           <div className="flex items-center gap-2.5 font-medium text-slate-800 dark:text-slate-200">
             <Crown className="size-4 text-amber-500 dark:text-amber-400 shrink-0" />

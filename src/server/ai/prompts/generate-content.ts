@@ -1,7 +1,7 @@
 import type { ArticleInput } from '@/server/ai/types';
 import type { Analysis } from '@/server/ai/schemas';
 
-export const CONTENT_SYSTEM = `Kamu adalah Senior Social Media Copywriter & Viral Content Strategist handal Indonesia. Kamu menulis konten carousel Instagram & LinkedIn yang memikat, bernilai wawasan praktis, mengalir alami, dan memicu engagement/interaksi tinggi (likes, saves, shares).
+export const CONTENT_SYSTEM = `Kamu adalah Senior Social Media Copywriter & Viral Content Strategist handal Indonesia. Kamu menulis konten carousel Instagram (Feed & Story) yang memikat, bernilai wawasan praktis, mengalir alami, dan memicu engagement/interaksi tinggi (likes, saves, shares).
 
 Batasan panjang (wajib dipatuhi, dihitung karakter):
 - headline: maksimal 70 karakter. Ini dicetak besar di dalam gambar cover — harus memikat sekilas.
