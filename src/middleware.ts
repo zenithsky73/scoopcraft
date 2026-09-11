@@ -6,7 +6,7 @@ import { authConfig } from '@/server/auth.config';
 // bukan instance auth() lengkap dari server/auth.ts.
 const { auth } = NextAuth(authConfig);
 
-const PROTECTED = ['/dashboard', '/content', '/upgrade', '/settings'];
+const PROTECTED = ['/dashboard', '/content', '/templates', '/calendar', '/upgrade', '/settings', '/admin'];
 
 // /dev/* dan /render/* punya penjagaannya sendiri (NODE_ENV dan token HMAC).
 

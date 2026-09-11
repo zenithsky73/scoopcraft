@@ -57,7 +57,7 @@ export function UpgradeDialog({
         <div className="mx-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 p-4 space-y-2.5 text-xs">
           <div className="flex items-center gap-2.5 font-medium text-slate-800 dark:text-slate-200">
             <Sparkles className="size-4 text-primary shrink-0" />
-            <span>Semua 20 Template Desain Visual Media Instagram</span>
+            <span>Semua 32 Template Desain Visual Media Instagram</span>
           </div>
           <div className="flex items-center gap-2.5 font-medium text-slate-800 dark:text-slate-200">
             <ImageIcon className="size-4 text-emerald-600 dark:text-emerald-400 shrink-0" />

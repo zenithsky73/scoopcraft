@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
@@ -41,7 +42,9 @@ export default async function LoginPage() {
       </div>
 
       {/* Form Component */}
-      <LoginForm />
+      <Suspense fallback={<div className="h-64 flex items-center justify-center text-xs text-slate-400">Memuat formulir...</div>}>
+        <LoginForm />
+      </Suspense>
 
       {/* Footer Switch */}
       <div className="pt-2 text-center text-xs text-slate-500 dark:text-slate-400">

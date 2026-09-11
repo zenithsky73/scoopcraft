@@ -55,7 +55,7 @@ export function PlanGrid({
                   </span>
                 </div>
                 <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5">
-                  Anda memiliki akses penuh tanpa batas kuota ke seluruh 20 template desain dan AI engine. Daftar paket di bawah ini adalah acuan katalog untuk pengguna platform Anda.
+                  Anda memiliki akses penuh tanpa batas kuota ke seluruh 32 template desain dan AI engine. Daftar paket di bawah ini adalah acuan katalog untuk pengguna platform Anda.
                 </p>
               </div>
             </div>

@@ -729,7 +729,7 @@ export function CarouselStudio({
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/40'
               }`}
             >
-              <Palette className="size-3.5" /> 20 Template
+              <Palette className="size-3.5" /> 32 Template
             </button>
 
             <button

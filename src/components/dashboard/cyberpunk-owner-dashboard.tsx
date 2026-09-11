@@ -22,8 +22,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { MultiInputForm } from '@/components/generate/multi-input-form';
 import { MasterQuotaInjector } from '@/components/dashboard/master-quota-injector';
-import { STYLES, type StyleDef } from '@/config/styles';
-import { TemplatePreviewModal } from '@/components/generate/template-preview-modal';
 
 export type CyberpunkOwnerDashboardProps = {
   user: {
@@ -36,7 +34,6 @@ export type CyberpunkOwnerDashboardProps = {
 };
 
 export function CyberpunkOwnerDashboard({ user, totalGenerations = 128 }: CyberpunkOwnerDashboardProps) {
-  const [selectedPreviewStyle, setSelectedPreviewStyle] = React.useState<StyleDef | null>(null);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#05070f] text-slate-900 dark:text-slate-100 relative overflow-hidden font-sans pb-24 transition-colors duration-200 selection:bg-indigo-500 selection:text-white">
@@ -84,7 +81,7 @@ export function CyberpunkOwnerDashboard({ user, totalGenerations = 128 }: Cyberp
             </h1>
 
             <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-400 max-w-xl font-medium">
-              Selamat datang, <span className="text-primary font-bold">{user.email}</span>. Anda memiliki akses penuh <span className="text-amber-700 dark:text-amber-400 font-bold">UNLIMITED ∞</span> ke seluruh 20 template desain dan engine generator AI.
+              Selamat datang, <span className="text-primary font-bold">{user.email}</span>. Anda memiliki akses penuh <span className="text-amber-700 dark:text-amber-400 font-bold">UNLIMITED ∞</span> ke seluruh 32 template desain dan engine generator AI.
             </p>
           </div>
 
@@ -98,43 +95,43 @@ export function CyberpunkOwnerDashboard({ user, totalGenerations = 128 }: Cyberp
             </div>
 
             <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-amber-500/30 flex flex-col justify-center shadow-sm">
-              <span className="text-[10px] font-mono uppercase text-amber-700 dark:text-amber-400 font-bold flex items-center gap-1">
+              <span className="text-[10px] font-mono uppercase text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1">
                 <Layers className="size-3" /> Template
               </span>
-              <span className="text-lg sm:text-xl font-black text-slate-900 dark:text-white">20/20 UNLOCKED</span>
+              <span className="text-lg sm:text-xl font-black text-slate-900 dark:text-white">32 Unlocked</span>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-emerald-500/30 col-span-2 sm:col-span-1 flex flex-col justify-center shadow-sm">
-              <span className="text-[10px] font-mono uppercase text-emerald-700 dark:text-emerald-400 font-bold flex items-center gap-1">
-                <Cpu className="size-3" /> AI Engine
+            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-cyan-500/30 col-span-2 sm:col-span-1 flex flex-col justify-center shadow-sm">
+              <span className="text-[10px] font-mono uppercase text-indigo-700 dark:text-cyan-400 font-bold flex items-center gap-1">
+                <ShieldCheck className="size-3" /> Status
               </span>
-              <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300">Gemini 2.5 Turbo</span>
+              <span className="text-xs font-mono font-black text-emerald-600 dark:text-emerald-400">
+                OWNER VIP
+              </span>
             </div>
           </div>
         </header>
 
-        {/* ─── 1.5 MASTER OWNER USERS QUICK ACCESS BANNER ─── */}
-        <section className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-indigo-500/10 to-cyan-500/10 border border-amber-300/60 dark:border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-amber-500 text-white shadow-md shadow-amber-500/25 shrink-0">
+        {/* ─── QUICK SHORTCUT TO ADMIN INJECTOR ─── */}
+        <section className="p-5 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 backdrop-blur-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm transition-colors duration-200">
+          <div className="flex items-center gap-3.5">
+            <div className="size-10 rounded-xl bg-amber-100 dark:bg-amber-500/10 border border-amber-300 dark:border-amber-500/30 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
               <Users className="size-5" />
             </div>
             <div>
-              <h3 className="font-black text-sm text-slate-900 dark:text-white flex items-center gap-2">
-                Master Kelola Pengguna Platform
-                <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-500/20 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-500/30 font-bold">
-                  GOD-MODE
-                </span>
+              <h3 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
+                Manajemen Pengguna &amp; Injector Kuota
               </h3>
-              <p className="text-xs text-slate-600 dark:text-slate-400">
-                Lihat semua user yang mendaftar lengkap dengan email & nama, serta suntik kuota langganan 1-klik.
+              <p className="text-[11px] text-slate-600 dark:text-slate-400">
+                Kelola daftar pengguna terdaftar, tambah kuota kustom, atau ubah paket subscriber.
               </p>
             </div>
           </div>
 
-          <Button asChild size="sm" className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs rounded-xl shadow-md shadow-amber-500/25 shrink-0">
+          <Button asChild size="sm" className="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shrink-0 rounded-xl shadow-sm">
             <Link href="/admin/users" className="flex items-center gap-1.5">
-              <Crown className="size-3.5" /> Buka Master Pengguna ➔
+              <span>Buka Master Users</span>
+              <ArrowRight className="size-3.5" />
             </Link>
           </Button>
         </section>
@@ -152,81 +149,7 @@ export function CyberpunkOwnerDashboard({ user, totalGenerations = 128 }: Cyberp
 
           <MultiInputForm isProUser={true} />
         </section>
-
-        {/* ─── 3. 20 MASTER TEMPLATES SHOWCASE GALLERY ─── */}
-        <section className="space-y-4 pt-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-                <Layers className="size-5 text-primary" /> Katalog 20 Template Desain Kelas Dunia
-              </h2>
-              <p className="text-xs text-slate-600 dark:text-slate-400">
-                Klik kartu atau ikon mata untuk melihat pratinjau 5 slide secara interaktif.
-              </p>
-            </div>
-            <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-primary/10 dark:bg-primary/20 border border-primary/20 dark:border-primary/40 text-primary">
-              20 Template Aktif
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {STYLES.map((style) => (
-              <div
-                key={style.id}
-                onClick={() => setSelectedPreviewStyle(style)}
-                className="group p-4 rounded-2xl bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-cyan-500/50 hover:bg-slate-50 dark:hover:bg-slate-900 transition-all duration-300 flex flex-col justify-between cursor-pointer relative overflow-hidden shadow-sm hover:shadow-md"
-              >
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span
-                        className="size-3 rounded-full shrink-0 shadow-sm"
-                        style={{ backgroundColor: style.accentColor }}
-                      />
-                      <span className="font-bold text-xs text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-cyan-300 transition-colors truncate">
-                        {style.label}
-                      </span>
-                    </div>
-
-                    <span
-                      className="text-[9px] font-black px-2 py-0.5 rounded-full uppercase"
-                      style={{
-                        backgroundColor: `${style.accentColor}15`,
-                        color: style.accentColor,
-                        border: `1px solid ${style.accentColor}30`,
-                      }}
-                    >
-                      {style.badge || 'PRO'}
-                    </span>
-                  </div>
-
-                  {style.subLabel && (
-                    <p className="text-[11px] font-semibold text-indigo-700 dark:text-cyan-400/90 truncate">
-                      {style.subLabel}
-                    </p>
-                  )}
-
-                  <p className="text-[11px] text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed">
-                    {style.description}
-                  </p>
-                </div>
-
-                <div className="pt-3 mt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-cyan-300">
-                  <span className="font-mono font-semibold">👁️ Lihat 5 Slide</span>
-                  <ArrowRight className="size-3 group-hover:translate-x-0.5 transition-transform" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
       </div>
-
-      {/* ─── 4. INTERACTIVE 5-SLIDE PREVIEW MODAL ─── */}
-      <TemplatePreviewModal
-        isOpen={!!selectedPreviewStyle}
-        onClose={() => setSelectedPreviewStyle(null)}
-        styleDef={selectedPreviewStyle}
-      />
     </div>
   );
 }

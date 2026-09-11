@@ -207,12 +207,12 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* ─── 20 TEMPLATE BISNIS & UMKM HIGHLIGHT ─── */}
+        {/* ─── 32 TEMPLATE BISNIS & UMKM HIGHLIGHT ─── */}
         <div className="p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-gradient-to-br dark:from-slate-900/90 dark:to-slate-950 shadow-md space-y-6 transition-colors duration-200">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
               <h2 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-                <Layers className="size-5 text-[#ff4526]" /> 20+ Pilihan Template Bisnis, Brand &amp; UMKM
+                <Layers className="size-5 text-[#ff4526]" /> 32 Pilihan Template Bisnis, Brand &amp; UMKM
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 Koleksi template visual siap pakai untuk Cafe (ala Fore), Kuliner Padang, Skincare, Retail, Toko Olshop, dan SaaS.

@@ -25,7 +25,7 @@ export const PLANS: Record<PaidPlan, PlanDef> = {
     badge: 'Paling Hemat',
     features: [
       '30 generate konten AI / bulan (~1 konten/hari)',
-      'Semua 20 template visual media Instagram',
+      'Semua 32 template visual media Instagram',
       'Ekstraksi link produk, web, video & naskah teks',
       'Foto otomatis per slide (Unsplash HD)',
       'Semua rasio (Feed 1:1, 4:5, Story 9:16)',

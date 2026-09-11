@@ -96,7 +96,7 @@ export default async function DashboardPage() {
               <div className="relative w-full h-full rounded-2xl bg-gradient-to-br from-slate-900 via-indigo-950/80 to-slate-900 border border-indigo-500/40 p-3.5 shadow-2xl flex flex-col justify-between">
                 <div className="flex items-center justify-between text-[10px]">
                   <span className="px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-400 font-bold border border-rose-500/30">
-                    🔥 HOT NEWS
+                    🔥 VIRAL CAROUSEL
                   </span>
                   <span className="font-mono text-indigo-400 font-bold">1/5</span>
                 </div>

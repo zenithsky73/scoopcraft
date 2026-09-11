@@ -29,7 +29,7 @@ export default async function UpgradePage() {
           Pilihan Paket &amp; Kuota Langganan
         </h1>
         <p className="text-sm text-slate-600 dark:text-slate-400 max-w-2xl">
-          Tingkatkan produktivitas konten media sosial dengan 20 template visual Instagram papan atas, ekspor batch gambar HD, dan kuota melimpah.
+          Tingkatkan produktivitas konten media sosial dengan 32 template visual Instagram papan atas, ekspor batch gambar HD, dan kuota melimpah.
         </p>
       </div>
 

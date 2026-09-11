@@ -7,20 +7,10 @@ import {
   Zap,
   Layers,
   Crown,
-  Download,
-  ArrowRight,
-  TrendingUp,
   FileDown,
-  Palette,
-  Clock,
-  Sliders,
-  CheckCircle2,
-  Bot,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MultiInputForm } from '@/components/generate/multi-input-form';
-import { STYLES, type StyleDef } from '@/config/styles';
-import { TemplatePreviewModal } from '@/components/generate/template-preview-modal';
 import type { QuotaState } from '@/server/billing/quota';
 
 export type SubscriberProDashboardProps = {
@@ -34,8 +24,6 @@ export type SubscriberProDashboardProps = {
 };
 
 export function SubscriberProDashboard({ user, quota }: SubscriberProDashboardProps) {
-  const [selectedPreviewStyle, setSelectedPreviewStyle] = React.useState<StyleDef | null>(null);
-
   return (
     <div className="mx-auto max-w-6xl space-y-8 pb-20">
       {/* ─── 1. VIP PRO SUITE HEADER ─── */}
@@ -63,7 +51,7 @@ export function SubscriberProDashboard({ user, quota }: SubscriberProDashboardPr
                 Selamat Datang, <span className="bg-gradient-to-r from-primary via-indigo-500 to-fuchsia-500 bg-clip-text text-transparent">{user.email.split('@')[0]}</span>
               </h1>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-xl mt-1 leading-relaxed">
-                Akun langganan <strong>{user.plan}</strong> Anda aktif. Anda dapat membuat carousel tanpa watermark, mengakses 20 template desain eksklusif, dan ekspor multi-halaman PDF & PNG.
+                Akun langganan <strong>{user.plan}</strong> Anda aktif. Anda dapat membuat carousel tanpa watermark, mengakses 32 template desain eksklusif, dan ekspor multi-halaman PDF & PNG.
               </p>
             </div>
           </div>
@@ -84,7 +72,7 @@ export function SubscriberProDashboard({ user, quota }: SubscriberProDashboardPr
                 <Layers className="size-3 text-indigo-500" /> Template
               </span>
               <span className="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
-                20 Unlocked
+                32 Unlocked
               </span>
             </div>
 
@@ -111,73 +99,6 @@ export function SubscriberProDashboard({ user, quota }: SubscriberProDashboardPr
 
         <MultiInputForm isProUser={true} />
       </section>
-
-      {/* ─── 3. 20 TEMPLATES UNLOCKED SHOWCASE ─── */}
-      <section className="space-y-4 pt-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-              <Layers className="size-5 text-primary" /> 20 Template Desain Eksklusif Anda
-            </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Seluruh 20 template siap digunakan untuk akun Pro Anda. Klik untuk melihat pratinjau 5 slide.
-            </p>
-          </div>
-          <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
-            20 / 20 Terbuka 🔓
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {STYLES.map((style) => (
-            <div
-              key={style.id}
-              onClick={() => setSelectedPreviewStyle(style)}
-              className="group p-4 rounded-2xl bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 hover:border-primary hover:shadow-lg transition-all duration-300 flex flex-col justify-between cursor-pointer relative overflow-hidden"
-            >
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="size-3 rounded-full shrink-0 shadow-sm"
-                      style={{ backgroundColor: style.accentColor }}
-                    />
-                    <span className="font-bold text-xs text-slate-900 dark:text-white group-hover:text-primary transition-colors truncate">
-                      {style.label}
-                    </span>
-                  </div>
-
-                  <span className="inline-flex items-center gap-0.5 text-[9px] font-black px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
-                    UNLOCKED
-                  </span>
-                </div>
-
-                {style.subLabel && (
-                  <p className="text-[11px] font-semibold text-primary/90 truncate">
-                    {style.subLabel}
-                  </p>
-                )}
-
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
-                  {style.description}
-                </p>
-              </div>
-
-              <div className="pt-3 mt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[10px] text-slate-400 group-hover:text-primary">
-                <span className="font-medium">👁️ Lihat 5 Slide</span>
-                <ArrowRight className="size-3 group-hover:translate-x-0.5 transition-transform" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ─── 4. INTERACTIVE 5-SLIDE PREVIEW MODAL ─── */}
-      <TemplatePreviewModal
-        isOpen={!!selectedPreviewStyle}
-        onClose={() => setSelectedPreviewStyle(null)}
-        styleDef={selectedPreviewStyle}
-      />
     </div>
   );
 }
