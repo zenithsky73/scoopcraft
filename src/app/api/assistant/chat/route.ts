@@ -21,10 +21,10 @@ const SYSTEM_PROMPT = `Kamu adalah "InstaDeck Copilot" — Asisten AI Resmi & Ek
 === ATURAN UTAMA & GUARDRAIL KETAT (CRITICAL) ===
 1. Kamu HANYA BOLEH DAN WAJIB HANYA menjawab pertanyaan seputar platform InstaDeck PRO:
    - Apa itu InstaDeck PRO, fitur-fitur, dan keunggulannya.
-   - Cara membuat carousel (Mode Topik, Teks/Naskah, Link Portal Berita, Link Video YouTube).
+   - Cara membuat carousel (Mode Topik AI, Naskah/Teks, Link Produk/Marketplace/Web, Link Video YouTube).
    - Cara kerja studio editor slide (edit teks judul/isi, ganti foto via Unsplash atau upload sendiri, pindah posisi slide, AI Polish).
-   - Fitur AI Polish (Shorten, Viral Hook, Formal Jurnalistik, Casual Kreator).
-   - Desain & 20 Template Visual (Breaking News, Bloomberg, Tech, Finance, Minimal, Red Collage, Podcast, Streetwear, Athletic, dll).
+   - Fitur AI Polish (Shorten, Viral Hook, Edukatif & Wawasan, Casual Kreator).
+   - Desain & 20 Template Visual (Modern, Minimalist, Bold, Dark Mode, Editorial, Social, dll).
    - Format & Rasio kanvas (Square 1:1, Portrait 4:5 yang optimal di feed Instagram, Story 9:16).
    - Fitur Brand Kit & Watermark (kustomisasi @handle akun, upload logo brand, sembunyikan watermark InstaDeck untuk paket Pro/Business).
    - Pilihan Ekspor (unduh 1 slide PNG HD, unduh semua slide ZIP, ekspor Dokumen PDF Carousel LinkedIn multi-halaman, salin caption + hashtag).
@@ -141,7 +141,7 @@ function getSmartFallbackReply(userMessage: string): string {
       '- **Salin Caption**: Menyalin naskah caption lengkap beserta hashtag relevan yang dibuatkan AI ke clipboard kamu.';
   }
 
-  return 'Halo! Saya **InstaDeck Copilot**, asisten AI resmi InstaDeck. 🚀\n\nSaya siap membantu kamu menguasai seluruh fitur InstaDeck PRO, seperti:\n- ⚡ **Membuat Carousel Otomatis** dari Topik, Teks, Link Berita, atau Video YouTube\n- 🎨 **Memilih dari 20 Template Desain** (Breaking News, Bloomberg, Tech, dll)\n- 💎 **Info Paket Langganan & Kuota** (Basic Rp19rb, Pro Rp49rb, Business Rp99rb)\n- 🏷️ **Kustomisasi Brand & Watermark** akunmu\n- 📄 **Ekspor Carousel ke PDF LinkedIn & ZIP**\n\nAda yang ingin kamu tanyakan atau butuh bantuan saat ini?';
+  return 'Halo! Saya **InstaDeck Copilot**, asisten AI resmi InstaDeck. 🚀\n\nSaya siap membantu kamu menguasai seluruh fitur InstaDeck PRO, seperti:\n- ⚡ **Membuat Carousel Otomatis** dari Topik, Naskah, Link Produk/Web, atau Video YouTube\n- 🎨 **Memilih dari 20 Template Desain** (Modern, Bold, Minimalist, Dark Mode, dll)\n- 💎 **Info Paket Langganan & Kuota** (Basic Rp49rb, Pro Rp99rb, Business Rp199rb)\n- 🏷️ **Kustomisasi Brand & Watermark** akunmu\n- 📄 **Ekspor Carousel ke PDF LinkedIn & ZIP**\n\nAda yang ingin kamu tanyakan atau butuh bantuan saat ini?';
 }
 
 export async function POST(req: Request) {

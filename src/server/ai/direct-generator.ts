@@ -150,7 +150,7 @@ export async function generateDirect(input: GenerateDirectInput) {
   try {
     const ai = getGeminiClient();
 
-    let systemRole = `Anda adalah Executive Creative Director & Growth Marketer untuk promosi dan konten UMKM / Bisnis di Instagram, Facebook & Threads.`;
+    let systemRole = `Anda adalah Executive Creative Director & Top Social Media Content Strategist handal Indonesia yang ahli menyusun konten carousel Instagram, LinkedIn, dan Threads berbobot tinggi untuk brand, kreator, dan bisnis.`;
     let dynamicGuidelines = '';
 
     if (isEcommerce) {
@@ -205,12 +205,12 @@ export async function generateDirect(input: GenerateDirectInput) {
   * Slide 4 (TWEET 5 / OUTRO): Cuitan penutup, kesimpulan bernas, dan ajakan Retweet tweet pertama serta Follow akun.`;
     } else {
       dynamicGuidelines = `ATURAN STRUKTUR 5 SLIDE SOSMED & CAROUSEL VIRAL:
-- PENTING: JANGAN gunakan format siaran berita atau redaksi jurnalistik. Buatlah konten carousel Instagram / LinkedIn yang memikat, bernilai wawasan praktis, dan memicu interaksi!
-1. Slide 0 (COVER): Headline hook memikat, mengundang rasa penasaran, relevan dengan inti topik.
+- PENTING: Gunakan gaya bahasa creator media sosial / praktisi bisnis modern (luwes, menarik, padat wawasan, memicu rasa penasaran), BUKAN siaran berita atau redaksi jurnalistik formal!
+1. Slide 0 (COVER): Headline hook memikat, mengundang rasa penasaran audiens (curiosity gap), relevan dengan inti materi.
 2. Slide 1 (POIN KUNCI / METRIK UTAMA): Sorot 1 wawasan penting, ide utama, atau angka/fakta terpenting pada "statHighlight" dengan penjelasan padat.
 3. Slide 2 (PEMBAHASAN MENDALAM): Penjelasan praktis mengenai mekanisme, tips penerapan, atau langkah implementasi nyata.
-4. Slide 3 (GOLDEN RULE / INSIGHT): Wawasan emas berbobot atau aturan penting yang menginspirasi pembaca.
-5. Slide 4 (OUTRO / KESIMPULAN): Rangkuman 1 kalimat padat dan ajakan bertindak (CTA simpan & bagikan).`;
+4. Slide 3 (GOLDEN RULE / INSIGHT): Wawasan emas berbobot, trik rahasia, atau aturan penting yang menginspirasi audiens.
+5. Slide 4 (OUTRO / KESIMPULAN): Rangkuman 1 kalimat padat dan ajakan bertindak (CTA simpan postingan, bagikan, atau follow akun).`;
     }
 
     let contextDirectives = '';
@@ -587,7 +587,7 @@ Kembalikan HANYA format JSON valid berikut:
           caption: deck.caption || '',
           hashtags: deck.hashtags || [],
           cta: deck.cta || 'Simpan & Bagikan!',
-          angle: isEcommerce ? 'Promosi Produk & Racun Shopee' : 'Edukasi & Social Carousel',
+          angle: isEcommerce ? 'Promosi Produk & Racun Olshop' : 'Edukasi & Social Media Carousel',
           analysis: { topic: articleTitle, category: detectedCategory } as any,
           slides: enrichedSlides as any,
           visualUrl: coverImageUrl,
@@ -636,7 +636,7 @@ Kembalikan HANYA format JSON valid berikut:
       caption: deck.caption,
       hashtags: deck.hashtags,
       cta: deck.cta,
-      angle: 'Jurnalisme Mendalam',
+      angle: isEcommerce ? 'Promosi & Rekomendasi' : 'Edukasi & Carousel Viral',
       slides: enrichedSlides,
     },
     style: effectiveStyle,

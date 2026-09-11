@@ -89,7 +89,7 @@ export function BrandForm({
             id="handle"
             value={handle}
             onChange={(event) => setHandle(event.target.value.replace(/^@+/, ''))}
-            placeholder="redaksikita"
+            placeholder="bisnisku.id"
             className="pl-8 text-xs bg-slate-50 dark:bg-slate-950/80 border-slate-200 dark:border-slate-800 rounded-xl"
             maxLength={32}
           />
@@ -100,13 +100,13 @@ export function BrandForm({
       {/* Display Name */}
       <div>
         <Label htmlFor="displayName" className="text-xs font-bold text-slate-800 dark:text-slate-200">
-          Nama Media / Bisnis <span className="text-slate-400 font-normal">(opsional)</span>
+          Nama Brand / Kreator / Bisnis <span className="text-slate-400 font-normal">(opsional)</span>
         </Label>
         <Input
           id="displayName"
           value={displayName}
           onChange={(event) => setDisplayName(event.target.value)}
-          placeholder="Redaksi Kita Official"
+          placeholder="InstaDeck Studio"
           className="mt-1 text-xs bg-slate-50 dark:bg-slate-950/80 border-slate-200 dark:border-slate-800 rounded-xl"
           maxLength={48}
         />

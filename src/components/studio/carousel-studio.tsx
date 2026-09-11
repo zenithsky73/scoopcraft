@@ -211,7 +211,7 @@ export function CarouselStudio({
         index: 4,
         type: 'OUTRO',
         ctaText: initialContent.cta || 'Bagikan ke Teman & Kolega!',
-        secondaryCta: 'Ikuti kami untuk analisis berita mendalam setiap hari.',
+        secondaryCta: 'Ikuti kami untuk tips, wawasan & inspirasi praktis setiap hari.',
         source: article.source,
       },
     ];
@@ -968,7 +968,7 @@ export function CarouselStudio({
               {/* Watermark & Branding Customizer */}
               <div className="p-4 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
                 <p className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-                  Watermark & Identitas Media:
+                  Watermark & Identitas Brand:
                 </p>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
@@ -978,18 +978,18 @@ export function CarouselStudio({
                     <Input
                       value={handle}
                       onChange={(e) => setHandle(e.target.value)}
-                      placeholder="@namamedia"
+                      placeholder="@namaakun"
                       className="h-9 text-xs bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800"
                     />
                   </div>
                   <div>
                     <Label className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold mb-1 block">
-                      Nama Brand / Redaksi
+                      Nama Brand / Kreator
                     </Label>
                     <Input
                       value={brandName}
                       onChange={(e) => setBrandName(e.target.value)}
-                      placeholder="MEDIA UPDATE"
+                      placeholder="BRAND ANDA"
                       className="h-9 text-xs bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800"
                     />
                   </div>

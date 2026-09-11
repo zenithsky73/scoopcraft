@@ -131,7 +131,7 @@ export function ContentGrid() {
             <p className="max-w-sm text-xs text-slate-500 dark:text-slate-400">
               {style || since || debounced
                 ? 'Tidak ada konten yang cocok dengan filter pencarian.'
-                : 'Mulai buat carousel pertama Anda dari link berita, YouTube, atau prompt AI di Dashboard!'}
+                : 'Mulai buat carousel pertama Anda dari ide topik, link produk/web, YouTube, atau naskah di Dashboard!'}
             </p>
             <Button asChild size="sm" className="mt-2 text-xs font-bold rounded-xl bg-primary text-white">
               <Link href="/dashboard">Buat Carousel Sekarang ➔</Link>

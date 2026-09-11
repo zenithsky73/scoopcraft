@@ -462,7 +462,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                     id="tagline"
                     value={tagline}
                     onChange={(e) => setTagline(e.target.value)}
-                    placeholder="Follow untuk update berita &amp; insight harian"
+                    placeholder="Follow untuk tips, wawasan &amp; konten menarik harian"
                     className="h-10 text-xs rounded-xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
                   />
                 </div>
@@ -746,7 +746,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                 <p className="text-xs text-slate-300">
                   {isOwner
                     ? 'Anda memiliki hak akses VIP Owner tanpa batasan kuota ke seluruh fitur AI dan template.'
-                    : 'Gunakan kuota Anda untuk menghasilkan carousel berita & artikel media sosial berkualitas tinggi.'}
+                    : 'Gunakan kuota Anda untuk menghasilkan konten carousel media sosial profesional & berkualitas tinggi.'}
                 </p>
               </div>
 

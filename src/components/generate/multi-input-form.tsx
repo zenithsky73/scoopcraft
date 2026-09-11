@@ -29,28 +29,34 @@ export type InputMode = 'url' | 'text' | 'prompt';
 
 const TONES = [
   {
-    id: 'Jurnalisme Tajam & Akurat',
-    label: '📰 Jurnalisme Tajam',
-    desc: 'Fakta & data objektif ala media nasional',
-    icon: '📰',
+    id: 'Edukasi & Wawasan Mendalam',
+    label: '💡 Edukasi & Wawasan',
+    desc: 'Penjelasan terstruktur, jelas & berbobot untuk audiens',
+    icon: '💡',
   },
   {
-    id: 'Finansial & Cuan Edukatif',
-    label: '💰 Finansial & Cuan',
-    desc: 'Metrik angka terstruktur (@ngomonginuang)',
-    icon: '💰',
+    id: 'Viral Hook & Bikin Penasaran',
+    label: '🔥 Viral Hook',
+    desc: 'Headline memancing curiosity gap & engagement tinggi',
+    icon: '🔥',
   },
   {
-    id: 'Santai & Populer Gen-Z',
-    label: '⚡ Santai Gen-Z',
-    desc: 'Bahasa mengalir, ramah (@tentangkampus_id)',
+    id: 'Promosi Produk & Racun Belanja',
+    label: '🛍️ Promosi & Racun Olshop',
+    desc: 'Persuasif, sorot keunggulan & pemicu konversi order',
+    icon: '🛍️',
+  },
+  {
+    id: 'Santai, Luwes & Populer Gen-Z',
+    label: '⚡ Santai & Relatable',
+    desc: 'Bahasa mengalir, akrab & asyik ala kreator medsos',
     icon: '⚡',
   },
   {
-    id: 'Viral Hook & Sensasional',
-    label: '🔥 Viral Hook',
-    desc: 'Headline memancing rasa penasaran tinggi',
-    icon: '🔥',
+    id: 'Bisnis, Finansial & Scale-Up',
+    label: '💰 Bisnis & Cuan',
+    desc: 'Metrik angka terstruktur & strategi pengembangan usaha',
+    icon: '💰',
   },
 ];
 
@@ -257,24 +263,24 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
             <div className="space-y-3 sm:space-y-4">
               <div>
                 <Label className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 mb-1.5 block">
-                  Judul Berita / Naskah (Opsional):
+                  Judul / Topik Naskah (Opsional):
                 </Label>
                 <Input
                   value={rawTitle}
                   onChange={(e) => setRawTitle(e.target.value)}
-                  placeholder="Judul artikel atau berita Anda..."
+                  placeholder="Judul topik, materi, atau naskah Anda..."
                   className="h-10 sm:h-11 bg-slate-50 dark:bg-slate-950/90 border-slate-200 dark:border-slate-800 text-xs sm:text-sm text-slate-900 dark:text-white rounded-xl"
                 />
               </div>
               <div>
                 <Label className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 mb-1.5 block">
-                  Isi Naskah Berita Lengkap:
+                  Isi Naskah / Konten Lengkap:
                 </Label>
                 <textarea
                   value={rawText}
                   onChange={(e) => setRawText(e.target.value)}
                   rows={5}
-                  placeholder="Salin dan tempelkan isi naskah berita atau artikel panjang di sini..."
+                  placeholder="Salin dan tempelkan naskah, artikel, materi edukasi, tips, atau catatan Anda di sini..."
                   className="w-full rounded-2xl bg-slate-50 dark:bg-slate-950/90 border border-slate-200 dark:border-slate-800 p-3.5 text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                   required
                 />

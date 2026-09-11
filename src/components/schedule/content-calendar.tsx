@@ -1434,7 +1434,7 @@ export function ContentCalendar({
                             : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800'
                         )}
                       >
-                        🔗 Link Berita / Artikel Web
+                        🔗 Link Web / Marketplace / Artikel
                       </button>
                     </div>
 
@@ -1548,7 +1548,7 @@ export function ContentCalendar({
                     {/* 3. Input Prompt / URL Topik */}
                     <div>
                       <label className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-1 block">
-                        {aiInputType === 'PROMPT' ? '3. Ketik Ide Topik / Produk / Menu Konten:' : '3. Tempelkan Link Berita / Artikel Web:'}
+                        {aiInputType === 'PROMPT' ? '3. Ketik Ide Topik / Produk / Menu Konten:' : '3. Tempelkan Link Produk / Web / Artikel:'}
                       </label>
                       <input
                         type={aiInputType === 'URL' ? 'url' : 'text'}

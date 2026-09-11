@@ -73,7 +73,7 @@ export function UrlInputForm({ disabled, defaultSlides }: { disabled?: boolean; 
             inputMode="url"
             value={url}
             onChange={(event) => setUrl(event.target.value)}
-            placeholder="Tempel link berita atau video YouTube (youtube.com/watch?v=... / youtu.be/...)"
+            placeholder="Tempel link produk (Shopee/Tokopedia), web, atau video YouTube..."
             className="h-11 pl-9"
             required
             disabled={disabled || loading}

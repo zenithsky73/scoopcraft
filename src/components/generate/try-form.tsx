@@ -71,11 +71,11 @@ export function TryForm({ guestQuota }: { guestQuota: number }) {
               inputMode="url"
               value={url}
               onChange={(event) => setUrl(event.target.value)}
-              placeholder="Tempel link berita atau video YouTube di sini"
+              placeholder="Tempel link produk (Shopee/Tokped), web, atau YouTube..."
               className="h-12 pl-9"
               required
               disabled={loading}
-              aria-label="URL artikel berita atau video YouTube"
+              aria-label="URL produk, web, atau video YouTube"
             />
           </div>
           <Button type="submit" size="lg" className="h-12" loading={loading} disabled={!url}>
@@ -84,7 +84,7 @@ export function TryForm({ guestQuota }: { guestQuota: number }) {
         </div>
 
         <p className="hint mt-2">
-          Tanpa daftar, tanpa kartu kredit · Mendukung portal berita & YouTube · {guestQuota} percobaan gratis
+          Tanpa daftar, tanpa kartu kredit · Mendukung marketplace, web & YouTube · {guestQuota} percobaan gratis
         </p>
 
         {error && (
