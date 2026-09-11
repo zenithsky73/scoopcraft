@@ -219,6 +219,32 @@ export function ContentCalendar({
   const [editCaption, setEditCaption] = React.useState<string>('');
   const [isSubmittingEdit, setIsSubmittingEdit] = React.useState(false);
 
+  // Handle OAuth callback notifications from URL params
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const connected = params.get('connected');
+    const handleParam = params.get('handle');
+    const canceled = params.get('canceled');
+    const errorParam = params.get('error');
+
+    if (connected) {
+      const platformName = connected.toUpperCase();
+      notify.celebrate(
+        `Akun ${platformName} Berhasil Terhubung! 🎉`,
+        `${handleParam ? `${handleParam} ` : ''}resmi tersambung dan siap digunakan untuk Auto-Post jadwal carousel.`
+      );
+      fetchAccounts();
+      window.history.replaceState({}, '', '/calendar');
+    } else if (canceled) {
+      notify.info('Otorisasi Dibatalkan', 'Proses otorisasi akun media sosial dibatalkan.');
+      window.history.replaceState({}, '', '/calendar');
+    } else if (errorParam) {
+      notify.error('Gagal Menghubungkan', `Kendala otorisasi: ${errorParam}`);
+      window.history.replaceState({}, '', '/calendar');
+    }
+  }, []);
+
   const fetchAccounts = async () => {
     try {
       const res = await fetch('/api/social-accounts');

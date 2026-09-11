@@ -87,6 +87,63 @@ export async function getReplizAccountCount(): Promise<Record<string, number>> {
 }
 
 /**
+ * Get official OAuth Authorization URL for Instagram, TikTok, Threads, etc.
+ */
+export async function getReplizOAuthUrl(platform: string, redirectUrl: string): Promise<string> {
+  const normPlatform = platform.toLowerCase();
+  const res = await fetch(`${REPLIZ_BASE_URL}/account/${normPlatform}/authorize?redirect=${encodeURIComponent(redirectUrl)}`, {
+    headers: {
+      Authorization: getReplizAuthHeader(),
+      Accept: "application/json",
+    },
+    next: { revalidate: 0 },
+  });
+
+  const data = await res.json();
+  if (!res.ok || !data.url) {
+    throw new Error(data?.message || `Gagal mendapatkan URL otorisasi ${platform} dari Repliz.`);
+  }
+
+  return data.url;
+}
+
+/**
+ * Exchange OAuth Code from Instagram / TikTok / Threads callback with Repliz
+ */
+export async function connectReplizOAuthAccount(platform: string, code: string): Promise<{ success: boolean; account?: any; error?: string }> {
+  try {
+    const normPlatform = platform.toLowerCase();
+    const res = await fetch(`${REPLIZ_BASE_URL}/account/${normPlatform}/connect`, {
+      method: "POST",
+      headers: {
+        Authorization: getReplizAuthHeader(),
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ code }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      return {
+        success: false,
+        error: data.message || `Gagal menautkan akun ${platform} (${res.status})`,
+      };
+    }
+
+    return {
+      success: true,
+      account: data,
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      error: err?.message || "Gagal menghubungi server Repliz.",
+    };
+  }
+}
+
+/**
  * Create a new scheduled post in Repliz
  */
 export async function createReplizSchedule(payload: ReplizSchedulePayload): Promise<ReplizScheduleResult> {
