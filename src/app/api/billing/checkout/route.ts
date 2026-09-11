@@ -58,7 +58,7 @@ export async function POST(req: Request) {
 
   // 2. Jika Midtrans Server Key AKTIF -> Buat Transaksi Snap Asli
   try {
-    const orderId = `NEWSLY-${plan}-${Date.now().toString(36).toUpperCase()}-${user.id.slice(-4).toUpperCase()}`;
+    const orderId = `INSTADECK-${plan}-${Date.now().toString(36).toUpperCase()}-${user.id.slice(-4).toUpperCase()}`;
 
     const snap = await createMidtransSnapTransaction({
       orderId,

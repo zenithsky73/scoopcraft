@@ -128,8 +128,8 @@ export async function POST(req: Request) {
           data: {
             userId: viewer.user.id,
             platform: validated.platform as SocialPlatform,
-            accountName: `${viewer.user.name || 'Newsly User'} (${validated.platform})`,
-            accountHandle: `@${(viewer.user.name || 'newsly').toLowerCase().replace(/\s+/g, '')}`,
+            accountName: `${viewer.user.name || 'InstaDeck User'} (${validated.platform})`,
+            accountHandle: `@${(viewer.user.name || 'instadeck').toLowerCase().replace(/\s+/g, '')}`,
             accessToken: 'demo_token',
             isConnected: true,
           },

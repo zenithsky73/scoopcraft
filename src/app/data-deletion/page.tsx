@@ -4,8 +4,8 @@ import { ThemeToggle } from '@/components/layout/theme-toggle';
 import { Button } from '@/components/ui/button';
 
 export const metadata = {
-  title: 'Petunjuk Penghapusan Data Pengguna - Newsly AI',
-  description: 'Panduan dan instruksi cara menghapus data pengguna Newsly AI (Scoopcraft)',
+  title: 'Petunjuk Penghapusan Data Pengguna - InstaDeck PRO',
+  description: 'Panduan dan instruksi cara menghapus data pengguna InstaDeck PRO',
 };
 
 export default function DataDeletionPage() {
@@ -15,7 +15,7 @@ export default function DataDeletionPage() {
         <Link href="/" className="flex items-center gap-2.5">
           <NewslyLogo size={32} />
           <span className="text-lg font-black tracking-tight text-slate-900 dark:text-white">
-            Newsly<span className="bg-gradient-to-r from-cyan-500 via-pink-500 to-amber-500 bg-clip-text text-transparent">AI</span>
+            InstaDeck<span className="bg-gradient-to-r from-primary via-orange-500 to-amber-500 bg-clip-text text-transparent"> PRO</span>
           </span>
         </Link>
         <div className="flex items-center gap-3">
@@ -38,7 +38,7 @@ export default function DataDeletionPage() {
 
         <div className="prose dark:prose-invert max-w-none space-y-6 text-sm sm:text-base leading-relaxed text-slate-700 dark:text-slate-300">
           <p>
-            Newsly AI (&quot;Scoopcraft&quot;) menghargai hak privasi Anda dan menyediakan mekanisme mudah bagi pengguna untuk menghapus akun dan data yang terkait dengan aplikasi kami.
+            InstaDeck PRO menghargai hak privasi Anda dan menyediakan mekanisme mudah bagi pengguna untuk menghapus akun dan data yang terkait dengan aplikasi kami.
           </p>
 
           <section className="space-y-3">
@@ -47,18 +47,18 @@ export default function DataDeletionPage() {
             <ol className="list-decimal pl-5 space-y-2">
               <li>Buka akun Facebook Anda dan masuk ke <strong>Pengaturan &amp; Privasi &gt; Pengaturan</strong>.</li>
               <li>Pilih menu <strong>Aplikasi dan Situs Web (Apps and Websites)</strong> di bilah sisi kiri.</li>
-              <li>Cari aplikasi <strong>newsly ai</strong> atau <strong>Scoopcraft</strong>.</li>
+              <li>Cari aplikasi <strong>InstaDeck PRO</strong> atau <strong>Repliz</strong>.</li>
               <li>Klik tombol <strong>Hapus (Remove)</strong> di samping nama aplikasi.</li>
               <li>Centang opsi jika ingin menghapus seluruh postingan dan interaksi yang dibuat oleh aplikasi, lalu konfirmasi penghapusan.</li>
             </ol>
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Metode 2: Memutuskan Akun dari Dashboard Newsly AI</h2>
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Metode 2: Memutuskan Akun dari Dashboard InstaDeck PRO</h2>
             <ol className="list-decimal pl-5 space-y-2">
-              <li>Masuk ke akun Newsly AI Anda di <Link href="/login" className="text-primary underline">https://scoopcraft.vercel.app/login</Link>.</li>
+              <li>Masuk ke akun InstaDeck PRO Anda di <Link href="/login" className="text-primary underline">https://scoopcraft.vercel.app/login</Link>.</li>
               <li>Buka menu <strong>Pengaturan (Settings) &gt; Akun Sosial</strong>.</li>
-              <li>Klik tombol <strong>Putuskan Sambungan (Disconnect)</strong> pada akun Facebook, Instagram, atau Threads yang ingin Anda hapus.</li>
+              <li>Klik tombol <strong>Putuskan Sambungan (Disconnect)</strong> pada akun Facebook, Instagram, TikTok, atau Threads yang ingin Anda hapus.</li>
               <li>Semua token akses dan data identitas yang tersimpan akan langsung dihapus permanen dari basis data kami.</li>
             </ol>
           </section>
@@ -66,7 +66,7 @@ export default function DataDeletionPage() {
           <section className="space-y-3">
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">Metode 3: Permintaan Penghapusan Manual / Lengkap</h2>
             <p>
-              Jika Anda ingin menghapus seluruh riwayat akun Newsly AI, artikel, dan gambar media secara permanen dari server kami, kirimkan permohonan melalui email ke:
+              Jika Anda ingin menghapus seluruh riwayat akun InstaDeck PRO, artikel, dan gambar media secara permanen dari server kami, kirimkan permohonan melalui email ke:
             </p>
             <div className="p-4 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-mono text-sm">
               Email: <strong>muhrhamd18@gmail.com</strong><br />

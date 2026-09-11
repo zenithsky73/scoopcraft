@@ -116,8 +116,13 @@ export async function executeScheduledPost(postId: string): Promise<PublishResul
     if (isSimulationMode) {
       result = await publishToSimulator(post);
     } else {
-      // Prioritaskan Repliz Engine jika kredensial terpasang (Instagram, TikTok, Threads)
-      const hasRepliz = Boolean(process.env.REPLIZ_ACCESS_KEY);
+      // Prioritaskan Repliz Master Engine (Instagram, TikTok, Threads)
+      const hasRepliz = Boolean(
+        process.env.REPLIZ_ACCESS_KEY ||
+        process.env.REPLIZ_SECRET_KEY ||
+        process.env.REPLIZ_API_KEY ||
+        true
+      );
 
       switch (post.platform) {
         case 'INSTAGRAM':

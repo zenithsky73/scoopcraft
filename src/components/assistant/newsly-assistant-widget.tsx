@@ -33,7 +33,7 @@ const INITIAL_SUGGESTIONS = [
   { label: '🔥 Tips Hook Slide 1', query: 'Beri saya tips membuat hook dan cover slide 1 yang viral dan memancing klik!' },
 ];
 
-export function NewslyAssistantWidget() {
+export function InstaDeckAssistantWidget() {
   const pathname = usePathname();
   const [mounted, setMounted] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
@@ -56,7 +56,11 @@ export function NewslyAssistantWidget() {
     setMounted(true);
     const handleOpen = () => setIsOpen(true);
     window.addEventListener('open-newsly-copilot', handleOpen);
-    return () => window.removeEventListener('open-newsly-copilot', handleOpen);
+    window.addEventListener('open-instadeck-copilot', handleOpen);
+    return () => {
+      window.removeEventListener('open-newsly-copilot', handleOpen);
+      window.removeEventListener('open-instadeck-copilot', handleOpen);
+    };
   }, []);
 
   const scrollToBottom = () => {
@@ -356,3 +360,5 @@ export function NewslyAssistantWidget() {
     </div>
   );
 }
+
+export { InstaDeckAssistantWidget as NewslyAssistantWidget };

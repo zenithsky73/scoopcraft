@@ -12,11 +12,19 @@ export const dynamic = 'force-dynamic';
 export async function GET(req: Request) {
   // Verifikasi otorisasi Cron (CRON_SECRET) jika diset
   const authHeader = req.headers.get('authorization');
+  const isVercelCron = Boolean(req.headers.get('x-vercel-cron'));
   const cronSecret = process.env.CRON_SECRET;
+  const { searchParams } = new URL(req.url);
+  const querySecret = searchParams.get('secret') || searchParams.get('key');
 
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    // Izinkan juga jika di lingkungan development lokal
-    if (process.env.NODE_ENV === 'production') {
+  if (cronSecret) {
+    const isAuthorized =
+      isVercelCron ||
+      authHeader === `Bearer ${cronSecret}` ||
+      querySecret === cronSecret ||
+      process.env.NODE_ENV !== 'production';
+
+    if (!isAuthorized) {
       return NextResponse.json({ error: 'Tidak diizinkan' }, { status: 401 });
     }
   }

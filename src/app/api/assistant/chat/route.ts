@@ -16,17 +16,17 @@ const chatRequestSchema = z.object({
     .max(30),
 });
 
-const SYSTEM_PROMPT = `Kamu adalah "Newsly Copilot" — Asisten AI Resmi & Eksklusif dari platform Newsly AI (platform generator carousel media sosial bertenaga kecerdasan buatan untuk Instagram, LinkedIn, dan Story).
+const SYSTEM_PROMPT = `Kamu adalah "InstaDeck Copilot" — Asisten AI Resmi & Eksklusif dari platform InstaDeck PRO (platform generator carousel media sosial bertenaga kecerdasan buatan untuk Instagram, LinkedIn, dan Story).
 
 === ATURAN UTAMA & GUARDRAIL KETAT (CRITICAL) ===
-1. Kamu HANYA BOLEH DAN WAJIB HANYA menjawab pertanyaan seputar platform Newsly AI:
-   - Apa itu Newsly AI, fitur-fitur, dan keunggulannya.
+1. Kamu HANYA BOLEH DAN WAJIB HANYA menjawab pertanyaan seputar platform InstaDeck PRO:
+   - Apa itu InstaDeck PRO, fitur-fitur, dan keunggulannya.
    - Cara membuat carousel (Mode Topik, Teks/Naskah, Link Portal Berita, Link Video YouTube).
    - Cara kerja studio editor slide (edit teks judul/isi, ganti foto via Unsplash atau upload sendiri, pindah posisi slide, AI Polish).
    - Fitur AI Polish (Shorten, Viral Hook, Formal Jurnalistik, Casual Kreator).
    - Desain & 20 Template Visual (Breaking News, Bloomberg, Tech, Finance, Minimal, Red Collage, Podcast, Streetwear, Athletic, dll).
    - Format & Rasio kanvas (Square 1:1, Portrait 4:5 yang optimal di feed Instagram, Story 9:16).
-   - Fitur Brand Kit & Watermark (kustomisasi @handle akun, upload logo brand, sembunyikan watermark Newsly untuk paket Pro/Business).
+   - Fitur Brand Kit & Watermark (kustomisasi @handle akun, upload logo brand, sembunyikan watermark InstaDeck untuk paket Pro/Business).
    - Pilihan Ekspor (unduh 1 slide PNG HD, unduh semua slide ZIP, ekspor Dokumen PDF Carousel LinkedIn multi-halaman, salin caption + hashtag).
    - Paket Langganan, Harga & Kuota:
      * Free Trial: gratis saat mendaftar untuk mencoba fitur dasar (10 kuota, 14 hari).
@@ -34,13 +34,13 @@ const SYSTEM_PROMPT = `Kamu adalah "Newsly Copilot" — Asisten AI Resmi & Ekskl
      * Paket Kreator Pro: Rp 99.000/bulan (100 generate konten AI/bulan, Auto-Post Instagram & LinkedIn Live, AI Campaign 30 Hari Sekali Klik, hubungkan hingga 3 akun medsos, watermark brand sendiri, ekspor PDF LinkedIn, input YouTube, unduh ZIP batch, prioritas AI).
      * Paket Sultan / Agensi (Business): Rp 199.000/bulan (Unlimited FUP 500/bulan, semua fitur Pro, Auto-Post Multi-Akun hingga 10 akun medsos klien, Multi-Brand Campaign 30 Hari, full Brand Kit logo/warna/font, render prioritas tertinggi).
    - Tips praktis membuat konten carousel yang berpotensi viral & punya engagement tinggi di media sosial.
-   - Bantuan kendala teknis atau panduan pemakaian tombol di aplikasi Newsly AI.
+   - Bantuan kendala teknis atau panduan pemakaian tombol di aplikasi InstaDeck PRO.
 
 2. ATURAN DILARANG KERAS (STRICTLY FORBIDDEN):
-   - JANGAN PERNAH menjawab pertanyaan di luar Newsly AI! (Misalnya: resep masakan, rumus fisika/matematika, coding pemrograman umum yang tidak ada kaitannya dengan Newsly, rekomendasi film/musik umum, ramalan cuaca, gosip selebriti, politik umum, sains acak, atau platform kompetitor).
-   - Jika pengguna menanyakan hal di luar Newsly AI, kamu HARUS menolak dengan ramah, sopan, sedikit jenaka, dan langsung mengarahkan kembali ke topik Newsly AI.
+   - JANGAN PERNAH menjawab pertanyaan di luar InstaDeck PRO! (Misalnya: resep masakan, rumus fisika/matematika, coding pemrograman umum yang tidak ada kaitannya dengan InstaDeck, rekomendasi film/musik umum, ramalan cuaca, gosip selebriti, politik umum, sains acak, atau platform kompetitor).
+   - Jika pengguna menanyakan hal di luar InstaDeck PRO, kamu HARUS menolak dengan ramah, sopan, sedikit jenaka, dan langsung mengarahkan kembali ke topik InstaDeck PRO.
    Contoh respons penolakan ramah:
-   "Waduh, pertanyaan yang menarik! 😄 Tapi sebagai **Asisten Resmi Newsly AI 🚀**, aku diprogram khusus hanya untuk menjawab hal-hal seputar Newsly AI, pembuatan carousel, fitur studio, dan strategi konten media sosial.\n\nYuk tanyakan sesuatu tentang cara bikin carousel dari link YouTube, tips hook slide 1, atau fitur paket Pro Newsly! ✨"
+   "Waduh, pertanyaan yang menarik! 😄 Tapi sebagai **Asisten Resmi InstaDeck PRO 🚀**, aku diprogram khusus hanya untuk menjawab hal-hal seputar InstaDeck PRO, pembuatan carousel, fitur studio, dan strategi konten media sosial.\n\nYuk tanyakan sesuatu tentang cara bikin carousel dari link YouTube, tips hook slide 1, atau fitur paket Pro InstaDeck! ✨"
 
 === GAYA KOMUNIKASI ===
 - Bahasa Indonesia yang ramah, energik, profesional, dan asyik (khas kreator konten digital masa kini).
@@ -51,8 +51,8 @@ function getSmartFallbackReply(userMessage: string): string {
   const q = userMessage.toLowerCase();
 
   // Guardrail check in fallback
-  const isNewslyRelated =
-    q.includes('newsly') ||
+  const isInstaDeckRelated =
+    q.includes('instadeck') ||
     q.includes('carousel') ||
     q.includes('slide') ||
     q.includes('generate') ||
@@ -98,16 +98,16 @@ function getSmartFallbackReply(userMessage: string): string {
     q.includes('bisa apa') ||
     q.includes('bantuan');
 
-  if (!isNewslyRelated) {
-    return 'Waduh, pertanyaan yang menarik! 😄 Tapi sebagai **Asisten Resmi Newsly AI 🚀**, aku diprogram khusus hanya untuk menjawab hal-hal seputar platform **Newsly AI**, pembuatan carousel, fitur studio, dan strategi konten media sosial.\n\nAda yang bisa kubantu terkait cara membuat carousel, memilih template, atau paket langganan di Newsly? ✨';
+  if (!isInstaDeckRelated) {
+    return 'Waduh, pertanyaan yang menarik! 😄 Tapi sebagai **Asisten Resmi InstaDeck PRO 🚀**, aku diprogram khusus hanya untuk menjawab hal-hal seputar platform **InstaDeck PRO**, pembuatan carousel, fitur studio, dan strategi konten media sosial.\n\nAda yang bisa kubantu terkait cara membuat carousel, memilih template, atau paket langganan di InstaDeck? ✨';
   }
 
   if (q.includes('youtube')) {
-    return '**Cara Membuat Carousel dari Link YouTube di Newsly AI 📺:**\n\n1. Buka menu **Generate Konten** di dashboard Newsly.\n2. Pilih tab **Link / URL** lalu tempel tautan video YouTube (bisa link video biasa, `youtu.be`, maupun `shorts`).\n3. AI Newsly akan otomatis mengekstrak transkrip dan poin-poin inti video.\n4. Pilih template visual yang kamu sukai (misal: *Tech*, *Podcast*, atau *Breaking News*).\n5. Klik **Generate Carousel**! Dalam hitungan detik, carousel edukatif dengan foto thumbnail tajam siap kamu posting. 🎉';
+    return '**Cara Membuat Carousel dari Link YouTube di InstaDeck PRO 📺:**\n\n1. Buka menu **Generate Konten** di dashboard InstaDeck.\n2. Pilih tab **Link / URL** lalu tempel tautan video YouTube (bisa link video biasa, `youtu.be`, maupun `shorts`).\n3. AI InstaDeck akan otomatis mengekstrak transkrip dan poin-poin inti video.\n4. Pilih template visual yang kamu sukai (misal: *Tech*, *Podcast*, atau *Breaking News*).\n5. Klik **Generate Carousel**! Dalam hitungan detik, carousel edukatif dengan foto thumbnail tajam siap kamu posting. 🎉';
   }
 
   if (q.includes('harga') || q.includes('paket') || q.includes('biaya') || q.includes('kuota') || q.includes('langganan')) {
-    return '**Pilihan Paket Langganan Newsly AI 💎:**\n\n' +
+    return '**Pilihan Paket Langganan InstaDeck PRO 💎:**\n\n' +
       '1. **Paket Lite / Pemula (Basic) — Rp 19.000/bln**\n' +
       '   - 25 Generate konten per bulan\n' +
       '   - 10 Template visual populer\n' +
@@ -126,22 +126,22 @@ function getSmartFallbackReply(userMessage: string): string {
   }
 
   if (q.includes('watermark') || q.includes('logo') || q.includes('brand')) {
-    return '**Cara Mengatur Watermark & Brand Kit di Newsly AI ✨:**\n\n' +
+    return '**Cara Mengatur Watermark & Brand Kit di InstaDeck PRO ✨:**\n\n' +
       '1. Buka menu **Pengaturan (Settings)** di sidebar.\n' +
       '2. Pada tab **Brand Kit**, kamu bisa memasukkan **Handle Media Sosial** kamu (misal: `@bisnishebat`).\n' +
-      '3. Untuk pengguna **Paket Pro & Business**, kamu bisa mengunggah **Logo Brand** dan mencentang opsi **Sembunyikan Watermark Newsly** agar branding konten 100% milikmu!\n' +
+      '3. Untuk pengguna **Paket Pro & Business**, kamu bisa mengunggah **Logo Brand** dan mencentang opsi **Sembunyikan Watermark InstaDeck** agar branding konten 100% milikmu!\n' +
       '4. Klik **Simpan Identitas Brand**, dan seluruh slide yang kamu buat otomatis menggunakan watermark barumu.';
   }
 
   if (q.includes('pdf') || q.includes('linkedin') || q.includes('zip') || q.includes('unduh') || q.includes('download')) {
-    return '**Pilihan Ekspor di Newsly AI 🚀:**\n\n' +
+    return '**Pilihan Ekspor di InstaDeck PRO 🚀:**\n\n' +
       '- **Unduh PNG**: Mengunduh slide aktif yang sedang dilihat dalam format gambar HD.\n' +
       '- **Unduh ZIP (Batch)**: Mengunduh semua slide sekaligus dalam 1 folder arsip ZIP siap pakai.\n' +
       '- **Ekspor PDF LinkedIn**: Menggabungkan seluruh slide menjadi file PDF interaktif multi-halaman yang langsung bisa kamu upload sebagai dokumen carousel di LinkedIn!\n' +
       '- **Salin Caption**: Menyalin naskah caption lengkap beserta hashtag relevan yang dibuatkan AI ke clipboard kamu.';
   }
 
-  return 'Halo! Saya **Newsly Copilot**, asisten AI resmi Newsly. 🚀\n\nSaya siap membantu kamu menguasai seluruh fitur Newsly AI, seperti:\n- ⚡ **Membuat Carousel Otomatis** dari Topik, Teks, Link Berita, atau Video YouTube\n- 🎨 **Memilih dari 20 Template Desain** (Breaking News, Bloomberg, Tech, dll)\n- 💎 **Info Paket Langganan & Kuota** (Basic Rp19rb, Pro Rp49rb, Business Rp99rb)\n- 🏷️ **Kustomisasi Brand & Watermark** akunmu\n- 📄 **Ekspor Carousel ke PDF LinkedIn & ZIP**\n\nAda yang ingin kamu tanyakan atau butuh bantuan saat ini?';
+  return 'Halo! Saya **InstaDeck Copilot**, asisten AI resmi InstaDeck. 🚀\n\nSaya siap membantu kamu menguasai seluruh fitur InstaDeck PRO, seperti:\n- ⚡ **Membuat Carousel Otomatis** dari Topik, Teks, Link Berita, atau Video YouTube\n- 🎨 **Memilih dari 20 Template Desain** (Breaking News, Bloomberg, Tech, dll)\n- 💎 **Info Paket Langganan & Kuota** (Basic Rp19rb, Pro Rp49rb, Business Rp99rb)\n- 🏷️ **Kustomisasi Brand & Watermark** akunmu\n- 📄 **Ekspor Carousel ke PDF LinkedIn & ZIP**\n\nAda yang ingin kamu tanyakan atau butuh bantuan saat ini?';
 }
 
 export async function POST(req: Request) {

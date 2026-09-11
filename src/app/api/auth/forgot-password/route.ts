@@ -21,7 +21,7 @@ export async function POST(req: Request) {
     if (!user || user.isGuest) {
       return NextResponse.json(
         {
-          error: `Email "${cleanEmail}" belum terdaftar di Newsly AI. Silakan daftar akun baru terlebih dahulu.`,
+          error: `Email "${cleanEmail}" belum terdaftar di InstaDeck PRO. Silakan daftar akun baru terlebih dahulu.`,
         },
         { status: 404 }
       );
