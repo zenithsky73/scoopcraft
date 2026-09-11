@@ -158,7 +158,7 @@ export function ScheduleModal({
         slideImages && slideImages.length > 0
           ? slideImages
           : Array.from({ length: totalSlides || 5 }, (_, i) =>
-              `https://newsly.ai/placeholder/slide-${i + 1}.png`
+              `https://scoopcraft.vercel.app/placeholder/slide-${i + 1}.png`
             );
 
       const res = await fetch('/api/schedule', {

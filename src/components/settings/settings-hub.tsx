@@ -447,7 +447,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                     id="displayName"
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
-                    placeholder="Newsly Media Daily"
+                    placeholder="InstaDeck Media Daily"
                     className="h-10 text-xs rounded-xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
                   />
                 </div>
@@ -608,7 +608,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
               <div className="space-y-3 text-xs">
                 <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
                   <span className="text-slate-500">Nama Tampilan</span>
-                  <span className="font-bold text-slate-900 dark:text-white">{user.name || 'Pengguna Newsly'}</span>
+                  <span className="font-bold text-slate-900 dark:text-white">{user.name || 'Pengguna InstaDeck'}</span>
                 </div>
 
                 <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center justify-between">

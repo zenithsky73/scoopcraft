@@ -245,7 +245,7 @@ function ContentCard({ run }: { run: RunCard }) {
 
             {/* Bottom Brand Watermark */}
             <div className="flex items-center justify-between text-[9px] text-slate-400 border-t border-slate-800/80 pt-1.5 z-10 font-mono">
-              <span>Newsly AI Studio</span>
+              <span>InstaDeck PRO Studio</span>
               <span>Slide 1 / {run.slides}</span>
             </div>
           </div>
@@ -276,7 +276,7 @@ function ContentCard({ run }: { run: RunCard }) {
 
         <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800/80 pt-2.5">
           <div className="flex items-center gap-1 font-semibold truncate max-w-[120px]">
-            <span className="truncate">{run.source || 'Newsly AI'}</span>
+            <span className="truncate">{run.source || 'InstaDeck PRO'}</span>
           </div>
 
           <div className="flex items-center gap-1 shrink-0 font-mono text-[10px]">

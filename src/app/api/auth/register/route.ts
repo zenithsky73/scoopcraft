@@ -69,9 +69,10 @@ export async function POST(req: Request) {
     const user = await db.user.create({
       data: {
         email: normalizedEmail,
-        name,
+        name: name || undefined,
         passwordHash,
         role,
+        isGuest: false,
         plan,
         subscriptionStatus,
         trialEndsAt: trialEnd,
@@ -79,7 +80,11 @@ export async function POST(req: Request) {
       select: { id: true, email: true },
     });
 
-    cookies().delete(GUEST_COOKIE);
+    try {
+      cookies().delete(GUEST_COOKIE);
+    } catch {
+      // ignore
+    }
     return NextResponse.json({ user, converted: false, isOwner }, { status: 201 });
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {

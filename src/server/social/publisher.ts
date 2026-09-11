@@ -192,7 +192,7 @@ async function publishToSimulator(post: ScheduledPost & { socialAccount: SocialA
   const timestamp = Date.now().toString(36);
   const platform = post.platform.toLowerCase();
 
-  let externalPostUrl = `https://newsly.ai/preview/post/${post.id}`;
+  let externalPostUrl = `https://scoopcraft.vercel.app/preview/post/${post.id}`;
   if (post.platform === 'INSTAGRAM') {
     externalPostUrl = `https://www.instagram.com/p/sim_${timestamp}_${randomId}/`;
   } else if (post.platform === 'LINKEDIN') {

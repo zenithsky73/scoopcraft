@@ -37,29 +37,45 @@ export type UserItem = {
 export function MasterUsersTable() {
   const [users, setUsers] = React.useState<UserItem[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [isRefreshing, setIsRefreshing] = React.useState(false);
   const [search, setSearch] = React.useState('');
   const [filter, setFilter] = React.useState<'ALL' | 'REGISTERED' | 'PRO' | 'GUEST' | 'OWNER'>('REGISTERED');
   const [actionLoadingId, setActionLoadingId] = React.useState<string | null>(null);
   const [toastMessage, setToastMessage] = React.useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = React.useState<Date>(new Date());
 
-  const fetchUsers = async () => {
-    setLoading(true);
+  const fetchUsers = React.useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
+    setIsRefreshing(true);
     try {
-      const res = await fetch('/api/admin/users');
+      const res = await fetch('/api/admin/users', {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          Pragma: 'no-cache',
+        },
+      });
       if (res.ok) {
         const data = await res.json();
         setUsers(data.users || []);
+        setLastUpdated(new Date());
       }
     } catch (err) {
       console.error('Fetch users error:', err);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
+      setIsRefreshing(false);
     }
-  };
+  }, []);
 
+  // Initial fetch and auto-polling every 8 seconds for live updates
   React.useEffect(() => {
     fetchUsers();
-  }, []);
+    const interval = setInterval(() => {
+      fetchUsers(true);
+    }, 8000);
+    return () => clearInterval(interval);
+  }, [fetchUsers]);
 
   const handleInject = async (user: UserItem, targetPlan: 'STARTER' | 'PRO' | 'AGENCY') => {
     setActionLoadingId(`${user.id}-${targetPlan}`);
@@ -103,7 +119,7 @@ export function MasterUsersTable() {
   };
 
   const handleAdminResetPassword = async (user: UserItem) => {
-    const defaultNewPass = 'Newsly12345';
+    const defaultNewPass = 'Instadeck123';
     const confirmPrompt = window.prompt(
       `Masukkan kata sandi baru untuk ${user.email} (atau gunakan default):`,
       defaultNewPass
@@ -174,8 +190,26 @@ export function MasterUsersTable() {
   const freeUsersCount = users.filter((u) => u.plan === 'TRIAL' || u.plan === 'BASIC').length;
   const totalGenerationsCount = users.reduce((acc, u) => acc + (u.generateCount || 0), 0);
 
-  // Filtered users
-  const isRealUser = (u: UserItem) => !u.isGuest && !u.email.includes('@guest.');
+  // Helper formatters
+  const isRealUser = (u: UserItem) => !u.isGuest && !u.email.toLowerCase().includes('@guest.');
+
+  const isRecentUser = (createdAt: string) => {
+    const diffHours = (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60);
+    return diffHours <= 24;
+  };
+
+  const getRelativeTime = (createdAt: string) => {
+    const diffMs = Date.now() - new Date(createdAt).getTime();
+    const diffSecs = Math.floor(diffMs / 1000);
+    if (diffSecs < 60) return 'Baru saja';
+    const diffMins = Math.floor(diffSecs / 60);
+    if (diffMins < 60) return `${diffMins} mnt lalu`;
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours} jam lalu`;
+    const diffDays = Math.floor(diffHours / 24);
+    if (diffDays <= 7) return `${diffDays} hari lalu`;
+    return new Date(createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+  };
 
   const registeredUsersCount = users.filter(isRealUser).length;
   const guestUsersCount = users.filter((u) => !isRealUser(u)).length;
@@ -184,7 +218,9 @@ export function MasterUsersTable() {
     const query = search.toLowerCase();
     const matchQuery =
       user.email.toLowerCase().includes(query) ||
-      (user.name && user.name.toLowerCase().includes(query));
+      (user.name && user.name.toLowerCase().includes(query)) ||
+      user.plan.toLowerCase().includes(query) ||
+      user.role.toLowerCase().includes(query);
 
     if (!matchQuery) return false;
 
@@ -194,6 +230,11 @@ export function MasterUsersTable() {
     if (filter === 'OWNER') return user.role === 'OWNER';
     return true;
   });
+
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    notify.info('Disalin', `${label} disalin ke clipboard.`);
+  };
 
   return (
     <div className="space-y-6">
@@ -226,12 +267,19 @@ export function MasterUsersTable() {
           </span>
         </div>
 
-        <div className="p-4 rounded-2xl bg-amber-50/70 dark:bg-slate-900/80 border border-amber-200 dark:border-amber-800/60 shadow-sm flex flex-col justify-between">
-          <span className="text-[11px] font-mono uppercase font-black text-amber-800 dark:text-amber-400 flex items-center gap-1.5">
-            <Crown className="size-3.5 text-amber-600" /> God-Mode Status
+        <div className="p-4 rounded-2xl bg-emerald-50/70 dark:bg-slate-900/80 border border-emerald-200 dark:border-emerald-800/60 shadow-sm flex flex-col justify-between">
+          <span className="text-[11px] font-mono uppercase font-black text-emerald-800 dark:text-emerald-400 flex items-center gap-1.5">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            Live Sync Auto
           </span>
-          <span className="text-xs font-black text-amber-900 dark:text-amber-300 mt-2">
-            Master Controller Live
+          <span className="text-xs font-bold text-emerald-900 dark:text-emerald-300 mt-2 flex items-center justify-between">
+            <span>{isRefreshing ? 'Memperbarui...' : 'Aktif (8s)'}</span>
+            <span className="text-[10px] font-mono text-slate-400 font-normal">
+              {lastUpdated.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+            </span>
           </span>
         </div>
       </div>
@@ -303,19 +351,19 @@ export function MasterUsersTable() {
           </button>
           <button
             type="button"
-            onClick={fetchUsers}
-            disabled={loading}
-            className="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800"
-            title="Refresh Data"
+            onClick={() => fetchUsers(false)}
+            disabled={loading || isRefreshing}
+            className="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 transition-all active:scale-95"
+            title="Refresh Data Sekarang"
           >
-            <RefreshCw className={`size-4 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`size-4 ${isRefreshing ? 'animate-spin text-primary' : ''}`} />
           </button>
         </div>
       </div>
 
       {/* ─── 3. USERS DATA TABLE ─── */}
       <div className="rounded-3xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden">
-        {loading ? (
+        {loading && users.length === 0 ? (
           <div className="p-12 text-center text-slate-500 text-xs font-semibold flex flex-col items-center gap-2">
             <RefreshCw className="size-6 animate-spin text-primary" />
             <span>Memuat daftar pengguna...</span>
@@ -330,6 +378,7 @@ export function MasterUsersTable() {
               const isOwnerUser = user.role === 'OWNER';
               const isPro = user.plan === 'PRO' || user.plan === 'BUSINESS';
               const isReal = isRealUser(user);
+              const isNew = isRecentUser(user.createdAt);
               const initial = (user.name || user.email).charAt(0).toUpperCase();
 
               return (
@@ -342,7 +391,7 @@ export function MasterUsersTable() {
                     <div
                       className={`size-10 rounded-2xl flex items-center justify-center font-black text-sm shrink-0 shadow-sm ${
                         isOwnerUser
-                          ? 'bg-amber-500 text-white'
+                          ? 'bg-amber-500 text-white shadow-amber-500/20'
                           : isPro
                           ? 'bg-primary text-white shadow-primary/20'
                           : 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
@@ -356,6 +405,12 @@ export function MasterUsersTable() {
                         <span className="font-bold text-sm text-slate-900 dark:text-white truncate">
                           {user.name || (isReal ? 'Pengguna Terdaftar' : 'Pengunjung Tamu')}
                         </span>
+
+                        {isNew && isReal && !isOwnerUser && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-500/30 text-[9px] font-black uppercase tracking-wider animate-pulse">
+                            ✨ BARU
+                          </span>
+                        )}
 
                         {isOwnerUser ? (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-500/20 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-500/30 text-[9px] font-black uppercase">
@@ -376,9 +431,21 @@ export function MasterUsersTable() {
                         )}
                       </div>
 
-                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate font-mono">
-                        {isReal ? user.email : 'Belum memasukkan email asli'}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-xs text-slate-500 dark:text-slate-400 truncate font-mono">
+                          {isReal ? user.email : 'Belum memasukkan email asli'}
+                        </p>
+                        {isReal && (
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard(user.email, 'Email')}
+                            className="text-[10px] text-slate-400 hover:text-primary transition-colors"
+                            title="Salin email"
+                          >
+                            📋
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -389,9 +456,15 @@ export function MasterUsersTable() {
                       <span>{user.generateCount} carousel</span>
                     </div>
 
-                    <div className="flex items-center gap-1">
+                    <div
+                      className="flex items-center gap-1"
+                      title={new Date(user.createdAt).toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'short' })}
+                    >
                       <Calendar className="size-3.5 text-slate-400" />
-                      <span>{new Date(user.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
+                      <span className="font-semibold text-slate-700 dark:text-slate-300">{getRelativeTime(user.createdAt)}</span>
+                      <span className="text-[11px] text-slate-400 hidden sm:inline">
+                        ({new Date(user.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })})
+                      </span>
                     </div>
                   </div>
 

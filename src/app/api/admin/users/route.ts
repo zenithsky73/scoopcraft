@@ -3,6 +3,9 @@ import { getViewer } from '@/server/viewer';
 import { db } from '@/server/db';
 import { APP } from '@/config/app';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   try {
     const viewer = await getViewer();
@@ -38,7 +41,16 @@ export async function GET() {
       orderBy: { createdAt: 'desc' },
     });
 
-    return NextResponse.json({ users });
+    return NextResponse.json(
+      { users, count: users.length, timestamp: new Date().toISOString() },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          Pragma: 'no-cache',
+          Expires: '0',
+        },
+      }
+    );
   } catch (error: any) {
     console.error('[Get Admin Users Error]:', error);
     return NextResponse.json(

@@ -6,7 +6,10 @@ export const credentialsSchema = z.object({
 });
 
 export const registerSchema = credentialsSchema.extend({
-  name: z.string().trim().min(2, 'Nama minimal 2 karakter').max(60).optional(),
+  name: z.preprocess(
+    (val) => (typeof val === 'string' && val.trim() === '' ? undefined : val),
+    z.string().trim().min(2, 'Nama minimal 2 karakter').max(60).optional()
+  ),
 });
 
 export type RegisterInput = z.infer<typeof registerSchema>;

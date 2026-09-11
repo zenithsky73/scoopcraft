@@ -3,7 +3,7 @@ import type { PaidPlan } from '@/config/plans';
 import { PLANS } from '@/config/plans';
 
 /**
- * Midtrans Payment Gateway Integration untuk Newsly AI.
+ * Midtrans Payment Gateway Integration untuk InstaDeck PRO.
  * Mendukung Snap Popup, QRIS (BCA, GoPay, OVO, ShopeePay, Dana),
  * dan Virtual Account Bank Indonesia.
  */
@@ -71,7 +71,7 @@ export async function createMidtransSnapTransaction(
         id: input.plan,
         price: planDef.price,
         quantity: 1,
-        name: `Newsly AI - ${planDef.name}`,
+        name: `InstaDeck PRO - ${planDef.name}`,
       },
     ],
     customer_details: {

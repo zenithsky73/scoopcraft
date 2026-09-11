@@ -128,7 +128,7 @@ export function NativePaymentModal({
             </div>
             <div>
               <h3 className="text-sm font-black tracking-tight text-white flex items-center gap-1.5">
-                Payment Gateway Newsly AI
+                Payment Gateway InstaDeck PRO
               </h3>
               <p className="text-[10px] font-mono text-slate-400">
                 Order ID: <span className="text-slate-300 font-bold">{orderId}</span>
@@ -318,7 +318,7 @@ export function NativePaymentModal({
 
                 {/* Direct WhatsApp Confirmation Button */}
                 <a
-                  href={`https://wa.me/6283837017301?text=Halo%20Admin%20Newsly%20AI%2C%20saya%20sudah%20transfer%20untuk%20aktivasi%20paket%20${plan.name}%20dengan%20Order%20ID%3A%20${orderId}`}
+                  href={`https://wa.me/6283837017301?text=Halo%20Admin%20InstaDeck%20PRO%2C%20saya%20sudah%20transfer%20untuk%20aktivasi%20paket%20${plan.name}%20dengan%20Order%20ID%3A%20${orderId}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full h-10 rounded-xl bg-emerald-600/20 border border-emerald-500/40 hover:bg-emerald-600/30 text-emerald-300 font-bold text-xs flex items-center justify-center gap-2 transition-colors"
@@ -372,7 +372,7 @@ export function NativePaymentModal({
             <ShieldCheck className="size-3.5 text-emerald-400" />
             <span>Enkripsi 256-bit &amp; Garansi Aktivasi Instan</span>
           </div>
-          <span className="font-mono text-slate-400">Newsly AI Studio</span>
+          <span className="font-mono text-slate-400">InstaDeck PRO Studio</span>
         </div>
       </div>
     </div>

@@ -413,7 +413,7 @@ export function ContentCalendar({
         }
 
         if (!finalCaption) {
-          finalCaption = contentObj?.feedCopy || contentObj?.caption || `${contentObj?.headline}\\n\\n#newsly #carousel #ai`;
+          finalCaption = contentObj?.feedCopy || contentObj?.caption || `${contentObj?.headline}\n\n#instadeck #carousel #ai`;
         }
       } 
       // MODE 2: PILIH DARI RIWAYAT CAROUSEL YANG SUDAH ADA
@@ -425,7 +425,7 @@ export function ContentCalendar({
             ? selectedContentObj.mediaUrls
             : (selectedContentObj.coverUrl ? [selectedContentObj.coverUrl] : []);
           if (!finalCaption) {
-            finalCaption = `${selectedContentObj.headline}\\n\\n#newsly #carousel #ai`;
+            finalCaption = `${selectedContentObj.headline}\n\n#instadeck #carousel #ai`;
           }
           outputFormat = selectedContentObj.format || 'FEED_PORTRAIT';
           designStyle = selectedContentObj.style || null;
@@ -437,7 +437,7 @@ export function ContentCalendar({
           finalMediaUrls = [customMediaUrl.trim()];
         }
         if (!finalCaption) {
-          finalCaption = customHeadline ? `${customHeadline}\\n\\n#newsly #content` : 'Konten Carousel Baru';
+          finalCaption = customHeadline ? `${customHeadline}\n\n#instadeck #content` : 'Konten Carousel Baru';
         }
       }
 
@@ -455,7 +455,7 @@ export function ContentCalendar({
           scheduledAt: scheduledDateTime.toISOString(),
           publishMode: 'schedule',
           caption: finalCaption,
-          hashtags: ['newsly', formPlatform.toLowerCase()],
+          hashtags: ['instadeck', formPlatform.toLowerCase()],
           mediaUrls: finalMediaUrls,
           format: outputFormat,
           style: designStyle,

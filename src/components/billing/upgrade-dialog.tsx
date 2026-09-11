@@ -9,7 +9,7 @@ import { PLANS, formatIDR } from '@/config/plans';
 export function UpgradeDialog({
   open,
   onClose,
-  title = 'Tingkatkan ke Newsly AI Pro',
+  title = 'Tingkatkan ke InstaDeck PRO',
   reason,
 }: {
   open: boolean;
@@ -37,11 +37,11 @@ export function UpgradeDialog({
 
         {/* Header */}
         <div className="p-6 pb-4 text-center">
-          <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-primary to-indigo-600 text-white shadow-lg shadow-primary/30">
+          <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-primary to-orange-500 text-white shadow-lg shadow-primary/30">
             <Crown className="size-6" />
           </div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 dark:bg-primary/20 border border-primary/20 dark:border-primary/40 text-primary text-xs font-black uppercase tracking-wider mb-2">
-            <Sparkles className="size-3.5" /> Newsly AI SaaS
+            <Sparkles className="size-3.5" /> InstaDeck PRO Studio
           </div>
           <h3 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">{title}</h3>
           <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">

@@ -461,7 +461,7 @@ export function CarouselStudio({
                   Studio Editor
                 </span>
                 <span className="text-xs text-slate-500 dark:text-slate-400 truncate hidden sm:inline">
-                  {article.source || 'Newsly AI'}
+                  {article.source || 'InstaDeck PRO'}
                 </span>
               </div>
               <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate max-w-md lg:max-w-xl">

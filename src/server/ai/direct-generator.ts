@@ -435,7 +435,7 @@ Kembalikan HANYA format JSON valid berikut:
         headline: articleTitle,
         feedCopy: `Simak ringkasan penting dan poin-poin utama seputar ${cleanTopic}.`,
         caption: `🔥 ${articleTitle}\n\nBerikut rangkuman dan poin-poin penting yang wajib Anda ketahui!\n\n👉 Simpan & Bagikan!`,
-        hashtags: ['#WawasanTerkini', '#Edukasi', '#NewslyAI', '#TrenViral', `#${cat}`],
+        hashtags: ['#WawasanTerkini', '#Edukasi', '#InstaDeckPRO', '#TrenViral', `#${cat}`],
         cta: 'Simpan postingan ini & bagikan ke temanmu!',
         slides: [
           { index: 0, title: articleTitle, body: `Rangkuman wawasan dan poin kunci mengenai ${cleanTopic}.`, statHighlight: 'Sorotan Utama' },

@@ -36,7 +36,7 @@ export function TemplatePreviewModal({
       headline: 'Revolusi Kendaraan Listrik & Transformasi Energi Hijau',
       lead: 'Pelajari analisis komprehensif perkembangan industri masa depan dalam 5 slide ringkas ini.',
       imageUrl: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1080&auto=format&fit=crop&q=80',
-      source: 'Newsly Media',
+      source: 'InstaDeck Media',
     },
     {
       index: 1,
@@ -47,7 +47,7 @@ export function TemplatePreviewModal({
       statHighlight: 'Efisiensi: +40%',
       imageUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1080&auto=format&fit=crop&q=80',
       sourceQuote: 'Teknologi ini menjadi standar baru efisiensi industri global.',
-      source: 'Newsly Media',
+      source: 'InstaDeck Media',
     },
     {
       index: 2,
@@ -58,7 +58,7 @@ export function TemplatePreviewModal({
       statHighlight: 'Cakupan: 2.500+ Titik',
       imageUrl: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1080&auto=format&fit=crop&q=80',
       sourceQuote: 'Kemudahan akses mempercepat transisi masyarakat ke energi bersih.',
-      source: 'Newsly Media',
+      source: 'InstaDeck Media',
     },
     {
       index: 3,
@@ -68,7 +68,7 @@ export function TemplatePreviewModal({
       supportingText: 'Kebijakan subsidi pembelian serta pembebasan pajak kendaraan ramah lingkungan menjadi katalis pertumbuhan pasar domestik.',
       statHighlight: 'Pertumbuhan: 85%',
       imageUrl: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1080&auto=format&fit=crop&q=80',
-      source: 'Newsly Media',
+      source: 'InstaDeck Media',
     },
     {
       index: 4,
@@ -77,7 +77,7 @@ export function TemplatePreviewModal({
       takeaway: 'Masa Depan Mobilitas Berkelanjutan',
       supportingText: 'Transisi energi bukan sekadar tren teknologi, melainkan keputusan strategis demi keberlanjutan masa depan.',
       ctaText: 'Simpan & Bagikan ke Rekan Anda!',
-      source: 'Newsly Media',
+      source: 'InstaDeck Media',
     },
   ];
 

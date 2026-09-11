@@ -4,8 +4,8 @@ import { ThemeToggle } from '@/components/layout/theme-toggle';
 import { Button } from '@/components/ui/button';
 
 export const metadata = {
-  title: 'Ketentuan Layanan - Newsly AI',
-  description: 'Syarat dan Ketentuan Penggunaan Layanan Newsly AI (Scoopcraft)',
+  title: 'Ketentuan Layanan - InstaDeck PRO',
+  description: 'Syarat dan Ketentuan Penggunaan Layanan InstaDeck PRO',
 };
 
 export default function TermsPage() {
@@ -15,7 +15,7 @@ export default function TermsPage() {
         <Link href="/" className="flex items-center gap-2.5">
           <NewslyLogo size={32} />
           <span className="text-lg font-black tracking-tight text-slate-900 dark:text-white">
-            Newsly<span className="bg-gradient-to-r from-cyan-500 via-pink-500 to-amber-500 bg-clip-text text-transparent">AI</span>
+            InstaDeck<span className="bg-gradient-to-r from-primary via-orange-500 to-amber-500 bg-clip-text text-transparent"> PRO</span>
           </span>
         </Link>
         <div className="flex items-center gap-3">
@@ -32,7 +32,7 @@ export default function TermsPage() {
             Ketentuan Layanan (Terms of Service)
           </h1>
           <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-            Terakhir diperbarui: 8 September 2026
+            Terakhir diperbarui: 11 September 2026
           </p>
         </div>
 
@@ -40,14 +40,14 @@ export default function TermsPage() {
           <section className="space-y-3">
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">1. Penerimaan Ketentuan</h2>
             <p>
-              Dengan mengakses dan menggunakan platform Newsly AI (&quot;Scoopcraft&quot;), Anda menyetujui untuk terikat oleh Ketentuan Layanan ini serta seluruh hukum dan peraturan yang berlaku.
+              Dengan mengakses dan menggunakan platform InstaDeck PRO, Anda menyetujui untuk terikat oleh Ketentuan Layanan ini serta seluruh hukum dan peraturan yang berlaku.
             </p>
           </section>
 
           <section className="space-y-3">
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">2. Deskripsi Layanan</h2>
             <p>
-              Newsly AI adalah platform pembuatan konten berita, infografis carousel grafis berbasis kecerdasan buatan (AI), dan sistem manajemen publikasi otomatis ke media sosial resmi (Facebook, Instagram, Threads, dll).
+              InstaDeck PRO adalah platform pembuatan konten visual carousel grafis profesional berbasis kecerdasan buatan (AI), dan sistem manajemen publikasi serta penjadwalan otomatis ke media sosial resmi (Instagram, TikTok, Threads).
             </p>
           </section>
 
@@ -55,23 +55,23 @@ export default function TermsPage() {
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">3. Tanggung Jawab Pengguna</h2>
             <p>Pengguna bertanggung jawab penuh atas:</p>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Keaslian, legalitas, dan ketepatan materi/berita yang dimasukkan dan dipublikasikan melalui platform.</li>
+              <li>Keaslian, legalitas, dan ketepatan materi yang dimasukkan dan dipublikasikan melalui platform.</li>
               <li>Menjaga kerahasiaan akun dan kata sandi Anda.</li>
-              <li>Mematuhi Pedoman Komunitas dan Kebijakan Platform Meta (Facebook, Instagram, Threads).</li>
+              <li>Mematuhi Pedoman Komunitas dan Kebijakan Platform (Instagram, TikTok, Threads).</li>
             </ul>
           </section>
 
           <section className="space-y-3">
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">4. Hak Kekayaan Intelektual</h2>
             <p>
-              Seluruh grafis, desain carousel, dan konten yang dihasilkan oleh pengguna menggunakan Newsly AI adalah milik pengguna sepenuhnya.
+              Seluruh grafis, desain carousel, dan konten yang dihasilkan oleh pengguna menggunakan InstaDeck PRO adalah milik pengguna sepenuhnya.
             </p>
           </section>
 
           <section className="space-y-3">
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">5. Kontak</h2>
             <p>
-              Untuk pertanyaan mengenai ketentuan ini, hubungi kami di: <a href="mailto:muhrhamd18@gmail.com" className="text-primary underline">muhrhamd18@gmail.com</a>.
+              Untuk pertanyaan mengenai ketentuan ini, hubungi kami di: <a href="mailto:91venture@gmail.com" className="text-primary underline">91venture@gmail.com</a>.
             </p>
           </section>
         </div>

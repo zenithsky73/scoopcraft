@@ -24,7 +24,7 @@ export function LoginForm() {
 
   React.useEffect(() => {
     try {
-      const savedEmail = localStorage.getItem('newsly_remember_email');
+      const savedEmail = localStorage.getItem('instadeck_remember_email') || localStorage.getItem('newsly_remember_email');
       if (savedEmail) {
         setEmail(savedEmail);
         setRememberMe(true);
@@ -57,8 +57,9 @@ export function LoginForm() {
     // Simpan atau hapus preferensi Ingat Saya
     try {
       if (rememberMe) {
-        localStorage.setItem('newsly_remember_email', email.trim().toLowerCase());
+        localStorage.setItem('instadeck_remember_email', email.trim().toLowerCase());
       } else {
+        localStorage.removeItem('instadeck_remember_email');
         localStorage.removeItem('newsly_remember_email');
       }
     } catch {}

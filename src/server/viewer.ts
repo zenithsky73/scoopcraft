@@ -52,8 +52,14 @@ export async function getViewer(): Promise<Viewer | null> {
       console.warn('[viewer] auth() failed (ignoring):', e);
     }
 
-    if (session?.user?.id) {
-      const user = await db.user.findUnique({ where: { id: session.user.id } });
+    if (session?.user) {
+      let user = null;
+      if (session.user.id) {
+        user = await db.user.findUnique({ where: { id: session.user.id } });
+      }
+      if (!user && session.user.email) {
+        user = await db.user.findUnique({ where: { email: session.user.email.toLowerCase().trim() } });
+      }
       if (user) return { user, isGuest: false };
     }
 
