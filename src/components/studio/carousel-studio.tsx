@@ -446,110 +446,108 @@ export function CarouselStudio({
       />
 
       {/* ─── 1. TOP APP BAR ─── */}
-      <header className="sticky top-0 z-40 bg-white/90 dark:bg-slate-950/90 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800/80 px-4 sm:px-6 py-3 transition-colors duration-200">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <Button asChild variant="ghost" size="sm" className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white shrink-0">
-              <Link href="/dashboard" className="flex items-center gap-1.5 text-xs font-semibold">
-                <ArrowLeft className="size-4" /> Kembali
-              </Link>
-            </Button>
-            <div className="h-5 w-px bg-slate-200 dark:bg-slate-800 shrink-0" />
-            <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-primary/10 dark:bg-primary/20 text-primary border border-primary/20 uppercase tracking-wider">
-                  Studio Editor
-                </span>
-                <span className="text-xs text-slate-500 dark:text-slate-400 truncate hidden sm:inline">
-                  {article.source || 'InstaDeck PRO'}
-                </span>
+      <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800/80 px-3 sm:px-6 py-2.5 sm:py-3 transition-colors duration-200">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5 sm:gap-3">
+          <div className="flex items-center justify-between md:justify-start gap-2 sm:gap-3 min-w-0">
+            <div className="flex items-center gap-2 min-w-0">
+              <Button asChild variant="ghost" size="sm" className="h-8 px-2 sm:px-3 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white shrink-0">
+                <Link href="/dashboard" className="flex items-center gap-1 text-xs font-semibold">
+                  <ArrowLeft className="size-3.5 sm:size-4" /> <span className="hidden xs:inline">Kembali</span>
+                </Link>
+              </Button>
+              <div className="h-4 w-px bg-slate-200 dark:bg-slate-800 shrink-0" />
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <span className="px-1.5 sm:px-2 py-0.2 rounded-full text-[9px] sm:text-[10px] font-black bg-primary/10 dark:bg-primary/20 text-primary border border-primary/20 uppercase tracking-wider shrink-0">
+                    Studio
+                  </span>
+                  <h1 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate max-w-[180px] sm:max-w-md lg:max-w-xl">
+                    {initialContent.headline || article.title}
+                  </h1>
+                </div>
               </div>
-              <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate max-w-md lg:max-w-xl">
-                {initialContent.headline || article.title}
-              </h1>
+            </div>
+
+            {/* Mobile Theme Toggle in Header */}
+            <div className="md:hidden shrink-0">
+              <ThemeToggle />
             </div>
           </div>
 
-          {/* Quick Actions & Theme Switcher */}
-          <div className="flex flex-wrap items-center gap-2 shrink-0 w-full md:w-auto justify-between md:justify-end">
-            <ThemeToggle />
-
-            <div className="flex items-center gap-1.5">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={handleCopyCaption}
-                className="flex items-center gap-1 text-xs font-bold bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800"
-              >
-                {copiedCaption ? <Check className="size-3.5 text-emerald-500" /> : <Copy className="size-3.5" />}
-                <span className="hidden sm:inline">{copiedCaption ? 'Tersalin!' : 'Salin Caption'}</span>
-                <span className="sm:hidden">{copiedCaption ? 'Tersalin' : 'Caption'}</span>
-              </Button>
-
-              <Button
-                variant="secondary"
-                size="sm"
-                disabled={isExportingPng}
-                onClick={handleDownloadCurrentPng}
-                className="flex items-center gap-1 text-xs font-bold bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800"
-              >
-                <Download className="size-3.5 text-slate-600 dark:text-slate-400" />
-                <span className="hidden sm:inline">PNG Slide {activeSlideIndex + 1}</span>
-                <span className="sm:hidden">Slide {activeSlideIndex + 1}</span>
-              </Button>
-
-              <Button
-                variant="secondary"
-                size="sm"
-                disabled={isExportingZip}
-                onClick={handleDownloadZip}
-                className="flex items-center gap-1 text-xs font-bold bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 shadow-sm"
-              >
-                <Download className="size-3.5 text-indigo-600 dark:text-indigo-400" />
-                <span className="hidden sm:inline">{isExportingZip ? 'Mengemas...' : 'Semua PNG (.ZIP)'}</span>
-                <span className="sm:hidden">{isExportingZip ? 'ZIP...' : '.ZIP'}</span>
-              </Button>
-
-              <Button
-                size="sm"
-                disabled={isExportingPdf}
-                onClick={handleExportPdf}
-                className="flex items-center gap-1.5 text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/25"
-              >
-                <FileDown className="size-3.5" />
-                <span>{isExportingPdf ? 'PDF...' : 'PDF'}</span>
-              </Button>
-
-              <Button
-                size="sm"
-                disabled={isPreparingSchedule}
-                onClick={handleOpenSchedule}
-                className="flex items-center gap-1.5 text-xs font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:opacity-95 text-white shadow-md shadow-pink-600/20"
-              >
-                {isPreparingSchedule ? (
-                  <RefreshCw className="size-3.5 animate-spin" />
-                ) : (
-                  <Calendar className="size-3.5" />
-                )}
-                <span className="hidden sm:inline">
-                  {isPreparingSchedule ? 'Menyiapkan...' : 'Jadwalkan'}
-                </span>
-                <span className="sm:hidden">Post</span>
-              </Button>
+          {/* Quick Actions & Export Buttons */}
+          <div className="flex items-center gap-1.5 shrink-0 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1 justify-start md:justify-end">
+            <div className="hidden md:block">
+              <ThemeToggle />
             </div>
+
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleCopyCaption}
+              className="h-8 px-2.5 sm:px-3 text-[11px] sm:text-xs font-bold bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800 shrink-0"
+            >
+              {copiedCaption ? <Check className="size-3.5 text-emerald-500 mr-1" /> : <Copy className="size-3.5 mr-1" />}
+              <span>{copiedCaption ? 'Tersalin' : 'Caption'}</span>
+            </Button>
+
+            <Button
+              variant="secondary"
+              size="sm"
+              disabled={isExportingPng}
+              onClick={handleDownloadCurrentPng}
+              className="h-8 px-2.5 sm:px-3 text-[11px] sm:text-xs font-bold bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800 shrink-0"
+            >
+              <Download className="size-3.5 mr-1 text-slate-500" />
+              <span>PNG #{activeSlideIndex + 1}</span>
+            </Button>
+
+            <Button
+              variant="secondary"
+              size="sm"
+              disabled={isExportingZip}
+              onClick={handleDownloadZip}
+              className="h-8 px-2.5 sm:px-3 text-[11px] sm:text-xs font-bold bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 shadow-sm shrink-0"
+            >
+              <Download className="size-3.5 mr-1 text-indigo-600 dark:text-indigo-400" />
+              <span>{isExportingZip ? '...' : '.ZIP'}</span>
+            </Button>
+
+            <Button
+              size="sm"
+              disabled={isExportingPdf}
+              onClick={handleExportPdf}
+              className="h-8 px-2.5 sm:px-3 text-[11px] sm:text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/25 shrink-0"
+            >
+              <FileDown className="size-3.5 mr-1" />
+              <span>{isExportingPdf ? 'PDF...' : 'PDF'}</span>
+            </Button>
+
+            <Button
+              size="sm"
+              disabled={isPreparingSchedule}
+              onClick={handleOpenSchedule}
+              className="h-8 px-3 text-[11px] sm:text-xs font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:opacity-95 text-white shadow-md shadow-pink-600/20 shrink-0"
+            >
+              {isPreparingSchedule ? (
+                <RefreshCw className="size-3.5 animate-spin mr-1" />
+              ) : (
+                <Calendar className="size-3.5 mr-1" />
+              )}
+              <span>{isPreparingSchedule ? '...' : 'Jadwalkan'}</span>
+            </Button>
           </div>
         </div>
       </header>
 
       {/* ─── 2. SPLIT-SCREEN WORKSPACE ─── */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-start">
+      <main className="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 items-start">
         {/* Mobile View Mode Switcher */}
         <div className="col-span-1 lg:hidden w-full bg-white dark:bg-slate-900/90 p-1 rounded-2xl border border-slate-200 dark:border-slate-800 flex gap-1 shadow-lg">
           <button
             type="button"
             onClick={() => setMobileView('preview')}
             className={cn(
-              'flex-1 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all',
+              'flex-1 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all',
               mobileView === 'preview'
                 ? 'bg-primary text-white shadow-md'
                 : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -562,7 +560,7 @@ export function CarouselStudio({
             type="button"
             onClick={() => setMobileView('edit')}
             className={cn(
-              'flex-1 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all',
+              'flex-1 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all',
               mobileView === 'edit'
                 ? 'bg-primary text-white shadow-md'
                 : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -576,46 +574,46 @@ export function CarouselStudio({
         {/* ─── LEFT/CENTER COLUMN: CANVAS PREVIEW & CONTROLS ─── */}
         <div
           className={cn(
-            'lg:col-span-7 flex flex-col items-center space-y-5 bg-white/80 dark:bg-slate-900/40 p-3 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800/80 shadow-xl backdrop-blur-sm transition-colors duration-200',
+            'lg:col-span-7 flex flex-col items-center space-y-4 sm:space-y-5 bg-white/80 dark:bg-slate-900/40 p-3 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800/80 shadow-xl backdrop-blur-sm transition-colors duration-200',
             mobileView !== 'preview' && 'hidden lg:flex'
           )}
         >
           {/* Format & View Mode Toolbar */}
-          <div className="flex flex-wrap items-center justify-between gap-3 w-full border-b border-slate-200 dark:border-slate-800/80 pb-4">
+          <div className="flex flex-wrap items-center justify-between gap-2.5 w-full border-b border-slate-200 dark:border-slate-800/80 pb-3 sm:pb-4">
             {/* Format Pills */}
-            <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800">
+            <div className="flex items-center gap-1 p-0.5 sm:p-1 bg-slate-100 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800">
               <button
                 type="button"
                 onClick={() => setCurrentFormat('FEED_PORTRAIT')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all ${
+                className={`px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-bold rounded-xl transition-all ${
                   currentFormat === 'FEED_PORTRAIT'
                     ? 'bg-primary text-white shadow-md'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
-                Feed 4:5 (IG)
+                4:5 Feed
               </button>
               <button
                 type="button"
                 onClick={() => setCurrentFormat('FEED_SQUARE')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all ${
+                className={`px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-bold rounded-xl transition-all ${
                   currentFormat === 'FEED_SQUARE'
                     ? 'bg-primary text-white shadow-md'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
-                Square 1:1
+                1:1 Square
               </button>
               <button
                 type="button"
                 onClick={() => setCurrentFormat('STORY')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all ${
+                className={`px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-bold rounded-xl transition-all ${
                   currentFormat === 'STORY'
                     ? 'bg-primary text-white shadow-md'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
-                Story 9:16
+                9:16 Story
               </button>
             </div>
 
@@ -624,10 +622,10 @@ export function CarouselStudio({
               variant="secondary"
               size="sm"
               onClick={() => fileInputRef.current?.click()}
-              className="h-8 px-3 text-xs font-bold bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-cyan-700 dark:text-cyan-300 hover:bg-slate-200 dark:hover:bg-slate-800 flex items-center gap-1.5 shadow-sm"
+              className="h-8 px-2.5 sm:px-3 text-[11px] sm:text-xs font-bold bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-cyan-700 dark:text-cyan-300 hover:bg-slate-200 dark:hover:bg-slate-800 flex items-center gap-1.5 shadow-sm shrink-0"
             >
-              <Upload className="size-3.5" />
-              <span>Ganti Foto Slide Ini</span>
+              <Upload className="size-3 sm:size-3.5" />
+              <span>Ganti Foto</span>
             </Button>
           </div>
 

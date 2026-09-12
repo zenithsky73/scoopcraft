@@ -641,133 +641,136 @@ export function ContentCalendar({
   return (
     <div className="space-y-4">
       {/* ─── 1. TOP HEADER & NAVIGATION BAR ─── */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-5 shadow-sm">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-3.5 sm:p-5 shadow-sm">
         {/* Navigation & Month Selector */}
-        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={handleToday}
-            className="h-9 px-3.5 text-xs font-black rounded-xl border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700"
-          >
-            Hari Ini
-          </Button>
+        <div className="flex items-center justify-between lg:justify-start gap-2 sm:gap-3 flex-wrap">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleToday}
+              className="h-8 sm:h-9 px-2.5 sm:px-3.5 text-xs font-black rounded-xl border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700"
+            >
+              Hari Ini
+            </Button>
 
-          <div className="flex items-center rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-0.5">
-            <button
-              onClick={handlePrev}
-              className="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors"
-              title="Sebelumnya"
-            >
-              <ChevronLeft className="size-4" />
-            </button>
-            <button
-              onClick={handleNext}
-              className="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors"
-              title="Berikutnya"
-            >
-              <ChevronRight className="size-4" />
-            </button>
+            <div className="flex items-center rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-0.5">
+              <button
+                onClick={handlePrev}
+                className="p-1 sm:p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors"
+                title="Sebelumnya"
+              >
+                <ChevronLeft className="size-3.5 sm:size-4" />
+              </button>
+              <button
+                onClick={handleNext}
+                className="p-1 sm:p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors"
+                title="Berikutnya"
+              >
+                <ChevronRight className="size-3.5 sm:size-4" />
+              </button>
+            </div>
           </div>
 
-          <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white capitalize tracking-tight flex items-center gap-2">
-            <CalendarIcon className="size-4 text-primary" />
+          <h2 className="text-sm sm:text-lg font-black text-slate-900 dark:text-white capitalize tracking-tight flex items-center gap-1.5">
+            <CalendarIcon className="size-3.5 sm:size-4 text-primary" />
             <span>{monthYearLabel}</span>
           </h2>
         </div>
 
         {/* View Switchers & Action Buttons */}
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center justify-between lg:justify-end gap-2 flex-wrap">
           {/* View Mode Toggle: WEEK | MONTH | LIST */}
           <div className="flex items-center p-0.5 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
             <button
               onClick={() => setViewMode('WEEK')}
               className={cn(
-                'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all',
+                'flex items-center gap-1 px-2.5 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition-all',
                 viewMode === 'WEEK'
                   ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm'
                   : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
               )}
             >
-              <LayoutGrid className="size-3.5" />
-              <span>Mingguan</span>
+              <LayoutGrid className="size-3 sm:size-3.5" />
+              <span>Minggu</span>
             </button>
 
             <button
               onClick={() => setViewMode('MONTH')}
               className={cn(
-                'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all',
+                'flex items-center gap-1 px-2.5 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition-all',
                 viewMode === 'MONTH'
                   ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm'
                   : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
               )}
             >
-              <CalendarDays className="size-3.5" />
-              <span>Bulanan</span>
+              <CalendarDays className="size-3 sm:size-3.5" />
+              <span>Bulan</span>
             </button>
 
             <button
               onClick={() => setViewMode('LIST')}
               className={cn(
-                'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all',
+                'flex items-center gap-1 px-2.5 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition-all',
                 viewMode === 'LIST'
                   ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm'
                   : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
               )}
             >
-              <List className="size-3.5" />
+              <List className="size-3 sm:size-3.5" />
               <span>Daftar</span>
             </button>
           </div>
 
-          <Button
-            size="sm"
-            onClick={() => setShowCampaignModal(true)}
-            className="h-9 text-xs font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 text-white rounded-xl shadow-sm"
-          >
-            <Sparkles className="size-3.5 mr-1" />
-            Campaign 30H
-          </Button>
+          <div className="flex items-center gap-1.5">
+            <Button
+              size="sm"
+              onClick={() => setShowCampaignModal(true)}
+              className="h-8 sm:h-9 text-[11px] sm:text-xs font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 text-white rounded-xl shadow-sm px-2.5 sm:px-3"
+            >
+              <Sparkles className="size-3 sm:size-3.5 mr-1" />
+              <span>Campaign</span>
+            </Button>
 
-          <Button
-            size="sm"
-            onClick={() => {
-              setFormDate(new Date().toISOString().split('T')[0]);
-              setFormTime('10:00');
-              setContentSourceMode('AI_GENERATE');
-              setAiPromptOrUrl('');
-              setShowCreateModal(true);
-            }}
-            className="h-9 text-xs font-bold bg-primary hover:bg-primary/90 text-white rounded-xl shadow-sm"
-          >
-            <Plus className="size-3.5 mr-1" />
-            + Jadwalkan Post
-          </Button>
+            <Button
+              size="sm"
+              onClick={() => {
+                setFormDate(new Date().toISOString().split('T')[0]);
+                setFormTime('10:00');
+                setContentSourceMode('AI_GENERATE');
+                setAiPromptOrUrl('');
+                setShowCreateModal(true);
+              }}
+              className="h-8 sm:h-9 text-[11px] sm:text-xs font-bold bg-primary hover:bg-primary/90 text-white rounded-xl shadow-sm px-2.5 sm:px-3.5"
+            >
+              <Plus className="size-3 sm:size-3.5 mr-1" />
+              <span>+ Jadwal</span>
+            </Button>
+          </div>
         </div>
       </div>
 
       {/* ─── 1.5. CONNECTED ACCOUNTS STATUS BAR ─── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 sm:px-4.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-        <div className="flex items-center gap-2 flex-wrap">
-          <div className="flex items-center gap-1.5 text-xs font-black text-slate-800 dark:text-slate-200">
-            <Share2 className="size-4 text-[#ff4526]" />
-            <span>Akun Medsos Terhubung ({accountsList.length}):</span>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 sm:px-4.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+        <div className="flex items-center gap-2 flex-wrap min-w-0">
+          <div className="flex items-center gap-1.5 text-xs font-black text-slate-800 dark:text-slate-200 shrink-0">
+            <Share2 className="size-3.5 sm:size-4 text-[#ff4526]" />
+            <span>Akun Medsos ({accountsList.length}):</span>
           </div>
 
           {accountsList.length === 0 ? (
-            <span className="text-xs text-slate-500 italic">
+            <span className="text-[11px] sm:text-xs text-slate-500 italic truncate">
               Belum ada akun terhubung (Instagram / TikTok / Threads).
             </span>
           ) : (
-            <div className="flex items-center gap-1.5 flex-wrap">
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1">
               {accountsList.map((acc) => (
                 <div
                   key={acc.id}
-                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-900 dark:text-white"
+                  className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 text-[10px] font-bold text-slate-700 dark:text-slate-300 shrink-0"
                 >
-                  {getPlatformIcon(acc.platform, "size-3.5")}
-                  <span>{acc.accountHandle || acc.accountName}</span>
-                  <span className="size-1.5 rounded-full bg-emerald-500 inline-block ml-0.5" />
+                  {getPlatformIcon(acc.platform, 'size-3.5')}
+                  <span className="truncate max-w-[90px]">{acc.accountHandle || acc.accountName}</span>
                 </div>
               ))}
             </div>

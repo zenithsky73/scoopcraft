@@ -171,7 +171,7 @@ function FilterGroup({
   options: { value: string; label: string }[];
 }) {
   return (
-    <div className="flex items-center gap-1 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 p-1 backdrop-blur-md overflow-x-auto max-w-full">
+    <div className="flex items-center gap-1 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 p-1 backdrop-blur-md overflow-x-auto no-scrollbar max-w-full">
       <span className="px-2 text-[10px] font-black uppercase tracking-wider text-slate-400 shrink-0">{label}</span>
       {options.map((option) => (
         <button

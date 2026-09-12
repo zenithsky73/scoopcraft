@@ -333,32 +333,32 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-x-auto">
+      <div className="flex items-center gap-1.5 p-1 sm:p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-x-auto no-scrollbar -mx-1 px-1">
         <button
           type="button"
           onClick={() => setActiveTab('BRAND')}
           className={cn(
-            'flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0',
+            'flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all shrink-0',
             activeTab === 'BRAND'
               ? 'bg-white dark:bg-slate-800 text-primary shadow-sm ring-1 ring-slate-200 dark:ring-slate-700'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           )}
         >
-          <Palette className="size-4" />
-          <span>Brand Kit &amp; Watermark</span>
+          <Palette className="size-3.5 sm:size-4" />
+          <span>Brand Kit</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('ACCOUNT')}
           className={cn(
-            'flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0',
+            'flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all shrink-0',
             activeTab === 'ACCOUNT'
               ? 'bg-white dark:bg-slate-800 text-primary shadow-sm ring-1 ring-slate-200 dark:ring-slate-700'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           )}
         >
-          <User className="size-4" />
+          <User className="size-3.5 sm:size-4" />
           <span>Profil &amp; Keamanan</span>
         </button>
 
@@ -366,13 +366,13 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
           type="button"
           onClick={() => setActiveTab('BILLING')}
           className={cn(
-            'flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0',
+            'flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all shrink-0',
             activeTab === 'BILLING'
               ? 'bg-white dark:bg-slate-800 text-primary shadow-sm ring-1 ring-slate-200 dark:ring-slate-700'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           )}
         >
-          <Zap className="size-4" />
+          <Zap className="size-3.5 sm:size-4" />
           <span>Paket &amp; Kuota</span>
         </button>
 
@@ -380,13 +380,13 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
           type="button"
           onClick={() => setActiveTab('PREFS')}
           className={cn(
-            'flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0',
+            'flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all shrink-0',
             activeTab === 'PREFS'
               ? 'bg-white dark:bg-slate-800 text-primary shadow-sm ring-1 ring-slate-200 dark:ring-slate-700'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           )}
         >
-          <Sliders className="size-4" />
+          <Sliders className="size-3.5 sm:size-4" />
           <span>Preferensi AI</span>
         </button>
 
@@ -394,14 +394,14 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
           type="button"
           onClick={() => setActiveTab('SOCIAL')}
           className={cn(
-            'flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0',
+            'flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all shrink-0',
             activeTab === 'SOCIAL'
               ? 'bg-white dark:bg-slate-800 text-pink-600 dark:text-pink-400 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           )}
         >
-          <Share2 className="size-4 text-pink-500" />
-          <span>Akun Media Sosial</span>
+          <Share2 className="size-3.5 sm:size-4 text-pink-500" />
+          <span>Akun Medsos</span>
         </button>
       </div>
 

@@ -160,71 +160,70 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
-        {/* ─── 1. MODE TABS (URL vs TEXT vs PROMPT) ─── */}
-        <div className="flex p-1 sm:p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-sm">
+      <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-8">
+        {/* ─── 1. MODE TABS (URL vs TEXT vs PROMPT vs CAMPAIGN) ─── */}
+        <div className="flex p-1 sm:p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-sm overflow-x-auto no-scrollbar gap-1">
           <button
             type="button"
             onClick={() => setMode('url')}
-            className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+            className={`flex-1 min-w-[75px] sm:min-w-0 flex items-center justify-center gap-1 sm:gap-2 py-2 sm:py-3 px-2 sm:px-3 rounded-xl text-[11px] sm:text-xs md:text-sm font-bold transition-all ${
               mode === 'url'
                 ? 'bg-primary text-white shadow-md shadow-primary/30'
                 : 'text-slate-700 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white'
             }`}
           >
-            <Link2 className="size-3.5 sm:size-4" />
-            <span>Link Produk / Web</span>
+            <Link2 className="size-3.5 sm:size-4 shrink-0" />
+            <span className="truncate">Link Web</span>
           </button>
 
           <button
             type="button"
             onClick={() => setMode('text')}
-            className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+            className={`flex-1 min-w-[75px] sm:min-w-0 flex items-center justify-center gap-1 sm:gap-2 py-2 sm:py-3 px-2 sm:px-3 rounded-xl text-[11px] sm:text-xs md:text-sm font-bold transition-all ${
               mode === 'text'
                 ? 'bg-primary text-white shadow-md shadow-primary/30'
                 : 'text-slate-700 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white'
             }`}
           >
-            <FileText className="size-3.5 sm:size-4" />
-            <span>Salin Teks</span>
+            <FileText className="size-3.5 sm:size-4 shrink-0" />
+            <span className="truncate">Salin Teks</span>
           </button>
 
           <button
             type="button"
             onClick={() => setMode('prompt')}
-            className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+            className={`flex-1 min-w-[75px] sm:min-w-0 flex items-center justify-center gap-1 sm:gap-2 py-2 sm:py-3 px-2 sm:px-3 rounded-xl text-[11px] sm:text-xs md:text-sm font-bold transition-all ${
               mode === 'prompt'
                 ? 'bg-primary text-white shadow-md shadow-primary/30'
                 : 'text-slate-700 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white'
             }`}
           >
-            <Sparkles className="size-3.5 sm:size-4" />
-            <span>Ide Prompt</span>
+            <Sparkles className="size-3.5 sm:size-4 shrink-0" />
+            <span className="truncate">Ide Prompt</span>
           </button>
 
           <button
             type="button"
             onClick={() => setShowCampaignModal(true)}
-            className="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 px-2 sm:px-3 rounded-xl text-xs sm:text-sm font-bold transition-all bg-gradient-to-r from-orange-500 via-primary to-rose-600 hover:opacity-95 text-white shadow-md shadow-primary/20"
+            className="flex-1 min-w-[95px] sm:min-w-0 flex items-center justify-center gap-1 sm:gap-2 py-2 sm:py-3 px-2 sm:px-3 rounded-xl text-[11px] sm:text-xs md:text-sm font-bold transition-all bg-gradient-to-r from-orange-500 via-primary to-rose-600 hover:opacity-95 text-white shadow-md shadow-primary/20 shrink-0"
           >
-            <Sparkles className="size-3.5 sm:size-4 text-amber-300" />
-            <span className="hidden sm:inline">Campaign 30 Hari</span>
-            <span className="sm:hidden">Campaign</span>
+            <Sparkles className="size-3.5 sm:size-4 text-amber-300 shrink-0" />
+            <span className="truncate">Campaign 30H</span>
           </button>
         </div>
 
         {/* ─── 2. INPUT WORKSPACE CONTAINER ─── */}
-        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shadow-md backdrop-blur-xl space-y-4">
+        <div className="p-3.5 sm:p-6 rounded-3xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shadow-md backdrop-blur-xl space-y-3.5 sm:space-y-4">
           {/* MODE A: URL Input */}
           {mode === 'url' && (
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                  <Globe className="size-4 text-cyan-600 dark:text-cyan-400" />
-                  <span>Tempelkan Link Marketplace, Video YouTube, atau Web:</span>
+              <div className="flex items-center justify-between gap-2">
+                <Label className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5 truncate">
+                  <Globe className="size-3.5 sm:size-4 text-cyan-600 dark:text-cyan-400 shrink-0" />
+                  <span className="truncate">Tempel Link Produk / Web / YouTube:</span>
                 </Label>
-                <span className="text-[10px] font-mono text-cyan-700 dark:text-cyan-400 font-bold bg-cyan-100 dark:bg-cyan-950/60 px-2 py-0.5 rounded-full border border-cyan-300 dark:border-cyan-800/40">
-                  Auto-Scrape & Multi-Photo AI
+                <span className="text-[9px] sm:text-[10px] font-mono text-cyan-700 dark:text-cyan-400 font-bold bg-cyan-100 dark:bg-cyan-950/60 px-2 py-0.5 rounded-full border border-cyan-300 dark:border-cyan-800/40 shrink-0">
+                  Auto-Scrape AI
                 </span>
               </div>
               <div className="relative">
@@ -233,23 +232,22 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
                   type="url"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
-                  placeholder="https://shopee.co.id/..., https://tokopedia.com/..., https://youtube.com/..., blog/web"
+                  placeholder="https://shopee.co.id/..., https://tokopedia.com/..., YouTube, atau Web"
                   className="h-11 sm:h-12 pl-10 sm:pl-11 text-xs sm:text-sm bg-slate-50 dark:bg-slate-950/90 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:border-primary rounded-xl"
                   required
                 />
               </div>
-              <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                <span className="text-[10px] text-slate-500 font-semibold">Mendukung:</span>
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1">
+                <span className="text-[10px] text-slate-500 font-semibold shrink-0">Mendukung:</span>
                 {[
                   '🛍️ Shopee & Tokopedia',
-                  '📱 TikTok Shop & Lazada',
-                  '▶️ YouTube & Shorts',
-                  '🌐 Blog & Medium',
-                  '🏪 Web Toko / Shopify',
+                  '📱 TikTok Shop',
+                  '▶️ YouTube',
+                  '🌐 Blog & Web',
                 ].map((site) => (
                   <span
                     key={site}
-                    className="text-[9px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400"
+                    className="text-[9px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 shrink-0 font-medium"
                   >
                     {site}
                   </span>
@@ -279,9 +277,9 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
                 <textarea
                   value={rawText}
                   onChange={(e) => setRawText(e.target.value)}
-                  rows={5}
+                  rows={4}
                   placeholder="Salin dan tempelkan naskah, artikel, materi edukasi, tips, atau catatan Anda di sini..."
-                  className="w-full rounded-2xl bg-slate-50 dark:bg-slate-950/90 border border-slate-200 dark:border-slate-800 p-3.5 text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                  className="w-full rounded-2xl bg-slate-50 dark:bg-slate-950/90 border border-slate-200 dark:border-slate-800 p-3 sm:p-3.5 text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                   required
                 />
               </div>
@@ -290,14 +288,14 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
 
           {/* MODE C: Prompt AI */}
           {mode === 'prompt' && (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                  <Sparkles className="size-4 text-primary shrink-0" />
-                  <span>Tuliskan Topik Carousel AI:</span>
+            <div className="space-y-2.5 sm:space-y-3">
+              <div className="flex items-center justify-between gap-2">
+                <Label className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5 truncate">
+                  <Sparkles className="size-3.5 sm:size-4 text-primary shrink-0" />
+                  <span className="truncate">Tuliskan Topik Carousel AI:</span>
                 </Label>
-                <span className="text-[10px] font-mono text-primary font-bold bg-primary/10 dark:bg-primary/20 px-2 py-0.5 rounded-full border border-primary/20 dark:border-primary/30">
-                  Gemini 2.5 Flash Turbo
+                <span className="text-[9px] sm:text-[10px] font-mono text-primary font-bold bg-primary/10 dark:bg-primary/20 px-2 py-0.5 rounded-full border border-primary/20 dark:border-primary/30 shrink-0">
+                  Gemini Flash Turbo
                 </span>
               </div>
               <textarea
@@ -305,29 +303,28 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
                 onChange={(e) => setPrompt(e.target.value)}
                 rows={3}
                 placeholder="Contoh: 5 strategi cerdas mengelola keuangan untuk fresh graduate di tahun 2026."
-                className="w-full rounded-2xl bg-slate-50 dark:bg-slate-950/90 border border-slate-200 dark:border-slate-800 p-3.5 text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                className="w-full rounded-2xl bg-slate-50 dark:bg-slate-950/90 border border-slate-200 dark:border-slate-800 p-3 sm:p-3.5 text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                 required
               />
 
               {/* Quick Trending Prompt Chips */}
-              <div className="space-y-1.5 pt-1">
+              <div className="space-y-1 pt-0.5">
                 <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
-                  ⚡ Ide Topik Tren Cepat (Klik untuk Coba):
+                  ⚡ Rekomendasi Topik Tren (Klik untuk Mencoba):
                 </span>
-                <div className="flex flex-wrap gap-1.5">
+                <div className="flex flex-wrap gap-1 sm:gap-1.5 max-h-24 sm:max-h-none overflow-y-auto pr-0.5">
                   {[
-                    '💡 5 Kesalahan Finansial Fatal di Usia 20-an & Solusinya',
-                    '🤖 7 AI Tools Produktivitas Paling Mengubah Kerja 2026',
-                    '📱 Review Flagship Smartphone: Inovasi Kamera & Baterai',
-                    '🚀 4 Strategi Bisnis Modal Kecil Menjadi Viral di Medsos',
-                    '💼 Seni Negosiasi Gaji & Karier untuk Profesional Muda',
-                    '☕ Rahasia Memulai Bisnis F&B dengan Pelanggan Loyal',
+                    '💡 5 Kesalahan Finansial di Usia 20-an & Solusinya',
+                    '🤖 7 AI Tools Produktivitas Mengubah Kerja 2026',
+                    '📱 Review Flagship Smartphone: Kamera & Baterai',
+                    '🚀 4 Strategi Bisnis Modal Kecil Menjadi Viral',
+                    '💼 Seni Negosiasi Gaji untuk Profesional Muda',
                   ].map((trendingTopic, idx) => (
                     <button
                       key={idx}
                       type="button"
                       onClick={() => setPrompt(trendingTopic)}
-                      className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-slate-100 dark:bg-slate-900 hover:bg-primary/10 hover:text-primary border border-slate-200 dark:border-slate-800 transition-all text-slate-700 dark:text-slate-300"
+                      className="px-2 sm:px-2.5 py-1 rounded-full text-[10px] font-semibold bg-slate-100 dark:bg-slate-900 hover:bg-primary/10 hover:text-primary border border-slate-200 dark:border-slate-800 transition-all text-slate-700 dark:text-slate-300 text-left truncate max-w-full"
                     >
                       {trendingTopic}
                     </button>
@@ -339,27 +336,27 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
 
           {/* Tone Selector Chips */}
           <div className="space-y-2 pt-3 border-t border-slate-200 dark:border-slate-800/80">
-            <Label className="text-[11px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block">
+            <Label className="text-[10px] sm:text-[11px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block">
               Gaya Bahasa / Tone:
             </Label>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-              {TONES.map((t) => {
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1.5 sm:gap-2">
+              {TONES.map((t, idx) => {
                 const isSelected = tone === t.id;
                 return (
                   <button
                     key={t.id}
                     type="button"
                     onClick={() => setTone(t.id)}
-                    className={`p-2.5 sm:p-3 rounded-xl border text-left transition-all ${
+                    className={`p-2 sm:p-2.5 rounded-xl border text-left transition-all ${
                       isSelected
                         ? 'bg-primary/10 dark:bg-primary/20 border-primary ring-1 ring-primary/50 text-primary dark:text-white shadow-sm'
                         : 'bg-slate-50 dark:bg-slate-950/80 border-slate-200 dark:border-slate-800/80 text-slate-600 dark:text-slate-400 hover:border-slate-400 dark:hover:border-slate-700'
-                    }`}
+                    } ${idx === TONES.length - 1 ? 'col-span-2 sm:col-span-1' : ''}`}
                   >
-                    <div className="font-bold text-[11px] sm:text-xs text-slate-900 dark:text-slate-200 truncate">
+                    <div className="font-bold text-[10px] sm:text-xs text-slate-900 dark:text-slate-200 truncate">
                       {t.label}
                     </div>
-                    <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">
+                    <div className="text-[9px] sm:text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">
                       {t.desc}
                     </div>
                   </button>
@@ -370,11 +367,11 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
         </div>
 
         {/* ─── 2. TEMA VISUAL GAMBAR AI (27 ART STYLES) ─── */}
-        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shadow-md backdrop-blur-xl">
+        <div className="p-3.5 sm:p-6 rounded-3xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shadow-md backdrop-blur-xl">
           <AIVisualThemePicker value={aiVisualTheme} onChange={setAiVisualTheme} />
         </div>
 
-        {/* ─── 3. PILIHAN TEMPLATE DESAIN VISUAL (5-COLUMN MODERN MOCKUP PICKER) ─── */}
+        {/* ─── 3. PILIHAN TEMPLATE DESAIN VISUAL (MOBILE SMART PICKER) ─── */}
         <VisualTemplatePicker
           selectedStyle={selectedStyle}
           onSelectStyle={handleSelectStyle}
@@ -389,30 +386,32 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
 
         {/* Error Notification */}
         {error && (
-          <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-xs font-semibold">
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-xs font-semibold">
             {error}
           </div>
         )}
 
         {/* Submit Generate Action Button */}
-        <Button
-          type="submit"
-          disabled={loading}
-          className="w-full h-13 sm:h-14 rounded-2xl bg-gradient-to-r from-primary via-orange-500 to-primary hover:opacity-95 text-white font-black text-sm sm:text-base shadow-xl shadow-primary/25 transition-all flex items-center justify-center gap-2"
-        >
-          {loading ? (
-            <>
-              <div className="size-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              <span>AI Sedang Meriset & Membuat Carousel...</span>
-            </>
-          ) : (
-            <>
-              <Sparkles className="size-5 text-amber-300" />
-              <span>Buat Carousel AI Sekarang</span>
-              <ArrowRight className="size-5 ml-1" />
-            </>
-          )}
-        </Button>
+        <div className="pt-2">
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full h-13 sm:h-14 rounded-2xl bg-gradient-to-r from-primary via-orange-500 to-primary hover:opacity-95 text-white font-black text-sm sm:text-base shadow-xl shadow-primary/25 transition-all flex items-center justify-center gap-2"
+          >
+            {loading ? (
+              <>
+                <div className="size-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span className="truncate">AI Sedang Meriset &amp; Membuat Carousel...</span>
+              </>
+            ) : (
+              <>
+                <Sparkles className="size-5 text-amber-300 shrink-0" />
+                <span>Buat Carousel AI Sekarang</span>
+                <ArrowRight className="size-5 ml-1 shrink-0" />
+              </>
+            )}
+          </Button>
+        </div>
       </form>
 
       {/* Upgrade Dialog */}
