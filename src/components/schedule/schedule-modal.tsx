@@ -4,11 +4,7 @@ import * as React from 'react';
 import {
   Calendar as CalendarIcon,
   Clock,
-  Instagram,
-  Facebook,
-  AtSign,
   Send,
-  Sparkles,
   X,
   CheckCircle2,
   AlertCircle,
@@ -16,6 +12,7 @@ import {
   Layers,
   ArrowRight,
 } from 'lucide-react';
+import { SocialIcon } from '@/components/social/social-icon';
 import { Button } from '@/components/ui/button';
 import { notify } from '@/lib/notify';
 import { cn } from '@/lib/utils';
@@ -39,7 +36,6 @@ const PLATFORMS = [
   {
     id: 'INSTAGRAM',
     name: 'Instagram',
-    icon: Instagram,
     gradient: 'from-pink-500 via-purple-500 to-amber-500',
     border: 'border-pink-500/30',
     color: 'text-pink-600 dark:text-pink-400',
@@ -48,7 +44,6 @@ const PLATFORMS = [
   {
     id: 'TIKTOK',
     name: 'TikTok',
-    icon: Sparkles,
     gradient: 'from-slate-950 via-slate-900 to-cyan-500',
     border: 'border-cyan-500/40',
     color: 'text-cyan-600 dark:text-cyan-400',
@@ -57,7 +52,6 @@ const PLATFORMS = [
   {
     id: 'THREADS',
     name: 'Threads',
-    icon: AtSign,
     gradient: 'from-slate-800 to-black',
     border: 'border-slate-500/30',
     color: 'text-slate-800 dark:text-slate-200',
@@ -271,23 +265,22 @@ export function ScheduleModal({
             <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1.5 block">
               Pilih Media Sosial Tujuan
             </label>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {PLATFORMS.map((platform) => {
                 const isSelected = selectedPlatform === platform.id;
-                const Icon = platform.icon;
                 return (
                   <button
                     key={platform.id}
                     type="button"
                     onClick={() => setSelectedPlatform(platform.id as any)}
                     className={cn(
-                      'flex flex-col items-center justify-center gap-1.5 py-2 px-1 rounded-xl border text-[11px] font-bold transition-all',
+                      'flex flex-col items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl border text-[11px] font-bold transition-all',
                       isSelected
                         ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 shadow-sm ring-1 ring-indigo-500/20'
                         : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60'
                     )}
                   >
-                    <Icon className={cn('size-4 shrink-0', platform.color)} />
+                    <SocialIcon platform={platform.id} size={22} variant="rounded" />
                     <span>{platform.name}</span>
                   </button>
                 );

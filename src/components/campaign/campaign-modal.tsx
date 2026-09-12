@@ -5,9 +5,6 @@ import {
   Sparkles,
   Calendar as CalendarIcon,
   Clock,
-  Instagram,
-  Facebook,
-  AtSign,
   X,
   Layers,
   CheckCircle2,
@@ -18,6 +15,7 @@ import {
   ChevronUp,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { SocialIcon } from '@/components/social/social-icon';
 import { notify } from '@/lib/notify';
 import { cn } from '@/lib/utils';
 import type { CampaignDayPost } from '@/server/ai/campaign-generator';
@@ -41,7 +39,7 @@ export function CampaignModal({ open, onClose, onCampaignSuccess }: CampaignModa
   const [niche, setNiche] = React.useState('CULINARY_RESTO');
   const [contentType, setContentType] = React.useState('MIXED');
   const [duration, setDuration] = React.useState<7 | 14 | 30>(30);
-  const [platform, setPlatform] = React.useState<'INSTAGRAM' | 'FACEBOOK' | 'THREADS'>('INSTAGRAM');
+  const [platform, setPlatform] = React.useState<'INSTAGRAM' | 'TIKTOK' | 'THREADS'>('INSTAGRAM');
 
   // Default start date: besok
   const defaultStartDate = React.useMemo(() => {
@@ -295,39 +293,39 @@ export function CampaignModal({ open, onClose, onCampaignSuccess }: CampaignModa
                       type="button"
                       onClick={() => setPlatform('INSTAGRAM')}
                       className={cn(
-                        'flex items-center justify-center gap-1 py-2 px-2 rounded-xl border text-[11px] font-bold transition-all',
+                        'flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl border text-[11px] font-bold transition-all',
                         platform === 'INSTAGRAM'
-                          ? 'border-pink-500 bg-pink-50 dark:bg-pink-950/60 text-pink-700 dark:text-pink-300 ring-1 ring-pink-500/20'
+                          ? 'border-pink-500 bg-pink-50 dark:bg-pink-950/60 text-pink-700 dark:text-pink-300 ring-1 ring-pink-500/20 shadow-sm'
                           : 'border-slate-200 dark:border-slate-800 text-slate-500 hover:bg-slate-50'
                       )}
                     >
-                      <Instagram className="size-3 text-pink-500" />
+                      <SocialIcon platform="INSTAGRAM" size={16} variant="rounded" />
                       <span>Instagram</span>
                     </button>
                     <button
                       type="button"
-                      onClick={() => setPlatform('FACEBOOK')}
+                      onClick={() => setPlatform('TIKTOK')}
                       className={cn(
-                        'flex items-center justify-center gap-1 py-2 px-2 rounded-xl border text-[11px] font-bold transition-all',
-                        platform === 'FACEBOOK'
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 ring-1 ring-blue-500/20'
+                        'flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl border text-[11px] font-bold transition-all',
+                        platform === 'TIKTOK'
+                          ? 'border-cyan-500 bg-cyan-50 dark:bg-cyan-950/60 text-cyan-700 dark:text-cyan-300 ring-1 ring-cyan-500/20 shadow-sm'
                           : 'border-slate-200 dark:border-slate-800 text-slate-500 hover:bg-slate-50'
                       )}
                     >
-                      <Facebook className="size-3 text-blue-600" />
-                      <span>Facebook</span>
+                      <SocialIcon platform="TIKTOK" size={16} variant="rounded" />
+                      <span>TikTok</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => setPlatform('THREADS')}
                       className={cn(
-                        'flex items-center justify-center gap-1 py-2 px-2 rounded-xl border text-[11px] font-bold transition-all',
+                        'flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl border text-[11px] font-bold transition-all',
                         platform === 'THREADS'
-                          ? 'border-slate-800 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white ring-1 ring-slate-400/30'
+                          ? 'border-slate-800 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white ring-1 ring-slate-400/30 shadow-sm'
                           : 'border-slate-200 dark:border-slate-800 text-slate-500 hover:bg-slate-50'
                       )}
                     >
-                      <AtSign className="size-3 text-slate-900 dark:text-white" />
+                      <SocialIcon platform="THREADS" size={16} variant="rounded" />
                       <span>Threads</span>
                     </button>
                   </div>

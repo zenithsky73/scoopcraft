@@ -3,9 +3,6 @@
 import * as React from 'react';
 import {
   X,
-  Instagram,
-  Sparkles,
-  AtSign,
   CheckCircle2,
   Zap,
   ShieldCheck,
@@ -14,6 +11,7 @@ import {
   Radio,
   Check,
 } from 'lucide-react';
+import { SocialIcon } from '@/components/social/social-icon';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -34,7 +32,6 @@ const PLATFORMS: {
   color: string;
   gradient: string;
   buttonClass: string;
-  icon: any;
   oauthParam: string;
   features: string[];
 }[] = [
@@ -46,7 +43,6 @@ const PLATFORMS: {
     color: '#E1306C',
     gradient: 'from-pink-500 via-purple-600 to-orange-500',
     buttonClass: 'bg-gradient-to-r from-pink-600 via-purple-600 to-orange-500 hover:opacity-95 shadow-pink-500/25',
-    icon: Instagram,
     oauthParam: 'instagram',
     features: [
       'Multi-slide Carousel & Feed High Quality',
@@ -62,7 +58,6 @@ const PLATFORMS: {
     color: '#00F2FE',
     gradient: 'from-cyan-500 via-sky-600 to-indigo-600',
     buttonClass: 'bg-black hover:bg-neutral-900 text-cyan-300 border border-cyan-500/30 shadow-cyan-500/20',
-    icon: Sparkles,
     oauthParam: 'tiktok',
     features: [
       'TikTok Photo Mode Carousel Otomatis',
@@ -78,7 +73,6 @@ const PLATFORMS: {
     color: '#000000',
     gradient: 'from-slate-900 via-zinc-800 to-black dark:from-slate-100 dark:via-zinc-200 dark:to-white',
     buttonClass: 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:opacity-95 shadow-slate-900/20 dark:shadow-white/20',
-    icon: AtSign,
     oauthParam: 'threads',
     features: [
       'Post Utas Microblog & Gambar Berseri',
@@ -156,7 +150,6 @@ export function ConnectAccountModal({
             <div className="grid grid-cols-3 gap-2.5">
               {PLATFORMS.map((plat) => {
                 const isSelected = selectedPlatform === plat.id;
-                const Icon = plat.icon;
                 return (
                   <button
                     key={plat.id}
@@ -170,16 +163,7 @@ export function ConnectAccountModal({
                     )}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <div
-                        className={cn(
-                          'size-8 rounded-xl flex items-center justify-center shadow-sm',
-                          plat.id === 'INSTAGRAM' && 'bg-gradient-to-tr from-pink-500 via-purple-600 to-orange-500 text-white',
-                          plat.id === 'TIKTOK' && 'bg-black text-cyan-300 border border-slate-700',
-                          plat.id === 'THREADS' && 'bg-slate-900 dark:bg-white text-white dark:text-slate-900'
-                        )}
-                      >
-                        <Icon className="size-4" />
-                      </div>
+                      <SocialIcon platform={plat.id} size={32} variant="rounded" />
                       {isSelected && (
                         <div className="size-4 rounded-full bg-[#ff4526] text-white flex items-center justify-center">
                           <CheckCircle2 className="size-3" />
@@ -202,22 +186,25 @@ export function ConnectAccountModal({
 
           {/* 2. Official Connection Card */}
           <div className="p-5 rounded-2xl bg-gradient-to-br from-orange-50/60 via-white to-pink-50/40 dark:from-indigo-950/30 dark:via-slate-900 dark:to-slate-950 border border-orange-200/80 dark:border-indigo-900/50 space-y-4 shadow-sm">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-mono">
-                  1-KLIK LOGIN RESMI
-                </span>
-                <span className="text-[10px] font-bold text-slate-500 flex items-center gap-1">
-                  <Radio className="size-3 text-emerald-500 animate-pulse" />
-                  OAuth 2.0 Live
-                </span>
+            <div className="flex items-start gap-3.5">
+              <SocialIcon platform={currentPlatformInfo.id} size={42} variant="rounded" />
+              <div className="space-y-1 flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-mono">
+                    1-KLIK LOGIN RESMI
+                  </span>
+                  <span className="text-[10px] font-bold text-slate-500 flex items-center gap-1">
+                    <Radio className="size-3 text-emerald-500 animate-pulse" />
+                    OAuth 2.0 Live
+                  </span>
+                </div>
+                <h4 className="text-sm font-black text-slate-900 dark:text-white">
+                  Otorisasikan Akun {currentPlatformInfo.label}
+                </h4>
+                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                  {currentPlatformInfo.desc}
+                </p>
               </div>
-              <h4 className="text-sm font-black text-slate-900 dark:text-white">
-                Otorisasikan Akun {currentPlatformInfo.label}
-              </h4>
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                {currentPlatformInfo.desc}
-              </p>
             </div>
 
             {/* Fitur yang diaktifkan */}

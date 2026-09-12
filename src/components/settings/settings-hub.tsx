@@ -23,9 +23,6 @@ import {
   Trash2,
   Info,
   Share2,
-  Instagram,
-  Facebook,
-  AtSign,
   ExternalLink,
   Plus,
 } from 'lucide-react';
@@ -35,6 +32,7 @@ import { cn, formatDate } from '@/lib/utils';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
 import { notify } from '@/lib/notify';
 import { ConnectAccountModal } from '@/components/schedule/connect-account-modal';
+import { SocialIcon } from '@/components/social/social-icon';
 import type { SocialPlatform } from '@prisma/client';
 
 interface SettingsHubProps {
@@ -866,9 +864,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
               <div className="p-4.5 rounded-2xl border border-pink-200 dark:border-pink-900/50 bg-pink-50/30 dark:bg-pink-950/20 flex flex-col justify-between shadow-sm">
                 <div className="space-y-2 mb-3">
                   <div className="flex items-center justify-between">
-                    <div className="size-9 rounded-xl bg-gradient-to-tr from-pink-500 via-purple-600 to-orange-500 text-white flex items-center justify-center shadow-md shadow-pink-500/20">
-                      <Instagram className="size-4.5" />
-                    </div>
+                    <SocialIcon platform="INSTAGRAM" size={36} variant="rounded" />
                     <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-pink-100 dark:bg-pink-950 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-900">
                       Instagram Pro
                     </span>
@@ -900,9 +896,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
               <div className="p-4.5 rounded-2xl border border-cyan-200 dark:border-cyan-900/50 bg-cyan-50/30 dark:bg-cyan-950/20 flex flex-col justify-between shadow-sm">
                 <div className="space-y-2 mb-3">
                   <div className="flex items-center justify-between">
-                    <div className="size-9 rounded-xl bg-slate-950 text-cyan-300 border border-slate-700 flex items-center justify-center shadow-md">
-                      <Sparkles className="size-4.5" />
-                    </div>
+                    <SocialIcon platform="TIKTOK" size={36} variant="rounded" />
                     <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-900">
                       TikTok Studio
                     </span>
@@ -934,9 +928,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
               <div className="p-4.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/40 flex flex-col justify-between shadow-sm">
                 <div className="space-y-2 mb-3">
                   <div className="flex items-center justify-between">
-                    <div className="size-9 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center shadow-md">
-                      <AtSign className="size-4.5" />
-                    </div>
+                    <SocialIcon platform="THREADS" size={36} variant="rounded" />
                     <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700">
                       Threads Meta
                     </span>
@@ -982,17 +974,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                       className="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50"
                     >
                       <div className="flex items-center gap-2.5">
-                        <div className="p-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-                          {acc.platform === 'INSTAGRAM' ? (
-                            <Instagram className="size-4 text-pink-500" />
-                          ) : acc.platform === 'TIKTOK' ? (
-                            <Sparkles className="size-4 text-cyan-400" />
-                          ) : acc.platform === 'THREADS' ? (
-                            <AtSign className="size-4 text-slate-900 dark:text-white" />
-                          ) : (
-                            <Share2 className="size-4 text-primary" />
-                          )}
-                        </div>
+                        <SocialIcon platform={acc.platform} size={24} variant="rounded" />
                         <div>
                           <div className="flex items-center gap-1.5">
                             <span className="text-xs font-bold text-slate-800 dark:text-slate-200">

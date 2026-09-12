@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { RunAsset, RunContent } from '@/lib/run-status';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { SocialIcon } from '@/components/social/social-icon';
 
 export function PlatformPreview({
   content,
@@ -30,7 +31,10 @@ export function PlatformPreview({
   return (
     <div className="space-y-3 rounded-xl border border-border bg-surface p-4">
       <div className="flex items-center justify-between">
-        <h4 className="text-xs font-semibold uppercase tracking-wider text-muted">Pratinjau Mockup Instagram</h4>
+        <div className="flex items-center gap-1.5">
+          <SocialIcon platform="INSTAGRAM" size={16} variant="rounded" />
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-muted">Pratinjau Mockup Instagram</h4>
+        </div>
         <Tabs value={platform} onValueChange={(val) => setPlatform(val as 'FEED' | 'STORY')}>
           <TabsList className="h-8">
             <TabsTrigger value="FEED" className="text-xs px-3">Instagram Feed</TabsTrigger>

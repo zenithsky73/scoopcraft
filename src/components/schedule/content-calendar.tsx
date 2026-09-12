@@ -6,9 +6,6 @@ import Image from 'next/image';
 import {
   Calendar as CalendarIcon,
   Clock,
-  Instagram,
-  Facebook,
-  AtSign,
   ExternalLink,
   Trash2,
   Zap,
@@ -37,6 +34,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { CampaignModal } from '@/components/campaign/campaign-modal';
 import { ConnectAccountModal } from '@/components/schedule/connect-account-modal';
+import { SocialIcon } from '@/components/social/social-icon';
 import { notify } from '@/lib/notify';
 import { cn } from '@/lib/utils';
 import type { SocialPlatform, ScheduleStatus, DesignStyle } from '@prisma/client';
@@ -613,16 +611,7 @@ export function ContentCalendar({
   }, [currentDate]);
 
   const getPlatformIcon = (platform: SocialPlatform, className = "size-3.5") => {
-    switch (platform) {
-      case 'INSTAGRAM':
-        return <Instagram className={cn(className, "text-pink-500")} />;
-      case 'TIKTOK':
-        return <Sparkles className={cn(className, "text-cyan-400")} />;
-      case 'THREADS':
-        return <AtSign className={cn(className, "text-slate-900 dark:text-white")} />;
-      default:
-        return <Share2 className={cn(className, "text-primary")} />;
-    }
+    return <SocialIcon platform={platform} className={className} size={18} variant="rounded" />;
   };
 
   const getStatusIcon = (status: ScheduleStatus) => {
@@ -816,9 +805,7 @@ export function ContentCalendar({
                   : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:bg-slate-50'
               )}
             >
-              {p === 'INSTAGRAM' && <Instagram className="size-3 text-pink-500" />}
-              {p === 'TIKTOK' && <Sparkles className="size-3 text-cyan-400" />}
-              {p === 'THREADS' && <AtSign className="size-3 text-slate-800 dark:text-white" />}
+              {p !== 'ALL' && <SocialIcon platform={p} size={15} variant="rounded" className="mr-0.5" />}
               <span>{p === 'ALL' ? 'Semua Platform' : p}</span>
             </button>
           ))}
