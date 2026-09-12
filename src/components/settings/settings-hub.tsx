@@ -65,7 +65,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
   const [activeTab, setActiveTab] = React.useState<'BRAND' | 'ACCOUNT' | 'BILLING' | 'PREFS' | 'SOCIAL'>('BRAND');
 
   // Brand Kit State
-  const [handle, setHandle] = React.useState(user.brandKit?.handle ?? '@');
+  const [handle, setHandle] = React.useState(user.brandKit?.handle ?? '');
   const [displayName, setDisplayName] = React.useState(user.brandKit?.displayName ?? '');
   const [tagline, setTagline] = React.useState(user.brandKit?.tagline ?? '');
   const [logoUrl, setLogoUrl] = React.useState<string | null>(user.brandKit?.logoUrl ?? null);
@@ -230,11 +230,11 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          handle: handle.trim(),
+          handle: handle.trim() || null,
           displayName: displayName.trim() || null,
           tagline: tagline.trim() || null,
-          logoUrl,
-          hideNewslyWatermark,
+          logoUrl: logoUrl || null,
+          hideNewslyWatermark: Boolean(hideNewslyWatermark),
         }),
       });
 
