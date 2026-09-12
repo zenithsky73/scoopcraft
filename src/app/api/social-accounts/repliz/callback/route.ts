@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getViewer } from '@/server/viewer';
 import { db } from '@/server/db';
-import { connectReplizOAuthAccount, getReplizAccounts } from '@/server/social/repliz-client';
+import { connectReplizOAuthAccount } from '@/server/social/repliz-client';
 import type { SocialPlatform } from '@prisma/client';
 
 export const runtime = 'nodejs';
@@ -62,31 +62,52 @@ export async function GET(req: Request) {
   const platformEnum = mapPlatform(platformCookie);
 
   try {
-    let connectedAccountId = '';
-    let accountDetails: any = null;
-
-    if (code) {
-      // Exchange code with Repliz
-      const exchangeResult = await connectReplizOAuthAccount(platformCookie, code);
-      if (exchangeResult.success && exchangeResult.account) {
-        connectedAccountId = exchangeResult.account._id || exchangeResult.account.id || exchangeResult.account.accountId || '';
-        accountDetails = exchangeResult.account;
-      }
+    if (!code) {
+      return NextResponse.redirect(
+        new URL(
+          `/calendar?canceled=oauth&error=${encodeURIComponent(
+            `Login atau otorisasi ${platformCookie} dibatalkan. Silakan login ke akun Anda dan izinkan akses.`
+          )}`,
+          baseUrl
+        )
+      );
     }
 
-    // Refresh list from Repliz pool to find the newest account
-    const replizData = await getReplizAccounts(1, 20);
-    const newestAccount = connectedAccountId
-      ? replizData.docs.find((d) => d._id === connectedAccountId)
-      : replizData.docs.find((d) => d.platform?.toLowerCase() === platformCookie.toLowerCase()) || replizData.docs[0];
+    // Exchange code with Repliz
+    const exchangeResult = await connectReplizOAuthAccount(platformCookie, code);
+    if (!exchangeResult.success || !exchangeResult.account) {
+      return NextResponse.redirect(
+        new URL(
+          `/calendar?error=${encodeURIComponent(
+            exchangeResult.error || `Gagal menautkan akun ${platformCookie} resmi.`
+          )}`,
+          baseUrl
+        )
+      );
+    }
 
-    const finalExternalId = connectedAccountId || newestAccount?._id || `repliz_${platformCookie}_${Date.now()}`;
-    let handle = newestAccount?.username || newestAccount?.name || accountDetails?.username || accountDetails?.name || 'Akun Baru';
+    const accountDetails = exchangeResult.account;
+    const connectedAccountId =
+      accountDetails._id || accountDetails.id || accountDetails.accountId;
+
+    if (!connectedAccountId) {
+      return NextResponse.redirect(
+        new URL(
+          `/calendar?error=${encodeURIComponent(
+            `Data akun ${platformCookie} tidak valid dari provider resmi.`
+          )}`,
+          baseUrl
+        )
+      );
+    }
+
+    let handle =
+      accountDetails.username || accountDetails.name || 'Akun';
     if (!handle.startsWith('@')) {
       handle = `@${handle}`;
     }
-    const name = newestAccount?.name || accountDetails?.name || handle.replace('@', '');
-    const avatar = newestAccount?.avatar || accountDetails?.avatar || null;
+    const name = accountDetails.name || handle.replace('@', '');
+    const avatar = accountDetails.avatar || null;
 
     // Upsert into Prisma SocialAccount for this user
     await db.socialAccount.upsert({
@@ -94,7 +115,7 @@ export async function GET(req: Request) {
         userId_platform_externalId: {
           userId,
           platform: platformEnum,
-          externalId: finalExternalId,
+          externalId: connectedAccountId,
         },
       },
       update: {
@@ -104,7 +125,7 @@ export async function GET(req: Request) {
         isConnected: true,
         accessToken: 'repliz_gold_oauth_token',
         metadata: {
-          replizAccountId: finalExternalId,
+          replizAccountId: connectedAccountId,
           platform: platformEnum,
           connectedVia: 'repliz_oauth_direct',
           connectedAt: new Date().toISOString(),
@@ -116,11 +137,11 @@ export async function GET(req: Request) {
         accountName: name,
         accountHandle: handle,
         avatarUrl: avatar,
-        externalId: finalExternalId,
+        externalId: connectedAccountId,
         isConnected: true,
         accessToken: 'repliz_gold_oauth_token',
         metadata: {
-          replizAccountId: finalExternalId,
+          replizAccountId: connectedAccountId,
           platform: platformEnum,
           connectedVia: 'repliz_oauth_direct',
           connectedAt: new Date().toISOString(),
