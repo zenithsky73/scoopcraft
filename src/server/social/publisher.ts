@@ -44,6 +44,7 @@ async function publishToRepliz(post: ScheduledPost & { socialAccount: SocialAcco
 
     const cleanMediaUrls = mediaUrls.map((u) => toAbsoluteMediaUrl(u)).filter(Boolean);
     const caption = `${post.caption || ''}\n\n${(post.hashtags || []).join(' ')}`.trim();
+    const music = (post.metadata as any)?.tiktokMusic || (post.metadata as any)?.music || null;
 
     const replizRes = await createReplizSchedule({
       accountId: replizAccountId,
@@ -53,6 +54,7 @@ async function publishToRepliz(post: ScheduledPost & { socialAccount: SocialAcco
       hashtags: post.hashtags || [],
       mediaUrls: cleanMediaUrls,
       scheduledAt: post.scheduledAt,
+      music,
     });
 
     if (!replizRes.success) {

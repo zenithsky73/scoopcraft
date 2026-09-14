@@ -19,6 +19,14 @@ const createScheduleSchema = z.object({
   style: z.string().optional().nullable(),
   socialAccountId: z.string().optional().nullable(),
   isSimulated: z.boolean().optional(),
+  tiktokMusic: z.object({
+    id: z.string(),
+    name: z.string(),
+    artist: z.string(),
+    thumbnail: z.string().optional(),
+    url: z.string().optional(),
+  }).optional().nullable(),
+  metadata: z.record(z.string(), z.any()).optional().nullable(),
 });
 
 // GET: Ambil daftar jadwal postingan user
@@ -160,6 +168,11 @@ export async function POST(req: Request) {
     );
     const isSimulated = validated.isSimulated !== undefined ? validated.isSimulated : !hasRealToken;
 
+    const postMetadata: any = {
+      ...(validated.metadata || {}),
+      ...(validated.tiktokMusic ? { tiktokMusic: validated.tiktokMusic } : {}),
+    };
+
     const scheduledPost = await db.scheduledPost.create({
       data: {
         userId: viewer.user.id,
@@ -174,6 +187,7 @@ export async function POST(req: Request) {
         format: validated.format as OutputFormat,
         style: (validated.style as DesignStyle) || null,
         isSimulated,
+        metadata: Object.keys(postMetadata).length > 0 ? postMetadata : null,
       },
       include: {
         socialAccount: true,

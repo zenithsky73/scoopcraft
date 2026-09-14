@@ -201,6 +201,12 @@ export interface ReplizSchedulePayload {
   hashtags?: string[];
   mediaUrls?: string[];
   scheduledAt: Date | string;
+  music?: {
+    id: string;
+    artist: string;
+    name: string;
+    thumbnail?: string;
+  } | null;
   metadata?: Record<string, any>;
 }
 
@@ -237,6 +243,13 @@ export async function createReplizSchedule(payload: ReplizSchedulePayload): Prom
       ? (medias[0].type === 'video' ? 'video' : 'image')
       : 'text';
 
+    const musicPayload = payload.music && payload.music.id ? {
+      id: payload.music.id,
+      artist: payload.music.artist || '',
+      name: payload.music.name || '',
+      thumbnail: payload.music.thumbnail || '',
+    } : { id: '', artist: '', name: '', thumbnail: '' };
+
     const reqBody = {
       accountId: payload.accountId,
       title: payload.title || payload.caption.slice(0, 60),
@@ -249,7 +262,7 @@ export async function createReplizSchedule(payload: ReplizSchedulePayload): Prom
         isAiGenerated: false,
         isDraft: false,
         collaborators: [],
-        music: { id: '', artist: '', name: '', thumbnail: '' },
+        music: musicPayload,
         products: [],
         tags,
         mentions: [],
