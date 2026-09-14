@@ -84,7 +84,10 @@ async function publishToRepliz(post: ScheduledPost & { socialAccount: SocialAcco
     }
 
     const cleanMediaUrls = mediaUrls.map((u) => toAbsoluteMediaUrl(u)).filter(Boolean);
-    const caption = `${post.caption || ''}\n\n${(post.hashtags || []).join(' ')}`.trim();
+    let caption = `${post.caption || ''}\n\n${(post.hashtags || []).join(' ')}`.trim();
+    if (platform === 'threads' && caption.length > 500) {
+      caption = caption.slice(0, 495).trim() + '...';
+    }
     const music = (post.metadata as any)?.tiktokMusic || (post.metadata as any)?.music || null;
     const topic = (post.metadata as any)?.threadsTopic || (post.metadata as any)?.topic || undefined;
 

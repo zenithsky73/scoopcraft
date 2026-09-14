@@ -836,17 +836,44 @@ export function ScheduleModal({
               <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300">
                 Caption & Hashtag
               </label>
-              <span className="text-[10px] text-slate-400">
-                {editableCaption.length} karakter • {hashtags.length} tag
+              <span
+                className={cn(
+                  'text-[10px] font-medium',
+                  selectedPlatform === 'THREADS' && editableCaption.length > 500
+                    ? 'text-red-500 font-bold'
+                    : 'text-slate-400'
+                )}
+              >
+                {editableCaption.length}{selectedPlatform === 'THREADS' ? '/500' : ''} karakter • {hashtags.length} tag
               </span>
             </div>
             <textarea
               value={editableCaption}
               onChange={(e) => setEditableCaption(e.target.value)}
               rows={3}
-              className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500 leading-relaxed resize-none"
+              className={cn(
+                'w-full rounded-xl border bg-slate-50 dark:bg-slate-950/60 p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 leading-relaxed resize-none',
+                selectedPlatform === 'THREADS' && editableCaption.length > 500
+                  ? 'border-red-400 dark:border-red-800 focus:ring-red-500'
+                  : 'border-slate-200 dark:border-slate-800 focus:ring-indigo-500'
+              )}
               placeholder="Tulis caption postingan..."
             />
+
+            {selectedPlatform === 'THREADS' && editableCaption.length > 500 && (
+              <div className="mt-1.5 p-2 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 text-[11px] text-amber-900 dark:text-amber-200 flex items-center justify-between gap-2 animate-in fade-in duration-150">
+                <span className="leading-tight text-[10px]">
+                  ⚠️ <strong>Batas Threads:</strong> Maksimal 500 karakter.
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setEditableCaption(editableCaption.slice(0, 485).trim() + '...')}
+                  className="px-2 py-0.5 rounded bg-amber-600 hover:bg-amber-500 text-white font-bold text-[10px] shrink-0 shadow-sm"
+                >
+                  Pangkas ke 500 ✂️
+                </button>
+              </div>
+            )}
             {hashtags.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-1.5">
                 {hashtags.slice(0, 5).map((tag, i) => (

@@ -298,10 +298,15 @@ export async function createReplizSchedule(payload: ReplizSchedulePayload): Prom
       musicPayload = { id: '', artist: '', name: '', thumbnail: '' };
     }
 
+    let description = payload.caption || '';
+    if (payload.platform && payload.platform.toLowerCase() === 'threads' && description.length > 500) {
+      description = description.slice(0, 495).trim() + '...';
+    }
+
     const reqBody = {
       accountId: payload.accountId,
-      title: payload.title || payload.caption.slice(0, 60),
-      description: payload.caption || '',
+      title: payload.title || description.slice(0, 60),
+      description,
       topic: payload.topic || (payload.metadata as any)?.threadsTopic || (payload.metadata as any)?.topic || '',
       type: postType,
       medias,
