@@ -32,18 +32,18 @@ export async function POST(req: Request) {
   const user = await db.user.findUniqueOrThrow({ where: { id: session.user.id }, select: { role: true } });
   if (user.role === 'OWNER') {
     return NextResponse.json(
-      { error: 'Akun pemilik sudah punya akses tanpa batas — tidak perlu berlangganan.' },
+      { error: 'Akun pemilik sudah punya akses tanpa batas (OWNER GOD-MODE) — tidak perlu berlangganan.' },
       { status: 409 },
     );
   }
 
-  // Belum ada pembayaran: aktivasi langsung menulis ke database.
-  // Lihat catatan di activate-subscription.ts soal apa yang harus menyusul.
-  const result = await activateSubscription(session.user.id, parsed.data.plan);
-
-  return NextResponse.json({
-    ...result,
-    stub: true,
-    message: 'Langganan diaktifkan tanpa pembayaran (mode stub).',
-  });
+  // Gateway Pembayaran Sedang Dalam Proses Verifikasi Resmi
+  // Seluruh aktivasi berbayar publik dikunci sementara.
+  return NextResponse.json(
+    {
+      error: 'Akses aktivasi paket saat ini dikunci sementara karena integrasi payment gateway (Midtrans / QRIS) sedang dalam tahap verifikasi resmi. Pembelian paket akan segera dibuka untuk publik.',
+      locked: true,
+    },
+    { status: 403 },
+  );
 }

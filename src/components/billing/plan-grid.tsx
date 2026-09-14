@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Check, Crown, Sparkles, Zap, ShieldCheck, ArrowRight } from 'lucide-react';
+import { Check, Crown, Sparkles, Zap, ShieldCheck, ArrowRight, Lock, AlertCircle } from 'lucide-react';
 import type { Plan } from '@prisma/client';
 import { PLAN_LIST, formatIDR, type PaidPlan } from '@/config/plans';
 import { cn } from '@/lib/utils';
@@ -27,6 +27,10 @@ export function PlanGrid({
     setError(null);
     setSuccessMessage(null);
     if (preview) return;
+    if (!isOwner) {
+      setError('Akses pembelian paket berbayar saat ini dikunci sementara karena integrasi payment gateway sedang dalam tahap verifikasi resmi. Fitur pembayaran akan segera dibuka.');
+      return;
+    }
     setSelectedPlanForModal(plan);
   }
 
@@ -39,6 +43,28 @@ export function PlanGrid({
 
   return (
     <div className="space-y-8">
+      {/* Payment Gateway Under Integration Announcement Banner */}
+      <div className="rounded-3xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-yellow-500/10 p-5 sm:p-6 shadow-lg backdrop-blur-xl transition-colors duration-200">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="flex size-12 items-center justify-center rounded-2xl bg-amber-500/20 border border-amber-500/30 text-amber-500 shrink-0">
+            <Lock className="size-6" />
+          </div>
+          <div className="space-y-1 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <h4 className="text-base font-black text-slate-900 dark:text-white">
+                Akses Pembelian Paket Dikunci Sementara
+              </h4>
+              <span className="px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-800 dark:text-amber-300 border border-amber-400/40 text-[10px] font-black uppercase tracking-wide">
+                Integrasi Gateway Berlangsung
+              </span>
+            </div>
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+              Integrasi gateway pembayaran resmi (Midtrans / QRIS Instan / Transfer Bank) saat ini sedang dalam proses verifikasi &amp; aktivasi. Seluruh paket berbayar untuk sementara waktu dikunci dan akan segera dibuka untuk publik setelah verifikasi selesai.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Owner VIP Status Banner */}
       {isOwner && (
         <div className="rounded-3xl border border-amber-500/40 bg-gradient-to-r from-amber-500/15 via-yellow-500/10 to-amber-600/15 p-6 shadow-xl backdrop-blur-xl transition-colors duration-200">
@@ -64,8 +90,9 @@ export function PlanGrid({
       )}
 
       {error && (
-        <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-xs font-bold text-red-700 dark:text-red-300">
-          {error}
+        <div className="rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 text-xs font-bold text-amber-700 dark:text-amber-300 flex items-center gap-2.5">
+          <AlertCircle className="size-4 shrink-0" />
+          <span>{error}</span>
         </div>
       )}
 
@@ -170,17 +197,19 @@ export function PlanGrid({
                 <Button
                   block
                   size="lg"
-                  disabled={active && !isOwner}
+                  disabled={!isOwner}
                   onClick={() => handleOpenCheckout(plan.id)}
                   className={cn(
-                    'h-11 rounded-2xl text-xs font-black transition-all shadow-md',
-                    active && !isOwner
-                      ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700'
-                      : isPro
-                      ? 'bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-500 text-white shadow-primary/25'
-                      : isBusiness
-                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-95 text-white shadow-purple-600/25'
-                      : 'bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700'
+                    'h-11 rounded-2xl text-xs font-black transition-all shadow-sm',
+                    isOwner
+                      ? isPro
+                        ? 'bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-500 text-white shadow-primary/25'
+                        : isBusiness
+                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-95 text-white shadow-purple-600/25'
+                        : 'bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700'
+                      : active
+                      ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 cursor-not-allowed'
+                      : 'bg-slate-100 dark:bg-slate-800/70 text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-800 cursor-not-allowed hover:bg-slate-100 dark:hover:bg-slate-800/70'
                   )}
                 >
                   {isOwner ? (
@@ -188,10 +217,12 @@ export function PlanGrid({
                       👑 Tes Checkout Modal <ArrowRight className="size-3.5" />
                     </span>
                   ) : active ? (
-                    'Paket Anda Saat Ini'
+                    <span className="flex items-center justify-center gap-1.5 font-bold">
+                      <Check className="size-3.5" /> Paket Anda Saat Ini
+                    </span>
                   ) : (
-                    <span className="flex items-center justify-center gap-1.5">
-                      Langganan Sekarang <ArrowRight className="size-3.5" />
+                    <span className="flex items-center justify-center gap-1.5 text-slate-500 dark:text-slate-400">
+                      <Lock className="size-3.5" /> Segera Hadir (Tahap Integrasi)
                     </span>
                   )}
                 </Button>

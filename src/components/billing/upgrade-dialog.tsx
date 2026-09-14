@@ -75,25 +75,30 @@ export function UpgradeDialog({
 
         {/* Pricing Box */}
         <div className="p-6 pt-4 space-y-3">
-          <div className="flex items-center justify-between rounded-2xl bg-gradient-to-r from-primary/10 via-indigo-600/5 to-transparent border border-primary/20 dark:border-primary/30 p-4">
+          <div className="flex items-center justify-between rounded-2xl bg-gradient-to-r from-amber-500/10 via-yellow-500/5 to-transparent border border-amber-500/20 dark:border-amber-500/30 p-4">
             <div>
-              <p className="text-xs font-black text-slate-900 dark:text-white">Mulai dari Rp 19.000</p>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">Pilihan paket hemat & fleksibel</p>
+              <div className="flex items-center gap-1.5">
+                <p className="text-xs font-black text-slate-900 dark:text-white">Mulai Rp 19.000</p>
+                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30">
+                  Segera Hadir
+                </span>
+              </div>
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Integrasi gateway pembayaran sedang diverifikasi</p>
             </div>
             <div className="text-right">
               <span className="text-lg font-black text-slate-900 dark:text-white">{formatIDR(PLANS.PRO.price)}</span>
-              <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium"> /bln (Pro)</span>
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium"> /bln</span>
             </div>
           </div>
 
           <div className="flex gap-2.5">
             <Button asChild size="lg" className="flex-1 rounded-2xl h-11 text-xs font-black bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 text-white shadow-lg shadow-primary/25">
               <Link href="/upgrade">
-                <Zap className="size-4 mr-1.5 fill-current" /> Lihat Semua Paket <ArrowRight className="size-4 ml-1" />
+                <Zap className="size-4 mr-1.5 fill-current" /> Lihat Rincian Paket <ArrowRight className="size-4 ml-1" />
               </Link>
             </Button>
             <Button variant="ghost" size="lg" onClick={onClose} className="rounded-2xl h-11 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
-              Nanti Saja
+              Tutup
             </Button>
           </div>
         </div>

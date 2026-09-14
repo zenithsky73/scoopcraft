@@ -42,44 +42,12 @@ export async function POST(req: Request) {
     );
   }
 
-  const plan = parsed.data.plan;
-  const serverKey = getMidtransServerKey();
-
-  // 1. Jika Midtrans Server Key belum diatur di .env (Mode Testing / Sandbox Cepat)
-  if (!serverKey) {
-    const activated = await activateSubscription(user.id, plan);
-    return NextResponse.json({
-      success: true,
-      mode: 'TEST_INSTANT',
-      message: `Paket ${plan} berhasil diaktifkan secara instan (Mode Uji Coba tanpa gateway).`,
-      activated,
-    });
-  }
-
-  // 2. Jika Midtrans Server Key AKTIF -> Buat Transaksi Snap Asli
-  try {
-    const orderId = `INSTADECK-${plan}-${Date.now().toString(36).toUpperCase()}-${user.id.slice(-4).toUpperCase()}`;
-
-    const snap = await createMidtransSnapTransaction({
-      orderId,
-      plan,
-      userId: user.id,
-      userEmail: user.email,
-      userName: user.name,
-    });
-
-    return NextResponse.json({
-      success: true,
-      mode: 'MIDTRANS_SNAP',
-      orderId,
-      token: snap.token,
-      redirectUrl: snap.redirect_url,
-    });
-  } catch (err: any) {
-    console.error('[Midtrans Checkout Error]:', err);
-    return NextResponse.json(
-      { error: err.message || 'Gagal membuat tagihan pembayaran Midtrans.' },
-      { status: 500 },
-    );
-  }
+  // Pembelian paket dikunci sementara untuk publik sampai Midtrans disetujui
+  return NextResponse.json(
+    {
+      error: 'Akses pembelian paket berbayar saat ini dikunci sementara karena integrasi payment gateway sedang dalam proses verifikasi resmi oleh pihak Midtrans. Pembelian paket akan segera dibuka setelah disetujui.',
+      locked: true,
+    },
+    { status: 403 },
+  );
 }
