@@ -218,8 +218,8 @@ export async function createReplizSchedule(payload: ReplizSchedulePayload): Prom
     const rawMediaUrls = (payload.mediaUrls || []).filter(Boolean);
     const medias = rawMediaUrls.map((url) => {
       let cleanUrl = url;
-      if (/\/api\/media\/[a-zA-Z0-9_-]+$/.test(cleanUrl)) {
-        cleanUrl = `${cleanUrl}.png`;
+      if (/\/api\/media\/[a-zA-Z0-9_-]+(\.(png|jpe?g|webp))?$/i.test(cleanUrl)) {
+        cleanUrl = cleanUrl.replace(/\.(png|jpe?g|webp)$/i, '') + '.jpg';
       }
       return {
         type: (cleanUrl.match(/\.(mp4|mov|webm)$/i) ? 'video' : 'image') as 'image' | 'video',

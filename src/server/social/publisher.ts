@@ -42,7 +42,7 @@ async function publishToRepliz(post: ScheduledPost & { socialAccount: SocialAcco
       }
     }
 
-    const cleanMediaUrls = mediaUrls.map(toAbsoluteMediaUrl).filter(Boolean);
+    const cleanMediaUrls = mediaUrls.map((u) => toAbsoluteMediaUrl(u)).filter(Boolean);
     const caption = `${post.caption || ''}\n\n${(post.hashtags || []).join(' ')}`.trim();
 
     const replizRes = await createReplizSchedule({
@@ -216,7 +216,7 @@ async function publishToSimulator(post: ScheduledPost & { socialAccount: SocialA
   };
 }
 
-function toAbsoluteMediaUrl(url: string): string {
+function toAbsoluteMediaUrl(url: string, targetExt: 'jpg' | 'png' = 'jpg'): string {
   if (!url) return '';
   let cleanUrl = url;
   if (cleanUrl.includes('-zenithsky73s-projects.vercel.app')) {
@@ -226,15 +226,15 @@ function toAbsoluteMediaUrl(url: string): string {
     cleanUrl = cleanUrl.replace('https://scoopcraft.vercel.app', 'https://pro.instadeck.id');
   }
   if (cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://')) {
-    if (/\/api\/media\/[a-zA-Z0-9_-]+$/.test(cleanUrl)) {
-      cleanUrl = `${cleanUrl}.png`;
+    if (/\/api\/media\/[a-zA-Z0-9_-]+(\.(png|jpe?g|webp))?$/i.test(cleanUrl)) {
+      cleanUrl = cleanUrl.replace(/\.(png|jpe?g|webp)$/i, '') + `.${targetExt}`;
     }
     return cleanUrl;
   }
   const appUrl = (process.env.NEXT_PUBLIC_APP_URL || process.env.AUTH_URL || 'https://pro.instadeck.id').replace(/\/$/, '');
   let fullUrl = `${appUrl}${cleanUrl.startsWith('/') ? '' : '/'}${cleanUrl}`;
-  if (/\/api\/media\/[a-zA-Z0-9_-]+$/.test(fullUrl)) {
-    fullUrl = `${fullUrl}.png`;
+  if (/\/api\/media\/[a-zA-Z0-9_-]+(\.(png|jpe?g|webp))?$/i.test(fullUrl)) {
+    fullUrl = fullUrl.replace(/\.(png|jpe?g|webp)$/i, '') + `.${targetExt}`;
   }
   return fullUrl;
 }
@@ -288,7 +288,7 @@ async function publishToInstagram(
   const fullCaption = `${post.caption}${hashtagsFormatted}`;
 
   const rawMediaUrls = post.mediaUrls || [];
-  const mediaUrls = rawMediaUrls.map(toAbsoluteMediaUrl).filter(Boolean);
+  const mediaUrls = rawMediaUrls.map((u) => toAbsoluteMediaUrl(u)).filter(Boolean);
 
   if (mediaUrls.length === 0) {
     return {
@@ -515,7 +515,7 @@ async function publishToFacebook(
     : '';
   const fullCaption = `${post.caption}${hashtagsFormatted}`;
   const rawMediaUrls = post.mediaUrls || [];
-  const mediaUrls = rawMediaUrls.map(toAbsoluteMediaUrl).filter(Boolean);
+  const mediaUrls = rawMediaUrls.map((u) => toAbsoluteMediaUrl(u)).filter(Boolean);
 
   try {
     if (mediaUrls.length === 1) {
@@ -641,7 +641,7 @@ async function publishToThreads(
     : '';
   const text = `${post.caption}${hashtagsFormatted}`;
   const rawMediaUrls = post.mediaUrls || [];
-  const mediaUrls = rawMediaUrls.map(toAbsoluteMediaUrl).filter(Boolean);
+  const mediaUrls = rawMediaUrls.map((u) => toAbsoluteMediaUrl(u)).filter(Boolean);
 
   try {
     let creationId = '';
