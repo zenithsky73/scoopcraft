@@ -258,47 +258,65 @@ export function VisualTemplatePicker({
         </div>
       </div>
 
-      {/* ─── MOBILE VIEW (< md): COMPACT HERO CARD + QUICK HORIZONTAL SWIPER + MODAL ─── */}
-      <div className="block md:hidden space-y-3.5">
-        {/* Active Selected Card Preview Box */}
-        <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/90 dark:border-slate-800 flex items-center justify-between gap-3 shadow-inner">
+      {/* ─── UNIFIED COMPACT TEMPLATE PICKER (DESKTOP & MOBILE) ─── */}
+      <div className="space-y-3.5">
+        {/* Active Selected Template Hero Card */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 shadow-sm gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            {/* Tiny Mockup Square */}
+            {/* Mini Visual Preview Swatch */}
             <div
-              className="size-14 rounded-xl border flex flex-col justify-between p-1 shadow-sm shrink-0"
-              style={{ backgroundColor: selectedDef.bgColor, color: selectedDef.textColor }}
+              className="relative aspect-[4/5] w-12 sm:w-14 rounded-xl overflow-hidden p-1.5 flex flex-col justify-between shadow-md shrink-0 border border-black/10 dark:border-white/10"
+              style={{
+                backgroundColor: selectedDef.bgColor,
+                color: selectedDef.textColor,
+              }}
             >
-              <div className="flex justify-between text-[6px] font-bold opacity-80 font-mono">
-                <span>01</span>
-                <span>4:5</span>
-              </div>
               <div
-                className="text-[7px] font-black truncate px-1 py-0.5 rounded text-center"
-                style={{ backgroundColor: `${selectedDef.accentColor}30` }}
-              >
-                {selectedDef.label.slice(0, 10)}
+                className="absolute inset-0 opacity-20"
+                style={{
+                  background: `radial-gradient(circle at top right, ${selectedDef.accentColor}, transparent 70%)`,
+                }}
+              />
+              <div className="relative z-10 flex items-center justify-between text-[6px] font-bold">
+                <span
+                  className="px-1 py-0.2 rounded font-mono uppercase truncate max-w-[80%]"
+                  style={{ backgroundColor: `${selectedDef.accentColor}30`, color: selectedDef.isLight ? '#0f172a' : '#ffffff' }}
+                >
+                  {selectedDef.badge || 'PRO'}
+                </span>
               </div>
-              <div className="text-[5px] text-right font-mono opacity-70">➔</div>
+              <div className="relative z-10 text-center">
+                <span
+                  className="font-black text-[7px] leading-tight block truncate"
+                  style={{ color: selectedDef.accentColor }}
+                >
+                  {selectedDef.label.split(' ')[0]}
+                </span>
+              </div>
+              <div className="text-[6px] text-right font-mono opacity-70">➔</div>
             </div>
 
             {/* Label & Details */}
-            <div className="min-w-0">
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-black text-slate-900 dark:text-white truncate">
+            <div className="min-w-0 space-y-0.5">
+              <div className="flex items-center gap-2">
+                <span className="text-xs sm:text-sm font-black text-slate-900 dark:text-white truncate">
                   {selectedDef.label}
                 </span>
                 {isProStyle(selectedDef.id) ? (
-                  <span className="px-1.5 py-0.2 rounded text-[8px] font-black uppercase bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 shrink-0">
+                  <span className="px-1.5 py-0.5 rounded text-[8px] font-black uppercase bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 shrink-0">
                     PRO
                   </span>
                 ) : (
-                  <span className="px-1.5 py-0.2 rounded text-[8px] font-black uppercase bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 shrink-0">
+                  <span className="px-1.5 py-0.5 rounded text-[8px] font-black uppercase bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 shrink-0">
                     GRATIS
                   </span>
                 )}
+                <span className="text-[10px] text-slate-400 font-mono hidden sm:inline">
+                  • {selectedFormat === 'FEED_PORTRAIT' ? '4:5 Feed' : '9:16 Story'}
+                </span>
               </div>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
-                {selectedDef.subLabel || 'Universal Layout'} • {selectedDef.category}
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                {selectedDef.description}
               </p>
             </div>
           </div>
@@ -308,24 +326,24 @@ export function VisualTemplatePicker({
             type="button"
             size="sm"
             onClick={() => setIsMobileModalOpen(true)}
-            className="h-9 px-3 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-xs shrink-0 shadow-md shadow-primary/20 flex items-center gap-1.5"
+            className="h-9 sm:h-10 px-3.5 sm:px-4 rounded-xl bg-gradient-to-r from-primary to-orange-500 hover:opacity-90 text-white font-bold text-xs shrink-0 shadow-md shadow-primary/20 flex items-center justify-center gap-1.5"
           >
             <SlidersHorizontal className="size-3.5" />
-            <span>Ganti</span>
-            <span className="text-[10px] opacity-80">(32)</span>
+            <span>Pilih Dari 32 Template</span>
+            <ArrowRight className="size-3.5" />
           </Button>
         </div>
 
         {/* Quick-Pick Horizontal Swiper Bar */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between text-[11px] px-0.5 font-bold text-slate-600 dark:text-slate-400">
-            <span>⚡ Pilihan Cepat Populer:</span>
+            <span>⚡ Pilihan Cepat Template Populer:</span>
             <button
               type="button"
               onClick={() => setIsMobileModalOpen(true)}
-              className="text-primary hover:underline text-[10px] font-semibold flex items-center gap-0.5"
+              className="text-primary hover:underline text-[11px] font-semibold flex items-center gap-0.5"
             >
-              Lihat 32 Desain <ArrowRight className="size-2.5" />
+              Lihat Semua 32 Desain <ArrowRight className="size-3" />
             </button>
           </div>
 
@@ -342,19 +360,19 @@ export function VisualTemplatePicker({
                   type="button"
                   onClick={() => handleSelect(style)}
                   className={cn(
-                    'shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all border shadow-sm',
+                    'shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border shadow-xs',
                     isSelected
-                      ? 'bg-primary text-white border-primary shadow-primary/20 ring-2 ring-primary/40'
+                      ? 'bg-primary text-white border-primary shadow-sm ring-1 ring-primary/40'
                       : isLocked
                       ? 'bg-slate-100/70 dark:bg-slate-950/70 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'
-                      : 'bg-white dark:bg-slate-950/80 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-400'
+                      : 'bg-white dark:bg-slate-950/80 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-400 dark:hover:border-slate-700'
                   )}
                 >
                   <span
                     className="size-2.5 rounded-full shrink-0"
                     style={{ backgroundColor: style.accentColor }}
                   />
-                  <span className="truncate max-w-[110px]">{style.label}</span>
+                  <span className="truncate max-w-[120px]">{style.label}</span>
                   {isSelected && <Check className="size-3 stroke-[3]" />}
                   {isLocked && !isSelected && <Lock className="size-2.5 text-amber-500" />}
                 </button>
@@ -373,86 +391,60 @@ export function VisualTemplatePicker({
           </div>
         </div>
 
-        {/* Optional Toggle to Expand Full 32 Cards Grid on Mobile */}
-        <div className="pt-1 text-center">
+        {/* Optional Inline Grid Expand Toggle */}
+        <div className="pt-0.5 text-center">
           <button
             type="button"
             onClick={() => setMobileViewMode((prev) => (prev === 'compact' ? 'expanded' : 'compact'))}
-            className="text-[11px] font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 inline-flex items-center gap-1 py-1"
+            className="text-[11px] font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 inline-flex items-center gap-1 py-0.5"
           >
             <LayoutGrid className="size-3" />
-            <span>{mobileViewMode === 'compact' ? 'Buka Grid Semua 32 Template Langsung' : 'Sembunyikan Grid (Gunakan Mode Ringkas)'}</span>
+            <span>{mobileViewMode === 'compact' ? 'Buka Grid Semua 32 Template Langsung di Halaman' : 'Tutup Grid (Kembali ke Tampilan Ringkas)'}</span>
           </button>
         </div>
 
-        {/* Expanded Grid on Mobile (Only if user chooses to expand) */}
+        {/* Expanded Grid (Only if user explicitly chooses to expand) */}
         {mobileViewMode === 'expanded' && (
-          <div className="grid grid-cols-2 gap-2 pt-2 animate-in fade-in duration-200">
-            {filteredStyles.map((style) => {
-              const isSelected = selectedStyle === style.id;
-              const isLocked = isProStyle(style.id) && !isProUser;
-              return renderTemplateCard(style, isSelected, isLocked, true);
-            })}
+          <div className="space-y-3 pt-2 animate-in fade-in duration-200">
+            {/* Category Filter for expanded grid */}
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+              {CATEGORIES.map((cat) => {
+                const isActive = activeCategory === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => setActiveCategory(cat.id)}
+                    className={cn(
+                      'shrink-0 px-2.5 py-1 rounded-xl text-[11px] font-bold transition-all flex items-center gap-1',
+                      isActive
+                        ? 'bg-primary text-white shadow-sm'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                    )}
+                  >
+                    <span>{cat.icon}</span>
+                    <span>{cat.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 sm:gap-3">
+              {filteredStyles.map((style) => {
+                const isSelected = selectedStyle === style.id;
+                const isLocked = isProStyle(style.id) && !isProUser;
+                return renderTemplateCard(style, isSelected, isLocked, true);
+              })}
+            </div>
           </div>
         )}
       </div>
 
-      {/* ─── DESKTOP VIEW (>= md): CATEGORY PILLS, LIVE SEARCH & 5-COL GRID ─── */}
-      <div className="hidden md:block space-y-4">
-        {/* Category Pills & Live Search Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          {/* Horizontal Category Filter Pills */}
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1">
-            {CATEGORIES.map((cat) => {
-              const isActive = activeCategory === cat.id;
-              return (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => setActiveCategory(cat.id)}
-                  className={cn(
-                    'shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm',
-                    isActive
-                      ? 'bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-900 dark:text-amber-300 border border-amber-500/40 ring-1 ring-amber-500/30'
-                      : 'bg-slate-100/80 dark:bg-slate-950/70 border border-slate-200/80 dark:border-slate-800/80 text-slate-700 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-slate-800'
-                  )}
-                >
-                  <span>{cat.icon}</span>
-                  <span>{cat.label} ({cat.count})</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Search Input Box */}
-          <div className="relative w-56 shrink-0">
-            <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-slate-400" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Cari gaya layout..."
-              className="w-full h-9 pl-9 pr-3 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-primary"
-            />
-          </div>
-        </div>
-
-        {/* 5-Column Grid on Desktop */}
-        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5">
-          {filteredStyles.map((style) => {
-            const isSelected = selectedStyle === style.id;
-            const isLocked = isProStyle(style.id) && !isProUser;
-            return renderTemplateCard(style, isSelected, isLocked, false);
-          })}
-        </div>
-      </div>
-
       {/* ─── 4. FULL TEMPLATES CATALOG MODAL (32 DESIGNS) ─── */}
       {isMobileModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-150">
-          <div className="relative w-full max-w-4xl bg-white dark:bg-slate-900 border-t sm:border border-slate-200 dark:border-slate-800 rounded-t-3xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl flex flex-col max-h-[90vh] sm:max-h-[85vh] overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/75 backdrop-blur-md animate-in fade-in duration-150">
+          <div className="relative w-full max-w-4xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-6 shadow-2xl flex flex-col max-h-[90vh] sm:max-h-[85vh] overflow-hidden">
             {/* Modal Header */}
-            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 gap-3">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 gap-3 shrink-0">
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="size-8 sm:size-9 rounded-xl bg-primary/10 dark:bg-primary/20 text-primary flex items-center justify-center shrink-0">
                   <Layers className="size-4 sm:size-5" />
@@ -483,7 +475,7 @@ export function VisualTemplatePicker({
             </div>
 
             {/* Modal Search Bar & Category Filters */}
-            <div className="py-3 space-y-2.5 border-b border-slate-100 dark:border-slate-800/80">
+            <div className="py-2.5 sm:py-3 space-y-2.5 border-b border-slate-100 dark:border-slate-800/80 shrink-0">
               {/* Search Bar */}
               <div className="relative w-full">
                 <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-slate-400" />
@@ -491,8 +483,8 @@ export function VisualTemplatePicker({
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Cari gaya: Shopee, Minimal, News, Dark..."
-                  className="w-full h-9 pl-9 pr-3 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-primary"
+                  placeholder="Cari gaya: Shopee, Minimal, News, Dark, Twitter..."
+                  className="w-full h-8 sm:h-9 pl-9 pr-3 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-primary"
                 />
               </div>
 
@@ -508,20 +500,20 @@ export function VisualTemplatePicker({
                       className={cn(
                         'shrink-0 px-2.5 py-1 rounded-xl text-[11px] font-bold transition-all flex items-center gap-1',
                         isActive
-                          ? 'bg-primary text-white shadow-sm'
+                          ? 'bg-primary text-white shadow-sm ring-1 ring-primary/40'
                           : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'
                       )}
                     >
                       <span>{cat.icon}</span>
-                      <span>{cat.label}</span>
+                      <span>{cat.label} ({cat.count})</span>
                     </button>
                   );
                 })}
               </div>
             </div>
 
-            {/* Modal Scrollable 2/3-Column Cards Grid */}
-            <div className="flex-1 overflow-y-auto py-3 pr-1">
+            {/* Modal Scrollable 2/3/4-Column Cards Grid */}
+            <div className="flex-1 min-h-0 max-h-[55vh] sm:max-h-[60vh] overflow-y-auto overscroll-contain py-3 pr-1.5">
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 sm:gap-3">
                 {filteredStyles.map((style) => {
                   const isSelected = selectedStyle === style.id;
@@ -532,7 +524,7 @@ export function VisualTemplatePicker({
             </div>
 
             {/* Modal Bottom Footer Action */}
-            <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3">
+            <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 shrink-0">
               <div className="text-[11px] font-semibold text-slate-600 dark:text-slate-400 truncate">
                 Terpilih: <strong className="text-primary">{selectedDef.label}</strong> ({selectedFormat === 'FEED_PORTRAIT' ? '4:5 Feed' : '9:16 Story'})
               </div>
@@ -540,7 +532,7 @@ export function VisualTemplatePicker({
                 type="button"
                 size="sm"
                 onClick={() => setIsMobileModalOpen(false)}
-                className="bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-xl px-4 shrink-0"
+                className="bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-xl px-4 shrink-0 shadow-md shadow-primary/20"
               >
                 Gunakan Template Ini
               </Button>

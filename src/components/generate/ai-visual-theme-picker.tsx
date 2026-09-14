@@ -213,7 +213,7 @@ export function AIVisualThemePicker({
             </div>
 
             {/* Filter Bar & Search Bar */}
-            <div className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-slate-100 dark:border-slate-800/80">
+            <div className="py-2.5 sm:py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-slate-100 dark:border-slate-800/80 shrink-0">
               {/* Category Pills */}
               <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1">
                 {CATEGORIES.map((cat) => {
@@ -226,7 +226,7 @@ export function AIVisualThemePicker({
                       className={cn(
                         'shrink-0 px-2.5 py-1 rounded-xl text-[11px] font-bold transition-all flex items-center gap-1',
                         isActive
-                          ? 'bg-primary text-white shadow-sm'
+                          ? 'bg-primary text-white shadow-sm ring-1 ring-primary/40'
                           : 'bg-slate-100 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'
                       )}
                     >
@@ -259,8 +259,8 @@ export function AIVisualThemePicker({
               </div>
             </div>
 
-            {/* Themes Grid */}
-            <div className="flex-1 overflow-y-auto py-3 pr-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 sm:gap-3">
+            {/* Themes Grid - Fixed Scrollable Container */}
+            <div className="flex-1 min-h-0 max-h-[55vh] sm:max-h-[60vh] overflow-y-auto overscroll-contain py-3 pr-1.5 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 sm:gap-3">
               {filteredThemes.map((theme) => {
                 const isSelected = value === theme.id;
                 const previewImage = theme.curatedPhotos?.[0];
@@ -331,7 +331,7 @@ export function AIVisualThemePicker({
             </div>
 
             {/* Modal Footer */}
-            <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
               <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                 Gaya Terpilih: <strong className="text-slate-900 dark:text-white">{selectedTheme.icon} {selectedTheme.label}</strong>
               </span>
@@ -339,9 +339,9 @@ export function AIVisualThemePicker({
                 size="sm"
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="h-8 px-4 rounded-xl text-xs font-bold bg-primary text-white hover:opacity-90"
+                className="h-8 px-4 rounded-xl text-xs font-bold bg-primary text-white hover:opacity-90 shadow-md shadow-primary/20"
               >
-                Selesai
+                Gunakan Gaya Ini
               </Button>
             </div>
           </div>

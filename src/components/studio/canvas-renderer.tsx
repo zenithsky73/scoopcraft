@@ -435,15 +435,21 @@ export function CanvasRenderer({
           </span>
         </div>
 
-        {/* Slide Counter */}
-        <div
-          className={`text-[10px] font-mono font-black px-2.5 py-0.5 rounded-none border shrink-0 ${
-            isLight
-              ? 'bg-white border-slate-300 text-slate-800 shadow-sm'
-              : 'bg-white/10 border-white/20 text-slate-100 backdrop-blur-md'
-          }`}
-        >
-          {slide.index + 1} / {totalSlides}
+        {/* Sleek Context Indicator or Brand Handle (No rigid numbers in corner) */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          {style === 'TWITTER_THREAD' ? (
+            <span className="text-[10px] font-mono text-sky-400 font-bold bg-sky-500/10 px-2 py-0.5 rounded-none border border-sky-500/20">
+              🧵 Utas 𝕏
+            </span>
+          ) : style === 'STEP_BY_STEP_GUIDE' ? (
+            <span className="text-[10px] font-mono font-bold text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-none border border-purple-500/20">
+              Roadmap
+            </span>
+          ) : (
+            <span className="text-[10px] font-mono font-bold tracking-wider opacity-70" style={{ color: textMuted }}>
+              {handle}
+            </span>
+          )}
         </div>
       </div>
 
@@ -1298,23 +1304,50 @@ export function CanvasRenderer({
 
       {/* ─── E. SLIDE 5: OUTRO / SUMMARY & CALL TO ACTION ─── */}
       {isOutro && (
-        <div className="relative z-10 flex-1 flex flex-col justify-center items-center p-6 sm:p-8 text-center space-y-5">
-          {/* Outro Graphic Indicator */}
-          <div
-            className={`size-16 rounded-none flex items-center justify-center shadow-xl border ${
-              isLight ? 'bg-white border-slate-200 shadow-md' : 'border-white/20'
-            }`}
-            style={{
-              backgroundColor: isLight ? `${accent}15` : `${accent}25`,
-              color: accent,
-            }}
-          >
-            <CheckCircle2 className="size-8" />
-          </div>
+        <div className="relative z-10 flex-1 flex flex-col justify-center items-center p-5 sm:p-7 text-center space-y-4 sm:space-y-5">
+          {/* Creator Profile / DNA Top Badge */}
+          {style === 'SHOPEE_PROMO' || style === 'RACUN_SHOPEE' || style === 'PRODUCT_CATALOG' || style === 'BRUTALIST_SALE' ? (
+            <div className="size-14 sm:size-16 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-400 text-white flex items-center justify-center shadow-lg shadow-orange-500/30">
+              <ShoppingBag className="size-7 sm:size-8" />
+            </div>
+          ) : style === 'TWITTER_THREAD' ? (
+            <div className="size-14 sm:size-16 rounded-full bg-slate-900 border border-white/20 text-white flex items-center justify-center shadow-lg font-mono text-xl font-black">
+              𝕏
+            </div>
+          ) : style === 'STEP_BY_STEP_GUIDE' ? (
+            <div className="size-14 sm:size-16 rounded-2xl bg-purple-600/30 border border-purple-500/50 text-purple-300 flex items-center justify-center shadow-lg">
+              <CheckCircle2 className="size-7 sm:size-8 text-purple-400" />
+            </div>
+          ) : (
+            <div className="flex flex-col items-center space-y-1.5">
+              <div
+                className="size-14 sm:size-16 rounded-full flex items-center justify-center font-black text-sm sm:text-base border-2 shadow-xl"
+                style={{
+                  backgroundColor: isLight ? `${accent}20` : `${accent}30`,
+                  borderColor: accent,
+                  color: isLight ? textPrimary : '#FFFFFF',
+                }}
+              >
+                {logoUrl ? (
+                  <img src={logoUrl} alt="Logo" className="w-full h-full object-cover rounded-full" />
+                ) : (
+                  <span>{brandName.slice(0, 2).toUpperCase()}</span>
+                )}
+              </div>
+              <div className="flex items-center gap-1 text-[11px] font-bold" style={{ color: textPrimary }}>
+                <span>{brandName}</span>
+                <BadgeCheck className="size-3.5 text-sky-400 fill-sky-400 inline" />
+              </div>
+              <span className="text-[9px] font-mono" style={{ color: textMuted }}>
+                {handle}
+              </span>
+            </div>
+          )}
 
-          <div className="space-y-2 max-w-xs">
+          {/* Outro Headline & Subtitle */}
+          <div className="space-y-1.5 max-w-xs">
             <h2
-              className={`font-black text-xl sm:text-2xl tracking-tight ${
+              className={`font-black text-lg sm:text-xl tracking-tight leading-snug ${
                 style === 'EDITORIAL' || style === 'POLICY' ? 'font-serif' : 'font-sans'
               }`}
               style={{ color: textPrimary }}
@@ -1323,37 +1356,37 @@ export function CanvasRenderer({
                 style === 'SHOPEE_PROMO' || style === 'RACUN_SHOPEE' || style === 'PRODUCT_CATALOG' || style === 'BRUTALIST_SALE'
                   ? 'Promo Terbatas — Pesan Sekarang!'
                   : style === 'TWITTER_THREAD'
-                  ? 'Utas Selesai / Thread End'
+                  ? 'Utas Selesai / Thread End 🧵'
                   : style === 'STEP_BY_STEP_GUIDE'
-                  ? 'Panduan Selesai!'
-                  : 'Rangkuman & Wawasan'
+                  ? 'Panduan Selesai & Siap Praktik!'
+                  : 'Suka dengan wawasan ini?'
               )}
             </h2>
             <p
-              className="text-xs sm:text-sm font-medium leading-relaxed"
+              className="text-xs font-medium leading-relaxed"
               style={{ color: textSecondary }}
             >
               {slide.supportingText || (
                 style === 'SHOPEE_PROMO' || style === 'RACUN_SHOPEE' || style === 'PRODUCT_CATALOG' || style === 'BRUTALIST_SALE'
                   ? 'Klaim voucher diskon spesial dan gratis ongkir sebelum stok habis!'
                   : style === 'TWITTER_THREAD'
-                  ? 'Suka dengan utas ini? Follow akun dan bagikan retweet ke teman-temanmu!'
+                  ? 'Retweet utas ini untuk berbagi wawasan dan ikuti akun untuk thread mingguan!'
                   : style === 'STEP_BY_STEP_GUIDE'
-                  ? 'Simpan panduan praktis ini agar mudah dilihat saat mempraktikkannya!'
-                  : 'Semoga ringkasan informasi ini bermanfaat untuk wawasan dan strategi Anda.'
+                  ? 'Simpan panduan praktis ini agar mudah dilihat kembali saat mempraktikkannya!'
+                  : 'Simpan (Save) postingan ini & ikuti akun untuk tips dan inspirasi berkualitas setiap hari.'
               )}
             </p>
           </div>
 
-          {/* Social Action Grid */}
-          <div className="w-full max-w-xs grid grid-cols-2 gap-2 pt-2 text-[10px] font-bold">
+          {/* Social Reaction / Action Grid */}
+          <div className="w-full max-w-xs grid grid-cols-2 gap-2 text-[10px] font-bold">
             <div
-              className={`rounded-none p-2.5 flex items-center justify-center gap-1.5 border shadow-sm ${
-                isLight ? 'bg-white border-slate-200 text-slate-900 font-bold' : 'bg-white/5 border-white/10 text-slate-100'
+              className={`p-2 rounded-xl flex items-center justify-center gap-1.5 border shadow-xs ${
+                isLight ? 'bg-white border-slate-200 text-slate-900' : 'bg-white/5 border-white/10 text-slate-100'
               }`}
             >
               {style === 'SHOPEE_PROMO' || style === 'RACUN_SHOPEE' || style === 'PRODUCT_CATALOG' || style === 'BRUTALIST_SALE' ? (
-                <span>🛒 Checkout Sekarang</span>
+                <span>🛒 Masuk Keranjang</span>
               ) : style === 'TWITTER_THREAD' ? (
                 <span>🔁 Retweet Utas</span>
               ) : style === 'STEP_BY_STEP_GUIDE' ? (
@@ -1363,25 +1396,25 @@ export function CanvasRenderer({
               )}
             </div>
             <div
-              className={`rounded-none p-2.5 flex items-center justify-center gap-1.5 border shadow-sm ${
-                isLight ? 'bg-white border-slate-200 text-slate-900 font-bold' : 'bg-white/5 border-white/10 text-slate-100'
+              className={`p-2 rounded-xl flex items-center justify-center gap-1.5 border shadow-xs ${
+                isLight ? 'bg-white border-slate-200 text-slate-900' : 'bg-white/5 border-white/10 text-slate-100'
               }`}
             >
               {style === 'SHOPEE_PROMO' || style === 'RACUN_SHOPEE' || style === 'PRODUCT_CATALOG' || style === 'BRUTALIST_SALE' ? (
                 <span>🎟️ Klaim Voucher</span>
               ) : style === 'TWITTER_THREAD' ? (
-                <span>🔔 Follow Akun</span>
+                <span>🔔 Aktifkan Notif</span>
               ) : style === 'STEP_BY_STEP_GUIDE' ? (
-                <span>🚀 Bagikan ke Teman</span>
-              ) : (
                 <span>🚀 Bagikan ke Tim</span>
+              ) : (
+                <span>🚀 Bagikan ke Teman</span>
               )}
             </div>
           </div>
 
-          {/* CTA Button Badge */}
+          {/* Big CTA Action Button */}
           <div
-            className="w-full max-w-xs py-3 px-4 rounded-none font-black text-xs shadow-xl flex items-center justify-center gap-2"
+            className="w-full max-w-xs py-3 px-4 rounded-xl font-black text-xs shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-transform hover:scale-[1.02]"
             style={{
               backgroundColor: accent,
               color: style === 'STREETWEAR' || style === 'MINIMAL' || style === 'BOLD' || style === 'BRUTALIST_SALE' ? '#000000' : '#FFFFFF',
@@ -1390,12 +1423,12 @@ export function CanvasRenderer({
             {style === 'SHOPEE_PROMO' ? (
               <>
                 <ShoppingBag className="size-3.5" />
-                <span>{slide.ctaText || 'Beli Sekarang di Shopee / Link Bio'}</span>
+                <span>{slide.ctaText || '👉 Beli di Shopee / Cek Link Bio'}</span>
               </>
             ) : style === 'RACUN_SHOPEE' ? (
               <>
                 <Sparkles className="size-3.5" />
-                <span>{slide.ctaText || 'Komentar "MAU" / Cek Link di Bio'}</span>
+                <span>{slide.ctaText || '👉 Komentar "MAU" / Cek Link Bio'}</span>
               </>
             ) : style === 'PRODUCT_CATALOG' ? (
               <>
@@ -1410,7 +1443,12 @@ export function CanvasRenderer({
             ) : style === 'TWITTER_THREAD' ? (
               <>
                 <Repeat className="size-3.5" />
-                <span>{slide.ctaText || 'Follow Akun untuk Thread Menarik'}</span>
+                <span>{slide.ctaText || `Ikuti ${handle} di 𝕏 & Instagram`}</span>
+              </>
+            ) : style === 'STEP_BY_STEP_GUIDE' ? (
+              <>
+                <Bookmark className="size-3.5" />
+                <span>{slide.ctaText || '📌 Simpan Panduan untuk Praktik'}</span>
               </>
             ) : style === 'EVENT_WEBINAR' ? (
               <>
@@ -1419,7 +1457,7 @@ export function CanvasRenderer({
               </>
             ) : (
               <>
-                <span>{slide.ctaText || 'Ikuti untuk tips & wawasan menarik harian'}</span>
+                <span>{slide.ctaText || `+ Ikuti ${handle} untuk Tips Harian`}</span>
                 <ArrowRight className="size-3.5" />
               </>
             )}
