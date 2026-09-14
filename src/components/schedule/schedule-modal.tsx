@@ -17,6 +17,8 @@ import {
   Search,
   Volume2,
   Sparkles,
+  Dices,
+  Shuffle,
 } from 'lucide-react';
 import { SocialIcon } from '@/components/social/social-icon';
 import { Button } from '@/components/ui/button';
@@ -173,6 +175,43 @@ export function ScheduleModal({
       }
     } catch {}
     setIsLoadingMusic(false);
+  };
+
+  const handleRandomizeMusic = async () => {
+    setIsLoadingMusic(true);
+    try {
+      let pool = musicList;
+      if (pool.length === 0) {
+        const r = await fetch('/api/social/tiktok-music?countryCode=ID&limit=30');
+        const d = await r.json();
+        if (d.docs && Array.isArray(d.docs) && d.docs.length > 0) {
+          pool = d.docs;
+          setMusicList(pool);
+        }
+      }
+      if (pool.length > 0) {
+        // Filter out current selected if any, to ensure a new song
+        const available = pool.filter((m) => m.id !== selectedMusic?.id);
+        const candidates = available.length > 0 ? available : pool;
+        const randomItem = candidates[Math.floor(Math.random() * candidates.length)];
+        setSelectedMusic(randomItem);
+        setShowMusicPicker(false);
+        if (randomItem.url) {
+          if (audioRef.current) {
+            audioRef.current.pause();
+          }
+          audioRef.current = new Audio(randomItem.url);
+          audioRef.current.play().catch(() => {});
+          audioRef.current.onended = () => setPlayingMusicId(null);
+          setPlayingMusicId(randomItem.id);
+        }
+        notify.success('Lagu Viral Terpilih! 🎲', `"${randomItem.name}" oleh ${randomItem.artist || 'TikTok Sound'}`);
+      }
+    } catch (err: any) {
+      notify.error('Gagal Mengacak Musik', err?.message);
+    } finally {
+      setIsLoadingMusic(false);
+    }
   };
 
   React.useEffect(() => {
@@ -500,6 +539,16 @@ export function ScheduleModal({
                       )}
                       <button
                         type="button"
+                        onClick={handleRandomizeMusic}
+                        disabled={isLoadingMusic}
+                        className="text-[10px] px-2 py-1 rounded-md bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800 text-amber-700 dark:text-amber-300 font-bold hover:bg-amber-100 dark:hover:bg-amber-900 transition-colors flex items-center gap-1"
+                        title="Acak lagu viral lain"
+                      >
+                        <Dices className="size-3 text-amber-500" />
+                        <span>Acak Lagi</span>
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => setShowMusicPicker(!showMusicPicker)}
                         className="text-[10px] px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
                       >
@@ -520,13 +569,24 @@ export function ScheduleModal({
                         </span>
                       </div>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setShowMusicPicker(true)}
-                      className="px-2.5 py-1 rounded-md bg-cyan-600 hover:bg-cyan-500 text-white text-[10px] font-bold shadow-sm transition-colors shrink-0"
-                    >
-                      Pilih Lagu
-                    </button>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        type="button"
+                        onClick={handleRandomizeMusic}
+                        disabled={isLoadingMusic}
+                        className="px-2.5 py-1 rounded-md bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-[10px] font-bold shadow-sm transition-all flex items-center gap-1"
+                      >
+                        <Dices className="size-3" />
+                        <span>Acak Viral 🎲</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowMusicPicker(true)}
+                        className="px-2.5 py-1 rounded-md bg-cyan-600 hover:bg-cyan-500 text-white text-[10px] font-bold shadow-sm transition-colors"
+                      >
+                        Pilih Manual
+                      </button>
+                    </div>
                   </div>
                 )}
 
