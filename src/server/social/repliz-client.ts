@@ -216,10 +216,16 @@ export interface ReplizScheduleResult {
 export async function createReplizSchedule(payload: ReplizSchedulePayload): Promise<ReplizScheduleResult> {
   try {
     const rawMediaUrls = (payload.mediaUrls || []).filter(Boolean);
-    const medias = rawMediaUrls.map((url) => ({
-      type: (url.match(/\.(mp4|mov|webm)$/i) ? 'video' : 'image') as 'image' | 'video',
-      url,
-    }));
+    const medias = rawMediaUrls.map((url) => {
+      let cleanUrl = url;
+      if (/\/api\/media\/[a-zA-Z0-9_-]+$/.test(cleanUrl)) {
+        cleanUrl = `${cleanUrl}.png`;
+      }
+      return {
+        type: (cleanUrl.match(/\.(mp4|mov|webm)$/i) ? 'video' : 'image') as 'image' | 'video',
+        url: cleanUrl,
+      };
+    });
 
     const tags = (payload.hashtags || [])
       .map((h) => h.replace(/^#/, '').trim())

@@ -7,8 +7,11 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    const rawId = params.id;
+    const id = rawId ? rawId.replace(/\.(png|jpg|jpeg|webp|gif|svg|mp4)$/i, '') : '';
+
     const media = await db.publicMedia.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!media || !media.dataBase64) {

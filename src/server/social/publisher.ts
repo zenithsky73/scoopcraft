@@ -226,10 +226,17 @@ function toAbsoluteMediaUrl(url: string): string {
     cleanUrl = cleanUrl.replace('https://scoopcraft.vercel.app', 'https://pro.instadeck.id');
   }
   if (cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://')) {
+    if (/\/api\/media\/[a-zA-Z0-9_-]+$/.test(cleanUrl)) {
+      cleanUrl = `${cleanUrl}.png`;
+    }
     return cleanUrl;
   }
   const appUrl = (process.env.NEXT_PUBLIC_APP_URL || process.env.AUTH_URL || 'https://pro.instadeck.id').replace(/\/$/, '');
-  return `${appUrl}${cleanUrl.startsWith('/') ? '' : '/'}${cleanUrl}`;
+  let fullUrl = `${appUrl}${cleanUrl.startsWith('/') ? '' : '/'}${cleanUrl}`;
+  if (/\/api\/media\/[a-zA-Z0-9_-]+$/.test(fullUrl)) {
+    fullUrl = `${fullUrl}.png`;
+  }
+  return fullUrl;
 }
 
 /**
