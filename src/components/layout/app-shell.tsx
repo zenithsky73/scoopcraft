@@ -13,11 +13,13 @@ import type { QuotaState } from '@/server/billing/quota';
  */
 export function AppShell({
   title,
+  name,
   email,
   quota,
   children,
 }: {
   title: string;
+  name?: string | null;
   email?: string | null;
   quota: QuotaState;
   children: React.ReactNode;
@@ -27,7 +29,7 @@ export function AppShell({
       <Sidebar quota={quota} />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <Topbar title={title} email={email} quota={quota} />
+        <Topbar title={title} name={name} email={email} quota={quota} />
 
         <main className="flex-1 px-4 pb-24 pt-6 sm:px-6 lg:px-8 lg:pb-12">
           {/* Banner Ajakan Daftar untuk Tamu */}

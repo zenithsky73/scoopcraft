@@ -7,10 +7,12 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
 export function UserMenu({
+  name,
   email,
   isOwner = false,
   isGuest = false,
 }: {
+  name?: string | null;
   email?: string | null;
   isOwner?: boolean;
   isGuest?: boolean;
@@ -26,6 +28,8 @@ export function UserMenu({
     return () => document.removeEventListener('mousedown', onClick);
   }, []);
 
+  const displayName = name || (email ? email.split('@')[0] : 'Tamu');
+
   return (
     <div ref={ref} className="relative">
       <button
@@ -35,10 +39,10 @@ export function UserMenu({
         aria-expanded={open}
       >
         <div className="size-7 rounded-lg bg-gradient-to-br from-primary to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">
-          {isOwner ? '👑' : email ? email.charAt(0).toUpperCase() : 'G'}
+          {isOwner ? '👑' : displayName.charAt(0).toUpperCase()}
         </div>
         <span className="text-xs font-semibold max-w-[100px] sm:max-w-[140px] truncate hidden sm:inline text-slate-700 dark:text-slate-300">
-          {isOwner ? 'Owner' : email || 'Tamu'}
+          {isOwner ? (name || 'Owner') : displayName}
         </span>
       </button>
 
@@ -50,11 +54,11 @@ export function UserMenu({
           {/* User Info Header */}
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 mb-2">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-bold text-slate-900 dark:text-white">
-                {isOwner ? 'Pemilik Sistem' : isGuest ? 'Sesi Tamu' : 'Pengguna Terdaftar'}
+              <span className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                {isOwner ? 'Pemilik Sistem' : displayName}
               </span>
               {isOwner && (
-                <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-amber-500/15 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30">
+                <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-amber-500/15 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 shrink-0">
                   OWNER
                 </span>
               )}

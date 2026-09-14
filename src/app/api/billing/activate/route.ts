@@ -41,7 +41,7 @@ export async function POST(req: Request) {
   // Seluruh aktivasi berbayar publik dikunci sementara.
   return NextResponse.json(
     {
-      error: 'Akses aktivasi paket saat ini dikunci sementara karena integrasi payment gateway (Midtrans / QRIS) sedang dalam tahap verifikasi resmi. Pembelian paket akan segera dibuka untuk publik.',
+      error: 'Akses aktivasi paket saat ini dikunci sementara karena sistem pembayaran otomatis sedang dalam tahap finalisasi & aktivasi sistem. Pembelian paket akan segera dibuka untuk publik.',
       locked: true,
     },
     { status: 403 },

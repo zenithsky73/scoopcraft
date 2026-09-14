@@ -383,22 +383,22 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
         )}
 
         {/* Submit Generate Action Button */}
-        <div className="pt-2">
+        <div className="pt-3 pb-6">
           <Button
             type="submit"
             disabled={loading}
-            className="w-full h-13 sm:h-14 rounded-2xl bg-gradient-to-r from-primary via-orange-500 to-primary hover:opacity-95 text-white font-black text-sm sm:text-base shadow-xl shadow-primary/25 transition-all flex items-center justify-center gap-2"
+            className="w-full h-14 sm:h-16 rounded-2xl bg-gradient-to-r from-primary via-orange-500 to-primary hover:opacity-95 text-white font-black text-base sm:text-lg shadow-xl shadow-primary/30 active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 px-6"
           >
             {loading ? (
               <>
-                <div className="size-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="size-6 border-3 border-white/30 border-t-white rounded-full animate-spin shrink-0" />
                 <span className="truncate">AI Sedang Meriset &amp; Membuat Carousel...</span>
               </>
             ) : (
               <>
-                <Sparkles className="size-5 text-amber-300 shrink-0" />
+                <Sparkles className="size-6 text-amber-300 shrink-0 animate-pulse" />
                 <span>Buat Carousel AI Sekarang</span>
-                <ArrowRight className="size-5 ml-1 shrink-0" />
+                <ArrowRight className="size-6 ml-1 shrink-0" />
               </>
             )}
           </Button>

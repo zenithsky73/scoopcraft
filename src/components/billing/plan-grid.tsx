@@ -55,11 +55,11 @@ export function PlanGrid({
                 Akses Pembelian Paket Dikunci Sementara
               </h4>
               <span className="px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-800 dark:text-amber-300 border border-amber-400/40 text-[10px] font-black uppercase tracking-wide">
-                Integrasi Gateway Berlangsung
+                Sistem Pembayaran Dalam Finalisasi
               </span>
             </div>
             <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-              Integrasi gateway pembayaran resmi (Midtrans / QRIS Instan / Transfer Bank) saat ini sedang dalam proses verifikasi &amp; aktivasi. Seluruh paket berbayar untuk sementara waktu dikunci dan akan segera dibuka untuk publik setelah verifikasi selesai.
+              Sistem pembayaran otomatis (QRIS Instan / Virtual Account / Transfer Bank) saat ini sedang dalam tahap finalisasi &amp; aktivasi sistem. Akses pembelian paket berbayar akan segera dibuka secara resmi untuk publik.
             </p>
           </div>
         </div>

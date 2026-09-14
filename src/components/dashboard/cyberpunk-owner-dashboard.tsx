@@ -26,6 +26,7 @@ import { MasterQuotaInjector } from '@/components/dashboard/master-quota-injecto
 export type CyberpunkOwnerDashboardProps = {
   user: {
     id: string;
+    name?: string | null;
     email: string;
     role: string;
     plan: string;
@@ -81,7 +82,7 @@ export function CyberpunkOwnerDashboard({ user, totalGenerations = 128 }: Cyberp
             </h1>
 
             <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-400 max-w-xl font-medium">
-              Selamat datang, <span className="text-primary font-bold">{user.email}</span>. Anda memiliki akses penuh <span className="text-amber-700 dark:text-amber-400 font-bold">UNLIMITED ∞</span> ke seluruh 32 template desain dan engine generator AI.
+              Selamat datang, <span className="text-primary font-bold">{user.name || user.email.split('@')[0]}</span>. Anda memiliki akses penuh <span className="text-amber-700 dark:text-amber-400 font-bold">UNLIMITED ∞</span> ke seluruh 32 template desain dan engine generator AI.
             </p>
           </div>
 

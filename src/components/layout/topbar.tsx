@@ -9,10 +9,12 @@ import type { QuotaState } from '@/server/billing/quota';
 
 export function Topbar({
   title,
+  name,
   email,
   quota,
 }: {
   title: string;
+  name?: string | null;
   email?: string | null;
   quota?: QuotaState;
 }) {
@@ -56,7 +58,7 @@ export function Topbar({
         )}
 
         <div className="h-5 w-px bg-slate-200 dark:border-slate-800 mx-0.5" />
-        <UserMenu email={email} isOwner={quota?.isOwner} isGuest={quota?.isGuest} />
+        <UserMenu name={name} email={email} isOwner={quota?.isOwner} isGuest={quota?.isGuest} />
       </div>
     </header>
   );

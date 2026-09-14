@@ -16,6 +16,7 @@ import type { QuotaState } from '@/server/billing/quota';
 export type SubscriberProDashboardProps = {
   user: {
     id: string;
+    name?: string | null;
     email: string;
     role: string;
     plan: string;
@@ -48,10 +49,10 @@ export function SubscriberProDashboard({ user, quota }: SubscriberProDashboardPr
 
             <div>
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
-                Selamat Datang, <span className="bg-gradient-to-r from-primary via-indigo-500 to-fuchsia-500 bg-clip-text text-transparent">{user.email.split('@')[0]}</span>
+                Selamat Datang, <span className="bg-gradient-to-r from-primary via-indigo-500 to-fuchsia-500 bg-clip-text text-transparent">{user.name || user.email.split('@')[0]}</span>
               </h1>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-xl mt-1 leading-relaxed">
-                Akun langganan <strong>{user.plan}</strong> Anda aktif. Anda dapat membuat carousel tanpa watermark, mengakses 32 template desain eksklusif, dan ekspor multi-halaman PDF & PNG.
+                Akun langganan <strong>{user.plan}</strong> Anda aktif. Anda dapat membuat carousel tanpa watermark, mengakses 32 template desain eksklusif, dan ekspor multi-halaman PDF &amp; PNG.
               </p>
             </div>
           </div>

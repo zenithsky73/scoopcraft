@@ -42,10 +42,10 @@ export async function POST(req: Request) {
     );
   }
 
-  // Pembelian paket dikunci sementara untuk publik sampai Midtrans disetujui
+  // Pembelian paket dikunci sementara untuk publik sampai payment gateway siap
   return NextResponse.json(
     {
-      error: 'Akses pembelian paket berbayar saat ini dikunci sementara karena integrasi payment gateway sedang dalam proses verifikasi resmi oleh pihak Midtrans. Pembelian paket akan segera dibuka setelah disetujui.',
+      error: 'Akses pembelian paket berbayar saat ini dikunci sementara karena sistem pembayaran otomatis sedang dalam proses finalisasi & aktivasi sistem. Pembelian paket akan segera dibuka untuk publik.',
       locked: true,
     },
     { status: 403 },

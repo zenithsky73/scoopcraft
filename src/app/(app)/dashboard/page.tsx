@@ -63,7 +63,7 @@ export default async function DashboardPage() {
                 </span>
               </div>
               <p className="text-sm sm:text-base font-semibold text-[#ff4526] mt-1">
-                AI Content Automation untuk Carousel &amp; Story
+                Selamat Datang, {user.name || user.email.split('@')[0]}! AI Content Automation untuk Carousel &amp; Story
               </p>
               <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-xl mt-1 leading-relaxed">
                 Ubah ide topik, materi edukasi, naskah bisnis, atau link artikel menjadi carousel media sosial berkelas dalam hitungan detik.

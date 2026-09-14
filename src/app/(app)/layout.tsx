@@ -15,7 +15,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const quota = getQuotaState(user);
 
   return (
-    <AppShell title="InstaDeck PRO" email={isGuest ? null : user.email} quota={quota}>
+    <AppShell
+      title="InstaDeck PRO"
+      name={isGuest ? null : (user.name || user.email.split('@')[0])}
+      email={isGuest ? null : user.email}
+      quota={quota}
+    >
       {children}
     </AppShell>
   );

@@ -109,13 +109,13 @@ export default function LandingPage() {
 
             {/* CTA Buttons */}
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 pt-4">
-              <Button asChild size="lg" className="h-13 px-7 rounded-2xl text-base font-black bg-[#ff4526] hover:bg-[#e93a1d] text-white shadow-xl shadow-[#ff4526]/30 transition-all">
+              <Button asChild size="lg" className="h-14 sm:h-15 px-8 rounded-2xl text-base sm:text-lg font-black bg-[#ff4526] hover:bg-[#e93a1d] text-white shadow-xl shadow-[#ff4526]/30 transition-all">
                 <Link href="/dashboard" className="flex items-center gap-2">
                   <Zap className="size-5 fill-current" /> Buat Carousel Sekarang <ArrowRight className="size-5" />
                 </Link>
               </Button>
 
-              <Button asChild variant="secondary" size="lg" className="h-13 px-6 rounded-2xl text-sm font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 shadow-sm">
+              <Button asChild variant="secondary" size="lg" className="h-14 px-6 rounded-2xl text-sm sm:text-base font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 shadow-sm">
                 <Link href="/templates">
                   <Layers className="size-4 mr-2 text-[#ff4526]" /> Jelajahi 20+ Template
                 </Link>

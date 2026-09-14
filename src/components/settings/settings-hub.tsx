@@ -990,9 +990,9 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                   {socialAccounts.map((acc) => (
                     <div
                       key={acc.id}
-                      className="flex items-center justify-between p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/60 hover:border-slate-300 dark:hover:border-slate-700 transition-all shadow-sm"
+                      className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 sm:p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/60 hover:border-slate-300 dark:hover:border-slate-700 transition-all shadow-sm gap-3"
                     >
-                      <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
                         {/* Avatar Image with Platform Badge */}
                         <div className="relative shrink-0">
                           {acc.avatarUrl ? (
@@ -1016,12 +1016,12 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                         </div>
 
                         {/* Account Details */}
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-xs font-black text-slate-900 dark:text-white truncate">
+                            <span className="text-xs sm:text-sm font-black text-slate-900 dark:text-white truncate max-w-[150px] sm:max-w-[220px]">
                               {acc.accountName || acc.accountHandle || 'Akun Terhubung'}
                             </span>
-                            <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold border border-emerald-300 dark:border-emerald-800 shrink-0">
+                            <span className="inline-flex items-center text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold border border-emerald-300 dark:border-emerald-800 shrink-0">
                               🟢 Terhubung &amp; Siap Posting
                             </span>
                           </div>
@@ -1031,15 +1031,17 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                         </div>
                       </div>
 
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDisconnectSocial(acc.id)}
-                        className="text-xs font-bold text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl shrink-0"
-                      >
-                        Putuskan
-                      </Button>
+                      <div className="flex items-center justify-end sm:justify-center border-t sm:border-t-0 pt-2.5 sm:pt-0 border-slate-200/60 dark:border-slate-800/60 shrink-0">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDisconnectSocial(acc.id)}
+                          className="text-xs font-bold text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl h-8 px-3"
+                        >
+                          Putuskan
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </div>
