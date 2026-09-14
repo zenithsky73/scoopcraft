@@ -86,12 +86,14 @@ async function publishToRepliz(post: ScheduledPost & { socialAccount: SocialAcco
     const cleanMediaUrls = mediaUrls.map((u) => toAbsoluteMediaUrl(u)).filter(Boolean);
     const caption = `${post.caption || ''}\n\n${(post.hashtags || []).join(' ')}`.trim();
     const music = (post.metadata as any)?.tiktokMusic || (post.metadata as any)?.music || null;
+    const topic = (post.metadata as any)?.threadsTopic || (post.metadata as any)?.topic || undefined;
 
     const replizRes = await createReplizSchedule({
       accountId: replizAccountId,
       platform,
       title: post.caption?.slice(0, 60) || 'InstaDeck Post',
       caption,
+      topic,
       hashtags: post.hashtags || [],
       mediaUrls: cleanMediaUrls,
       scheduledAt: post.scheduledAt,

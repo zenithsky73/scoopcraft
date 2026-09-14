@@ -198,6 +198,7 @@ export interface ReplizSchedulePayload {
   platform: string;
   title?: string;
   caption: string;
+  topic?: string;
   hashtags?: string[];
   mediaUrls?: string[];
   scheduledAt: Date | string;
@@ -301,7 +302,7 @@ export async function createReplizSchedule(payload: ReplizSchedulePayload): Prom
       accountId: payload.accountId,
       title: payload.title || payload.caption.slice(0, 60),
       description: payload.caption || '',
-      topic: '',
+      topic: payload.topic || (payload.metadata as any)?.threadsTopic || (payload.metadata as any)?.topic || '',
       type: postType,
       medias,
       meta: { title: '', description: '', url: '' },

@@ -76,6 +76,18 @@ export interface TikTokMusicItem {
   duration?: number;
 }
 
+export const THREADS_TOPIC_PRESETS = [
+  { label: 'Racun Belanja', emoji: '🛍️' },
+  { label: 'Sneakers & Fashion', emoji: '👟' },
+  { label: 'Tips Bisnis & UMKM', emoji: '💼' },
+  { label: 'Tech & Gadget', emoji: '🤖' },
+  { label: 'Outfit Ideas', emoji: '✨' },
+  { label: 'Digital Marketing', emoji: '📈' },
+  { label: 'Kuliner & Foodies', emoji: '🍲' },
+  { label: 'Daily Life & Thoughts', emoji: '☕' },
+  { label: 'Desain & Kreatif', emoji: '🎨' },
+];
+
 export function ScheduleModal({
   open,
   onClose,
@@ -118,6 +130,9 @@ export function ScheduleModal({
   const [showMusicPicker, setShowMusicPicker] = React.useState(false);
   const [playingMusicId, setPlayingMusicId] = React.useState<string | null>(null);
   const audioRef = React.useRef<HTMLAudioElement | null>(null);
+
+  // Threads Topic State
+  const [threadsTopic, setThreadsTopic] = React.useState('');
 
   const togglePlayAudio = (music: TikTokMusicItem) => {
     if (!music.url) return;
@@ -296,6 +311,7 @@ export function ScheduleModal({
             thumbnail: selectedMusic.thumbnail,
             url: selectedMusic.url,
           } : null,
+          threadsTopic: selectedPlatform === 'THREADS' && threadsTopic.trim() ? threadsTopic.trim() : null,
         }),
       });
 
@@ -678,6 +694,85 @@ export function ScheduleModal({
                     </div>
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Fitur Khusus Threads: Topic Tag Meta */}
+            {selectedPlatform === 'THREADS' && (
+              <div className="mt-2.5 p-3 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-300 dark:border-slate-800 space-y-2.5 animate-in fade-in duration-150">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-slate-200">
+                    <span className="flex items-center justify-center size-5 rounded-md bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-black shadow-sm">
+                      #
+                    </span>
+                    <span>Threads Topic Tag (Meta)</span>
+                  </div>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold">
+                    Maks. 1 Topik
+                  </span>
+                </div>
+
+                <div className="relative">
+                  <span className="absolute left-3 top-2.5 text-slate-400 font-bold text-xs">#</span>
+                  <input
+                    type="text"
+                    value={threadsTopic}
+                    onChange={(e) => setThreadsTopic(e.target.value)}
+                    placeholder="Ketik topik (contoh: Racun Belanja, Sepatu Sneakers, Tips Bisnis)..."
+                    className="w-full pl-7 pr-8 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500 dark:focus:ring-slate-400"
+                  />
+                  {threadsTopic && (
+                    <button
+                      type="button"
+                      onClick={() => setThreadsTopic('')}
+                      className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                      title="Hapus topik"
+                    >
+                      <X className="size-3.5" />
+                    </button>
+                  )}
+                </div>
+
+                {/* Popular Presets */}
+                <div className="space-y-1">
+                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 block">
+                    Pilihan Topik Populer:
+                  </span>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {THREADS_TOPIC_PRESETS.map((preset) => {
+                      const isSelected = threadsTopic.toLowerCase() === preset.label.toLowerCase();
+                      return (
+                        <button
+                          key={preset.label}
+                          type="button"
+                          onClick={() => setThreadsTopic(isSelected ? '' : preset.label)}
+                          className={cn(
+                            'px-2 py-1 rounded-lg text-[10px] font-bold transition-all border flex items-center gap-1',
+                            isSelected
+                              ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-900 dark:border-white shadow-sm ring-1 ring-slate-400'
+                              : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600'
+                          )}
+                        >
+                          <span>{preset.emoji}</span>
+                          <span>{preset.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {threadsTopic.trim() && (
+                  <div className="p-2 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 text-[11px] flex items-center gap-2 text-blue-900 dark:text-blue-200">
+                    <span className="font-semibold">Tampilan di Threads:</span>
+                    <span className="px-2 py-0.5 rounded-full bg-blue-600 text-white font-bold text-[10px]">
+                      #{threadsTopic.trim()}
+                    </span>
+                  </div>
+                )}
+
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight">
+                  Tag Topik Threads resmi dari Meta akan menempatkan postingan Anda ke forum pencarian topik terkait.
+                </p>
               </div>
             )}
           </div>

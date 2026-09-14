@@ -194,6 +194,7 @@ export function ContentCalendar({
   const [formTime, setFormTime] = React.useState<string>('10:00');
   const [formPlatform, setFormPlatform] = React.useState<SocialPlatform>('INSTAGRAM');
   const [formSocialAccountId, setFormSocialAccountId] = React.useState<string>('');
+  const [formThreadsTopic, setFormThreadsTopic] = React.useState<string>('');
   
   // Content Generation Modes
   const [contentSourceMode, setContentSourceMode] = React.useState<ContentSourceMode>('AI_GENERATE');
@@ -459,6 +460,7 @@ export function ContentCalendar({
           style: designStyle,
           generatedContentId: generatedContentId || undefined,
           socialAccountId: formSocialAccountId || undefined,
+          threadsTopic: formPlatform === 'THREADS' && formThreadsTopic.trim() ? formThreadsTopic.trim() : undefined,
         }),
       });
 
@@ -1345,6 +1347,82 @@ export function ContentCalendar({
                     </div>
                   );
                 })()}
+
+                {/* Fitur Khusus Threads: Topic Tag Meta */}
+                {formPlatform === 'THREADS' && (
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-300 dark:border-slate-800 space-y-2 animate-in fade-in duration-150">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-slate-200">
+                        <span className="flex items-center justify-center size-5 rounded-md bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-black">
+                          #
+                        </span>
+                        <span>Threads Topic Tag (Meta)</span>
+                      </div>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold">
+                        Maks. 1 Topik
+                      </span>
+                    </div>
+
+                    <div className="relative">
+                      <span className="absolute left-3 top-2.5 text-slate-400 font-bold text-xs">#</span>
+                      <input
+                        type="text"
+                        value={formThreadsTopic}
+                        onChange={(e) => setFormThreadsTopic(e.target.value)}
+                        placeholder="Ketik topik (contoh: Racun Belanja, Sepatu Sneakers, Tips Bisnis)..."
+                        className="w-full pl-7 pr-8 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#ff4526]"
+                      />
+                      {formThreadsTopic && (
+                        <button
+                          type="button"
+                          onClick={() => setFormThreadsTopic('')}
+                          className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                        >
+                          <X className="size-3.5" />
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {[
+                        { label: 'Racun Belanja', emoji: '🛍️' },
+                        { label: 'Sneakers & Fashion', emoji: '👟' },
+                        { label: 'Tips Bisnis & UMKM', emoji: '💼' },
+                        { label: 'Tech & Gadget', emoji: '🤖' },
+                        { label: 'Outfit Ideas', emoji: '✨' },
+                        { label: 'Digital Marketing', emoji: '📈' },
+                        { label: 'Kuliner & Foodies', emoji: '🍲' },
+                      ].map((preset) => {
+                        const isSelected = formThreadsTopic.toLowerCase() === preset.label.toLowerCase();
+                        return (
+                          <button
+                            key={preset.label}
+                            type="button"
+                            onClick={() => setFormThreadsTopic(isSelected ? '' : preset.label)}
+                            className={cn(
+                              'px-2 py-1 rounded-lg text-[10px] font-bold transition-all border flex items-center gap-1',
+                              isSelected
+                                ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-900 dark:border-white shadow-sm'
+                                : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-slate-400'
+                            )}
+                          >
+                            <span>{preset.emoji}</span>
+                            <span>{preset.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {formThreadsTopic.trim() && (
+                      <div className="p-2 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 text-[11px] flex items-center gap-2 text-blue-900 dark:text-blue-200">
+                        <span className="font-semibold">Tampilan di Threads:</span>
+                        <span className="px-2 py-0.5 rounded-full bg-blue-600 text-white font-bold text-[10px]">
+                          #{formThreadsTopic.trim()}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* ─── TAB SUMBER KONTEN: AI GENERATE DARI LINK/PROMPT vs RIWAYAT vs MANUAL ─── */}

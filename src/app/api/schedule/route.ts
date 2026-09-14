@@ -26,6 +26,7 @@ const createScheduleSchema = z.object({
     thumbnail: z.string().optional(),
     url: z.string().optional(),
   }).optional().nullable(),
+  threadsTopic: z.string().optional().nullable(),
   metadata: z.record(z.string(), z.any()).optional().nullable(),
 });
 
@@ -171,6 +172,7 @@ export async function POST(req: Request) {
     const postMetadata: any = {
       ...(validated.metadata || {}),
       ...(validated.tiktokMusic ? { tiktokMusic: validated.tiktokMusic } : {}),
+      ...(validated.threadsTopic ? { threadsTopic: validated.threadsTopic, topic: validated.threadsTopic } : {}),
     };
 
     const scheduledPost = await db.scheduledPost.create({
