@@ -134,6 +134,19 @@ export function ScheduleModal({
   // Threads Topic State
   const [threadsTopic, setThreadsTopic] = React.useState('');
 
+  // Instagram Placement State (Feed vs Story)
+  const [igPlacement, setIgPlacement] = React.useState<'feed' | 'story'>(
+    format === 'STORY' ? 'story' : 'feed'
+  );
+
+  React.useEffect(() => {
+    if (format === 'STORY') {
+      setIgPlacement('story');
+    } else {
+      setIgPlacement('feed');
+    }
+  }, [format]);
+
   const togglePlayAudio = (music: TikTokMusicItem) => {
     if (!music.url) return;
 
@@ -312,6 +325,7 @@ export function ScheduleModal({
             url: selectedMusic.url,
           } : null,
           threadsTopic: selectedPlatform === 'THREADS' && threadsTopic.trim() ? threadsTopic.trim() : null,
+          igPlacement: selectedPlatform === 'INSTAGRAM' ? igPlacement : null,
         }),
       });
 
@@ -486,6 +500,70 @@ export function ScheduleModal({
                 </a>
               )}
             </div>
+
+            {/* Instagram Placement Selector (Feed Carousel vs Instagram Story) */}
+            {selectedPlatform === 'INSTAGRAM' && (
+              <div className="mt-2.5 space-y-2.5 p-3 rounded-2xl border border-pink-200/80 dark:border-pink-900/50 bg-pink-50/40 dark:bg-pink-950/20 animate-in fade-in duration-150">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+                    <Sparkles className="size-3.5 text-pink-500" />
+                    <span>Target Penempatan Instagram</span>
+                  </label>
+                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-pink-100 dark:bg-pink-950 text-pink-700 dark:text-pink-300 font-bold border border-pink-200 dark:border-pink-900 uppercase tracking-wide">
+                    Meta Direct
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIgPlacement('feed')}
+                    className={cn(
+                      'p-2.5 rounded-xl border text-left flex flex-col justify-between transition-all',
+                      igPlacement === 'feed'
+                        ? 'border-pink-500 bg-white dark:bg-slate-900 text-pink-600 dark:text-pink-400 ring-2 ring-pink-500/20 shadow-sm'
+                        : 'border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-slate-950/40 text-slate-600 dark:text-slate-400 hover:bg-white'
+                    )}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-black">📸 Feed / Carousel</span>
+                      {igPlacement === 'feed' && <CheckCircle2 className="size-3.5 text-pink-500" />}
+                    </div>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight">
+                      Postingan multi-slide permanen di profil feed &amp; timeline explore.
+                    </p>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setIgPlacement('story')}
+                    className={cn(
+                      'p-2.5 rounded-xl border text-left flex flex-col justify-between transition-all',
+                      igPlacement === 'story'
+                        ? 'border-pink-500 bg-white dark:bg-slate-900 text-pink-600 dark:text-pink-400 ring-2 ring-pink-500/20 shadow-sm'
+                        : 'border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-slate-950/40 text-slate-600 dark:text-slate-400 hover:bg-white'
+                    )}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-black">✨ Instagram Story</span>
+                      {igPlacement === 'story' && <CheckCircle2 className="size-3.5 text-pink-500" />}
+                    </div>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight">
+                      Tampil 24 jam di lingkaran foto profil atas.
+                    </p>
+                  </button>
+                </div>
+
+                <div className="text-[11px] text-slate-600 dark:text-slate-300 bg-white/80 dark:bg-slate-900/80 p-2 rounded-xl border border-pink-100 dark:border-pink-950 flex items-center gap-1.5">
+                  <span className="font-bold text-pink-600 dark:text-pink-400 shrink-0">ℹ️ Info:</span>
+                  <span className="leading-snug">
+                    {igPlacement === 'story'
+                      ? `Seluruh slide (${totalSlides} slide) akan otomatis diunggah berurutan langsung ke Instagram Story Anda.`
+                      : `Carousel ${totalSlides} slide akan diposting lengkap dengan caption & hashtag ke Feed Instagram.`}
+                  </span>
+                </div>
+              </div>
+            )}
 
             {/* TikTok Background Music (BGM) Selector */}
             {selectedPlatform === 'TIKTOK' && (

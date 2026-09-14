@@ -90,10 +90,12 @@ async function publishToRepliz(post: ScheduledPost & { socialAccount: SocialAcco
     }
     const music = (post.metadata as any)?.tiktokMusic || (post.metadata as any)?.music || null;
     const topic = (post.metadata as any)?.threadsTopic || (post.metadata as any)?.topic || undefined;
+    const placement = (post.metadata as any)?.igPlacement || (post.metadata as any)?.placement || (post.format === 'STORY' ? 'story' : 'feed');
 
     const replizRes = await createReplizSchedule({
       accountId: replizAccountId,
       platform,
+      placement,
       title: post.caption?.slice(0, 60) || 'InstaDeck Post',
       caption,
       topic,
@@ -101,6 +103,7 @@ async function publishToRepliz(post: ScheduledPost & { socialAccount: SocialAcco
       mediaUrls: cleanMediaUrls,
       scheduledAt: post.scheduledAt,
       music,
+      metadata: post.metadata as any,
     });
 
     if (!replizRes.success) {

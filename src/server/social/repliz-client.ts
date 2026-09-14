@@ -196,6 +196,7 @@ export async function connectReplizOAuthAccount(platform: string, code: string):
 export interface ReplizSchedulePayload {
   accountId: string;
   platform: string;
+  placement?: 'feed' | 'story';
   title?: string;
   caption: string;
   topic?: string;
@@ -268,7 +269,14 @@ export async function createReplizSchedule(payload: ReplizSchedulePayload): Prom
       .map((h) => h.replace(/^#/, '').trim())
       .filter(Boolean);
 
-    const postType = medias.length > 1
+    const isStory =
+      payload.placement === 'story' ||
+      (payload.metadata as any)?.placement === 'story' ||
+      (payload.metadata as any)?.igPlacement === 'story';
+
+    const postType = isStory
+      ? 'story'
+      : medias.length > 1
       ? 'album'
       : medias.length === 1
       ? (medias[0].type === 'video' ? 'video' : 'image')
