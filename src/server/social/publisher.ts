@@ -1,4 +1,4 @@
-import { createReplizSchedule } from './repliz-client';
+import { createReplizSchedule, getReplizScheduleById } from './repliz-client';
 import { db } from '@/server/db';
 import type { SocialAccount, ScheduledPost, SocialPlatform } from '@prisma/client';
 
@@ -7,6 +7,7 @@ export type PublishResult = {
   externalPostId?: string;
   externalPostUrl?: string;
   isSimulated: boolean;
+  isPendingInProvider?: boolean;
   error?: string;
 };
 
@@ -22,6 +23,46 @@ async function publishToRepliz(post: ScheduledPost & { socialAccount: SocialAcco
   try {
     const replizAccountId = (post.socialAccount?.metadata as any)?.replizAccountId || post.socialAccount?.externalId || 'default';
     const platform = post.platform.toLowerCase();
+
+    // IDEMPOTENCY CHECK: Jika schedule sudah pernah didaftarkan ke Repliz, sinkronkan statusnya, JANGAN buat schedule baru
+    if (post.externalPostId && !post.externalPostId.startsWith('sim_')) {
+      const existing = await getReplizScheduleById(post.externalPostId);
+      if (existing) {
+        if (existing.status === 'success') {
+          return {
+            success: true,
+            isSimulated: false,
+            isPendingInProvider: false,
+            externalPostId: post.externalPostId,
+            externalPostUrl: 'https://repliz.com/schedule',
+          };
+        } else if (existing.status === 'error') {
+          return {
+            success: false,
+            isSimulated: false,
+            error: existing.errorMessage || `Gagal dipublikasikan oleh ${post.platform}`,
+          };
+        } else {
+          // Masih pending atau sedang diproses oleh worker Repliz
+          return {
+            success: true,
+            isSimulated: false,
+            isPendingInProvider: true,
+            externalPostId: post.externalPostId,
+            externalPostUrl: 'https://repliz.com/schedule',
+          };
+        }
+      } else {
+        // Schedule sudah ada external ID, tetapi belum ter-update statusnya, jangan create duplikat
+        return {
+          success: true,
+          isSimulated: false,
+          isPendingInProvider: true,
+          externalPostId: post.externalPostId,
+          externalPostUrl: 'https://repliz.com/schedule',
+        };
+      }
+    }
 
     let mediaUrls: string[] = [];
     if (post.mediaUrls && Array.isArray(post.mediaUrls) && post.mediaUrls.length > 0) {
@@ -65,9 +106,12 @@ async function publishToRepliz(post: ScheduledPost & { socialAccount: SocialAcco
       };
     }
 
+    const isFutureSchedule = new Date(post.scheduledAt).getTime() > Date.now() + 60000;
+
     return {
       success: true,
       isSimulated: false,
+      isPendingInProvider: isFutureSchedule,
       externalPostId: replizRes.scheduleId,
       externalPostUrl: 'https://repliz.com/schedule',
     };
@@ -153,11 +197,12 @@ export async function executeScheduledPost(postId: string): Promise<PublishResul
 
     if (result.success) {
       const isFutureSchedule = new Date(post.scheduledAt).getTime() > Date.now() + 60000;
+      const isStillPending = isFutureSchedule || Boolean(result.isPendingInProvider);
       await db.scheduledPost.update({
         where: { id: postId },
         data: {
-          status: isFutureSchedule ? 'PENDING' : 'PUBLISHED',
-          publishedAt: isFutureSchedule ? null : new Date(),
+          status: isStillPending ? 'PENDING' : 'PUBLISHED',
+          publishedAt: isStillPending ? null : new Date(),
           externalPostId: result.externalPostId,
           externalPostUrl: result.externalPostUrl,
           isSimulated: result.isSimulated,

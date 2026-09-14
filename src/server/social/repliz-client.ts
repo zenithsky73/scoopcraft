@@ -351,6 +351,28 @@ export async function createReplizSchedule(payload: ReplizSchedulePayload): Prom
 }
 
 /**
+ * Fetch schedule details and status from Repliz
+ */
+export async function getReplizScheduleById(scheduleId: string): Promise<any | null> {
+  if (!scheduleId) return null;
+  try {
+    const res = await fetch(`${REPLIZ_BASE_URL}/schedule/${scheduleId}`, {
+      headers: {
+        Authorization: getReplizAuthHeader(),
+        Accept: 'application/json',
+      },
+      next: { revalidate: 0 },
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (err: any) {
+    console.warn('[Repliz Get Schedule Status Warning]:', err?.message);
+  }
+  return null;
+}
+
+/**
  * Delete / cancel a scheduled post in Repliz
  */
 export async function deleteReplizSchedule(scheduleId: string): Promise<boolean> {
