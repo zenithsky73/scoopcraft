@@ -195,6 +195,7 @@ export function ContentCalendar({
   const [formPlatform, setFormPlatform] = React.useState<SocialPlatform>('INSTAGRAM');
   const [formSocialAccountId, setFormSocialAccountId] = React.useState<string>('');
   const [formThreadsTopic, setFormThreadsTopic] = React.useState<string>('');
+  const [formIgPlacement, setFormIgPlacement] = React.useState<'feed' | 'story'>('feed');
   
   // Content Generation Modes
   const [contentSourceMode, setContentSourceMode] = React.useState<ContentSourceMode>('AI_GENERATE');
@@ -461,6 +462,7 @@ export function ContentCalendar({
           generatedContentId: generatedContentId || undefined,
           socialAccountId: formSocialAccountId || undefined,
           threadsTopic: formPlatform === 'THREADS' && formThreadsTopic.trim() ? formThreadsTopic.trim() : undefined,
+          igPlacement: formPlatform === 'INSTAGRAM' ? formIgPlacement : undefined,
         }),
       });
 
@@ -1328,22 +1330,69 @@ export function ContentCalendar({
                   }
 
                   return (
-                    <div className="space-y-1">
-                      <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">
-                        Pilih Akun {formPlatform} Pengirim:
-                      </label>
-                      <select
-                        value={formSocialAccountId}
-                        onChange={(e) => setFormSocialAccountId(e.target.value)}
-                        className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#ff4526]"
-                      >
-                        <option value="">-- Gunakan Akun Default Repliz Gold --</option>
-                        {platformAccounts.map((acc) => (
-                          <option key={acc.id} value={acc.id}>
-                            {acc.accountHandle || acc.accountName} ({acc.accountName})
-                          </option>
-                        ))}
-                      </select>
+                    <div className="space-y-3">
+                      <div className="space-y-1">
+                        <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">
+                          Pilih Akun {formPlatform} Pengirim:
+                        </label>
+                        <select
+                          value={formSocialAccountId}
+                          onChange={(e) => setFormSocialAccountId(e.target.value)}
+                          className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#ff4526]"
+                        >
+                          <option value="">-- Gunakan Akun Terhubung --</option>
+                          {platformAccounts.map((acc) => (
+                            <option key={acc.id} value={acc.id}>
+                              {acc.accountHandle || acc.accountName} ({acc.accountName})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Fitur Khusus Instagram: Target Penempatan Feed vs Story */}
+                      {formPlatform === 'INSTAGRAM' && (
+                        <div className="p-3 rounded-2xl border border-pink-200/80 dark:border-pink-900/50 bg-pink-50/40 dark:bg-pink-950/20 space-y-2 animate-in fade-in duration-150">
+                          <div className="flex items-center justify-between">
+                            <label className="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+                              <Sparkles className="size-3.5 text-pink-500" />
+                              <span>Target Penempatan Instagram</span>
+                            </label>
+                            <span className="text-[9px] px-2 py-0.5 rounded-full bg-pink-100 dark:bg-pink-950 text-pink-700 dark:text-pink-300 font-bold border border-pink-200 dark:border-pink-900">
+                              Meta Direct
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setFormIgPlacement('feed')}
+                              className={cn(
+                                'p-2 rounded-xl border text-left flex flex-col justify-between transition-all',
+                                formIgPlacement === 'feed'
+                                  ? 'border-pink-500 bg-white dark:bg-slate-900 text-pink-600 dark:text-pink-400 ring-2 ring-pink-500/20 shadow-sm'
+                                  : 'border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-slate-950/40 text-slate-600 dark:text-slate-400 hover:bg-white'
+                              )}
+                            >
+                              <span className="text-xs font-black">📸 Feed / Carousel</span>
+                              <span className="text-[10px] text-slate-500 dark:text-slate-400">Postingan profil permanen</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => setFormIgPlacement('story')}
+                              className={cn(
+                                'p-2 rounded-xl border text-left flex flex-col justify-between transition-all',
+                                formIgPlacement === 'story'
+                                  ? 'border-pink-500 bg-white dark:bg-slate-900 text-pink-600 dark:text-pink-400 ring-2 ring-pink-500/20 shadow-sm'
+                                  : 'border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-slate-950/40 text-slate-600 dark:text-slate-400 hover:bg-white'
+                              )}
+                            >
+                              <span className="text-xs font-black">✨ Instagram Story</span>
+                              <span className="text-[10px] text-slate-500 dark:text-slate-400">Tampil 24 jam di Story</span>
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   );
                 })()}

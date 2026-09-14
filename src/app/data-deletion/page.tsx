@@ -47,7 +47,7 @@ export default function DataDeletionPage() {
             <ol className="list-decimal pl-5 space-y-2">
               <li>Buka akun Facebook Anda dan masuk ke <strong>Pengaturan &amp; Privasi &gt; Pengaturan</strong>.</li>
               <li>Pilih menu <strong>Aplikasi dan Situs Web (Apps and Websites)</strong> di bilah sisi kiri.</li>
-              <li>Cari aplikasi <strong>InstaDeck PRO</strong> atau <strong>Repliz</strong>.</li>
+              <li>Cari aplikasi <strong>InstaDeck PRO</strong>.</li>
               <li>Klik tombol <strong>Hapus (Remove)</strong> di samping nama aplikasi.</li>
               <li>Centang opsi jika ingin menghapus seluruh postingan dan interaksi yang dibuat oleh aplikasi, lalu konfirmasi penghapusan.</li>
             </ol>
@@ -56,7 +56,7 @@ export default function DataDeletionPage() {
           <section className="space-y-3">
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">Metode 2: Memutuskan Akun dari Dashboard InstaDeck PRO</h2>
             <ol className="list-decimal pl-5 space-y-2">
-              <li>Masuk ke akun InstaDeck PRO Anda di <Link href="/login" className="text-primary underline">https://scoopcraft.vercel.app/login</Link>.</li>
+              <li>Masuk ke akun InstaDeck PRO Anda di <Link href="/login" className="text-primary underline">https://pro.instadeck.id/login</Link>.</li>
               <li>Buka menu <strong>Pengaturan (Settings) &gt; Akun Sosial</strong>.</li>
               <li>Klik tombol <strong>Putuskan Sambungan (Disconnect)</strong> pada akun Facebook, Instagram, TikTok, atau Threads yang ingin Anda hapus.</li>
               <li>Semua token akses dan data identitas yang tersimpan akan langsung dihapus permanen dari basis data kami.</li>
