@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { createPortal } from 'react-dom';
 import {
   Sparkles,
   Check,
@@ -53,9 +54,14 @@ export function AIVisualThemePicker({
   className,
   compact = false,
 }: AIVisualThemePickerProps) {
+  const [mounted, setMounted] = React.useState(false);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [activeCategory, setActiveCategory] = React.useState<AIImageThemeCategory>('ALL');
   const [searchQuery, setSearchQuery] = React.useState('');
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const selectedTheme = React.useMemo(() => getAIThemeDef(value) || AI_IMAGE_THEMES[0], [value]);
 
@@ -178,12 +184,18 @@ export function AIVisualThemePicker({
         </button>
       </div>
 
-      {/* ─── FULL THEMES MODAL DIALOG (27 ART STYLES) ─── */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/70 backdrop-blur-md animate-in fade-in duration-150">
-          <div className="relative w-full max-w-4xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-6 shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+      {/* ─── FULL THEMES MODAL DIALOG (MOUNTED VIA PORTAL TO PREVENT CLIPPING) ─── */}
+      {mounted && isModalOpen && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-md animate-in fade-in duration-150">
+          {/* Backdrop Click Dismiss */}
+          <div className="absolute inset-0" onClick={() => setIsModalOpen(false)} />
+
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-4xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-6 shadow-2xl flex flex-col max-h-[88vh] overflow-hidden z-10 animate-in zoom-in-95 duration-150"
+          >
             {/* Modal Header */}
-            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 gap-3">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 gap-3 shrink-0">
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="size-9 rounded-xl bg-primary/10 dark:bg-primary/20 text-primary flex items-center justify-center shrink-0">
                   <Palette className="size-5" />
@@ -259,8 +271,8 @@ export function AIVisualThemePicker({
               </div>
             </div>
 
-            {/* Themes Grid - Fixed Scrollable Container */}
-            <div className="flex-1 min-h-0 max-h-[55vh] sm:max-h-[60vh] overflow-y-auto overscroll-contain py-3 pr-1.5 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 sm:gap-3">
+            {/* Themes Grid - Clean Scrollable Body */}
+            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain py-3 pr-1.5 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 sm:gap-3">
               {filteredThemes.map((theme) => {
                 const isSelected = value === theme.id;
                 const previewImage = theme.curatedPhotos?.[0];
@@ -332,21 +344,23 @@ export function AIVisualThemePicker({
 
             {/* Modal Footer */}
             <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium truncate max-w-[200px] sm:max-w-none">
                 Gaya Terpilih: <strong className="text-slate-900 dark:text-white">{selectedTheme.icon} {selectedTheme.label}</strong>
               </span>
               <Button
                 size="sm"
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="h-8 px-4 rounded-xl text-xs font-bold bg-primary text-white hover:opacity-90 shadow-md shadow-primary/20"
+                className="h-8 px-4 rounded-xl text-xs font-bold bg-primary text-white hover:opacity-95 shadow-md shadow-primary/20 shrink-0"
               >
                 Gunakan Gaya Ini
               </Button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
 }
+

@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { createPortal } from 'react-dom';
 import {
   Layers,
   Check,
@@ -58,10 +59,15 @@ export function VisualTemplatePicker({
   isProUser = false,
   onRequireUpgrade,
 }: VisualTemplatePickerProps) {
+  const [mounted, setMounted] = React.useState(false);
   const [activeCategory, setActiveCategory] = React.useState<CategoryFilter>('ALL');
   const [searchQuery, setSearchQuery] = React.useState('');
   const [isMobileModalOpen, setIsMobileModalOpen] = React.useState(false);
   const [mobileViewMode, setMobileViewMode] = React.useState<'compact' | 'expanded'>('compact');
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const selectedDef = React.useMemo(() => {
     return STYLES.find((s) => s.id === selectedStyle) || STYLES[0];
@@ -439,10 +445,16 @@ export function VisualTemplatePicker({
         )}
       </div>
 
-      {/* ─── 4. FULL TEMPLATES CATALOG MODAL (32 DESIGNS) ─── */}
-      {isMobileModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/75 backdrop-blur-md animate-in fade-in duration-150">
-          <div className="relative w-full max-w-4xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-6 shadow-2xl flex flex-col max-h-[90vh] sm:max-h-[85vh] overflow-hidden">
+      {/* ─── 4. FULL TEMPLATES CATALOG MODAL (MOUNTED VIA PORTAL TO PREVENT CLIPPING) ─── */}
+      {mounted && isMobileModalOpen && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-md animate-in fade-in duration-150">
+          {/* Backdrop click dismiss */}
+          <div className="absolute inset-0" onClick={() => setIsMobileModalOpen(false)} />
+
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-4xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-6 shadow-2xl flex flex-col max-h-[88vh] overflow-hidden z-10 animate-in zoom-in-95 duration-150"
+          >
             {/* Modal Header */}
             <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 gap-3 shrink-0">
               <div className="flex items-center gap-2.5 min-w-0">
@@ -513,7 +525,7 @@ export function VisualTemplatePicker({
             </div>
 
             {/* Modal Scrollable 2/3/4-Column Cards Grid */}
-            <div className="flex-1 min-h-0 max-h-[55vh] sm:max-h-[60vh] overflow-y-auto overscroll-contain py-3 pr-1.5">
+            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain py-3 pr-1.5">
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 sm:gap-3">
                 {filteredStyles.map((style) => {
                   const isSelected = selectedStyle === style.id;
@@ -525,7 +537,7 @@ export function VisualTemplatePicker({
 
             {/* Modal Bottom Footer Action */}
             <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 shrink-0">
-              <div className="text-[11px] font-semibold text-slate-600 dark:text-slate-400 truncate">
+              <div className="text-[11px] font-semibold text-slate-600 dark:text-slate-400 truncate max-w-[200px] sm:max-w-none">
                 Terpilih: <strong className="text-primary">{selectedDef.label}</strong> ({selectedFormat === 'FEED_PORTRAIT' ? '4:5 Feed' : '9:16 Story'})
               </div>
               <Button
@@ -538,7 +550,8 @@ export function VisualTemplatePicker({
               </Button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
