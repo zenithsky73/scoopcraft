@@ -21,7 +21,7 @@ export function HeroShowcase() {
       {/* ─── FLOATING TOP-RIGHT PILL: AI ENGINE ─── */}
       <div className="absolute -top-2 -right-3 sm:-right-4 z-30 hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-gradient-to-r from-[#ff4526] to-orange-500 border border-[#ff866a]/40 shadow-xl shadow-[#ff4526]/25 backdrop-blur-xl text-xs font-bold text-white">
         <Sparkles className="size-4 text-amber-200 animate-pulse" />
-        <span>Gemini 2.5 Flash</span>
+        <span>InstaDeck Neural AI</span>
       </div>
 
       {/* ─── 3D LAYERED CAROUSEL STACK CONTAINER ─── */}

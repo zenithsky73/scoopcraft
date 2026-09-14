@@ -3,8 +3,8 @@ import type { GeneratedCopy } from '@/server/ai/schemas';
 export const LIMITS = {
   headline: 70,
   feedCopy: 180,
-  caption: 600,
-  captionMin: 200,
+  caption: 500,
+  captionMin: 50,
   cta: 60,
   altText: 125,
   hashtagsMin: 6,

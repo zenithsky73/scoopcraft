@@ -81,7 +81,7 @@ export async function generateCampaignPlan(input: CampaignInput): Promise<Campai
     '      "pillar": "PROMOTION",',
     '      "keyPoint1": "Poin utama atau keunggulan produk/menu",',
     '      "keyPoint2": "Detail rasa/fitur atau cara menikmati",',
-    '      "caption": "Caption Instagram menarik dengan hook, isi singkat, dan ajakan interaksi.",',
+    '      "caption": "Caption media sosial ringkas dan menarik (hook, isi, ajakan aksi). WAJIB MAKSIMAL 450 KARAKTER (DILARANG LEBIH DARI 500 KARAKTER).",',
     '      "hashtags": ["#Brand", "#Promo", "#Kuliner", "#Viral"],',
     '      "cta": "Simpan postingan ini & order via link di bio!",',
     '      "photoQuery": "food photography delicious gourmet"',
@@ -172,7 +172,10 @@ export async function generateCampaignPlan(input: CampaignInput): Promise<Campai
               headline: dayHeadline,
               category: p.category || 'KULINER',
               slides,
-              caption: p.caption || ('Yuk nikmati ' + dayTitle + ' hari ini! Simpan postingan ini ya! ✨'),
+              caption: (() => {
+                let c = (p.caption || ('Yuk nikmati ' + dayTitle + ' hari ini! Simpan postingan ini ya! ✨')).trim();
+                return c.length > 500 ? c.slice(0, 495).trim() + '...' : c;
+              })(),
               hashtags: Array.isArray(p.hashtags) && p.hashtags.length > 0
                 ? p.hashtags
                 : ['#InstaDeckPRO', '#KontenHarian', '#PromoSpesial', '#InspirasiBisnis'],

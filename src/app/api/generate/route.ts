@@ -137,7 +137,7 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         error: message.includes('API_KEY')
-          ? 'Kunci API Gemini belum terhubung di server. Silakan hubungi admin.'
+          ? 'Kunci API AI Engine belum terhubung di server. Silakan hubungi admin.'
           : message || 'Terjadi kesalahan saat memproses AI. Silakan coba kembali.',
         detail: message,
       },

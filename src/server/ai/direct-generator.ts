@@ -280,13 +280,14 @@ ${dynamicGuidelines}
 ${contextDirectives}
 
 ${input.tone ? `- Gaya bahasa: ${input.tone}` : ''}
+- WAJIB: Caption media sosial harus padat, menarik, dan MAKSIMAL 450 karakter (DILARANG MELEBIHI 500 KARAKTER).
 
 Kembalikan HANYA format JSON valid berikut:
 {
   "category": "${isEcommerce ? 'BISNIS' : isRecipe ? 'KULINER' : isListicle ? 'EDUKASI' : 'TEKNOLOGI'}",
   "headline": "Judul headline memikat untuk cover",
   "feedCopy": "Deskripsi singkat pengantar di cover",
-  "caption": "Caption Instagram lengkap dengan hook, poin bahasan emoji rapi, dan ajakan diskusi",
+  "caption": "Caption media sosial ringkas dengan hook, poin emoji rapi, dan CTA. WAJIB MAKSIMAL 450 KARAKTER.",
   "hashtags": ["#Tag1", "#Tag2", "#Tag3", "#Tag4", "#Tag5"],
   "cta": "${isEcommerce ? 'Klik link di bio untuk checkout & klaim voucher diskon!' : 'Simpan postingan ini & bagikan ke temanmu!'}",
   "slides": [
@@ -362,7 +363,7 @@ Kembalikan HANYA format JSON valid berikut:
     }
 
     if (!generatedSuccessfully || !deck!.slides || deck!.slides.length === 0) {
-      throw lastError || new Error('Semua model Gemini gagal menghasilkan slide.');
+      throw lastError || new Error('Semua model AI Engine gagal menghasilkan slide.');
     }
   } catch (aiErr: any) {
     console.warn('[Direct Generator AI Fallback]: Menggunakan synthesizer kontekstual cerdas:', aiErr?.message);
@@ -559,12 +560,18 @@ Kembalikan HANYA format JSON valid berikut:
         },
       });
 
+      let finalCaption = (deck.caption || '').trim();
+      if (finalCaption.length > 500) {
+        finalCaption = finalCaption.slice(0, 495).trim() + '...';
+      }
+      deck.caption = finalCaption;
+
       const genContent = await tx.generatedContent.create({
         data: {
           articleId: article.id,
           headline: deck.headline || articleTitle,
           feedCopy: deck.feedCopy || '',
-          caption: deck.caption || '',
+          caption: finalCaption,
           hashtags: deck.hashtags || [],
           cta: deck.cta || 'Simpan & Bagikan!',
           angle: isEcommerce ? 'Promosi Produk & Racun Olshop' : 'Edukasi & Social Media Carousel',

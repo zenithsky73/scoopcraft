@@ -62,7 +62,7 @@ export type SlideCopy = z.infer<typeof slideCopySchema>;
 export const contentSchema = z.object({
   headline: z.string().describe('Headline untuk di dalam gambar, maksimal 70 karakter.'),
   feedCopy: z.string().describe('Teks pendukung di dalam gambar, maksimal 180 karakter.'),
-  caption: z.string().describe('Caption media sosial, 300-600 karakter, boleh pakai baris baru.'),
+  caption: z.string().describe('Caption media sosial, 150-450 karakter (maksimal 500 karakter).'),
   hashtags: z.array(z.string()).describe('6-10 hashtag tanpa tanda pagar.'),
   cta: z.string().describe('Ajakan singkat, maksimal 60 karakter.'),
   angle: z.string().describe('Sudut pandang yang dipakai.'),

@@ -50,7 +50,7 @@ export default async function DashboardPage() {
           <div className="space-y-3 text-center md:text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300">
               <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>AI Engine: <strong>Gemini 3.5 Flash Turbo</strong></span>
+              <span>AI Engine: <strong>InstaDeck Neural Ultra</strong></span>
             </div>
 
             <div>
@@ -114,7 +114,7 @@ export default async function DashboardPage() {
               </div>
               {/* Glowing Badge */}
               <div className="absolute -bottom-2 -right-2 px-2.5 py-1 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 text-[10px] font-black text-white shadow-lg shadow-indigo-500/30">
-                ✨ Gemini Turbo
+                ✨ InstaDeck AI Turbo
               </div>
             </div>
           </div>

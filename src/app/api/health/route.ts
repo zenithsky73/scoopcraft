@@ -11,9 +11,9 @@ export async function GET() {
     status: 'OK',
     env: {
       hasDatabaseUrl: Boolean(process.env.DATABASE_URL),
-      hasGeminiApiKey: Boolean(process.env.GEMINI_API_KEY),
+      hasAiApiKey: Boolean(process.env.GEMINI_API_KEY),
       hasAuthSecret: Boolean(process.env.AUTH_SECRET),
-      geminiModel: process.env.GEMINI_MODEL || 'gemini-3.5-flash',
+      aiModel: 'InstaDeck Neural Engine',
     },
     database: { connected: false, userCount: 0, error: null },
     ai: { ready: false, testResult: null, error: null },
@@ -39,14 +39,14 @@ export async function GET() {
         contents: [{ role: 'user', parts: [{ text: 'Halo AI' }] }],
       });
       diagnostics.ai.ready = true;
-      diagnostics.ai.testResult = res.text ? 'Gemini AI Aktif & Merespons Cepat' : 'Respon kosong';
+      diagnostics.ai.testResult = res.text ? 'AI Engine Aktif & Merespons Cepat' : 'Respon kosong';
     } catch (err: any) {
       diagnostics.status = 'ERROR';
       diagnostics.ai.error = err?.message || String(err);
     }
   } else {
     diagnostics.status = 'ERROR';
-    diagnostics.ai.error = 'GEMINI_API_KEY belum diatur di Vercel Environment Variables.';
+    diagnostics.ai.error = 'Kunci API AI Engine belum diatur di environment variables.';
   }
 
   return NextResponse.json(diagnostics, {

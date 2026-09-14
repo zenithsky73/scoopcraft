@@ -109,13 +109,13 @@ async function runGeminiStructured<S extends z.ZodType>({
       });
 
       const text = response.text;
-      if (!text) throw new AiError('INVALID_OUTPUT', 'Keluaran Gemini kosong.');
+      if (!text) throw new AiError('INVALID_OUTPUT', 'Keluaran AI Engine kosong.');
 
       let rawJson: unknown;
       try {
         rawJson = JSON.parse(text);
       } catch {
-        throw new AiError('INVALID_OUTPUT', 'Gagal mem-parsing keluaran JSON dari Gemini.');
+        throw new AiError('INVALID_OUTPUT', 'Gagal mem-parsing keluaran JSON dari AI Engine.');
       }
 
       const parsed = schema.parse(rawJson);
@@ -142,7 +142,7 @@ async function runGeminiStructured<S extends z.ZodType>({
   }
 
   if (lastError?.status === 429 || String(lastError?.message).includes('RESOURCE_EXHAUSTED')) {
-    throw new AiError('RATE_LIMITED', 'Batas kuota Gemini tercapai. Silakan coba kembali dalam beberapa detik.');
+    throw new AiError('RATE_LIMITED', 'Batas kuota AI Engine tercapai. Silakan coba kembali dalam beberapa detik.');
   }
 
   throw new AiError('UNKNOWN', lastError?.message || String(lastError));

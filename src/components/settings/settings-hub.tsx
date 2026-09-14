@@ -817,7 +817,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
               <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
                 <div>
                   <h4 className="text-xs font-bold text-slate-900 dark:text-white">Engine AI</h4>
-                  <p className="text-[11px] text-slate-500">Google Gemini 2.5 Turbo (Aktif &amp; Berkecepatan Tinggi).</p>
+                  <p className="text-[11px] text-slate-500">InstaDeck AI Neural Ultra (Aktif &amp; Berkecepatan Tinggi).</p>
                 </div>
                 <span className="px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-bold">
                   ⚡ Online

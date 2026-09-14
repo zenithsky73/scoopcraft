@@ -291,7 +291,7 @@ export function MultiInputForm({ isProUser = false }: { isProUser?: boolean }) {
                   <span className="truncate">Tuliskan Topik Carousel AI:</span>
                 </Label>
                 <span className="text-[9px] sm:text-[10px] font-mono text-primary font-bold bg-primary/10 dark:bg-primary/20 px-2 py-0.5 rounded-full border border-primary/20 dark:border-primary/30 shrink-0">
-                  Gemini Flash Turbo
+                  InstaDeck Neural AI
                 </span>
               </div>
               <textarea

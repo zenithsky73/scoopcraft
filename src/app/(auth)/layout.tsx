@@ -69,7 +69,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             </div>
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm backdrop-blur-md">
               <Zap className="size-3 text-amber-500" />
-              <span>Gemini 2.5 Turbo</span>
+              <span>AI Neural Turbo</span>
             </div>
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm backdrop-blur-md">
               <Download className="size-3 text-emerald-600 dark:text-emerald-400" />
