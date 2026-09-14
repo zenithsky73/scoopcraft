@@ -463,7 +463,10 @@ export function CanvasRenderer({
             <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
               <img
                 src={slide.imageUrl}
-                alt="Cover Background"
+                alt=""
+                onError={(e) => {
+                  (e.currentTarget as HTMLElement).style.display = 'none';
+                }}
                 className={`w-full h-full object-cover filter transition-opacity duration-300 ${
                   isLight ? 'opacity-95 brightness-100 contrast-105' : 'opacity-90 brightness-100 contrast-105'
                 }`}
@@ -710,7 +713,14 @@ export function CanvasRenderer({
             <div className="relative z-10 flex-1 flex flex-col justify-between p-4 sm:p-6 space-y-3 overflow-hidden">
               {slide.imageUrl ? (
                 <div className="relative w-full h-36 sm:h-44 rounded-none overflow-hidden border-2 border-orange-500/40 shadow-xl shrink-0">
-                  <img src={slide.imageUrl} alt="Product Detail" className="w-full h-full object-cover" />
+                  <img
+                    src={slide.imageUrl}
+                    alt=""
+                    onError={(e) => {
+                      (e.currentTarget as HTMLElement).style.display = 'none';
+                    }}
+                    className="w-full h-full object-cover"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                   <div className="absolute bottom-2.5 left-3.5 right-3.5 flex items-center justify-between">
                     <span className="px-2 py-0.5 bg-[#EE4D2D] text-white text-[10px] font-black uppercase rounded-none shadow">
@@ -847,7 +857,14 @@ export function CanvasRenderer({
               <div className="relative flex-1 flex flex-col justify-between p-5 rounded-none bg-white border border-[#C5A880]/40 shadow-xl space-y-2.5">
                 {slide.imageUrl && (
                   <div className="relative w-full h-32 sm:h-40 rounded-none overflow-hidden border border-[#C5A880]/30 shadow-md shrink-0">
-                    <img src={slide.imageUrl} alt="Catalog" className="w-full h-full object-cover" />
+                    <img
+                      src={slide.imageUrl}
+                      alt=""
+                      onError={(e) => {
+                        (e.currentTarget as HTMLElement).style.display = 'none';
+                      }}
+                      className="w-full h-full object-cover"
+                    />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                   </div>
                 )}
@@ -1024,7 +1041,14 @@ export function CanvasRenderer({
                 <div className="relative z-10 flex-1 flex flex-col justify-between p-4 sm:p-6 space-y-3 overflow-hidden">
                   {slide.imageUrl ? (
                     <div className="relative w-full h-28 sm:h-36 rounded-none overflow-hidden shadow-md shrink-0 border border-white/15">
-                      <img src={slide.imageUrl} alt="Visual" className="w-full h-full object-cover filter contrast-105" />
+                      <img
+                        src={slide.imageUrl}
+                        alt=""
+                        onError={(e) => {
+                          (e.currentTarget as HTMLElement).style.display = 'none';
+                        }}
+                        className="w-full h-full object-cover filter contrast-105"
+                      />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                       <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between">
                         <span className="text-[9px] font-mono font-bold text-white uppercase bg-black/60 px-2 py-0.5 rounded-none">
@@ -1089,7 +1113,10 @@ export function CanvasRenderer({
                     >
                       <img
                         src={slide.imageUrl}
-                        alt="Visual Detail"
+                        alt=""
+                        onError={(e) => {
+                          (e.currentTarget as HTMLElement).style.display = 'none';
+                        }}
                         className="w-full h-full object-cover filter contrast-105"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
@@ -1186,7 +1213,14 @@ export function CanvasRenderer({
                 <div className="relative z-10 flex-1 flex flex-col justify-between p-4 sm:p-6 space-y-3 overflow-hidden">
                   {slide.imageUrl && (
                     <div className="relative w-full h-32 sm:h-40 rounded-none overflow-hidden shadow-md shrink-0 border border-white/15">
-                      <img src={slide.imageUrl} alt="Visual" className="w-full h-full object-cover" />
+                      <img
+                        src={slide.imageUrl}
+                        alt=""
+                        onError={(e) => {
+                          (e.currentTarget as HTMLElement).style.display = 'none';
+                        }}
+                        className="w-full h-full object-cover"
+                      />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                       <div className="absolute bottom-2 left-3">
                         <span className="text-[10px] font-mono font-bold text-white bg-black/60 px-2 py-0.5 rounded-none">
@@ -1329,7 +1363,14 @@ export function CanvasRenderer({
                 }}
               >
                 {logoUrl ? (
-                  <img src={logoUrl} alt="Logo" className="w-full h-full object-cover rounded-full" />
+                  <img
+                    src={logoUrl}
+                    alt=""
+                    onError={(e) => {
+                      (e.currentTarget as HTMLElement).style.display = 'none';
+                    }}
+                    className="w-full h-full object-cover rounded-full"
+                  />
                 ) : (
                   <span>{brandName.slice(0, 2).toUpperCase()}</span>
                 )}
@@ -1473,7 +1514,14 @@ export function CanvasRenderer({
       >
         <div className="flex items-center gap-1.5 min-w-0">
           {logoUrl && (
-            <img src={logoUrl} alt="Brand Logo" className="size-4 object-contain shrink-0 rounded-none" />
+            <img
+              src={logoUrl}
+              alt=""
+              onError={(e) => {
+                (e.currentTarget as HTMLElement).style.display = 'none';
+              }}
+              className="size-4 object-contain shrink-0 rounded-none"
+            />
           )}
           <span className="font-bold tracking-wide truncate" style={{ color: textMuted }}>
             {handle}

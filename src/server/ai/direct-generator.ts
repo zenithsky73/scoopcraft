@@ -6,7 +6,6 @@ import { scrapeArticleFast } from '@/server/scraper/fast-scraper';
 import { SLIDES } from '@/server/design/deck';
 import { consumeQuota } from '@/server/billing/quota';
 import { getContextualPhotoForSlide, detectCategoryFromText } from '@/server/images/contextual-photos';
-import { getAIThemeDef } from '@/config/ai-image-themes';
 import { STYLES } from '@/config/styles';
 
 export type InputMode = 'url' | 'text' | 'prompt';
@@ -22,7 +21,6 @@ export type GenerateDirectInput = {
   niche?: string;
   contentType?: string;
   targetAudience?: string;
-  aiVisualTheme?: string;
   style: DesignStyle;
   format?: OutputFormat;
   slides?: number;
@@ -248,12 +246,6 @@ export async function generateDirect(input: GenerateDirectInput) {
       const guideline = NICHE_GUIDELINES[input.niche] || `Kategori: ${input.niche}`;
       contextDirectives += `\n- TARGET NICHE / INDUSTRI: ${guideline}. Sesuaikan istilah, persona, dan daya tarik konten dengan target industri ini.`;
     }
-    if (input.aiVisualTheme && input.aiVisualTheme !== 'AUTO') {
-      const themeDef = getAIThemeDef(input.aiVisualTheme);
-      if (themeDef) {
-        contextDirectives += `\n- TEMA VISUAL SENI GAMBAR AI: "${themeDef.label}" (${themeDef.description}). Selaraskan konteks visual ilustrasi slide dengan tema seni ini.`;
-      }
-    }
 
     if (input.contentType) {
       contextDirectives += `\n- PILAR / TIPE KONTEN: ${input.contentType}.`;
@@ -273,10 +265,6 @@ export async function generateDirect(input: GenerateDirectInput) {
     }
     if (input.targetAudience) {
       contextDirectives += `\n- TARGET AUDIENS: ${input.targetAudience}`;
-    }
-    if (input.aiVisualTheme && input.aiVisualTheme !== 'AUTO') {
-      const themeDef = getAIThemeDef(input.aiVisualTheme);
-      contextDirectives += `\n- TEMA VISUAL SENI GAMBAR AI: ${themeDef.label} (${themeDef.description}). Arahan visual: ${themeDef.promptModifier}.`;
     }
 
     const prompt = `${systemRole}
@@ -476,29 +464,19 @@ Kembalikan HANYA format JSON valid berikut:
       ? 'OUTRO'
       : activePattern[(idx - 1) % activePattern.length];
 
-    // SETIAP slide selalu mendapatkan foto produk asli (jika dari marketplace/link) atau tema seni AI kontekstual!
+    // SETIAP slide selalu mendapatkan foto produk asli (jika dari marketplace/link) atau foto topik editorial resolusi tinggi!
     let photoUrl: string | null = null;
-    if (input.aiVisualTheme && input.aiVisualTheme !== 'AUTO') {
-      // Jika pengguna secara spesifik memilih Tema Visual AI (misal: 3D Cute Pixar, Cyberpunk, Ghibli, dsb), gunakan tema visual seni tersebut
-      photoUrl = getContextualPhotoForSlide(
-        detectedCategory,
-        idx,
-        `${s.title || ''} ${s.body || ''} ${articleTitle}`,
-        isCover ? articleImageUrl : null,
-        input.aiVisualTheme
-      );
-    } else if (isCover && (articleImages[0] || articleImageUrl)) {
+    if (isCover && (articleImages[0] || articleImageUrl)) {
       photoUrl = articleImages[0] || articleImageUrl;
     } else if (articleImages.length > 0) {
-      // Jika dari link produk / marketplace dan tema AUTO, gunakan foto-foto produk asli secara berurutan untuk setiap slide!
+      // Jika dari link produk / marketplace, gunakan foto-foto produk asli secara berurutan untuk setiap slide!
       photoUrl = articleImages[idx % articleImages.length];
     } else {
       photoUrl = getContextualPhotoForSlide(
         detectedCategory,
         idx,
         `${s.title || ''} ${s.body || ''} ${articleTitle}`,
-        isCover ? articleImageUrl : null,
-        input.aiVisualTheme
+        isCover ? articleImageUrl : null
       );
     }
 

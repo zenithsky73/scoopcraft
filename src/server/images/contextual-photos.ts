@@ -1,11 +1,8 @@
 /**
  * Contextual Photo Engine untuk InstaDeck PRO.
  * Menyediakan koleksi foto editorial resolusi tinggi (Unsplash HD CDN)
- * serta visual art styles yang dicocokkan secara presisi berdasarkan topik konten
- * dan tema visual seni AI per-slide.
+ * yang dicocokkan secara presisi berdasarkan topik konten per-slide.
  */
-
-import { getAIThemeDef, type AIImageThemeId } from '@/config/ai-image-themes';
 
 export const TOPIC_PHOTO_COLLECTION: Record<string, string[]> = {
   // ─── 1. CRYPTO, BITCOIN & BLOCKCHAIN ───
@@ -211,55 +208,6 @@ export const TOPIC_PHOTO_COLLECTION: Record<string, string[]> = {
     'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1080&auto=format&fit=crop&q=80', // Global communication
     'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1080&auto=format&fit=crop&q=80', // Creative office
   ],
-};
-
-/**
- * Visual bertema seni AI yang dipetakan secara cerdas ke topik konten.
- */
-const THEMED_TOPIC_COLLECTIONS: Partial<Record<string, Record<string, string[]>>> = {
-  PIXAR_3D: {
-    CRYPTO: [
-      'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=1080&auto=format&fit=crop&q=80', // 3D Blockchain tokens
-      'https://images.unsplash.com/photo-1642543492481-44e81e3914a7?w=1080&auto=format&fit=crop&q=80', // Floating 3D golden coins
-      'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1080&auto=format&fit=crop&q=80', // 3D glossy neon crypto asset
-    ],
-    SAHAM_TRADING: [
-      'https://images.unsplash.com/photo-1642543492481-44e81e3914a7?w=1080&auto=format&fit=crop&q=80', // 3D financial growth coins
-      'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=1080&auto=format&fit=crop&q=80', // 3D digital assets
-    ],
-    KULINER: [
-      'https://images.unsplash.com/photo-1563089145-599997674d42?w=1080&auto=format&fit=crop&q=80', // 3D glossy delicious food art
-      'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?w=1080&auto=format&fit=crop&q=80', // 3D cute cartoon pastry
-    ],
-    SKINCARE: [
-      'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?w=1080&auto=format&fit=crop&q=80', // 3D pastel aesthetic beauty sphere
-      'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=1080&auto=format&fit=crop&q=80', // 3D cute glowing character
-    ],
-    AI_TECH: [
-      'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1080&auto=format&fit=crop&q=80', // 3D cute Pixar robot
-      'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1080&auto=format&fit=crop&q=80', // 3D neural cube
-    ],
-  },
-  GHIBLI_ANIME: {
-    KULINER: [
-      'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=1080&auto=format&fit=crop&q=80', // Anime rustic cafe
-      'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=1080&auto=format&fit=crop&q=80', // Anime village kitchen
-    ],
-    TRAVEL: [
-      'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=1080&auto=format&fit=crop&q=80', // Ghibli magical landscape
-      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1080&auto=format&fit=crop&q=80', // Ghibli golden sunset hills
-    ],
-  },
-  CYBERPUNK_NEON: {
-    AI_TECH: [
-      'https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=1080&auto=format&fit=crop&q=80', // Cyberpunk neon city
-      'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1080&auto=format&fit=crop&q=80', // Cyberpunk neon terminal
-    ],
-    CRYPTO: [
-      'https://images.unsplash.com/photo-1563089145-599997674d42?w=1080&auto=format&fit=crop&q=80', // Neon crypto holographic asset
-      'https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=1080&auto=format&fit=crop&q=80', // Cyberpunk digital grid
-    ],
-  },
 };
 
 /**
@@ -654,43 +602,28 @@ export function detectCategoryFromText(text: string): string {
 
 /**
  * Mengambil foto editorial yang relevan untuk setiap slide secara dinamis, presisi & kontekstual.
- * Menjamin SETIAP slide (0, 1, 2, 3, 4, ...) selalu memiliki foto berbeda yang sesuai topik dan tema visual seni AI.
+ * Menjamin SETIAP slide (0, 1, 2, 3, 4, ...) selalu memiliki foto berbeda yang sesuai topik konten.
  */
 export function getContextualPhotoForSlide(
   category: string | undefined,
   slideIndex: number,
   slideText?: string,
   articleImageUrl?: string | null,
-  aiVisualTheme?: string,
 ): string {
-  // 1. Deteksi kategori spesifik dari teks slide & topik terlebih dahulu
-  const detectedCategory = detectCategoryFromText(slideText || category || '');
-
-  // 2. Jika pengguna memilih Tema Visual Seni AI khusus (bukan AUTO):
-  if (aiVisualTheme && aiVisualTheme !== 'AUTO') {
-    // Cek apakah ada koleksi visual bertema yang cocok spesifik dengan kategori topik ini
-    const themedByTopic = THEMED_TOPIC_COLLECTIONS[aiVisualTheme]?.[detectedCategory];
-    if (themedByTopic && themedByTopic.length > 0) {
-      return themedByTopic[slideIndex % themedByTopic.length];
-    }
-
-    // Jika belum ada mapping topik spesifik, gunakan koleksi curated dari definisi tema visual
-    const themeDef = getAIThemeDef(aiVisualTheme);
-    if (themeDef && themeDef.curatedPhotos && themeDef.curatedPhotos.length > 0) {
-      return themeDef.curatedPhotos[slideIndex % themeDef.curatedPhotos.length];
-    }
-  }
-
-  // 3. Slide 0 (Cover): Jika mode AUTO dan ada gambar asli dari URL artikel / produk marketplace, utamakan gambar asli
+  // 1. Slide 0 (Cover): Jika ada gambar asli dari URL artikel / produk marketplace, utamakan gambar asli
   if (slideIndex === 0 && articleImageUrl) {
     return articleImageUrl;
   }
 
-  // 4. Pilih dari koleksi foto editorial HD yang 100% cocok dengan topik konten
+  // 2. Deteksi kategori spesifik dari teks slide & topik
+  const detectedCategory = detectCategoryFromText(slideText || category || '');
+
+  // 3. Pilih dari koleksi foto editorial HD yang 100% cocok dengan topik konten
   const pool = TOPIC_PHOTO_COLLECTION[detectedCategory] || TOPIC_PHOTO_COLLECTION.BERITA;
 
   // Pastikan slide 0, 1, 2, 3, 4, 5 selalu mendapatkan foto yang berbeda
   const photoIndex = slideIndex % pool.length;
   return pool[photoIndex] || pool[0];
 }
+
 
