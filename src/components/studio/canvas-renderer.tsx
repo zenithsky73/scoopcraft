@@ -464,6 +464,7 @@ export function CanvasRenderer({
               <img
                 src={slide.imageUrl}
                 alt=""
+                crossOrigin="anonymous"
                 onError={(e) => {
                   (e.currentTarget as HTMLElement).style.display = 'none';
                 }}
@@ -716,6 +717,7 @@ export function CanvasRenderer({
                   <img
                     src={slide.imageUrl}
                     alt=""
+                    crossOrigin="anonymous"
                     onError={(e) => {
                       (e.currentTarget as HTMLElement).style.display = 'none';
                     }}
@@ -860,6 +862,7 @@ export function CanvasRenderer({
                     <img
                       src={slide.imageUrl}
                       alt=""
+                      crossOrigin="anonymous"
                       onError={(e) => {
                         (e.currentTarget as HTMLElement).style.display = 'none';
                       }}
@@ -1044,6 +1047,7 @@ export function CanvasRenderer({
                       <img
                         src={slide.imageUrl}
                         alt=""
+                        crossOrigin="anonymous"
                         onError={(e) => {
                           (e.currentTarget as HTMLElement).style.display = 'none';
                         }}
@@ -1114,6 +1118,7 @@ export function CanvasRenderer({
                       <img
                         src={slide.imageUrl}
                         alt=""
+                        crossOrigin="anonymous"
                         onError={(e) => {
                           (e.currentTarget as HTMLElement).style.display = 'none';
                         }}
@@ -1216,6 +1221,7 @@ export function CanvasRenderer({
                       <img
                         src={slide.imageUrl}
                         alt=""
+                        crossOrigin="anonymous"
                         onError={(e) => {
                           (e.currentTarget as HTMLElement).style.display = 'none';
                         }}
@@ -1366,6 +1372,7 @@ export function CanvasRenderer({
                   <img
                     src={logoUrl}
                     alt=""
+                    crossOrigin="anonymous"
                     onError={(e) => {
                       (e.currentTarget as HTMLElement).style.display = 'none';
                     }}
@@ -1517,6 +1524,7 @@ export function CanvasRenderer({
             <img
               src={logoUrl}
               alt=""
+              crossOrigin="anonymous"
               onError={(e) => {
                 (e.currentTarget as HTMLElement).style.display = 'none';
               }}

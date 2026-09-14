@@ -55,18 +55,18 @@ export default function LandingPage() {
   return (
     <div className="min-h-dvh bg-[#fafafa] dark:bg-[#070913] text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-200">
       {/* ─── HEADER ─── */}
-      <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-slate-200 dark:border-slate-800/80 bg-white/90 dark:bg-[#070913]/90 px-4 backdrop-blur-xl lg:px-12 transition-colors duration-200">
-        <Link href="/" className="flex items-center gap-2.5">
-          <NewslyLogo size={36} showText showProBadge textClassName="text-lg font-black tracking-tight" />
+      <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-slate-200 dark:border-slate-800/80 bg-white/90 dark:bg-[#070913]/90 px-3 sm:px-6 lg:px-12 backdrop-blur-xl transition-colors duration-200">
+        <Link href="/" className="flex items-center gap-2">
+          <NewslyLogo size={32} showText showProBadge textClassName="text-base sm:text-lg font-black tracking-tight" />
         </Link>
 
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3">
           <ThemeToggle />
-          <Button asChild variant="ghost" size="sm" className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-xs font-bold">
+          <Button asChild variant="ghost" size="sm" className="h-8 px-2 sm:px-3 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-xs font-bold">
             <Link href="/login">Masuk</Link>
           </Button>
-          <Button asChild size="sm" className="bg-[#ff4526] hover:bg-[#e93a1d] text-white text-xs font-bold shadow-lg shadow-[#ff4526]/25 rounded-xl">
-            <Link href="/dashboard">Buat Konten Gratis</Link>
+          <Button asChild size="sm" className="h-8 px-2.5 sm:px-4 bg-[#ff4526] hover:bg-[#e93a1d] text-white text-[11px] sm:text-xs font-bold shadow-lg shadow-[#ff4526]/25 rounded-xl">
+            <Link href="/dashboard">Buat Konten</Link>
           </Button>
         </div>
       </header>

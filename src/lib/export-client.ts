@@ -16,6 +16,7 @@ export async function renderElementToPngDataUrl(elementId: string): Promise<stri
     quality: 0.95,
     pixelRatio: 2,
     cacheBust: true,
+    skipAutoScale: true,
   });
 }
 

@@ -194,9 +194,11 @@ function FilterGroup({
 }
 
 function ContentCard({ run }: { run: RunCard }) {
+  const [imgError, setImgError] = React.useState(false);
   const running = run.status === 'PENDING' || run.status === 'PROCESSING';
   const spec = run.thumbnail ? FORMAT_SPECS[run.thumbnail.format] : FORMAT_SPECS.FEED_PORTRAIT;
   const styleObj = AVAILABLE_STYLES.find((s) => s.id === run.styles?.[0]);
+  const hasImage = Boolean(run.thumbnail?.imageUrl && !imgError);
 
   return (
     <Link
@@ -208,14 +210,15 @@ function ContentCard({ run }: { run: RunCard }) {
         className="relative w-full overflow-hidden bg-gradient-to-br from-slate-900 via-slate-950 to-indigo-950"
         style={{ aspectRatio: spec.ratio }}
       >
-        {run.thumbnail?.imageUrl ? (
+        {hasImage ? (
           <>
             <Image
-              src={run.thumbnail.imageUrl}
+              src={run.thumbnail!.imageUrl!}
               alt={run.title || 'Thumbnail Carousel'}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
               className="object-cover transition-transform duration-500 group-hover:scale-105"
+              onError={() => setImgError(true)}
               unoptimized
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
