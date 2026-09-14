@@ -449,7 +449,9 @@ Kembalikan HANYA format JSON valid berikut:
   }
 
   // 3. Enrich Each Slide with Multi-Photo & Dynamic Varied Layout Architectures (Slide 2+)
-  const detectedCategory = deck.category || detectCategoryFromText(articleTitle);
+  const detectedCategory = detectCategoryFromText(
+    `${articleTitle} ${deck.headline || ''} ${deck.category || ''} ${articleContent.slice(0, 500)}`
+  );
 
   // 6 Pola Kombinasi Layout Beragam (Diacak Setiap Generate Agar Tidak Monoton)
   const LAYOUT_PATTERNS = [
