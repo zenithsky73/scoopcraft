@@ -290,13 +290,26 @@ export function ScheduleModal({
             {/* Account Status Card */}
             <div className="mt-2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 flex items-center justify-between text-xs">
               {isRealAccount ? (
-                <div className="flex items-center gap-2">
-                  <span className="size-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                  <div>
-                    <span className="font-bold text-slate-800 dark:text-slate-200 block text-[11px]">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  {currentAccount?.avatarUrl ? (
+                    <div className="relative shrink-0">
+                      <img
+                        src={currentAccount.avatarUrl}
+                        alt=""
+                        className="size-7 rounded-full object-cover border border-slate-200 dark:border-slate-700 shadow-sm"
+                      />
+                      <div className="absolute -bottom-0.5 -right-0.5 bg-white dark:bg-slate-900 rounded-full p-0.5 shadow">
+                        <SocialIcon platform={currentAccount.platform} size={10} variant="rounded" />
+                      </div>
+                    </div>
+                  ) : (
+                    <span className="size-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                  )}
+                  <div className="min-w-0">
+                    <span className="font-bold text-slate-800 dark:text-slate-200 block text-[11px] truncate">
                       Akun Aktif: {currentAccount?.accountName}
                     </span>
-                    <span className="text-[10px] text-slate-400 block">
+                    <span className="text-[10px] text-slate-400 block truncate">
                       {currentAccount?.accountHandle || currentAccount?.accountName} • Auto-Post Siap
                     </span>
                   </div>

@@ -42,13 +42,16 @@ async function publishToRepliz(post: ScheduledPost & { socialAccount: SocialAcco
       }
     }
 
+    const cleanMediaUrls = mediaUrls.map(toAbsoluteMediaUrl).filter(Boolean);
     const caption = `${post.caption || ''}\n\n${(post.hashtags || []).join(' ')}`.trim();
 
     const replizRes = await createReplizSchedule({
       accountId: replizAccountId,
       platform,
+      title: post.caption?.slice(0, 60) || 'InstaDeck Post',
       caption,
-      mediaUrls,
+      hashtags: post.hashtags || [],
+      mediaUrls: cleanMediaUrls,
       scheduledAt: post.scheduledAt,
     });
 
@@ -147,11 +150,12 @@ export async function executeScheduledPost(postId: string): Promise<PublishResul
     }
 
     if (result.success) {
+      const isFutureSchedule = new Date(post.scheduledAt).getTime() > Date.now() + 60000;
       await db.scheduledPost.update({
         where: { id: postId },
         data: {
-          status: 'PUBLISHED',
-          publishedAt: new Date(),
+          status: isFutureSchedule ? 'PENDING' : 'PUBLISHED',
+          publishedAt: isFutureSchedule ? null : new Date(),
           externalPostId: result.externalPostId,
           externalPostUrl: result.externalPostUrl,
           isSimulated: result.isSimulated,
@@ -197,7 +201,7 @@ async function publishToSimulator(post: ScheduledPost & { socialAccount: SocialA
   const timestamp = Date.now().toString(36);
   const platform = post.platform.toLowerCase();
 
-  let externalPostUrl = `https://scoopcraft.vercel.app/preview/post/${post.id}`;
+  let externalPostUrl = `https://pro.instadeck.id/preview/post/${post.id}`;
   if (post.platform === 'INSTAGRAM') {
     externalPostUrl = `https://www.instagram.com/p/sim_${timestamp}_${randomId}/`;
   } else if (post.platform === 'LINKEDIN') {
@@ -216,12 +220,15 @@ function toAbsoluteMediaUrl(url: string): string {
   if (!url) return '';
   let cleanUrl = url;
   if (cleanUrl.includes('-zenithsky73s-projects.vercel.app')) {
-    cleanUrl = cleanUrl.replace(/https:\/\/[^/]+-zenithsky73s-projects\.vercel\.app/, 'https://scoopcraft.vercel.app');
+    cleanUrl = cleanUrl.replace(/https:\/\/[^/]+-zenithsky73s-projects\.vercel\.app/, 'https://pro.instadeck.id');
+  }
+  if (cleanUrl.includes('scoopcraft.vercel.app')) {
+    cleanUrl = cleanUrl.replace('https://scoopcraft.vercel.app', 'https://pro.instadeck.id');
   }
   if (cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://')) {
     return cleanUrl;
   }
-  const appUrl = (process.env.NEXT_PUBLIC_APP_URL || process.env.AUTH_URL || 'https://scoopcraft.vercel.app').replace(/\/$/, '');
+  const appUrl = (process.env.NEXT_PUBLIC_APP_URL || process.env.AUTH_URL || 'https://pro.instadeck.id').replace(/\/$/, '');
   return `${appUrl}${cleanUrl.startsWith('/') ? '' : '/'}${cleanUrl}`;
 }
 

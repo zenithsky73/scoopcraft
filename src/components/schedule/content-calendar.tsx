@@ -769,8 +769,12 @@ export function ContentCalendar({
                   key={acc.id}
                   className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 text-[10px] font-bold text-slate-700 dark:text-slate-300 shrink-0"
                 >
-                  {getPlatformIcon(acc.platform, 'size-3.5')}
-                  <span className="truncate max-w-[90px]">{acc.accountHandle || acc.accountName}</span>
+                  {acc.avatarUrl ? (
+                    <img src={acc.avatarUrl} alt="" className="size-3.5 rounded-full object-cover shrink-0" />
+                  ) : (
+                    getPlatformIcon(acc.platform, 'size-3.5')
+                  )}
+                  <span className="truncate max-w-[120px]">{acc.accountHandle || acc.accountName}</span>
                 </div>
               ))}
             </div>

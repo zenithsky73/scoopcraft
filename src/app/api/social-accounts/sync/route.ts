@@ -42,7 +42,8 @@ export async function GET(req: Request) {
     ]);
 
     const mappedAccounts = replizData.docs.map((acc) => {
-      const platformEnum = mapPlatform(acc.platform) || ('INSTAGRAM' as SocialPlatform);
+      const rawPlatform = acc.platform || acc.type || 'instagram';
+      const platformEnum = mapPlatform(rawPlatform) || ('INSTAGRAM' as SocialPlatform);
       const cleanHandle = acc.username.startsWith('@') ? acc.username : `@${acc.username}`;
       
       const claimedRecord = dbAccounts.find(

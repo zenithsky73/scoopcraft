@@ -25,6 +25,7 @@ import {
   Share2,
   ExternalLink,
   Plus,
+  RefreshCw,
 } from 'lucide-react';
 import { Input, Label } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -959,32 +960,74 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
 
             {/* List Akun Terhubung */}
             <div>
-              <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-2.5">
-                Akun yang Terhubung ({socialAccounts.length})
-              </h4>
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                  Akun yang Terhubung ({socialAccounts.length})
+                </h4>
+                {socialAccounts.length > 0 && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      fetchSocialAccounts();
+                      notify.info('Menyinkronkan...', 'Memperbarui data profil akun media sosial.');
+                    }}
+                    className="h-7 px-2 text-[11px] font-bold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+                  >
+                    <RefreshCw className={cn("size-3 mr-1", socialLoading && "animate-spin")} />
+                    Sinkronkan Profil
+                  </Button>
+                )}
+              </div>
+
               {socialAccounts.length === 0 ? (
-                <div className="p-4 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400">
-                  Belum ada akun yang terhubung. Klik salah satu tombol di atas untuk menghubungkan akun.
+                <div className="p-6 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400">
+                  Belum ada akun yang terhubung. Klik salah satu tombol di atas untuk menghubungkan akun Instagram, TikTok, atau Threads Anda.
                 </div>
               ) : (
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                   {socialAccounts.map((acc) => (
                     <div
                       key={acc.id}
-                      className="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50"
+                      className="flex items-center justify-between p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/60 hover:border-slate-300 dark:hover:border-slate-700 transition-all shadow-sm"
                     >
-                      <div className="flex items-center gap-2.5">
-                        <SocialIcon platform={acc.platform} size={24} variant="rounded" />
-                        <div>
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                              {acc.accountName}
+                      <div className="flex items-center gap-3 min-w-0">
+                        {/* Avatar Image with Platform Badge */}
+                        <div className="relative shrink-0">
+                          {acc.avatarUrl ? (
+                            <img
+                              src={acc.avatarUrl}
+                              alt={acc.accountHandle || acc.accountName}
+                              className="size-10 rounded-full object-cover border-2 border-white dark:border-slate-800 shadow-sm"
+                              onError={(e) => {
+                                // Fallback jika URL avatar expired
+                                (e.target as HTMLElement).style.display = 'none';
+                              }}
+                            />
+                          ) : (
+                            <div className="size-10 rounded-full bg-gradient-to-tr from-pink-500/20 via-purple-500/20 to-indigo-500/20 border-2 border-white dark:border-slate-800 flex items-center justify-center font-black text-xs text-slate-700 dark:text-slate-300 shadow-sm">
+                              {(acc.accountHandle || acc.accountName || 'A').replace('@', '').charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                          <div className="absolute -bottom-1 -right-1 bg-white dark:bg-slate-900 rounded-full p-0.5 shadow-md">
+                            <SocialIcon platform={acc.platform} size={14} variant="rounded" />
+                          </div>
+                        </div>
+
+                        {/* Account Details */}
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-xs font-black text-slate-900 dark:text-white truncate">
+                              {acc.accountName || acc.accountHandle || 'Akun Terhubung'}
                             </span>
-                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold border border-emerald-300 dark:border-emerald-800">
+                            <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold border border-emerald-300 dark:border-emerald-800 shrink-0">
                               🟢 Terhubung &amp; Siap Posting
                             </span>
                           </div>
-                          <span className="text-[11px] text-slate-400">{acc.accountHandle}</span>
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">
+                            {acc.accountHandle ? (acc.accountHandle.startsWith('@') ? acc.accountHandle : `@${acc.accountHandle}`) : `@${acc.accountName}`}
+                          </p>
                         </div>
                       </div>
 
@@ -993,7 +1036,7 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDisconnectSocial(acc.id)}
-                        className="text-xs text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
+                        className="text-xs font-bold text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl shrink-0"
                       >
                         Putuskan
                       </Button>

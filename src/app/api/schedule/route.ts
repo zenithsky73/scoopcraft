@@ -53,6 +53,20 @@ export async function GET(req: Request) {
       };
     }
 
+    // Auto-process overdue pending posts for this user
+    const overduePosts = await db.scheduledPost.findMany({
+      where: {
+        userId: viewer.user.id,
+        status: 'PENDING',
+        scheduledAt: { lte: new Date() },
+      },
+      take: 5,
+    });
+
+    if (overduePosts.length > 0) {
+      await Promise.all(overduePosts.map((p) => executeScheduledPost(p.id).catch(() => null)));
+    }
+
     const posts = await db.scheduledPost.findMany({
       where: whereClause,
       include: {
@@ -166,28 +180,20 @@ export async function POST(req: Request) {
       },
     });
 
-    // Jika mode publish sekarang (Publish Now), langsung eksekusi tanpa menunggu cron
-    if (isPublishNow) {
-      const publishResult = await executeScheduledPost(scheduledPost.id);
-      const updatedPost = await db.scheduledPost.findUnique({
-        where: { id: scheduledPost.id },
-        include: { socialAccount: true },
-      });
-
-      return NextResponse.json({
-        success: publishResult.success,
-        message: publishResult.success
-          ? 'Postingan berhasil dipublikasikan sekarang!'
-          : (publishResult.error || 'Gagal mempublikasikan postingan.'),
-        post: updatedPost,
-        result: publishResult,
-      });
-    }
+    // Eksekusi publish / register schedule ke engine provider
+    const publishResult = await executeScheduledPost(scheduledPost.id);
+    const updatedPost = await db.scheduledPost.findUnique({
+      where: { id: scheduledPost.id },
+      include: { socialAccount: true },
+    });
 
     return NextResponse.json({
-      success: true,
-      message: 'Postingan berhasil dijadwalkan!',
-      post: scheduledPost,
+      success: publishResult.success,
+      message: isPublishNow
+        ? (publishResult.success ? 'Postingan berhasil dipublikasikan sekarang!' : (publishResult.error || 'Gagal mempublikasikan postingan.'))
+        : (publishResult.success ? 'Postingan berhasil didaftarkan ke jadwal otomatis!' : (publishResult.error || 'Jadwal tersimpan di sistem.')),
+      post: updatedPost || scheduledPost,
+      result: publishResult,
     });
   } catch (error: any) {
     console.error('[Schedule API] Error creating schedule:', error);

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getViewer } from '@/server/viewer';
 import { db } from '@/server/db';
-import { connectReplizOAuthAccount } from '@/server/social/repliz-client';
+import { connectReplizOAuthAccount, getReplizAccountById } from '@/server/social/repliz-client';
 import type { SocialPlatform } from '@prisma/client';
 
 export const runtime = 'nodejs';
@@ -86,7 +86,7 @@ export async function GET(req: Request) {
       );
     }
 
-    const accountDetails = exchangeResult.account;
+    let accountDetails = exchangeResult.account;
     const connectedAccountId =
       accountDetails._id || accountDetails.id || accountDetails.accountId;
 
@@ -101,13 +101,44 @@ export async function GET(req: Request) {
       );
     }
 
-    let handle =
-      accountDetails.username || accountDetails.name || 'Akun';
+    // Always fetch fresh profile details directly from Repliz
+    try {
+      const fresh = await getReplizAccountById(connectedAccountId);
+      if (fresh) {
+        accountDetails = { ...accountDetails, ...fresh };
+      }
+    } catch (e) {}
+
+    let rawUsername =
+      accountDetails.username ||
+      accountDetails.name ||
+      accountDetails.handle ||
+      accountDetails.user?.username ||
+      '';
+    
+    let rawName =
+      accountDetails.name ||
+      accountDetails.displayName ||
+      accountDetails.username ||
+      '';
+
+    let rawAvatar =
+      accountDetails.picture ||
+      accountDetails.avatar ||
+      accountDetails.avatarUrl ||
+      accountDetails.profile_picture_url ||
+      null;
+
+    if (!rawUsername && rawName) rawUsername = rawName;
+    if (!rawUsername) rawUsername = 'Akun';
+    if (!rawName) rawName = rawUsername;
+
+    let handle = rawUsername.trim();
     if (!handle.startsWith('@')) {
       handle = `@${handle}`;
     }
-    const name = accountDetails.name || handle.replace('@', '');
-    const avatar = accountDetails.avatar || null;
+    const name = rawName.trim();
+    const avatar = rawAvatar && typeof rawAvatar === 'string' && rawAvatar.trim().length > 0 ? rawAvatar.trim() : null;
 
     // Upsert into Prisma SocialAccount for this user
     await db.socialAccount.upsert({

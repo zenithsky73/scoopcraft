@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getViewer } from '@/server/viewer';
 import { db } from '@/server/db';
+import { getReplizAccountById } from '@/server/social/repliz-client';
 import type { SocialPlatform } from '@prisma/client';
 
 export const runtime = 'nodejs';
@@ -28,7 +29,49 @@ export async function GET(req: Request) {
       orderBy: { createdAt: 'desc' },
     });
 
-    return NextResponse.json({ accounts });
+    // Auto-heal accounts that have placeholder names or missing avatars from Repliz
+    const enrichedAccounts = await Promise.all(
+      accounts.map(async (acc) => {
+        const needsHeal =
+          acc.accountName === 'Akun' ||
+          acc.accountHandle === '@Akun' ||
+          !acc.avatarUrl;
+
+        const replizId =
+          acc.externalId && acc.externalId.length === 24
+            ? acc.externalId
+            : (acc.metadata as any)?.replizAccountId;
+
+        if (needsHeal && replizId) {
+          try {
+            const replizAcc = await getReplizAccountById(replizId);
+            if (replizAcc && (replizAcc.username || replizAcc.name)) {
+              const handle = (replizAcc.username || replizAcc.name || '').trim();
+              const formattedHandle = handle.startsWith('@') ? handle : `@${handle}`;
+              const name = (replizAcc.name || handle.replace('@', '')).trim();
+              const avatar = replizAcc.picture || replizAcc.avatar || null;
+
+              if (name !== 'Akun' || avatar) {
+                const updated = await db.socialAccount.update({
+                  where: { id: acc.id },
+                  data: {
+                    accountName: name || acc.accountName,
+                    accountHandle: formattedHandle || acc.accountHandle,
+                    avatarUrl: avatar || acc.avatarUrl,
+                  },
+                });
+                return updated;
+              }
+            }
+          } catch (e) {
+            // Ignore heal failure
+          }
+        }
+        return acc;
+      })
+    );
+
+    return NextResponse.json({ accounts: enrichedAccounts });
   } catch (error: any) {
     return NextResponse.json(
       { error: error?.message || 'Gagal mengambil data akun media sosial.' },

@@ -5,27 +5,15 @@
 
 export interface ReplizAccount {
   _id: string;
-  platform: "instagram" | "tiktok" | "threads" | "facebook" | "youtube" | "twitter" | "linkedin" | "shopee";
+  id?: string;
+  platform?: "instagram" | "tiktok" | "threads" | "facebook" | "youtube" | "twitter" | "linkedin" | "shopee" | string;
+  type?: string;
   name: string;
   username: string;
   avatar?: string;
-  status: string;
-  createdAt: string;
-}
-
-export interface ReplizSchedulePayload {
-  accountId: string;
-  platform: string;
-  caption: string;
-  mediaUrls?: string[];
-  scheduledAt: Date | string;
-  metadata?: Record<string, any>;
-}
-
-export interface ReplizScheduleResult {
-  success: boolean;
-  scheduleId?: string;
-  error?: string;
+  picture?: string;
+  status?: string;
+  createdAt?: string;
 }
 
 function getReplizAuthHeader(): string {
@@ -54,13 +42,63 @@ export async function getReplizAccounts(page = 1, limit = 50): Promise<{ docs: R
     }
 
     const data = await res.json();
+    const docs = (data.docs || []).map((d: any) => ({
+      ...d,
+      _id: d._id || d.id,
+      id: d._id || d.id,
+      platform: d.type || d.platform,
+      type: d.type || d.platform,
+      avatar: d.picture || d.avatar || null,
+      picture: d.picture || d.avatar || null,
+      name: d.name || d.username || 'Akun',
+      username: d.username || d.name || 'Akun',
+    }));
+
     return {
-      docs: data.docs || [],
-      total: data.totalDocs || 0,
+      docs,
+      total: data.totalDocs || docs.length || 0,
     };
   } catch (err: any) {
     console.warn("[Repliz Client Warning]:", err?.message);
     return { docs: [], total: 0 };
+  }
+}
+
+/**
+ * Fetch single connected social account by ID from Repliz
+ */
+export async function getReplizAccountById(accountId: string): Promise<ReplizAccount | null> {
+  if (!accountId) return null;
+  try {
+    const res = await fetch(`${REPLIZ_BASE_URL}/account/${accountId}`, {
+      headers: {
+        Authorization: getReplizAuthHeader(),
+        Accept: "application/json",
+      },
+      next: { revalidate: 0 },
+    });
+
+    if (!res.ok) {
+      return null;
+    }
+
+    const d = await res.json();
+    if (!d || (!d._id && !d.id)) return null;
+
+    return {
+      ...d,
+      _id: d._id || d.id,
+      id: d._id || d.id,
+      platform: d.type || d.platform,
+      type: d.type || d.platform,
+      avatar: d.picture || d.avatar || null,
+      picture: d.picture || d.avatar || null,
+      name: d.name || d.username || 'Akun',
+      username: d.username || d.name || 'Akun',
+    };
+  } catch (err: any) {
+    console.warn("[Repliz Get Account By ID Warning]:", err?.message);
+    return null;
   }
 }
 
@@ -131,9 +169,21 @@ export async function connectReplizOAuthAccount(platform: string, code: string):
       };
     }
 
+    // Attempt to extract or enrich full account details
+    let account = data.data || data.account || data.doc || data;
+    const accountId = account._id || account.id || account.accountId;
+
+    // If details like username are missing from connect response, fetch fresh object by accountId
+    if (accountId && (!account.username || !account.picture)) {
+      const fresh = await getReplizAccountById(accountId);
+      if (fresh) {
+        account = { ...account, ...fresh };
+      }
+    }
+
     return {
       success: true,
-      account: data,
+      account,
     };
   } catch (err: any) {
     return {
@@ -143,11 +193,67 @@ export async function connectReplizOAuthAccount(platform: string, code: string):
   }
 }
 
+export interface ReplizSchedulePayload {
+  accountId: string;
+  platform: string;
+  title?: string;
+  caption: string;
+  hashtags?: string[];
+  mediaUrls?: string[];
+  scheduledAt: Date | string;
+  metadata?: Record<string, any>;
+}
+
+export interface ReplizScheduleResult {
+  success: boolean;
+  scheduleId?: string;
+  error?: string;
+}
+
 /**
  * Create a new scheduled post in Repliz
  */
 export async function createReplizSchedule(payload: ReplizSchedulePayload): Promise<ReplizScheduleResult> {
   try {
+    const rawMediaUrls = (payload.mediaUrls || []).filter(Boolean);
+    const medias = rawMediaUrls.map((url) => ({
+      type: (url.match(/\.(mp4|mov|webm)$/i) ? 'video' : 'image') as 'image' | 'video',
+      url,
+    }));
+
+    const tags = (payload.hashtags || [])
+      .map((h) => h.replace(/^#/, '').trim())
+      .filter(Boolean);
+
+    const postType = medias.length > 1
+      ? 'album'
+      : medias.length === 1
+      ? (medias[0].type === 'video' ? 'video' : 'image')
+      : 'text';
+
+    const reqBody = {
+      accountId: payload.accountId,
+      title: payload.title || payload.caption.slice(0, 60),
+      description: payload.caption || '',
+      topic: '',
+      type: postType,
+      medias,
+      meta: { title: '', description: '', url: '' },
+      additionalInfo: {
+        isAiGenerated: false,
+        isDraft: false,
+        collaborators: [],
+        music: { id: '', artist: '', name: '', thumbnail: '' },
+        products: [],
+        tags,
+        mentions: [],
+        link: '',
+      },
+      replies: [],
+      scheduleAt: new Date(payload.scheduledAt).toISOString(),
+      ...payload.metadata,
+    };
+
     const res = await fetch(`${REPLIZ_BASE_URL}/schedule`, {
       method: "POST",
       headers: {
@@ -155,14 +261,7 @@ export async function createReplizSchedule(payload: ReplizSchedulePayload): Prom
         "Content-Type": "application/json",
         Accept: "application/json",
       },
-      body: JSON.stringify({
-        accountId: payload.accountId,
-        platform: payload.platform.toLowerCase(),
-        caption: payload.caption,
-        mediaUrls: payload.mediaUrls || [],
-        scheduledAt: new Date(payload.scheduledAt).toISOString(),
-        ...payload.metadata,
-      }),
+      body: JSON.stringify(reqBody),
     });
 
     const data = await res.json();
@@ -175,7 +274,7 @@ export async function createReplizSchedule(payload: ReplizSchedulePayload): Prom
 
     return {
       success: true,
-      scheduleId: data._id || data.id || data.scheduleId,
+      scheduleId: data.scheduleId || data._id || data.id,
     };
   } catch (err: any) {
     return {
