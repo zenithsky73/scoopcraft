@@ -217,6 +217,36 @@ export interface ReplizScheduleResult {
 }
 
 /**
+ * Fetch a random trending TikTok sound from Indonesia pool
+ */
+export async function getRandomTrendingTikTokMusic(): Promise<{ id: string; artist: string; name: string; thumbnail?: string } | null> {
+  try {
+    const res = await fetch(`${REPLIZ_BASE_URL}/tiktok/music?genre=ALL&countryCode=ID&dateRange=7DAY&limit=30`, {
+      headers: {
+        Authorization: getReplizAuthHeader(),
+        Accept: 'application/json',
+      },
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const list = Array.isArray(data) ? data : (data.docs || data.data || []);
+      if (list.length > 0) {
+        const item = list[Math.floor(Math.random() * list.length)];
+        return {
+          id: item.id,
+          artist: item.artist || '',
+          name: item.name || '',
+          thumbnail: item.thumbnail || '',
+        };
+      }
+    }
+  } catch (err: any) {
+    console.warn('[TikTok Auto Music Fallback Warning]:', err?.message);
+  }
+  return null;
+}
+
+/**
  * Create a new scheduled post in Repliz
  */
 export async function createReplizSchedule(payload: ReplizSchedulePayload): Promise<ReplizScheduleResult> {
@@ -243,12 +273,29 @@ export async function createReplizSchedule(payload: ReplizSchedulePayload): Prom
       ? (medias[0].type === 'video' ? 'video' : 'image')
       : 'text';
 
-    const musicPayload = payload.music && payload.music.id ? {
+    let musicPayload = payload.music && payload.music.id ? {
       id: payload.music.id,
       artist: payload.music.artist || '',
       name: payload.music.name || '',
       thumbnail: payload.music.thumbnail || '',
-    } : { id: '', artist: '', name: '', thumbnail: '' };
+    } : null;
+
+    // Jika posting ke TikTok dan belum memilih musik, otomatis pasangkan lagu trending viral teratas
+    if (!musicPayload && payload.platform.toLowerCase() === 'tiktok') {
+      const autoMusic = await getRandomTrendingTikTokMusic();
+      if (autoMusic) {
+        musicPayload = {
+          id: autoMusic.id,
+          artist: autoMusic.artist || '',
+          name: autoMusic.name || '',
+          thumbnail: autoMusic.thumbnail || '',
+        };
+      }
+    }
+
+    if (!musicPayload) {
+      musicPayload = { id: '', artist: '', name: '', thumbnail: '' };
+    }
 
     const reqBody = {
       accountId: payload.accountId,

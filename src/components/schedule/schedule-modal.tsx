@@ -562,10 +562,10 @@ export function ScheduleModal({
                       <Sparkles className="size-4 text-amber-500 shrink-0" />
                       <div className="min-w-0">
                         <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 block truncate">
-                          Sound Trending Otomatis (Default)
+                          Auto-Attach Musik Viral (Otomatis)
                         </span>
                         <span className="text-[10px] text-slate-400 block truncate">
-                          TikTok akan menyematkan audio FYP yang sesuai
+                          Otomatis dipasangkan lagu trending FYP nomor 1
                         </span>
                       </div>
                     </div>
