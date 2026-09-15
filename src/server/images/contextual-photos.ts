@@ -360,31 +360,7 @@ export function detectCategoryFromText(text: string): string {
     return 'SKINCARE';
   }
 
-  // 5. FASHION & OOTD
-  if (
-    t.includes('fashion') ||
-    t.includes('baju') ||
-    t.includes('outfit') ||
-    t.includes('ootd') ||
-    t.includes('pakaian') ||
-    t.includes('celana') ||
-    t.includes('hoodie') ||
-    t.includes('dress') ||
-    t.includes('hijab') ||
-    t.includes('sepatu') ||
-    t.includes('sneakers') ||
-    t.includes('tas') ||
-    t.includes('styling') ||
-    t.includes('model') ||
-    t.includes('thrift') ||
-    t.includes('jam tangan') ||
-    t.includes('kacamata') ||
-    t.includes('streetwear')
-  ) {
-    return 'FASHION';
-  }
-
-  // 5B. SNEAKERS & SEPATU
+  // 5A. SNEAKERS & SEPATU
   if (
     t.includes('sneaker') ||
     t.includes('sepatu') ||
@@ -397,6 +373,28 @@ export function detectCategoryFromText(text: string): string {
     t.includes('vans')
   ) {
     return 'SNEAKERS';
+  }
+
+  // 5B. FASHION & OOTD
+  if (
+    t.includes('fashion') ||
+    t.includes('baju') ||
+    t.includes('outfit') ||
+    t.includes('ootd') ||
+    t.includes('pakaian') ||
+    t.includes('celana') ||
+    t.includes('hoodie') ||
+    t.includes('dress') ||
+    t.includes('hijab') ||
+    t.includes('tas') ||
+    t.includes('styling') ||
+    t.includes('model') ||
+    t.includes('thrift') ||
+    t.includes('jam tangan') ||
+    t.includes('kacamata') ||
+    t.includes('streetwear')
+  ) {
+    return 'FASHION';
   }
 
   // 6A. KULINER SPESIFIK: RENDANG & MASAKAN PADANG
