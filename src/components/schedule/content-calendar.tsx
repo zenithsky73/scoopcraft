@@ -31,6 +31,9 @@ import {
   FileText,
   Palette,
   Wand2,
+  Lock,
+  Eye,
+  Copy,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CampaignModal } from '@/components/campaign/campaign-modal';
@@ -186,8 +189,9 @@ export function ContentCalendar({
   // Modals
   const [showCampaignModal, setShowCampaignModal] = React.useState(false);
   const [showCreateModal, setShowCreateModal] = React.useState(false);
-  const [showEditModal, setShowEditModal] = React.useState(false);
-  const [selectedPostToEdit, setSelectedPostToEdit] = React.useState<ScheduledPostItem | null>(null);
+  const [showDetailModal, setShowDetailModal] = React.useState(false);
+  const [selectedPostForDetail, setSelectedPostForDetail] = React.useState<ScheduledPostItem | null>(null);
+  const [copiedDetailCaption, setCopiedDetailCaption] = React.useState(false);
   const [accountsList, setAccountsList] = React.useState<SocialAccountItem[]>(socialAccounts);
   const [showConnectModal, setShowConnectModal] = React.useState(false);
   const [connectDefaultPlatform, setConnectDefaultPlatform] = React.useState<SocialPlatform>('INSTAGRAM');
@@ -215,12 +219,6 @@ export function ContentCalendar({
   const [customMediaUrl, setCustomMediaUrl] = React.useState<string>('');
   const [isSubmittingSchedule, setIsSubmittingSchedule] = React.useState(false);
   const [generatingProgressMessage, setGeneratingProgressMessage] = React.useState<string>('');
-
-  // Edit Modal Form State
-  const [editDate, setEditDate] = React.useState<string>('');
-  const [editTime, setEditTime] = React.useState<string>('');
-  const [editCaption, setEditCaption] = React.useState<string>('');
-  const [isSubmittingEdit, setIsSubmittingEdit] = React.useState(false);
 
   // Handle OAuth callback notifications from URL params
   React.useEffect(() => {
@@ -284,7 +282,7 @@ export function ContentCalendar({
       if (res.ok && data.success) {
         notify.celebrate('Terbit! 🚀', 'Postingan berhasil dipublikasikan sekarang.');
         await fetchPosts();
-        if (showEditModal) setShowEditModal(false);
+        if (showDetailModal) setShowDetailModal(false);
       } else {
         notify.error('Gagal Menerbitkan', data?.error || data?.message || data?.result?.error || 'Terjadi kesalahan');
         await fetchPosts();
@@ -323,7 +321,7 @@ export function ContentCalendar({
       if (res.ok) {
         notify.success('Dihapus', 'Jadwal postingan berhasil dibatalkan.');
         setPosts((prev) => prev.filter((p) => p.id !== id));
-        if (showEditModal) setShowEditModal(false);
+        if (showDetailModal) setShowDetailModal(false);
       } else {
         notify.error('Gagal', 'Tidak dapat menghapus jadwal.');
       }
@@ -346,19 +344,11 @@ export function ContentCalendar({
     setShowCreateModal(true);
   };
 
-  // Open edit modal for post
-  const openEditPost = (post: ScheduledPostItem) => {
-    setSelectedPostToEdit(post);
-    const d = new Date(post.scheduledAt);
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
-    const hh = String(d.getHours()).padStart(2, '0');
-    const min = String(d.getMinutes()).padStart(2, '0');
-    setEditDate(`${yyyy}-${mm}-${dd}`);
-    setEditTime(`${hh}:${min}`);
-    setEditCaption(post.caption || '');
-    setShowEditModal(true);
+  // Open detail view modal for post (Read-Only Paten)
+  const openPostDetail = (post: ScheduledPostItem) => {
+    setSelectedPostForDetail(post);
+    setCopiedDetailCaption(false);
+    setShowDetailModal(true);
   };
 
   // Handle Save New Scheduled Post (Direct Schedule OR Auto-Generate AI & Schedule)
@@ -512,38 +502,7 @@ export function ContentCalendar({
     }
   };
 
-  // Handle Save Edit Post
-  const handleSaveEdit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedPostToEdit) return;
 
-    setIsSubmittingEdit(true);
-    try {
-      const scheduledDateTime = new Date(`${editDate}T${editTime}:00`);
-
-      const res = await fetch(`/api/schedule/${selectedPostToEdit.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          scheduledAt: scheduledDateTime.toISOString(),
-          caption: editCaption.trim(),
-        }),
-      });
-
-      const data = await res.json();
-      if (res.ok && data.success) {
-        notify.success('Jadwal Diperbarui! ✅', `Waktu jadwal diubah ke ${editDate} ${editTime} WIB.`);
-        setShowEditModal(false);
-        await fetchPosts();
-      } else {
-        notify.error('Gagal', data?.error || 'Gagal mengubah jadwal');
-      }
-    } catch (err: any) {
-      notify.error('Gagal', err?.message);
-    } finally {
-      setIsSubmittingEdit(false);
-    }
-  };
 
   // Filter posts
   const filteredPosts = React.useMemo(() => {
@@ -941,7 +900,7 @@ export function ContentCalendar({
                       return (
                         <div
                           key={post.id}
-                          onClick={() => openEditPost(post)}
+                          onClick={() => openPostDetail(post)}
                           className="group relative rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md hover:border-primary dark:hover:border-primary transition-all cursor-pointer overflow-hidden flex flex-col"
                         >
                           {/* Card Top: Platform & Handle */}
@@ -1084,7 +1043,7 @@ export function ContentCalendar({
                         key={post.id}
                         onClick={(e) => {
                           e.stopPropagation();
-                          openEditPost(post);
+                          openPostDetail(post);
                         }}
                         className="px-1.5 py-1 rounded-md text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 truncate flex items-center gap-1 hover:ring-1 hover:ring-primary"
                       >
@@ -1162,11 +1121,11 @@ export function ContentCalendar({
                         type="button"
                         variant="secondary"
                         size="sm"
-                        onClick={() => openEditPost(post)}
+                        onClick={() => openPostDetail(post)}
                         className="text-xs h-8 px-3 font-bold"
                       >
-                        <Edit3 className="size-3 mr-1" />
-                        Edit Jadwal
+                        <Eye className="size-3 mr-1" />
+                        Lihat Detail
                       </Button>
 
                       <div className="flex items-center gap-1">
@@ -1891,126 +1850,214 @@ export function ContentCalendar({
         </div>
       )}
 
-      {/* ─── 5. MODAL: EDIT / DETAIL POSTINGAN TERJADWAL ─── */}
-      {showEditModal && selectedPostToEdit && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
-          <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl animate-in zoom-in-95 flex flex-col">
+      {/* ─── 5. MODAL: DETAIL POSTINGAN TERJADWAL (PATEN & TERKUNCI) ─── */}
+      {showDetailModal && selectedPostForDetail && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in">
+          <div className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl animate-in zoom-in-95 flex flex-col max-h-[92vh]">
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 px-5 py-4 bg-slate-50 dark:bg-slate-950">
-              <div className="flex items-center gap-2">
-                {getPlatformIcon(selectedPostToEdit.platform, "size-4")}
-                <h3 className="text-sm font-black text-slate-900 dark:text-white">
-                  Detail &amp; Ubah Jadwal ({selectedPostToEdit.platform})
-                </h3>
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 px-5 py-4 bg-slate-50 dark:bg-slate-950 shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="size-8 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center shadow-md">
+                  <Lock className="size-4" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-black text-slate-900 dark:text-white">
+                      Detail Jadwal Postingan
+                    </h3>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                      {selectedPostForDetail.platform}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-500">
+                    Jadwal ini bersifat paten dan telah terdaftar di sistem antrean otomatis
+                  </p>
+                </div>
               </div>
               <button
-                onClick={() => setShowEditModal(false)}
+                onClick={() => setShowDetailModal(false)}
                 className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800"
               >
                 <X className="size-4" />
               </button>
             </div>
 
-            {/* Form */}
-            <form onSubmit={handleSaveEdit} className="p-5 space-y-4">
-              {/* Media Thumbnail */}
-              <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                <div className="size-14 rounded-xl bg-slate-900 overflow-hidden shrink-0">
-                  {selectedPostToEdit.mediaUrls?.[0] ? (
-                    <img src={selectedPostToEdit.mediaUrls[0]} alt="" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-white text-xs">IMG</div>
-                  )}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-white line-clamp-1">
-                    {selectedPostToEdit.generatedContent?.headline || selectedPostToEdit.caption}
-                  </h4>
-                  <p className="text-[11px] text-slate-500">
-                    {selectedPostToEdit.mediaUrls?.length || 5} Slide Carousel • Status: {selectedPostToEdit.status}
+            {/* Content Body */}
+            <div className="p-5 space-y-4 overflow-y-auto flex-1">
+              {/* Alert Status Paten / Terkunci */}
+              <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-2.5">
+                <Lock className="size-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                <div className="space-y-0.5">
+                  <p className="font-bold text-slate-900 dark:text-white">Jadwal Paten &amp; Terkunci</p>
+                  <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
+                    Postingan yang telah dijadwalkan tidak dapat diubah lagi untuk memastikan konsistensi antrean publikasi otomatis ke media sosial Anda.
                   </p>
                 </div>
               </div>
 
-              {/* Tanggal & Jam */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-1 block">
-                    Tanggal
-                  </label>
-                  <input
-                    type="date"
-                    required
-                    value={editDate}
-                    onChange={(e) => setEditDate(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs font-bold text-slate-900 dark:text-white"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-1 block">
-                    Jam
-                  </label>
-                  <input
-                    type="time"
-                    required
-                    value={editTime}
-                    onChange={(e) => setEditTime(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs font-bold text-slate-900 dark:text-white"
-                  />
-                </div>
-              </div>
-
-              {/* Caption */}
+              {/* Media Slide Preview Gallery */}
               <div>
-                <label className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-1 block">
-                  Caption Postingan
-                </label>
-                <textarea
-                  rows={3}
-                  value={editCaption}
-                  onChange={(e) => setEditCaption(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs text-slate-900 dark:text-white"
-                />
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                    <Layers className="size-3.5 text-primary" />
+                    <span>Slide Visual Carousel ({selectedPostForDetail.mediaUrls?.length || 1} Slide)</span>
+                  </label>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 font-mono font-bold text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+                    {selectedPostForDetail.format === 'STORY' ? '✨ 9:16 Instagram Story' : '📸 4:5 Feed Portrait'}
+                  </span>
+                </div>
+
+                <div className="flex gap-2.5 overflow-x-auto no-scrollbar py-1">
+                  {selectedPostForDetail.mediaUrls?.map((url, idx) => (
+                    <div
+                      key={idx}
+                      className={cn(
+                        'relative rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden bg-slate-950 shrink-0 shadow-sm',
+                        selectedPostForDetail.format === 'STORY' ? 'w-24 aspect-[9/16]' : 'w-24 aspect-[4/5]'
+                      )}
+                    >
+                      <img src={url} alt={`Slide ${idx + 1}`} className="w-full h-full object-cover" />
+                      <div className="absolute top-1 left-1 px-1.5 py-0.2 rounded bg-black/70 text-white text-[9px] font-mono font-bold">
+                        #{idx + 1}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                <Button
-                  type="submit"
-                  disabled={isSubmittingEdit}
-                  className="w-full h-10 text-xs font-bold bg-primary hover:bg-primary/90 text-white rounded-xl shadow-sm"
-                >
-                  {isSubmittingEdit ? 'Menyimpan...' : '💾 Simpan Perubahan Jadwal'}
-                </Button>
+              {/* Status & Jadwal Info Grid */}
+              <div className="grid grid-cols-2 gap-2.5">
+                <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800/80 space-y-1">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                    Waktu Tayang
+                  </span>
+                  <div className="flex items-center gap-1.5 text-xs font-black text-slate-900 dark:text-white">
+                    <Clock className="size-3.5 text-primary shrink-0" />
+                    <span>
+                      {new Date(selectedPostForDetail.scheduledAt).toLocaleDateString('id-ID', {
+                        weekday: 'short',
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })} WIB
+                    </span>
+                  </div>
+                </div>
 
-                <div className="grid grid-cols-2 gap-2">
-                  {selectedPostToEdit.status === 'PENDING' && (
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => handlePublishNow(selectedPostToEdit.id)}
-                      className="text-xs font-bold text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-800"
-                    >
-                      <Zap className="size-3 mr-1 text-amber-500" />
-                      Terbitkan Sekarang
-                    </Button>
-                  )}
+                <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800/80 space-y-1">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                    Status Publikasi
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    {getStatusIcon(selectedPostForDetail.status)}
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                      {selectedPostForDetail.status === 'PENDING' ? 'Menunggu Antrean' : selectedPostForDetail.status === 'PUBLISHED' ? 'Berhasil Terbit' : 'Gagal'}
+                    </span>
+                  </div>
+                </div>
+              </div>
 
+              {/* Akun Pengirim */}
+              <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800/80 flex items-center justify-between">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="p-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                    {getPlatformIcon(selectedPostForDetail.platform, 'size-4')}
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-xs font-bold text-slate-900 dark:text-white block truncate">
+                      {selectedPostForDetail.socialAccount?.accountName || selectedPostForDetail.platform}
+                    </span>
+                    <span className="text-[10px] text-slate-400 block truncate">
+                      {selectedPostForDetail.socialAccount?.accountHandle || 'Akun Terhubung'}
+                    </span>
+                  </div>
+                </div>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold border border-emerald-200 dark:border-emerald-900">
+                  Ready
+                </span>
+              </div>
+
+              {/* Caption & Hashtag Display */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                    Caption &amp; Hashtag
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(selectedPostForDetail.caption || '');
+                      setCopiedDetailCaption(true);
+                      notify.success('Caption Disalin! 📋');
+                      setTimeout(() => setCopiedDetailCaption(false), 2000);
+                    }}
+                    className="text-[11px] font-bold text-primary hover:underline flex items-center gap-1"
+                  >
+                    {copiedDetailCaption ? (
+                      <>
+                        <Check className="size-3 text-emerald-500" />
+                        <span className="text-emerald-600 dark:text-emerald-400">Tersalin</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="size-3" />
+                        <span>Salin Caption</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-800 dark:text-slate-200 whitespace-pre-wrap leading-relaxed max-h-36 overflow-y-auto font-sans">
+                  {selectedPostForDetail.caption || 'Tidak ada caption'}
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer Actions */}
+            <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex items-center justify-between gap-2 shrink-0">
+              <div className="flex items-center gap-2">
+                {selectedPostForDetail.status === 'PENDING' && (
                   <Button
                     type="button"
-                    variant="ghost"
                     size="sm"
-                    onClick={() => handleDelete(selectedPostToEdit.id)}
-                    className="text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40"
+                    disabled={actionLoadingId === selectedPostForDetail.id}
+                    onClick={() => handlePublishNow(selectedPostForDetail.id)}
+                    className="h-9 px-3.5 text-xs font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:opacity-95 text-white rounded-xl shadow-md"
                   >
-                    <Trash2 className="size-3 mr-1" />
-                    Hapus Jadwal
+                    {actionLoadingId === selectedPostForDetail.id ? (
+                      <RefreshCw className="size-3.5 animate-spin mr-1" />
+                    ) : (
+                      <Zap className="size-3.5 mr-1" />
+                    )}
+                    <span>Terbitkan Sekarang</span>
                   </Button>
-                </div>
+                )}
+
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  disabled={actionLoadingId === selectedPostForDetail.id}
+                  onClick={() => handleDelete(selectedPostForDetail.id)}
+                  className="h-9 px-3 text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl"
+                >
+                  <Trash2 className="size-3.5 mr-1" />
+                  <span>Batalkan Jadwal</span>
+                </Button>
               </div>
-            </form>
+
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => setShowDetailModal(false)}
+                className="h-9 px-4 text-xs font-bold rounded-xl"
+              >
+                Tutup
+              </Button>
+            </div>
           </div>
         </div>
       )}

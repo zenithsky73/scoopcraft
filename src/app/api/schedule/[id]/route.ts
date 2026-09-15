@@ -84,13 +84,7 @@ export async function DELETE(
   }
 }
 
-// PATCH: Edit waktu atau caption jadwal
-const updateSchema = z.object({
-  scheduledAt: z.string().datetime().optional(),
-  caption: z.string().min(1).optional(),
-  hashtags: z.array(z.string()).optional(),
-});
-
+// PATCH: Postingan terjadwal bersifat paten dan tidak dapat diubah
 export async function PATCH(
   req: Request,
   { params }: { params: { id: string } }
@@ -100,39 +94,8 @@ export async function PATCH(
     return NextResponse.json({ error: 'Silakan login terlebih dahulu.' }, { status: 401 });
   }
 
-  try {
-    const body = await req.json();
-    const validated = updateSchema.parse(body);
-
-    const post = await db.scheduledPost.findFirst({
-      where: {
-        id: params.id,
-        userId: viewer.user.id,
-      },
-    });
-
-    if (!post) {
-      return NextResponse.json({ error: 'Postingan tidak ditemukan.' }, { status: 404 });
-    }
-
-    const dataToUpdate: any = {};
-    if (validated.scheduledAt) dataToUpdate.scheduledAt = new Date(validated.scheduledAt);
-    if (validated.caption) dataToUpdate.caption = validated.caption;
-    if (validated.hashtags) dataToUpdate.hashtags = validated.hashtags;
-
-    const updated = await db.scheduledPost.update({
-      where: { id: params.id },
-      data: dataToUpdate,
-    });
-
-    return NextResponse.json({
-      success: true,
-      post: updated,
-    });
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error?.message || 'Gagal memperbarui postingan.' },
-      { status: 500 }
-    );
-  }
+  return NextResponse.json(
+    { error: 'Postingan yang sudah terjadwal bersifat paten dan tidak dapat diubah lagi.' },
+    { status: 403 }
+  );
 }
