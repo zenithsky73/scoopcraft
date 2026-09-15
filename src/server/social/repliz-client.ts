@@ -215,6 +215,7 @@ export interface ReplizSchedulePayload {
 export interface ReplizScheduleResult {
   success: boolean;
   scheduleId?: string;
+  scheduleIds?: string[];
   error?: string;
 }
 
@@ -274,14 +275,6 @@ export async function createReplizSchedule(payload: ReplizSchedulePayload): Prom
       (payload.metadata as any)?.placement === 'story' ||
       (payload.metadata as any)?.igPlacement === 'story';
 
-    const postType = isStory
-      ? 'story'
-      : medias.length > 1
-      ? 'album'
-      : medias.length === 1
-      ? (medias[0].type === 'video' ? 'video' : 'image')
-      : 'text';
-
     let musicPayload = payload.music && payload.music.id ? {
       id: payload.music.id,
       artist: payload.music.artist || '',
@@ -310,6 +303,88 @@ export async function createReplizSchedule(payload: ReplizSchedulePayload): Prom
     if (payload.platform && payload.platform.toLowerCase() === 'threads' && description.length > 500) {
       description = description.slice(0, 495).trim() + '...';
     }
+
+    // MULTI-SLIDE INSTAGRAM STORY HANDLING
+    // Di Instagram Meta Graph API, container Story hanya menerima 1 gambar per item.
+    // Jika user membuat story dengan banyak slide (medias.length > 1), buat jadwal terpisah untuk setiap slide secara berurutan.
+    if (isStory && medias.length > 1) {
+      const baseDate = new Date(payload.scheduledAt);
+      const scheduleIds: string[] = [];
+      let lastError = '';
+
+      for (let i = 0; i < medias.length; i++) {
+        const slideMedia = medias[i];
+        // Jeda waktu 15 detik antar slide agar terbit berurutan di Story dan tidak race condition di Meta API
+        const slideScheduleTime = new Date(baseDate.getTime() + i * 15 * 1000).toISOString();
+        const slideTitle = payload.title
+          ? `${payload.title} (Story ${i + 1}/${medias.length})`
+          : `Story Part ${i + 1}`;
+
+        const reqBody = {
+          accountId: payload.accountId,
+          title: slideTitle,
+          description: i === 0 ? description : '',
+          topic: '',
+          type: 'story',
+          medias: [slideMedia],
+          meta: { title: '', description: '', url: '' },
+          additionalInfo: {
+            isAiGenerated: false,
+            isDraft: false,
+            collaborators: [],
+            music: musicPayload,
+            products: [],
+            tags: i === 0 ? tags : [],
+            mentions: [],
+            link: '',
+          },
+          replies: [],
+          scheduleAt: slideScheduleTime,
+          ...payload.metadata,
+          placement: 'story',
+        };
+
+        const res = await fetch(`${REPLIZ_BASE_URL}/schedule`, {
+          method: 'POST',
+          headers: {
+            Authorization: getReplizAuthHeader(),
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify(reqBody),
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          const sId = data.scheduleId || data.data?._id || data._id || data.id;
+          if (sId) scheduleIds.push(sId);
+        } else {
+          lastError = data.message || `Gagal menjadwalkan story slide ${i + 1}`;
+          console.warn(`[Repliz Multi-Story Warning] Slide ${i + 1} failed:`, data);
+        }
+      }
+
+      if (scheduleIds.length > 0) {
+        return {
+          success: true,
+          scheduleId: scheduleIds[0],
+          scheduleIds,
+        };
+      } else {
+        return {
+          success: false,
+          error: lastError || 'Gagal menjadwalkan multi-slide Instagram Story.',
+        };
+      }
+    }
+
+    const postType = isStory
+      ? 'story'
+      : medias.length > 1
+      ? 'album'
+      : medias.length === 1
+      ? (medias[0].type === 'video' ? 'video' : 'image')
+      : 'text';
 
     const reqBody = {
       accountId: payload.accountId,

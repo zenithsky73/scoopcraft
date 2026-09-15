@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { getViewer } from '@/server/viewer';
 import { db } from '@/server/db';
 import { executeScheduledPost } from '@/server/social/publisher';
+import { deleteReplizSchedule } from '@/server/social/repliz-client';
 
 export const runtime = 'nodejs';
 
@@ -66,6 +67,12 @@ export async function DELETE(
 
     if (!post) {
       return NextResponse.json({ error: 'Postingan tidak ditemukan.' }, { status: 404 });
+    }
+
+    // Batalkan dari Repliz jika terdaftar
+    if (post.externalPostId && !post.externalPostId.startsWith('sim_')) {
+      const scheduleIds: string[] = (post.metadata as any)?.replizScheduleIds || [post.externalPostId];
+      await Promise.all(scheduleIds.map((sId) => deleteReplizSchedule(sId).catch(() => false)));
     }
 
     await db.scheduledPost.delete({

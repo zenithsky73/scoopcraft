@@ -1473,14 +1473,20 @@ export function CarouselStudio({
           position: 'fixed',
           left: '-9999px',
           top: 0,
-          width: '440px',
+          width: currentFormat === 'STORY' ? '360px' : '440px',
           opacity: 1,
           pointerEvents: 'none',
           zIndex: -9999,
         }}
       >
         {slides.map((s, idx) => (
-          <div key={idx} style={{ width: '440px', marginBottom: '24px' }}>
+          <div
+            key={idx}
+            style={{
+              width: currentFormat === 'STORY' ? '360px' : '440px',
+              marginBottom: '24px',
+            }}
+          >
             <CanvasRenderer
               slide={s}
               style={currentStyle}

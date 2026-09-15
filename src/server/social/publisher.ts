@@ -114,6 +114,18 @@ async function publishToRepliz(post: ScheduledPost & { socialAccount: SocialAcco
       };
     }
 
+    if (replizRes.scheduleIds && replizRes.scheduleIds.length > 1) {
+      await db.scheduledPost.update({
+        where: { id: post.id },
+        data: {
+          metadata: {
+            ...((post.metadata as any) || {}),
+            replizScheduleIds: replizRes.scheduleIds,
+          },
+        },
+      }).catch(() => null);
+    }
+
     const isFutureSchedule = new Date(post.scheduledAt).getTime() > Date.now() + 60000;
 
     return {
