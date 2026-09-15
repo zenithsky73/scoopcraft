@@ -153,6 +153,7 @@ model User {
   brandKit BrandKit?
   socialAccounts SocialAccount[]
   scheduledPosts ScheduledPost[]
+  apiKeys        ApiKey[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -499,4 +500,21 @@ model PublicMedia {
 
   @@index([createdAt])
 }
+
+model ApiKey {
+  id         String    @id @default(cuid())
+  name       String    @default("Default API Key")
+  keyPrefix  String    // e.g. "instadeck_live_a1b2..." (first 16 characters for display)
+  keyHash    String    @unique // SHA-256 hash of the complete secret key
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lastUsedAt DateTime?
+  expiresAt  DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([keyHash])
+}
+
 

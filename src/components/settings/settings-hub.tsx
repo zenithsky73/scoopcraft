@@ -26,6 +26,8 @@ import {
   ExternalLink,
   Plus,
   RefreshCw,
+  Key,
+  Bot,
 } from 'lucide-react';
 import { Input, Label } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -34,6 +36,7 @@ import { ThemeToggle } from '@/components/layout/theme-toggle';
 import { notify } from '@/lib/notify';
 import { ConnectAccountModal } from '@/components/schedule/connect-account-modal';
 import { SocialIcon } from '@/components/social/social-icon';
+import { ApiKeysTab } from '@/components/settings/api-keys-tab';
 import type { SocialPlatform } from '@prisma/client';
 
 interface SettingsHubProps {
@@ -61,7 +64,7 @@ interface SettingsHubProps {
 
 export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubProps) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = React.useState<'BRAND' | 'ACCOUNT' | 'BILLING' | 'PREFS' | 'SOCIAL'>('BRAND');
+  const [activeTab, setActiveTab] = React.useState<'BRAND' | 'ACCOUNT' | 'BILLING' | 'PREFS' | 'SOCIAL' | 'INTEGRATIONS'>('BRAND');
 
   // Brand Kit State
   const [handle, setHandle] = React.useState(user.brandKit?.handle ?? '');
@@ -126,6 +129,8 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
     if (tab === 'social' || connected || canceled || warning || error) {
       setActiveTab('SOCIAL');
       fetchSocialAccounts();
+    } else if (tab === 'mcp' || tab === 'api-keys' || tab === 'integrations') {
+      setActiveTab('INTEGRATIONS');
     }
 
     if (connected === 'meta') {
@@ -403,6 +408,20 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
         >
           <Share2 className="size-3.5 sm:size-4 text-pink-500" />
           <span>Akun Medsos</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('INTEGRATIONS')}
+          className={cn(
+            'flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all shrink-0',
+            activeTab === 'INTEGRATIONS'
+              ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+          )}
+        >
+          <Bot className="size-3.5 sm:size-4 text-indigo-500" />
+          <span>API Key &amp; MCP AI</span>
         </button>
       </div>
 
@@ -1050,6 +1069,10 @@ export function SettingsHub({ user, quotaRemaining, quotaTotal }: SettingsHubPro
           </div>
         </div>
       )}
+
+      {/* ─── TAB 6: API KEYS & MCP AI INTEGRATION ─── */}
+      {activeTab === 'INTEGRATIONS' && <ApiKeysTab />}
+
       {/* Connect Social Account Modal */}
       <ConnectAccountModal
         isOpen={showConnectModal}
