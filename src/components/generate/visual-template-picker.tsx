@@ -32,22 +32,26 @@ export interface VisualTemplatePickerProps {
 type CategoryFilter = 'ALL' | 'MINIMALIST' | 'BOLD' | 'DARK_MODE' | 'EDITORIAL' | 'SOCIAL';
 
 const CATEGORIES: { id: CategoryFilter; label: string; icon: string; count: number }[] = [
-  { id: 'ALL', label: 'Semua Gaya', icon: '🌟', count: 32 },
-  { id: 'MINIMALIST', label: 'Minimalist & Clean', icon: '✨', count: 8 },
+  { id: 'ALL', label: 'Semua Gaya', icon: '🌟', count: 38 },
+  { id: 'MINIMALIST', label: 'Minimalist & Clean', icon: '✨', count: 11 },
   { id: 'BOLD', label: 'Bold & High Contrast', icon: '⚡', count: 7 },
   { id: 'DARK_MODE', label: 'Dark Mode & Sleek', icon: '🌙', count: 6 },
-  { id: 'EDITORIAL', label: 'Editorial & Classic', icon: '📰', count: 6 },
-  { id: 'SOCIAL', label: 'Social & Interactive', icon: '💬', count: 5 },
+  { id: 'EDITORIAL', label: 'Editorial & Classic', icon: '📰', count: 8 },
+  { id: 'SOCIAL', label: 'Social & Interactive', icon: '💬', count: 6 },
 ];
 
 const POPULAR_STYLE_IDS: DesignStyle[] = [
   'MODERN',
   'BREAKING_NEWS',
+  'KULINER_NUSANTARA',
+  'NOTION_MINIMAL',
+  'JAPANDI_WARM',
   'SHOPEE_PROMO',
   'TWITTER_THREAD',
   'MINIMAL',
+  'VOGUE_GOLD',
+  'MATCHA_SAGE',
   'CORPORATE',
-  'TERMINAL',
   'BEFORE_AFTER',
 ];
 

@@ -102,6 +102,12 @@ type ViewMode = 'WEEK' | 'MONTH' | 'LIST';
 type ContentSourceMode = 'AI_GENERATE' | 'EXISTING' | 'CUSTOM';
 
 const AVAILABLE_STYLES_PRESET = [
+  { id: 'KULINER_NUSANTARA', label: '🍛 Kuliner Nusantara Asli (Resep & Masakan)', color: '#DC2626' },
+  { id: 'NOTION_MINIMAL', label: '📝 Notion Clean Docs (Catatan & Produktivitas)', color: '#EAB308' },
+  { id: 'JAPANDI_WARM', label: '🌿 Japandi Warm (Organik, Linen & Slow Living)', color: '#D95D39' },
+  { id: 'MATCHA_SAGE', label: '🍵 Matcha Botanical (Hijau Sage & Segar Alami)', color: '#2D6A4F' },
+  { id: 'PASTEL_BLUSH', label: '🌸 Pastel Peach Blossom (Skincare, Glow & Beauty)', color: '#FB7185' },
+  { id: 'VOGUE_GOLD', label: '👑 Vogue Luxury Editorial (Serif & Emas Eksklusif)', color: '#B45309' },
   { id: 'CULINARY', label: '🍲 Kuliner & Resto (Padang, Cafe, F&B)', color: '#F59E0B' },
   { id: 'MINIMAL', label: '☕ Cafe & Fore Aesthetic Modern', color: '#10B981' },
   { id: 'SHOPEE_PROMO', label: '🔥 Promo & Flash Sale UMKM', color: '#EE4D2D' },
@@ -127,37 +133,37 @@ export const NICHE_PRESETS: NicheItem[] = [
   { id: 'KEUANGAN_PRIBADI', label: 'Keuangan Pribadi', group: 'Bisnis & Keuangan', desc: 'Money management, tips hemat & budgeting', defaultStyle: 'FINANCE', quickEmoji: '💰' },
   { id: 'INVESTASI', label: 'Investasi & Saham', group: 'Bisnis & Keuangan', desc: 'Pasar modal, reksadana, crypto & trading', defaultStyle: 'TECH', quickEmoji: '📈' },
   { id: 'BISNIS_DIGITAL', label: 'Bisnis Digital & E-Commerce', group: 'Bisnis & Keuangan', desc: 'Toko online, affiliate, dropship & olshop', defaultStyle: 'SHOPEE_PROMO', quickEmoji: '🛒' },
-  { id: 'PENGEMBANGAN_KARIR', label: 'Pengembangan Karir & HR', group: 'Bisnis & Keuangan', desc: 'Tips interview, resume CV & produktivitas kerja', defaultStyle: 'CORPORATE', quickEmoji: '👔' },
+  { id: 'PENGEMBANGAN_KARIR', label: 'Pengembangan Karir & HR', group: 'Bisnis & Keuangan', desc: 'Tips interview, resume CV & produktivitas kerja', defaultStyle: 'NOTION_MINIMAL', quickEmoji: '👔' },
   { id: 'MARKETING_BRANDING', label: 'Marketing & Branding', group: 'Bisnis & Keuangan', desc: 'Digital marketing, social media ads & copywriting', defaultStyle: 'SPOTLIGHT', quickEmoji: '📣' },
 
   // ─── KULINER & F&B ───
-  { id: 'KULINER_MAKANAN', label: 'Kuliner & Makanan (Padang / Resto)', group: 'Kuliner & F&B', desc: 'Restoran, warung makan, masakan nusantara', defaultStyle: 'CULINARY', quickEmoji: '🍲' },
-  { id: 'CAFE_MINUMAN', label: 'Cafe, Kopi & Minuman (Fore style)', group: 'Kuliner & F&B', desc: 'Coffee shop, bakery, minuman kekinian & boba', defaultStyle: 'MINIMAL', quickEmoji: '☕' },
-  { id: 'RESEP_MASAKAN', label: 'Resep Masakan & Baking', group: 'Kuliner & F&B', desc: 'Resep rumahan, kue, bumbu dapur & tutorial masak', defaultStyle: 'STEP_BY_STEP_GUIDE', quickEmoji: '🍳' },
+  { id: 'KULINER_MAKANAN', label: 'Kuliner & Makanan (Padang / Resto)', group: 'Kuliner & F&B', desc: 'Restoran, warung makan, masakan nusantara', defaultStyle: 'KULINER_NUSANTARA', quickEmoji: '🍛' },
+  { id: 'CAFE_MINUMAN', label: 'Cafe, Kopi & Minuman (Fore style)', group: 'Kuliner & F&B', desc: 'Coffee shop, bakery, minuman kekinian & boba', defaultStyle: 'JAPANDI_WARM', quickEmoji: '☕' },
+  { id: 'RESEP_MASAKAN', label: 'Resep Masakan & Baking', group: 'Kuliner & F&B', desc: 'Resep rumahan, kue, bumbu dapur & tutorial masak', defaultStyle: 'KULINER_NUSANTARA', quickEmoji: '🍳' },
 
   // ─── KESEHATAN & OLAHRAGA ───
   { id: 'KESEHATAN', label: 'Kesehatan & Medis', group: 'Kesehatan & Olahraga', desc: 'Informasi medis, pola hidup sehat & imun', defaultStyle: 'BEFORE_AFTER', quickEmoji: '🩺' },
   { id: 'OLAHRAGA', label: 'Olahraga & Fitness', group: 'Kesehatan & Olahraga', desc: 'Gym workout, lari, sepeda & latihan di rumah', defaultStyle: 'ATHLETIC', quickEmoji: '🏋️' },
-  { id: 'DIET_NUTRISI', label: 'Diet & Nutrisi', group: 'Kesehatan & Olahraga', desc: 'Pola makan sehat, defisit kalori & meal prep', defaultStyle: 'BEFORE_AFTER', quickEmoji: '🥗' },
-  { id: 'KESEHATAN_MENTAL', label: 'Kesehatan Mental & Self-Care', group: 'Kesehatan & Olahraga', desc: 'Mindfulness, stress relief, afirmasi & meditasi', defaultStyle: 'LIFESTYLE', quickEmoji: '🧘' },
+  { id: 'DIET_NUTRISI', label: 'Diet & Nutrisi', group: 'Kesehatan & Olahraga', desc: 'Pola makan sehat, defisit kalori & meal prep', defaultStyle: 'MATCHA_SAGE', quickEmoji: '🥗' },
+  { id: 'KESEHATAN_MENTAL', label: 'Kesehatan Mental & Self-Care', group: 'Kesehatan & Olahraga', desc: 'Mindfulness, stress relief, afirmasi & meditasi', defaultStyle: 'JAPANDI_WARM', quickEmoji: '🧘' },
 
   // ─── TEKNOLOGI & GADGET ───
   { id: 'TEKNOLOGI_GADGET', label: 'Teknologi & Gadget', group: 'Teknologi & AI', desc: 'Smartphone, laptop, hardware & inovasi tech', defaultStyle: 'TERMINAL', quickEmoji: '📱' },
   { id: 'ULASAN_GADGET', label: 'Ulasan & Review Gadget', group: 'Teknologi & AI', desc: 'Spesifikasi, unboxing & perbandingan gadget', defaultStyle: 'UNBOXING_POLAROID', quickEmoji: '📦' },
-  { id: 'AI_OTOMASI', label: 'Kecerdasan Buatan (AI) & Tools', group: 'Teknologi & AI', desc: 'Prompt AI, ChatGPT, automation & produktivitas', defaultStyle: 'TERMINAL', quickEmoji: '🤖' },
+  { id: 'AI_OTOMASI', label: 'Kecerdasan Buatan (AI) & Tools', group: 'Teknologi & AI', desc: 'Prompt AI, ChatGPT, automation & produktivitas', defaultStyle: 'NOTION_MINIMAL', quickEmoji: '🤖' },
   { id: 'PEMROGRAMAN', label: 'Pemrograman & IT (Coding)', group: 'Teknologi & AI', desc: 'Web development, coding tutorial & tech career', defaultStyle: 'TERMINAL', quickEmoji: '💻' },
   { id: 'GAMING', label: 'Gaming & Esports', group: 'Teknologi & AI', desc: 'Game review, tips gameplay, setup & berita game', defaultStyle: 'BOLD', quickEmoji: '🎮' },
 
   // ─── LIFESTYLE, FASHION & BEAUTY ───
-  { id: 'KECANTIKAN', label: 'Kecantikan & Skincare', group: 'Fashion & Lifestyle', desc: 'Perawatan kulit glowing, makeup & kosmetik', defaultStyle: 'PRODUCT_CATALOG', quickEmoji: '✨' },
+  { id: 'KECANTIKAN', label: 'Kecantikan & Skincare', group: 'Fashion & Lifestyle', desc: 'Perawatan kulit glowing, makeup & kosmetik', defaultStyle: 'PASTEL_BLUSH', quickEmoji: '✨' },
   { id: 'FASHION', label: 'Fashion & Streetwear', group: 'Fashion & Lifestyle', desc: 'Outfit ideas, distro, tren busana & aksesoris', defaultStyle: 'BRUTALIST_SALE', quickEmoji: '🛍️' },
-  { id: 'GAYA_HIDUP', label: 'Gaya Hidup & Hiburan', group: 'Fashion & Lifestyle', desc: 'Pop culture, film, musik & hobi seru', defaultStyle: 'SPOTLIGHT', quickEmoji: '🍿' },
+  { id: 'GAYA_HIDUP', label: 'Gaya Hidup & Hiburan', group: 'Fashion & Lifestyle', desc: 'Pop culture, film, musik & hobi seru', defaultStyle: 'VOGUE_GOLD', quickEmoji: '🍿' },
   { id: 'WISATA_TRAVEL', label: 'Wisata (Travel) & Liburan', group: 'Fashion & Lifestyle', desc: 'Rekomendasi destinasi, hotel & itinerary jalan-jalan', defaultStyle: 'RED_COLLAGE', quickEmoji: '✈️' },
 
   // ─── PROPERTI, PENDIDIKAN & LAINNYA ───
-  { id: 'PROPERTI_RUMAH', label: 'Properti & Desain Rumah', group: 'Properti & Hunian', desc: 'Dekorasi interior, rumah impian, arsitektur & kost', defaultStyle: 'MINIMAL', quickEmoji: '🏠' },
+  { id: 'PROPERTI_RUMAH', label: 'Properti & Desain Rumah', group: 'Properti & Hunian', desc: 'Dekorasi interior, rumah impian, arsitektur & kost', defaultStyle: 'JAPANDI_WARM', quickEmoji: '🏠' },
   { id: 'OTOMOTIF', label: 'Otomotif (Mobil & Motor)', group: 'Otomotif & Servis', desc: 'Review mobil/motor, tips servis & modifikasi', defaultStyle: 'BOLD', quickEmoji: '🚗' },
-  { id: 'PENDIDIKAN', label: 'Pendidikan & Beasiswa', group: 'Edukasi & Pengembangan', desc: 'Tips belajar, info kampus, beasiswa & bahasa asing', defaultStyle: 'LIFESTYLE', quickEmoji: '🎓' },
+  { id: 'PENDIDIKAN', label: 'Pendidikan & Beasiswa', group: 'Edukasi & Pengembangan', desc: 'Tips belajar, info kampus, beasiswa & bahasa asing', defaultStyle: 'NOTION_MINIMAL', quickEmoji: '🎓' },
   { id: 'PARENTING', label: 'Parenting & Keluarga', group: 'Edukasi & Pengembangan', desc: 'Pola asuh anak, ibu & bayi, keharmonisan keluarga', defaultStyle: 'UNBOXING_POLAROID', quickEmoji: '👶' },
   { id: 'MOTIVASI_MINDSET', label: 'Motivasi & Pengembangan Diri', group: 'Edukasi & Pengembangan', desc: 'Quotes inspiratif, buku filosofis & habit positif', defaultStyle: 'QUOTE_MINIMAL', quickEmoji: '🖋️' },
 ];

@@ -312,6 +312,55 @@ export function CanvasRenderer({
         </>
       )}
 
+      {/* ─── 6 NEW LIGHT MODE SIGNATURE DNA ACCENTS ─── */}
+      {style === 'JAPANDI_WARM' && (
+        <>
+          <div className="absolute top-0 right-0 w-80 h-80 bg-[#D95D39]/10 blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-72 h-72 bg-[#C89F6B]/15 blur-3xl pointer-events-none" />
+          <div className="absolute inset-3 border border-[#E6DCB8]/70 pointer-events-none" />
+        </>
+      )}
+
+      {style === 'NOTION_MINIMAL' && (
+        <>
+          <div className="absolute top-0 left-0 right-0 h-1 bg-amber-400 z-30" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000006_1px,transparent_1px),linear-gradient(to_bottom,#00000006_1px,transparent_1px)] bg-[size:28px_28px] pointer-events-none" />
+        </>
+      )}
+
+      {style === 'MATCHA_SAGE' && (
+        <>
+          <div className="absolute top-0 right-0 w-80 h-80 bg-[#2D6A4F]/10 blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-72 h-72 bg-[#52B788]/15 blur-3xl pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(#2D6A4F0c_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+        </>
+      )}
+
+      {style === 'KULINER_NUSANTARA' && (
+        <>
+          <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-red-600 via-amber-500 to-yellow-500 z-30 shadow-sm" />
+          <div className="absolute top-0 right-0 w-72 h-72 bg-amber-500/15 blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-red-600/10 blur-3xl pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(#D9770608_1px,transparent_1px)] [background-size:14px_14px] pointer-events-none" />
+        </>
+      )}
+
+      {style === 'PASTEL_BLUSH' && (
+        <>
+          <div className="absolute top-0 right-0 w-72 h-72 bg-rose-300/30 blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-200/40 blur-3xl pointer-events-none" />
+          <div className="absolute top-2 right-4 w-16 h-4 bg-rose-200/60 rotate-6 pointer-events-none shadow-xs" />
+        </>
+      )}
+
+      {style === 'VOGUE_GOLD' && (
+        <>
+          <div className="absolute inset-3 border border-[#B45309]/35 pointer-events-none" />
+          <div className="absolute inset-4 border border-[#B45309]/15 pointer-events-none" />
+          <div className="absolute top-0 right-0 w-72 h-72 bg-amber-600/10 blur-3xl pointer-events-none" />
+        </>
+      )}
+
       {/* ─── 2. HEADER BAR (CUSTOM UNIK PER TEMPLATE) ─── */}
       <div
         className={`relative z-20 px-5 sm:px-6 pt-4 pb-3 flex items-center justify-between shrink-0 ${
@@ -414,6 +463,31 @@ export function CanvasRenderer({
           ) : style === 'EVENT_WEBINAR' ? (
             <span className="px-2.5 py-0.5 text-[10px] font-mono font-black uppercase bg-gradient-to-r from-pink-600 to-purple-600 text-white rounded-none flex items-center gap-1 shadow-sm">
               <Ticket className="size-3" /> {slide.tag || 'ADMISSION PASS'}
+            </span>
+          ) : style === 'JAPANDI_WARM' ? (
+            <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-[#2D2724] text-[#FAF7F2] flex items-center gap-1 shadow-xs">
+              <Leaf className="size-3 text-[#D95D39]" /> {slide.tag || (isCover ? 'JAPANDI ESSENCE' : isOutro ? 'REFLECTION' : `POINT 0${slide.index}`)}
+            </span>
+          ) : style === 'NOTION_MINIMAL' ? (
+            <div className="flex items-center gap-1.5 bg-zinc-100 border border-zinc-300 px-2 py-0.5 text-zinc-900 shadow-xs">
+              <FileText className="size-3 text-amber-500" />
+              <span className="text-[10px] font-mono font-bold tracking-tight">{slide.tag || (isCover ? 'DOC / OVERVIEW' : isOutro ? 'SUMMARY' : `PAGE 0${slide.index + 1}`)}</span>
+            </div>
+          ) : style === 'MATCHA_SAGE' ? (
+            <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-[#2D6A4F] text-[#F4F8F3] flex items-center gap-1 shadow-sm">
+              <Leaf className="size-3 text-emerald-300" /> {slide.tag || (isCover ? 'BOTANICAL EDIT' : isOutro ? 'HARMONY' : `LEAF 0${slide.index}`)}
+            </span>
+          ) : style === 'KULINER_NUSANTARA' ? (
+            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider bg-[#DC2626] text-white flex items-center gap-1 shadow-sm">
+              <Utensils className="size-3 text-yellow-300" /> {slide.tag || (isCover ? 'RESEP UTAMA' : isSlide2_Metric ? 'BAHAN & BUMBU' : isSlide3_Detail ? 'TUMIS & OLAH' : isOutro ? 'SARAN SAJI' : 'TIPS RAHASIA')}
+            </span>
+          ) : style === 'PASTEL_BLUSH' ? (
+            <span className="px-2.5 py-0.5 text-[10px] font-bold tracking-wide bg-rose-100 border border-rose-300 text-rose-800 flex items-center gap-1 shadow-xs">
+              <Sparkles className="size-3 text-rose-500" /> {slide.tag || (isCover ? 'PEACH GLOW' : isOutro ? 'SWEET NOTES' : `DAILY NOTE #${slide.index}`)}
+            </span>
+          ) : style === 'VOGUE_GOLD' ? (
+            <span className="px-3 py-0.5 text-[9px] font-serif uppercase tracking-[0.2em] border-b-2 border-[#B45309] text-[#111827] font-bold">
+              {slide.tag || (isCover ? 'VOGUE EDITORIAL' : isOutro ? 'THE EPILOGUE' : `CHAPTER 0${slide.index}`)}
             </span>
           ) : (
             <span
@@ -608,11 +682,62 @@ export function CanvasRenderer({
                 </div>
               )}
 
+              {/* Special Cover: JAPANDI_WARM */}
+              {style === 'JAPANDI_WARM' && (
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F5EBE6] border border-[#E6DCB8] text-xs text-[#2D2724] shadow-sm">
+                  <span className="size-2 rounded-full bg-[#D95D39]" />
+                  <span className="font-serif font-bold italic">Slow Living & Mindful Design</span>
+                </div>
+              )}
+
+              {/* Special Cover: NOTION_MINIMAL */}
+              {style === 'NOTION_MINIMAL' && (
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-100/95 border border-yellow-300 text-xs font-mono font-bold text-zinc-900 shadow-sm">
+                  <span>⚡ Actionable Guide & Key Notes</span>
+                </div>
+              )}
+
+              {/* Special Cover: MATCHA_SAGE */}
+              {style === 'MATCHA_SAGE' && (
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#E8F1E7] border border-[#C8DEC6] text-xs font-bold text-[#1B4332] shadow-sm">
+                  <Leaf className="size-3 text-[#2D6A4F]" />
+                  <span>Fresh Botanical & Organic Balance</span>
+                </div>
+              )}
+
+              {/* Special Cover: KULINER_NUSANTARA */}
+              {style === 'KULINER_NUSANTARA' && (
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-100 border border-amber-400 text-xs font-bold text-amber-950 shadow-md">
+                  <span className="text-red-600 font-black">🌶️ 100% Rasa Asli</span>
+                  <span className="text-amber-700">•</span>
+                  <span className="font-mono text-[11px] text-amber-900 font-bold">Anti Gagal & Gurih</span>
+                </div>
+              )}
+
+              {/* Special Cover: PASTEL_BLUSH */}
+              {style === 'PASTEL_BLUSH' && (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-rose-200 text-xs font-bold text-rose-700 shadow-sm">
+                  <Sparkles className="size-3 text-rose-500" />
+                  <span>Daily Glow & Aesthetic Diary</span>
+                </div>
+              )}
+
+              {/* Special Cover: VOGUE_GOLD */}
+              {style === 'VOGUE_GOLD' && (
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#FAF8F5] border border-[#B45309]/50 text-xs font-serif italic text-[#111827] shadow-sm">
+                  <span className="text-[#B45309] font-bold uppercase tracking-widest text-[9px]">EXCLUSIVE ESSAY</span>
+                  <span>•</span>
+                  <span className="text-[11px]">Special Edition</span>
+                </div>
+              )}
+
               {/* Headline */}
               <h1
                 className={`font-black tracking-tight leading-[1.2] ${
-                  style === 'EDITORIAL' || style === 'POLICY'
+                  style === 'EDITORIAL' || style === 'POLICY' || style === 'VOGUE_GOLD' || style === 'JAPANDI_WARM'
                     ? 'font-serif text-2xl sm:text-3xl'
+                    : style === 'NOTION_MINIMAL'
+                    ? 'font-sans font-extrabold text-2xl sm:text-3xl tracking-tight text-zinc-900'
                     : style === 'BOLD' || style === 'ATHLETIC'
                     ? 'italic font-black text-2xl sm:text-3xl uppercase'
                     : style === 'MINIMAL'
@@ -1036,6 +1161,325 @@ export function CanvasRenderer({
                 </div>
               </div>
             </div>
+          ) : style === 'JAPANDI_WARM' ? (
+            /* KHUSUS 12: JAPANDI_WARM (Organic Linen & Warm Terracotta) */
+            <div className="relative z-10 flex-1 flex flex-col justify-between p-4 sm:p-6 space-y-3 overflow-hidden text-[#2D2724]">
+              {slide.imageUrl ? (
+                <div className="relative w-full h-36 sm:h-44 overflow-hidden border border-[#E6DCB8] shadow-md shrink-0">
+                  <img
+                    src={slide.imageUrl}
+                    alt=""
+                    crossOrigin="anonymous"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLElement).style.display = 'none';
+                    }}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-stone-900/60 via-transparent to-transparent" />
+                  <div className="absolute bottom-2.5 left-3.5 right-3.5 flex items-center justify-between text-[#FAF7F2]">
+                    <span className="px-2 py-0.5 bg-[#D95D39] text-[9px] font-bold uppercase tracking-wider">
+                      🌿 Japandi Harmony
+                    </span>
+                    <span className="text-[10px] font-serif italic">#0{slide.index + 1}</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-3.5 bg-[#F5EBE6] border border-[#E6DCB8] flex items-center justify-between shadow-xs">
+                  <div className="space-y-0.5">
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-[#D95D39] block">
+                      {slide.tag || `FOKUS ESTETIK #${slide.index}`}
+                    </span>
+                    <div className="text-base font-serif font-bold text-[#2D2724]">
+                      {slide.statHighlight || 'Slow Living & Mindful'}
+                    </div>
+                  </div>
+                  <div className="size-8 rounded-full bg-[#D95D39]/15 text-[#D95D39] flex items-center justify-center font-serif font-bold text-xs">
+                    0{slide.index}
+                  </div>
+                </div>
+              )}
+
+              <div className="p-5 bg-white/95 border border-[#E6DCB8] shadow-sm flex-1 flex flex-col justify-center space-y-2.5">
+                <div className="flex items-center gap-2">
+                  <span className="size-2 rounded-full bg-[#D95D39] shrink-0" />
+                  <span className="text-[9px] font-serif uppercase tracking-widest text-[#78716C]">
+                    Wawasan Alami
+                  </span>
+                </div>
+                <h2 className="font-serif font-bold text-base sm:text-lg tracking-tight text-[#2D2724] leading-snug">
+                  {cleanTakeaway}
+                </h2>
+                {slide.supportingText && (
+                  <p className="text-xs sm:text-sm font-normal text-[#57534E] leading-relaxed pt-1 border-t border-[#F5EBE6]">
+                    {slide.supportingText}
+                  </p>
+                )}
+                <div className="pt-2 flex items-center justify-between text-[10px] font-serif italic text-[#78716C]">
+                  <span>🌿 Keseimbangan & Estetika</span>
+                  <span>Slide 0{slide.index + 1}</span>
+                </div>
+              </div>
+            </div>
+          ) : style === 'NOTION_MINIMAL' ? (
+            /* KHUSUS 13: NOTION_MINIMAL (Clean Productivity Docs & Callout) */
+            <div className="relative z-10 flex-1 flex flex-col justify-between p-4 sm:p-6 space-y-3 overflow-hidden text-zinc-900">
+              {/* Notion Callout Box on Slide 1 / Hero */}
+              <div className="p-4 bg-yellow-50/90 border border-yellow-200/90 shadow-xs space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="text-base">💡</span>
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-900">
+                    {slide.tag || (slide.index === 1 ? 'KEY TAKEAWAY' : `POINT 0${slide.index}`)}
+                  </span>
+                </div>
+                <div className="text-xs sm:text-sm font-semibold text-zinc-900 leading-snug pl-6">
+                  {slide.statHighlight ? `Highlight: ${slide.statHighlight}` : 'Catatan penting yang perlu dipahami secara mendalam.'}
+                </div>
+              </div>
+
+              {/* Main Notion Document Page Container */}
+              <div className="p-5 bg-white border border-zinc-200 shadow-sm flex-1 flex flex-col justify-between space-y-3">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-1.5 text-[9px] font-mono text-zinc-400">
+                    <span>📄 Workspace</span>
+                    <span>/</span>
+                    <span className="text-zinc-700 font-bold">Notes_0{slide.index}.md</span>
+                  </div>
+                  <h2 className="font-extrabold text-base sm:text-lg tracking-tight text-zinc-950 leading-snug">
+                    {cleanTakeaway}
+                  </h2>
+                  {slide.supportingText && (
+                    <div className="pl-3 border-l-2 border-zinc-300 py-0.5">
+                      <p className="text-xs sm:text-sm font-normal text-zinc-700 leading-relaxed">
+                        {slide.supportingText}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="pt-2 border-t border-zinc-100 flex items-center justify-between text-[10px] font-mono text-zinc-500">
+                  <div className="flex items-center gap-1.5">
+                    <span className="size-2 rounded-full bg-emerald-500 inline-block" />
+                    <span>Status: Verified</span>
+                  </div>
+                  <span className="bg-zinc-100 px-2 py-0.5 border border-zinc-200 text-zinc-700 font-bold">
+                    Pg {slide.index + 1}/{totalSlides}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : style === 'MATCHA_SAGE' ? (
+            /* KHUSUS 14: MATCHA_SAGE (Fresh Botanical & Sage Leaf) */
+            <div className="relative z-10 flex-1 flex flex-col justify-between p-4 sm:p-6 space-y-3 overflow-hidden text-[#1B4332]">
+              {slide.imageUrl ? (
+                <div className="relative w-full h-36 sm:h-44 overflow-hidden border border-[#C8DEC6] shadow-md shrink-0">
+                  <img
+                    src={slide.imageUrl}
+                    alt=""
+                    crossOrigin="anonymous"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLElement).style.display = 'none';
+                    }}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#1B4332]/70 via-transparent to-transparent" />
+                  <div className="absolute bottom-2.5 left-3.5 right-3.5 flex items-center justify-between text-[#F4F8F3]">
+                    <span className="px-2 py-0.5 bg-[#2D6A4F] text-[9px] font-bold uppercase tracking-wider">
+                      🌿 Botanical Clean
+                    </span>
+                    <span className="text-xs font-bold">Leaf 0{slide.index}</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-3.5 bg-[#E8F1E7] border border-[#C8DEC6] flex items-center justify-between shadow-xs">
+                  <div className="flex items-center gap-2">
+                    <Leaf className="size-4 text-[#2D6A4F]" />
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#2D6A4F]">
+                      {slide.tag || `PANDUAN ALAMI 0${slide.index}`}
+                    </span>
+                  </div>
+                  <span className="text-xs font-bold text-[#1B4332] bg-white px-2 py-0.5 border border-[#C8DEC6]">
+                    {slide.statHighlight || '100% Organik'}
+                  </span>
+                </div>
+              )}
+
+              <div className="p-5 bg-white border border-[#C8DEC6] shadow-sm flex-1 flex flex-col justify-center space-y-2.5">
+                <h2 className="font-bold text-base sm:text-lg tracking-tight text-[#1B4332] leading-snug">
+                  {cleanTakeaway}
+                </h2>
+                {slide.supportingText && (
+                  <p className="text-xs sm:text-sm font-medium text-[#406A56] leading-relaxed pt-1 border-t border-[#E8F1E7]">
+                    {slide.supportingText}
+                  </p>
+                )}
+                <div className="pt-2 flex items-center justify-between text-[10px] font-mono text-[#52796F]">
+                  <span>🍵 Segar & Seimbang</span>
+                  <span>Bagian 0{slide.index + 1}</span>
+                </div>
+              </div>
+            </div>
+          ) : style === 'KULINER_NUSANTARA' ? (
+            /* KHUSUS 15: KULINER_NUSANTARA (Resep Asli, Takaran Bumbu & Langkah Masak) */
+            <div className="relative z-10 flex-1 flex flex-col justify-between p-4 sm:p-6 space-y-3 overflow-hidden text-[#292524]">
+              {/* Special Dynamic Header Card per slide index */}
+              {slide.index === 1 ? (
+                /* Slide 1: Kartu Takaran Bahan & Bumbu Lengkap */
+                <div className="p-3.5 bg-[#FEF3C7] border-2 border-[#F59E0B] shadow-sm flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">🌶️</span>
+                    <div>
+                      <span className="text-[9px] font-black uppercase tracking-wider text-red-700 block">
+                        BAHAN & TAKARAN BUMBU
+                      </span>
+                      <span className="text-xs font-bold text-amber-950">
+                        {slide.statHighlight || 'Takaran Pas & Bumbu Halus'}
+                      </span>
+                    </div>
+                  </div>
+                  <span className="px-2 py-1 bg-red-600 text-white text-[9px] font-black uppercase shadow-xs">
+                    STEP 01
+                  </span>
+                </div>
+              ) : slide.index === 2 ? (
+                /* Slide 2: Langkah Menumis & Memasak */
+                <div className="p-3.5 bg-[#FFFBEB] border-2 border-amber-400 shadow-sm flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">🔥</span>
+                    <div>
+                      <span className="text-[9px] font-black uppercase tracking-wider text-amber-800 block">
+                        TUMIS & OLAH BUMBU
+                      </span>
+                      <span className="text-xs font-bold text-amber-950">
+                        {slide.statHighlight || 'Api Sedang & Wangi Tanak'}
+                      </span>
+                    </div>
+                  </div>
+                  <span className="px-2 py-1 bg-amber-600 text-white text-[9px] font-black uppercase shadow-xs">
+                    STEP 02
+                  </span>
+                </div>
+              ) : (
+                /* Slide 3+: Rahasia Kelezatan & Penyajian */
+                <div className="p-3.5 bg-[#FEF2F2] border-2 border-red-300 shadow-sm flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">⭐</span>
+                    <div>
+                      <span className="text-[9px] font-black uppercase tracking-wider text-red-700 block">
+                        RAHASIA DAPUR CHEF
+                      </span>
+                      <span className="text-xs font-bold text-stone-900">
+                        {slide.statHighlight || 'Tips Gurih & Meresap'}
+                      </span>
+                    </div>
+                  </div>
+                  <span className="px-2 py-1 bg-red-700 text-white text-[9px] font-black uppercase shadow-xs">
+                    STEP 0{slide.index}
+                  </span>
+                </div>
+              )}
+
+              {/* Main Instruction Card with Photo or Recipe Box */}
+              <div className="p-5 bg-white border-2 border-amber-200/80 shadow-md flex-1 flex flex-col justify-between space-y-2.5">
+                {slide.imageUrl && (
+                  <div className="relative w-full h-28 sm:h-32 overflow-hidden border border-amber-300 shadow-inner shrink-0">
+                    <img
+                      src={slide.imageUrl}
+                      alt=""
+                      crossOrigin="anonymous"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLElement).style.display = 'none';
+                      }}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-stone-950/70 via-transparent to-transparent" />
+                    <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between text-white text-[10px] font-bold">
+                      <span>🍛 Visual Masakan</span>
+                      <span>100% Menggugah Selera</span>
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-1.5">
+                  <h2 className="font-bold text-base sm:text-lg tracking-tight text-stone-950 leading-snug">
+                    {cleanTakeaway}
+                  </h2>
+                  {slide.supportingText && (
+                    <p className="text-xs sm:text-sm font-medium text-stone-700 leading-relaxed">
+                      {slide.supportingText}
+                    </p>
+                  )}
+                </div>
+
+                <div className="pt-2 border-t border-amber-100 flex items-center justify-between text-[10px] font-bold text-amber-800">
+                  <span className="flex items-center gap-1">
+                    <Utensils className="size-3 text-red-600" /> Resep Teruji Anti-Gagal
+                  </span>
+                  <span>Halaman {slide.index + 1}</span>
+                </div>
+              </div>
+            </div>
+          ) : style === 'PASTEL_BLUSH' ? (
+            /* KHUSUS 16: PASTEL_BLUSH (Peach Scrapbook Diary & Soft Cards) */
+            <div className="relative z-10 flex-1 flex flex-col justify-between p-4 sm:p-6 space-y-3 overflow-hidden text-[#4C0519]">
+              <div className="relative p-5 bg-white border-2 border-rose-200 shadow-md flex-1 flex flex-col justify-between space-y-3">
+                {/* Washi Tape Accent */}
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-5 bg-rose-200/90 border border-rose-300/80 -rotate-2 shadow-xs pointer-events-none" />
+
+                <div className="flex items-center justify-between pt-1">
+                  <span className="text-[10px] font-bold text-rose-600 uppercase tracking-wider flex items-center gap-1">
+                    <Sparkles className="size-3 text-rose-400" /> {slide.tag || `DAILY BLUSH #${slide.index}`}
+                  </span>
+                  <span className="text-xs font-bold text-rose-500 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
+                    {slide.statHighlight || '✨ Glow Tips'}
+                  </span>
+                </div>
+
+                <div className="space-y-2 text-center my-auto">
+                  <h2 className="font-bold text-base sm:text-lg text-rose-950 leading-snug">
+                    {cleanTakeaway}
+                  </h2>
+                  {slide.supportingText && (
+                    <p className="text-xs sm:text-sm text-rose-800 leading-relaxed font-normal max-w-xs mx-auto">
+                      {slide.supportingText}
+                    </p>
+                  )}
+                </div>
+
+                <div className="pt-2 border-t border-rose-100 flex items-center justify-between text-[10px] font-mono text-rose-400">
+                  <span>🌸 Rating 5/5</span>
+                  <span>Diary Page 0{slide.index + 1}</span>
+                </div>
+              </div>
+            </div>
+          ) : style === 'VOGUE_GOLD' ? (
+            /* KHUSUS 17: VOGUE_GOLD (Editorial Luxury Serif & Roman Numerals) */
+            <div className="relative z-10 flex-1 flex flex-col justify-between p-5 sm:p-7 space-y-3.5 overflow-hidden text-[#111827]">
+              <div className="p-6 bg-[#FAF8F5] border border-[#B45309]/30 shadow-md flex-1 flex flex-col justify-between space-y-3">
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between text-[9px] font-serif uppercase tracking-[0.25em] text-[#B45309] font-bold">
+                    <span>{slide.tag || `CHAPTER 0${slide.index}`}</span>
+                    <span>VOGUE ESSAY</span>
+                  </div>
+                  <div className="h-px bg-[#B45309]/30 w-full" />
+                </div>
+
+                <div className="space-y-2.5 my-auto">
+                  <h2 className="font-serif font-bold text-lg sm:text-xl tracking-wide text-[#111827] leading-snug">
+                    {cleanTakeaway}
+                  </h2>
+                  {slide.supportingText && (
+                    <p className="text-xs sm:text-sm font-serif italic text-[#4B5563] leading-relaxed">
+                      {slide.supportingText}
+                    </p>
+                  )}
+                </div>
+
+                <div className="pt-2.5 border-t border-[#B45309]/20 flex items-center justify-between text-[9px] font-serif uppercase tracking-widest text-[#B45309]">
+                  <span>✨ The Editorial Collection</span>
+                  <span>No. 0{slide.index + 1}</span>
+                </div>
+              </div>
+            </div>
           ) : (
             /* ─── 6 VARIAN MODULAR BERSIH & DINAMIS (NON-BERITA/BERITA SEIMBANG) ─── */
             <>
@@ -1358,6 +1802,30 @@ export function CanvasRenderer({
             <div className="size-14 sm:size-16 rounded-2xl bg-purple-600/30 border border-purple-500/50 text-purple-300 flex items-center justify-center shadow-lg">
               <CheckCircle2 className="size-7 sm:size-8 text-purple-400" />
             </div>
+          ) : style === 'KULINER_NUSANTARA' ? (
+            <div className="size-14 sm:size-16 rounded-2xl bg-gradient-to-tr from-red-600 to-amber-500 text-white flex items-center justify-center shadow-lg shadow-red-600/30">
+              <Utensils className="size-7 sm:size-8 text-yellow-200" />
+            </div>
+          ) : style === 'JAPANDI_WARM' ? (
+            <div className="size-14 sm:size-16 rounded-full bg-[#FAF7F2] border-2 border-[#D95D39] text-[#D95D39] flex items-center justify-center shadow-md">
+              <Leaf className="size-7 sm:size-8" />
+            </div>
+          ) : style === 'NOTION_MINIMAL' ? (
+            <div className="size-14 sm:size-16 rounded-xl bg-yellow-100 border-2 border-yellow-400 text-zinc-900 flex items-center justify-center shadow-sm">
+              <FileText className="size-7 sm:size-8 text-amber-600" />
+            </div>
+          ) : style === 'MATCHA_SAGE' ? (
+            <div className="size-14 sm:size-16 rounded-full bg-[#E8F1E7] border-2 border-[#2D6A4F] text-[#2D6A4F] flex items-center justify-center shadow-md">
+              <Leaf className="size-7 sm:size-8" />
+            </div>
+          ) : style === 'PASTEL_BLUSH' ? (
+            <div className="size-14 sm:size-16 rounded-full bg-rose-100 border-2 border-rose-300 text-rose-600 flex items-center justify-center shadow-md">
+              <Sparkles className="size-7 sm:size-8" />
+            </div>
+          ) : style === 'VOGUE_GOLD' ? (
+            <div className="size-14 sm:size-16 rounded-none bg-[#FAF8F5] border-2 border-[#B45309] text-[#B45309] flex items-center justify-center shadow-md font-serif font-bold text-xl">
+              V
+            </div>
           ) : (
             <div className="flex flex-col items-center space-y-1.5">
               <div
@@ -1396,7 +1864,7 @@ export function CanvasRenderer({
           <div className="space-y-1.5 max-w-xs">
             <h2
               className={`font-black text-lg sm:text-xl tracking-tight leading-snug ${
-                style === 'EDITORIAL' || style === 'POLICY' ? 'font-serif' : 'font-sans'
+                style === 'EDITORIAL' || style === 'POLICY' || style === 'VOGUE_GOLD' || style === 'JAPANDI_WARM' ? 'font-serif' : 'font-sans'
               }`}
               style={{ color: textPrimary }}
             >
@@ -1407,6 +1875,18 @@ export function CanvasRenderer({
                   ? 'Utas Selesai / Thread End 🧵'
                   : style === 'STEP_BY_STEP_GUIDE'
                   ? 'Panduan Selesai & Siap Praktik!'
+                  : style === 'KULINER_NUSANTARA'
+                  ? 'Siap Masak Menu Ini di Rumah?'
+                  : style === 'JAPANDI_WARM'
+                  ? 'Inspirasi Estetika & Ketenangan'
+                  : style === 'NOTION_MINIMAL'
+                  ? 'Dokumen & Catatan Lengkap'
+                  : style === 'MATCHA_SAGE'
+                  ? 'Harmoni Alami & Keseimbangan'
+                  : style === 'PASTEL_BLUSH'
+                  ? 'Simpan Tips Cantik & Glowing Ini!'
+                  : style === 'VOGUE_GOLD'
+                  ? 'The Curated Luxury Conclusion'
                   : 'Suka dengan wawasan ini?'
               )}
             </h2>
@@ -1421,6 +1901,18 @@ export function CanvasRenderer({
                   ? 'Retweet utas ini untuk berbagi wawasan dan ikuti akun untuk thread mingguan!'
                   : style === 'STEP_BY_STEP_GUIDE'
                   ? 'Simpan panduan praktis ini agar mudah dilihat kembali saat mempraktikkannya!'
+                  : style === 'KULINER_NUSANTARA'
+                  ? 'Simpan resep ini agar tidak lupa saat belanja bumbu & masak bersama keluarga!'
+                  : style === 'JAPANDI_WARM'
+                  ? 'Simpan inspirasi ini dan ikuti kami untuk sentuhan slow living setiap hari.'
+                  : style === 'NOTION_MINIMAL'
+                  ? 'Simpan dokumentasi ini untuk referensi kerja dan produktivitas harianmu.'
+                  : style === 'MATCHA_SAGE'
+                  ? 'Simpan catatan asri ini & bagikan kepada teman yang menyukai ketenangan alami.'
+                  : style === 'PASTEL_BLUSH'
+                  ? 'Tag sahabatmu & simpan postingan ini untuk inspirasi harianmu!'
+                  : style === 'VOGUE_GOLD'
+                  ? 'Simpan karya editorial ini & ikuti publikasi eksklusif kami selanjutnya.'
                   : 'Simpan (Save) postingan ini & ikuti akun untuk tips dan inspirasi berkualitas setiap hari.'
               )}
             </p>
@@ -1437,8 +1929,8 @@ export function CanvasRenderer({
                 <span>🛒 Masuk Keranjang</span>
               ) : style === 'TWITTER_THREAD' ? (
                 <span>🔁 Retweet Utas</span>
-              ) : style === 'STEP_BY_STEP_GUIDE' ? (
-                <span>📌 Simpan Panduan</span>
+              ) : style === 'STEP_BY_STEP_GUIDE' || style === 'KULINER_NUSANTARA' ? (
+                <span>📌 Simpan Resep/Tips</span>
               ) : (
                 <span>📌 Simpan Postingan</span>
               )}
@@ -1452,8 +1944,8 @@ export function CanvasRenderer({
                 <span>🎟️ Klaim Voucher</span>
               ) : style === 'TWITTER_THREAD' ? (
                 <span>🔔 Aktifkan Notif</span>
-              ) : style === 'STEP_BY_STEP_GUIDE' ? (
-                <span>🚀 Bagikan ke Tim</span>
+              ) : style === 'STEP_BY_STEP_GUIDE' || style === 'KULINER_NUSANTARA' ? (
+                <span>❤️ Bagikan Resep</span>
               ) : (
                 <span>🚀 Bagikan ke Teman</span>
               )}
@@ -1465,7 +1957,7 @@ export function CanvasRenderer({
             className="w-full max-w-xs py-3 px-4 rounded-xl font-black text-xs shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-transform hover:scale-[1.02]"
             style={{
               backgroundColor: accent,
-              color: style === 'STREETWEAR' || style === 'MINIMAL' || style === 'BOLD' || style === 'BRUTALIST_SALE' ? '#000000' : '#FFFFFF',
+              color: style === 'STREETWEAR' || style === 'MINIMAL' || style === 'BOLD' || style === 'BRUTALIST_SALE' || style === 'NOTION_MINIMAL' ? '#000000' : '#FFFFFF',
             }}
           >
             {style === 'SHOPEE_PROMO' ? (
@@ -1497,6 +1989,36 @@ export function CanvasRenderer({
               <>
                 <Bookmark className="size-3.5" />
                 <span>{slide.ctaText || '📌 Simpan Panduan untuk Praktik'}</span>
+              </>
+            ) : style === 'KULINER_NUSANTARA' ? (
+              <>
+                <Utensils className="size-3.5" />
+                <span>{slide.ctaText || '📌 Simpan Resep & Ikuti Menu Harian'}</span>
+              </>
+            ) : style === 'JAPANDI_WARM' ? (
+              <>
+                <Leaf className="size-3.5" />
+                <span>{slide.ctaText || `+ Ikuti ${handle} untuk Inspirasi`}</span>
+              </>
+            ) : style === 'NOTION_MINIMAL' ? (
+              <>
+                <FileText className="size-3.5" />
+                <span>{slide.ctaText || '⚡ Dapatkan Ringkasan & Template'}</span>
+              </>
+            ) : style === 'MATCHA_SAGE' ? (
+              <>
+                <Leaf className="size-3.5" />
+                <span>{slide.ctaText || `🌿 Ikuti ${handle} untuk Tips Sehat`}</span>
+              </>
+            ) : style === 'PASTEL_BLUSH' ? (
+              <>
+                <Sparkles className="size-3.5" />
+                <span>{slide.ctaText || `🌸 Follow ${handle} untuk Tips Glow`}</span>
+              </>
+            ) : style === 'VOGUE_GOLD' ? (
+              <>
+                <Award className="size-3.5" />
+                <span>{slide.ctaText || '👑 Ikuti Koleksi Editorial Kami'}</span>
               </>
             ) : style === 'EVENT_WEBINAR' ? (
               <>

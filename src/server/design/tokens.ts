@@ -20,10 +20,7 @@ export type StyleTokens = {
   headlineFont?: string;
 };
 
-export const STYLE_TOKENS: Record<
-  'MINIMAL' | 'BREAKING_NEWS' | 'MODERN' | 'BOLD' | 'EDITORIAL' | 'TECH' | 'FINANCE' | 'CORPORATE' | 'LIFESTYLE',
-  StyleTokens
-> = {
+export const STYLE_TOKENS: Partial<Record<DesignStyle, StyleTokens>> = {
   MINIMAL: {
     label: 'Katalog Produk Studio',
     bg: '#FFFFFF',
@@ -161,10 +158,102 @@ export const STYLE_TOKENS: Record<
     fallbackBg: 'linear-gradient(140deg,#FFE4E6,#FECDD3 60%,#FDA4AF)',
     cardBg: '#FFFFFF',
   },
+  JAPANDI_WARM: {
+    label: 'Japandi Warm Minimal',
+    bg: '#FAF7F2',
+    fg: '#2D2724',
+    muted: '#78716C',
+    accent: '#D95D39',
+    accentFg: '#FFFFFF',
+    rule: '#E7E5E4',
+    scrim: 'linear-gradient(180deg, rgba(45,39,36,0) 35%, rgba(45,39,36,.7) 100%)',
+    headlineWeight: 700,
+    headlineTracking: '-0.02em',
+    badgeText: '🌿 JAPANDI LIVING',
+    fallbackBg: 'linear-gradient(140deg,#FAF7F2,#F5EBE6 60%,#E6DCB8)',
+    cardBg: '#FFFFFF',
+  },
+  NOTION_MINIMAL: {
+    label: 'Notion Clean Workspace',
+    bg: '#FAFAFA',
+    fg: '#18181B',
+    muted: '#71717A',
+    accent: '#EAB308',
+    accentFg: '#18181B',
+    rule: '#E4E4E7',
+    scrim: 'linear-gradient(180deg, rgba(24,24,27,0) 35%, rgba(24,24,27,.75) 100%)',
+    headlineWeight: 800,
+    headlineTracking: '-0.025em',
+    badgeText: '📝 NOTION DOCS',
+    fallbackBg: 'linear-gradient(140deg,#FAFAFA,#F4F4F5 60%,#E4E4E7)',
+    cardBg: '#FFFFFF',
+  },
+  MATCHA_SAGE: {
+    label: 'Matcha & Sage Botanical',
+    bg: '#F4F8F3',
+    fg: '#1B4332',
+    muted: '#52796F',
+    accent: '#2D6A4F',
+    accentFg: '#FFFFFF',
+    rule: '#D8E2DC',
+    scrim: 'linear-gradient(180deg, rgba(27,67,50,0) 35%, rgba(27,67,50,.72) 100%)',
+    headlineWeight: 700,
+    headlineTracking: '-0.02em',
+    badgeText: '🍵 BOTANICAL SAGE',
+    fallbackBg: 'linear-gradient(140deg,#F4F8F3,#E8F1E7 60%,#C8DEC6)',
+    cardBg: '#FFFFFF',
+  },
+  KULINER_NUSANTARA: {
+    label: 'Kuliner Nusantara Asli',
+    bg: '#FFFDF5',
+    fg: '#292524',
+    muted: '#78716C',
+    accent: '#DC2626',
+    accentFg: '#FFFFFF',
+    rule: '#FDE68A',
+    scrim: 'linear-gradient(180deg, rgba(41,37,36,0) 35%, rgba(41,37,36,.75) 100%)',
+    headlineWeight: 900,
+    headlineTracking: '-0.025em',
+    badgeText: '🍛 RESEP NUSANTARA',
+    fallbackBg: 'linear-gradient(140deg,#FFFDF5,#FEF3C7 60%,#FDE68A)',
+    cardBg: '#FFFFFF',
+  },
+  PASTEL_BLUSH: {
+    label: 'Pastel Peach Blossom',
+    bg: '#FFF5F5',
+    fg: '#4C0519',
+    muted: '#9F1239',
+    accent: '#FB7185',
+    accentFg: '#FFFFFF',
+    rule: '#FECDD3',
+    scrim: 'linear-gradient(180deg, rgba(76,5,25,0) 35%, rgba(76,5,25,.65) 100%)',
+    headlineWeight: 700,
+    headlineTracking: '-0.015em',
+    badgeText: '🌸 PEACH BLUSH',
+    fallbackBg: 'linear-gradient(140deg,#FFF5F5,#FFE4E6 60%,#FECDD3)',
+    cardBg: '#FFFFFF',
+  },
+  VOGUE_GOLD: {
+    label: 'Vogue Editorial Luxury',
+    bg: '#FAF8F5',
+    fg: '#111827',
+    muted: '#6B7280',
+    accent: '#B45309',
+    accentFg: '#FFFFFF',
+    rule: '#E5E7EB',
+    scrim: 'linear-gradient(180deg, rgba(17,24,39,0) 35%, rgba(17,24,39,.75) 100%)',
+    headlineWeight: 800,
+    headlineTracking: '-0.015em',
+    badgeText: '👑 VOGUE EDITORIAL',
+    fallbackBg: 'linear-gradient(140deg,#FAF8F5,#F3F4F6 60%,#E5E7EB)',
+    cardBg: '#FFFFFF',
+    fontFamily: "Georgia, 'Times New Roman', serif",
+    headlineFont: "'Playfair Display', Georgia, 'Times New Roman', serif",
+  },
 };
 
 export function tokensFor(style: DesignStyle): StyleTokens {
-  return STYLE_TOKENS[style as keyof typeof STYLE_TOKENS] ?? STYLE_TOKENS.MINIMAL;
+  return STYLE_TOKENS[style] ?? STYLE_TOKENS.MINIMAL!;
 }
 
 export const IMPLEMENTED_STYLES: DesignStyle[] = [
@@ -177,4 +266,10 @@ export const IMPLEMENTED_STYLES: DesignStyle[] = [
   'FINANCE',
   'CORPORATE',
   'LIFESTYLE',
+  'JAPANDI_WARM',
+  'NOTION_MINIMAL',
+  'MATCHA_SAGE',
+  'KULINER_NUSANTARA',
+  'PASTEL_BLUSH',
+  'VOGUE_GOLD',
 ];
