@@ -34,14 +34,43 @@ export const TOPIC_PHOTO_COLLECTION: Record<string, string[]> = {
     'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1080&auto=format&fit=crop&q=80', // Creative brainstorm session
   ],
 
-  // ─── 4. KULINER, MAKANAN, CAFE & RESEP ───
+  // ─── 4. KULINER SPESIFIK: NASI GORENG & INDONESIAN WOK ───
+  NASI_GORENG: [
+    'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=1080&auto=format&fit=crop&q=80', // Asian wok street food fried rice
+    'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=1080&auto=format&fit=crop&q=80', // Delicious fried rice plate with egg
+    'https://images.unsplash.com/photo-1603073163308-9655c607283b?w=1080&auto=format&fit=crop&q=80', // Wok stir fry rice dish
+    'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1080&auto=format&fit=crop&q=80', // Fresh appetizing meal bowl
+  ],
+
+  // ─── 4B. KULINER SPESIFIK: RENDANG & DAGING PADANG ───
+  RENDANG_PADANG: [
+    'https://images.unsplash.com/photo-1544025162-d76694265947?w=1080&auto=format&fit=crop&q=80', // Spiced slow cooked meat beef ribs
+    'https://images.unsplash.com/photo-1608897013039-887f21d8c804?w=1080&auto=format&fit=crop&q=80', // Rich beef curry stew
+    'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=1080&auto=format&fit=crop&q=80', // Delicious grilled spiced meat
+    'https://images.unsplash.com/photo-1541544741938-0af808871cc0?w=1080&auto=format&fit=crop&q=80', // Braised rich spiced meat
+  ],
+
+  // ─── 4C. KULINER SPESIFIK: AYAM GORENG & SAMBAL ───
+  AYAM_GORENG: [
+    'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=1080&auto=format&fit=crop&q=80', // Crispy golden fried chicken
+    'https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=1080&auto=format&fit=crop&q=80', // Spicy grilled chicken feast
+    'https://images.unsplash.com/photo-1527477321005-4d01d75ba29f?w=1080&auto=format&fit=crop&q=80', // Golden wings & drumsticks
+  ],
+
+  // ─── 4D. KULINER SPESIFIK: KOPI & KAFE ───
+  KOPI_CAFE: [
+    'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1080&auto=format&fit=crop&q=80', // Latte art coffee cup
+    'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=1080&auto=format&fit=crop&q=80', // Espresso machine extraction
+    'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=1080&auto=format&fit=crop&q=80', // Warm cafe table aesthetic
+    'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=1080&auto=format&fit=crop&q=80', // Iced coffee glass
+  ],
+
+  // ─── 4E. KULINER UMUM, MAKANAN, CAFE & RESEP ───
   KULINER: [
     'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1080&auto=format&fit=crop&q=80', // Gourmet meal plate
     'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1080&auto=format&fit=crop&q=80', // Chef cooking in kitchen
     'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=1080&auto=format&fit=crop&q=80', // Artisan wood-fired pizza
     'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=1080&auto=format&fit=crop&q=80', // Juicy gourmet burger
-    'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=1080&auto=format&fit=crop&q=80', // Espresso machine extraction
-    'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1080&auto=format&fit=crop&q=80', // Latte art coffee cup
     'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=1080&auto=format&fit=crop&q=80', // Pancakes with syrup & berries
     'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=1080&auto=format&fit=crop&q=80', // Asian ramen noodles bowl
   ],
@@ -59,14 +88,30 @@ export const TOPIC_PHOTO_COLLECTION: Record<string, string[]> = {
   // ─── 6. FASHION, OOTD & AKSESORIS ───
   FASHION: [
     'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=1080&auto=format&fit=crop&q=80', // Fashion model in modern outfit
-    'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1080&auto=format&fit=crop&q=80', // Nike red sneakers
     'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=1080&auto=format&fit=crop&q=80', // Minimalist wardrobe rack
     'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=1080&auto=format&fit=crop&q=80', // Luxury leather handbag
     'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1080&auto=format&fit=crop&q=80', // Modern aesthetic watch
     'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=1080&auto=format&fit=crop&q=80', // High-fashion editorial look
   ],
 
-  // ─── 7. AI, ROBOTIK, CODING & TECH ───
+  // ─── 6B. SNEAKERS & SEPATU ───
+  SNEAKERS: [
+    'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1080&auto=format&fit=crop&q=80', // Nike red sneakers
+    'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=1080&auto=format&fit=crop&q=80', // Aesthetic white & pastel sneakers
+    'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=1080&auto=format&fit=crop&q=80', // Retro racing sneakers on feet
+    'https://images.unsplash.com/photo-1552346154-21d32810aba3?w=1080&auto=format&fit=crop&q=80', // Modern trendy sneakers
+  ],
+
+  // ─── 7. AI, TOOLS, SOFTWARE & AUTOMATION ───
+  AI_TOOLS: [
+    'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1080&auto=format&fit=crop&q=80', // Glowing digital neural network
+    'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1080&auto=format&fit=crop&q=80', // Analytics software dashboard
+    'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1080&auto=format&fit=crop&q=80', // Clean productive developer setup
+    'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=1080&auto=format&fit=crop&q=80', // High tech digital UI tools
+    'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1080&auto=format&fit=crop&q=80', // Futuristic AI Robot
+  ],
+
+  // ─── 7B. AI, ROBOTIK, CODING & TECH UMUM ───
   AI_TECH: [
     'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1080&auto=format&fit=crop&q=80', // Futuristic AI Robot head
     'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1080&auto=format&fit=crop&q=80', // Neural network glowing mesh
@@ -339,7 +384,73 @@ export function detectCategoryFromText(text: string): string {
     return 'FASHION';
   }
 
-  // 6. KULINER & MAKANAN
+  // 5B. SNEAKERS & SEPATU
+  if (
+    t.includes('sneaker') ||
+    t.includes('sepatu') ||
+    t.includes('puma') ||
+    t.includes('nike') ||
+    t.includes('adidas') ||
+    t.includes('jordan') ||
+    t.includes('speedcat') ||
+    t.includes('sambas') ||
+    t.includes('vans')
+  ) {
+    return 'SNEAKERS';
+  }
+
+  // 6A. KULINER SPESIFIK: RENDANG & MASAKAN PADANG
+  if (
+    t.includes('rendang') ||
+    t.includes('padang') ||
+    t.includes('dendeng') ||
+    t.includes('gulai') ||
+    t.includes('daging sapi')
+  ) {
+    return 'RENDANG_PADANG';
+  }
+
+  // 6B. KULINER SPESIFIK: NASI GORENG & WOK
+  if (
+    t.includes('nasi goreng') ||
+    t.includes('fried rice') ||
+    t.includes('nasi rempah') ||
+    t.includes('nasi uduk') ||
+    t.includes('nasi bakar') ||
+    t.includes('nasi')
+  ) {
+    return 'NASI_GORENG';
+  }
+
+  // 6C. KULINER SPESIFIK: AYAM GORENG & SAMBAL
+  if (
+    t.includes('ayam goreng') ||
+    t.includes('ayam bakar') ||
+    t.includes('ayam geprek') ||
+    t.includes('ayam crispy') ||
+    t.includes('ayam') ||
+    t.includes('bebek')
+  ) {
+    return 'AYAM_GORENG';
+  }
+
+  // 6D. KULINER SPESIFIK: KOPI & KAFE
+  if (
+    t.includes('kopi') ||
+    t.includes('coffee') ||
+    t.includes('espresso') ||
+    t.includes('latte') ||
+    t.includes('cappuccino') ||
+    t.includes('cafe') ||
+    t.includes('kafe') ||
+    t.includes('barista') ||
+    t.includes('boba') ||
+    t.includes('matcha')
+  ) {
+    return 'KOPI_CAFE';
+  }
+
+  // 6E. KULINER UMUM & MAKANAN
   if (
     t.includes('kuliner') ||
     t.includes('makanan') ||
@@ -347,22 +458,12 @@ export function detectCategoryFromText(text: string): string {
     t.includes('masak') ||
     t.includes('resto') ||
     t.includes('restoran') ||
-    t.includes('cafe') ||
-    t.includes('kafe') ||
-    t.includes('kopi') ||
-    t.includes('coffee') ||
-    t.includes('barista') ||
     t.includes('bakery') ||
     t.includes('roti') ||
     t.includes('cake') ||
     t.includes('minuman') ||
-    t.includes('boba') ||
-    t.includes('matcha') ||
     t.includes('mie') ||
-    t.includes('nasi') ||
-    t.includes('rendang') ||
     t.includes('sambal') ||
-    t.includes('ayam') ||
     t.includes('kuliner malam') ||
     t.includes('jajanan') ||
     t.includes('snack') ||
@@ -572,9 +673,25 @@ export function detectCategoryFromText(text: string): string {
     return 'LAPTOP';
   }
 
-  // 16. AI & SOFTWARE TECH
-  if (t.includes('ai') || t.includes('robot') || t.includes('chatgpt') || t.includes('gemini') || t.includes('claude') || t.includes('algoritma') || t.includes('software') || t.includes('coding') || t.includes('programming')) {
-    return 'AI_TECH';
+  // 16. AI & SOFTWARE TECH / TOOLS
+  if (
+    t.includes('tools ai') ||
+    t.includes('ai tools') ||
+    t.includes('ai') ||
+    t.includes('robot') ||
+    t.includes('chatgpt') ||
+    t.includes('gemini') ||
+    t.includes('claude') ||
+    t.includes('algoritma') ||
+    t.includes('software') ||
+    t.includes('coding') ||
+    t.includes('programming') ||
+    t.includes('otomasi') ||
+    t.includes('aplikasi') ||
+    t.includes('tools') ||
+    t.includes('tool')
+  ) {
+    return 'AI_TOOLS';
   }
 
   // 17. E-COMMERCE & SHOPEE AFFILIATE
@@ -600,6 +717,15 @@ export function detectCategoryFromText(text: string): string {
   return 'BERITA';
 }
 
+function hashString(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+}
+
 /**
  * Mengambil foto editorial yang relevan untuk setiap slide secara dinamis, presisi & kontekstual.
  * Menjamin SETIAP slide (0, 1, 2, 3, 4, ...) selalu memiliki foto berbeda yang sesuai topik konten.
@@ -616,13 +742,16 @@ export function getContextualPhotoForSlide(
   }
 
   // 2. Deteksi kategori spesifik dari teks slide & topik
-  const detectedCategory = detectCategoryFromText(slideText || category || '');
+  const combinedText = (slideText || category || '').toLowerCase();
+  const detectedCategory = detectCategoryFromText(combinedText);
 
   // 3. Pilih dari koleksi foto editorial HD yang 100% cocok dengan topik konten
   const pool = TOPIC_PHOTO_COLLECTION[detectedCategory] || TOPIC_PHOTO_COLLECTION.BERITA;
 
-  // Pastikan slide 0, 1, 2, 3, 4, 5 selalu mendapatkan foto yang berbeda
-  const photoIndex = slideIndex % pool.length;
+  // Hash teks topik agar topik berbeda (misal prompt A vs prompt B) selalu mendapatkan foto berbeda
+  const hashOffset = hashString(combinedText);
+  const photoIndex = (hashOffset + slideIndex) % pool.length;
+
   return pool[photoIndex] || pool[0];
 }
 
