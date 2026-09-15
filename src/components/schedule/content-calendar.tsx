@@ -3,6 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import {
   Calendar as CalendarIcon,
   Clock,
@@ -85,6 +86,7 @@ export type RecentContentItem = {
   format: string;
   style?: string | null;
   totalSlides: number;
+  hasRenderedAssets?: boolean;
 };
 
 interface ContentCalendarProps {
@@ -171,6 +173,7 @@ export function ContentCalendar({
   socialAccounts = [],
   recentContents = [],
 }: ContentCalendarProps) {
+  const router = useRouter();
   const [posts, setPosts] = React.useState<ScheduledPostItem[]>(initialPosts);
   const [currentDate, setCurrentDate] = React.useState<Date>(new Date());
   const [viewMode, setViewMode] = React.useState<ViewMode>('WEEK');
@@ -368,7 +371,7 @@ export function ContentCalendar({
       let finalMediaUrls: string[] = [];
       let finalCaption = customCaption.trim();
       let generatedContentId: string | null = null;
-      let outputFormat = 'FEED_PORTRAIT';
+      let outputFormat = (formPlatform === 'INSTAGRAM' && formIgPlacement === 'story') ? 'STORY' : 'FEED_PORTRAIT';
       let designStyle: string | null = aiSelectedStyle;
 
       // MODE 1: AUTO-GENERATE AI DARI LINK ATAU PROMPT
@@ -379,7 +382,9 @@ export function ContentCalendar({
           return;
         }
 
-        setGeneratingProgressMessage('✨ AI sedang merangkum materi & mendesain slide carousel...');
+        const targetFormat = (formPlatform === 'INSTAGRAM' && formIgPlacement === 'story') ? 'STORY' : 'FEED_PORTRAIT';
+
+        setGeneratingProgressMessage('✨ AI sedang merangkum materi & menyusun slide carousel...');
 
         const genRes = await fetch('/api/generate', {
           method: 'POST',
@@ -391,7 +396,7 @@ export function ContentCalendar({
             niche: aiNiche,
             contentType: aiContentType,
             style: aiSelectedStyle as DesignStyle,
-            format: 'FEED_PORTRAIT',
+            format: targetFormat,
             slides: aiSlidesCount,
           }),
         });
@@ -401,35 +406,60 @@ export function ContentCalendar({
           throw new Error(genData?.error || 'Gagal menghasilkan carousel dengan AI.');
         }
 
-        setGeneratingProgressMessage('📅 Menyimpan hasil carousel ke jadwal kalender...');
-
         const contentObj = genData.content || genData.generatedContent;
-        generatedContentId = contentObj?.id || null;
-        
-        if (contentObj?.assets && contentObj.assets.length > 0) {
-          finalMediaUrls = contentObj.assets.map((a: any) => a.imageUrl).filter(Boolean);
-        } else if (contentObj?.visualUrl) {
-          finalMediaUrls = [contentObj.visualUrl];
+        if (!contentObj?.id) {
+          throw new Error('ID konten hasil generate tidak ditemukan.');
         }
 
-        if (!finalCaption) {
-          finalCaption = contentObj?.feedCopy || contentObj?.caption || `${contentObj?.headline}\n\n#instadeck #carousel #ai`;
-        }
+        setGeneratingProgressMessage('🎨 Membuka Studio & merender slide resolusi tinggi...');
+        notify.celebrate('Konten Siap! 🎨', 'Mengalihkan ke Studio untuk merender visual resolusi tinggi & memasang jadwal...');
+
+        // Alihkan ke Studio dengan parameter autoSchedule
+        const queryParams = new URLSearchParams({
+          autoSchedule: 'true',
+          date: formDate,
+          time: formTime,
+          platform: formPlatform,
+          placement: formIgPlacement,
+          accId: formSocialAccountId || '',
+          topic: formThreadsTopic || '',
+        });
+
+        router.push(`/content/${contentObj.id}?${queryParams.toString()}`);
+        return;
       } 
       // MODE 2: PILIH DARI RIWAYAT CAROUSEL YANG SUDAH ADA
       else if (contentSourceMode === 'EXISTING') {
         const selectedContentObj = recentContents.find((c) => c.id === selectedContentId) || recentContents[0] || null;
-        if (selectedContentObj) {
-          generatedContentId = selectedContentObj.id;
-          finalMediaUrls = selectedContentObj.mediaUrls.length > 0
-            ? selectedContentObj.mediaUrls
-            : (selectedContentObj.coverUrl ? [selectedContentObj.coverUrl] : []);
-          if (!finalCaption) {
-            finalCaption = `${selectedContentObj.headline}\n\n#instadeck #carousel #ai`;
-          }
-          outputFormat = selectedContentObj.format || 'FEED_PORTRAIT';
-          designStyle = selectedContentObj.style || null;
+        if (!selectedContentObj) {
+          notify.warning('Pilih Konten', 'Pilih salah satu konten dari riwayat carousel Anda.');
+          setIsSubmittingSchedule(false);
+          return;
         }
+
+        // Jika konten belum memiliki slide visual resolusi tinggi yang dirender, buka Studio untuk render otomatis
+        if (!selectedContentObj.hasRenderedAssets || selectedContentObj.mediaUrls.length <= 1) {
+          setGeneratingProgressMessage('🎨 Membuka Studio untuk merender slide...');
+          const queryParams = new URLSearchParams({
+            autoSchedule: 'true',
+            date: formDate,
+            time: formTime,
+            platform: formPlatform,
+            placement: formIgPlacement,
+            accId: formSocialAccountId || '',
+            topic: formThreadsTopic || '',
+          });
+          router.push(`/content/${selectedContentObj.id}?${queryParams.toString()}`);
+          return;
+        }
+
+        generatedContentId = selectedContentObj.id;
+        finalMediaUrls = selectedContentObj.mediaUrls;
+        if (!finalCaption) {
+          finalCaption = `${selectedContentObj.headline}\n\n#instadeck #carousel #ai`;
+        }
+        outputFormat = (formPlatform === 'INSTAGRAM' && formIgPlacement === 'story') ? 'STORY' : (selectedContentObj.format || 'FEED_PORTRAIT');
+        designStyle = selectedContentObj.style || null;
       } 
       // MODE 3: KUSTOM MANUAL
       else {

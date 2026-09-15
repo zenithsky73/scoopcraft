@@ -86,20 +86,22 @@ export default async function CalendarPage() {
     generatedContent: post.generatedContent,
   }));
 
-  const serializedRecentContents = recentContents
-    .filter((gc) => gc.assets?.length > 0)
-    .map((gc) => {
-      const cover = gc.assets.find((a) => a.slideIndex === 0) || gc.assets[0];
-      return {
-        id: gc.id,
-        headline: gc.headline,
-        coverUrl: cover?.imageUrl || gc.visualUrl || null,
-        mediaUrls: gc.assets.map((a) => a.imageUrl).filter(Boolean) as string[],
-        format: (cover?.format || 'FEED_PORTRAIT') as string,
-        style: cover?.style || null,
-        totalSlides: gc.assets.length,
-      };
-    });
+  const serializedRecentContents = recentContents.map((gc) => {
+    const cover = gc.assets?.find((a) => a.slideIndex === 0) || gc.assets?.[0];
+    const assetUrls = (gc.assets || []).map((a) => a.imageUrl).filter(Boolean) as string[];
+    const slidesCount = Array.isArray(gc.slides) ? (gc.slides as any[]).length : (assetUrls.length || 5);
+
+    return {
+      id: gc.id,
+      headline: gc.headline,
+      coverUrl: cover?.imageUrl || gc.visualUrl || null,
+      mediaUrls: assetUrls.length > 0 ? assetUrls : (gc.visualUrl ? [gc.visualUrl] : []),
+      format: (cover?.format || 'FEED_PORTRAIT') as string,
+      style: cover?.style || null,
+      totalSlides: slidesCount,
+      hasRenderedAssets: assetUrls.length > 0,
+    };
+  });
 
   return (
     <div className="w-full">

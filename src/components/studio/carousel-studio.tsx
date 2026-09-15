@@ -263,6 +263,15 @@ export function CarouselStudio({
     notify.info(`Slide dipindahkan ke posisi ${toIndex + 1} 🔀`);
   };
 
+  const [scheduleInitialConfig, setScheduleInitialConfig] = React.useState<{
+    initialDate?: string;
+    initialTime?: string;
+    initialPlatform?: 'INSTAGRAM' | 'TIKTOK' | 'THREADS';
+    initialPlacement?: 'feed' | 'story';
+    initialAccountId?: string;
+    initialThreadsTopic?: string;
+  } | null>(null);
+
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -270,7 +279,40 @@ export function CarouselStudio({
         params.get('generated') === 'true' ||
         sessionStorage.getItem(`just_gen_${initialContent.headline}`);
 
-      if (isJustGenerated) {
+      const autoSchedule = params.get('autoSchedule');
+      const dateParam = params.get('date');
+      const timeParam = params.get('time');
+      const platformParam = params.get('platform') as any;
+      const placementParam = params.get('placement') as any;
+      const accIdParam = params.get('accId');
+      const topicParam = params.get('topic');
+
+      if (placementParam === 'story') {
+        setCurrentFormat('STORY');
+      }
+
+      if (autoSchedule === 'true') {
+        setScheduleInitialConfig({
+          initialDate: dateParam || undefined,
+          initialTime: timeParam || undefined,
+          initialPlatform: platformParam || undefined,
+          initialPlacement: placementParam || (placementParam === 'story' ? 'story' : undefined),
+          initialAccountId: accIdParam || undefined,
+          initialThreadsTopic: topicParam ? decodeURIComponent(topicParam) : undefined,
+        });
+
+        // Hapus query params dari URL agar refresh tidak memicu ulang
+        try {
+          window.history.replaceState({}, '', window.location.pathname);
+        } catch {}
+
+        // Otomatis render visual slide resolusi tinggi dan buka modal jadwal
+        const timer = setTimeout(() => {
+          handleOpenSchedule();
+        }, 700);
+
+        return () => clearTimeout(timer);
+      } else if (isJustGenerated) {
         notify.celebrate(
           'Carousel Berhasil Dibuat! 🎉',
           'Semua slide naskah dan visual telah siap Anda gunakan.'
@@ -1416,6 +1458,12 @@ export function CarouselStudio({
         totalSlides={slides.length}
         format={currentFormat}
         style={currentStyle}
+        initialDate={scheduleInitialConfig?.initialDate}
+        initialTime={scheduleInitialConfig?.initialTime}
+        initialPlatform={scheduleInitialConfig?.initialPlatform}
+        initialPlacement={scheduleInitialConfig?.initialPlacement}
+        initialAccountId={scheduleInitialConfig?.initialAccountId}
+        initialThreadsTopic={scheduleInitialConfig?.initialThreadsTopic}
       />
 
       {/* ─── HIDDEN OFFSCREEN RENDER CONTAINER FOR 100% RELIABLE EXPORTS ─── */}

@@ -37,6 +37,12 @@ interface ScheduleModalProps {
   totalSlides: number;
   format?: OutputFormat;
   style?: DesignStyle;
+  initialDate?: string;
+  initialTime?: string;
+  initialPlatform?: 'INSTAGRAM' | 'TIKTOK' | 'THREADS';
+  initialPlacement?: 'feed' | 'story';
+  initialAccountId?: string;
+  initialThreadsTopic?: string;
   onScheduleSuccess?: (post: any) => void;
 }
 
@@ -99,10 +105,18 @@ export function ScheduleModal({
   totalSlides,
   format = 'FEED_PORTRAIT',
   style,
+  initialDate,
+  initialTime,
+  initialPlatform,
+  initialPlacement,
+  initialAccountId,
+  initialThreadsTopic,
   onScheduleSuccess,
 }: ScheduleModalProps) {
   const [publishMode, setPublishMode] = React.useState<'now' | 'schedule'>('schedule');
-  const [selectedPlatform, setSelectedPlatform] = React.useState<'INSTAGRAM' | 'TIKTOK' | 'THREADS'>('INSTAGRAM');
+  const [selectedPlatform, setSelectedPlatform] = React.useState<'INSTAGRAM' | 'TIKTOK' | 'THREADS'>(
+    initialPlatform || 'INSTAGRAM'
+  );
 
   // Default waktu: 2 jam dari sekarang
   const defaultDate = React.useMemo(() => {
@@ -115,8 +129,8 @@ export function ScheduleModal({
     return d.toTimeString().slice(0, 5);
   }, []);
 
-  const [dateStr, setDateStr] = React.useState(defaultDate);
-  const [timeStr, setTimeStr] = React.useState(defaultTime);
+  const [dateStr, setDateStr] = React.useState(initialDate || defaultDate);
+  const [timeStr, setTimeStr] = React.useState(initialTime || defaultTime);
   const [editableCaption, setEditableCaption] = React.useState(caption);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [accounts, setAccounts] = React.useState<any[]>([]);
@@ -132,20 +146,28 @@ export function ScheduleModal({
   const audioRef = React.useRef<HTMLAudioElement | null>(null);
 
   // Threads Topic State
-  const [threadsTopic, setThreadsTopic] = React.useState('');
+  const [threadsTopic, setThreadsTopic] = React.useState(initialThreadsTopic || '');
 
   // Instagram Placement State (Feed vs Story)
   const [igPlacement, setIgPlacement] = React.useState<'feed' | 'story'>(
-    format === 'STORY' ? 'story' : 'feed'
+    initialPlacement || (format === 'STORY' ? 'story' : 'feed')
   );
 
   React.useEffect(() => {
-    if (format === 'STORY') {
-      setIgPlacement('story');
-    } else {
-      setIgPlacement('feed');
+    if (open) {
+      if (initialDate) setDateStr(initialDate);
+      if (initialTime) setTimeStr(initialTime);
+      if (initialPlatform) setSelectedPlatform(initialPlatform);
+      if (initialPlacement) {
+        setIgPlacement(initialPlacement);
+      } else if (format === 'STORY') {
+        setIgPlacement('story');
+      } else {
+        setIgPlacement('feed');
+      }
+      if (initialThreadsTopic) setThreadsTopic(initialThreadsTopic);
     }
-  }, [format]);
+  }, [open, initialDate, initialTime, initialPlatform, initialPlacement, initialThreadsTopic, format]);
 
   const togglePlayAudio = (music: TikTokMusicItem) => {
     if (!music.url) return;
@@ -303,18 +325,21 @@ export function ScheduleModal({
               `/placeholder/slide-${i + 1}.png`
             );
 
+      const effectiveFormat = (selectedPlatform === 'INSTAGRAM' && igPlacement === 'story') ? 'STORY' : format;
+
       const res = await fetch('/api/schedule', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           generatedContentId: contentId || null,
+          socialAccountId: initialAccountId || currentAccount?.id || null,
           platform: selectedPlatform,
           publishMode,
           scheduledAt: targetIso,
           caption: editableCaption,
           hashtags,
           mediaUrls: finalMediaUrls,
-          format,
+          format: effectiveFormat,
           style: style || null,
           isSimulated: isRealAccount ? !useRealPublish : true,
           tiktokMusic: selectedPlatform === 'TIKTOK' && selectedMusic ? {
