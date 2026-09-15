@@ -47,11 +47,16 @@ export async function GET(req: Request) {
     }));
 
     // Kumpulkan foto pelengkap dari kategori terdekat
-    const fallbackCategory = detectedCategory.includes('RENDANG') || detectedCategory.includes('NASI') || detectedCategory.includes('AYAM')
-      ? 'KULINER'
-      : detectedCategory === 'AI_TOOLS'
-      ? 'AI_TECH'
-      : 'BISNIS';
+    const fallbackCategory =
+      detectedCategory.includes('RENDANG') || detectedCategory.includes('NASI') || detectedCategory.includes('AYAM') || detectedCategory.includes('SATE') || detectedCategory.includes('BAKSO')
+        ? 'KULINER'
+        : detectedCategory.includes('AI') || detectedCategory.includes('CODING')
+        ? 'DESIGN_UIUX'
+        : detectedCategory.includes('FITNESS') || detectedCategory.includes('RUNNING')
+        ? 'DIET_NUTRISI'
+        : detectedCategory.includes('SKINCARE')
+        ? 'FASHION'
+        : 'BISNIS';
 
     const fallbackUrls = (TOPIC_PHOTO_COLLECTION[fallbackCategory] || []).filter((u) => !primaryUrls.includes(u));
     const fallbackPhotos = fallbackUrls.map((url, i) => ({
