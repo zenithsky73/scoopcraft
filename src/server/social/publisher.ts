@@ -84,6 +84,19 @@ async function publishToRepliz(post: ScheduledPost & { socialAccount: SocialAcco
     }
 
     const cleanMediaUrls = mediaUrls.map((u) => toAbsoluteMediaUrl(u)).filter(Boolean);
+
+    // Warm up public media URLs so edge cache is primed before Meta / TikTok crawler fetches
+    if (cleanMediaUrls.length > 0) {
+      await Promise.all(
+        cleanMediaUrls.map((u) =>
+          fetch(u, {
+            headers: { 'User-Agent': 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)' },
+            signal: AbortSignal.timeout(4000),
+          }).catch(() => null)
+        )
+      );
+    }
+
     let caption = `${post.caption || ''}\n\n${(post.hashtags || []).join(' ')}`.trim();
     if (platform === 'threads' && caption.length > 500) {
       caption = caption.slice(0, 495).trim() + '...';

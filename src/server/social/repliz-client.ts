@@ -308,14 +308,17 @@ export async function createReplizSchedule(payload: ReplizSchedulePayload): Prom
     // Di Instagram Meta Graph API, container Story hanya menerima 1 gambar per item.
     // Jika user membuat story dengan banyak slide (medias.length > 1), buat jadwal terpisah untuk setiap slide secara berurutan.
     if (isStory && medias.length > 1) {
-      const baseDate = new Date(payload.scheduledAt);
+      const nowMs = Date.now();
+      const targetMs = new Date(payload.scheduledAt).getTime();
+      // Berikan buffer awal 10 detik saat posting 'sekarang' agar CDN/Edge cache dan crawler Meta siap
+      const startBaseMs = Math.max(targetMs, nowMs + 10000);
       const scheduleIds: string[] = [];
       let lastError = '';
 
       for (let i = 0; i < medias.length; i++) {
         const slideMedia = medias[i];
         // Jeda waktu 15 detik antar slide agar terbit berurutan di Story dan tidak race condition di Meta API
-        const slideScheduleTime = new Date(baseDate.getTime() + i * 15 * 1000).toISOString();
+        const slideScheduleTime = new Date(startBaseMs + i * 15 * 1000).toISOString();
         const slideTitle = payload.title
           ? `${payload.title} (Story ${i + 1}/${medias.length})`
           : `Story Part ${i + 1}`;

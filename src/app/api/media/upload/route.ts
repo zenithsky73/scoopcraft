@@ -1,23 +1,39 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/server/db';
+import sharp from 'sharp';
 
 export const runtime = 'nodejs';
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { dataBase64, mimeType = 'image/png' } = body;
+    const { dataBase64, mimeType = 'image/jpeg' } = body;
 
     if (!dataBase64 || typeof dataBase64 !== 'string') {
       return NextResponse.json({ error: 'dataBase64 is required' }, { status: 400 });
     }
 
     const cleanBase64 = dataBase64.replace(/^data:image\/\w+;base64,/, '');
+    const rawBuffer = Buffer.from(cleanBase64, 'base64');
+
+    // Convert and optimize directly to high-quality JPEG at upload time
+    let processedBuffer = rawBuffer;
+    let finalMime = 'image/jpeg';
+
+    try {
+      processedBuffer = await sharp(rawBuffer)
+        .jpeg({ quality: 92, mozjpeg: true })
+        .toBuffer();
+      finalMime = 'image/jpeg';
+    } catch {
+      processedBuffer = rawBuffer;
+      finalMime = mimeType || 'image/png';
+    }
 
     const media = await db.publicMedia.create({
       data: {
-        dataBase64: cleanBase64,
-        mimeType,
+        dataBase64: processedBuffer.toString('base64'),
+        mimeType: finalMime,
       },
     });
 
@@ -26,8 +42,7 @@ export async function POST(req: Request) {
       baseUrl = 'https://pro.instadeck.id';
     }
     const cleanBase = baseUrl.replace(/\/$/, '');
-    const ext = mimeType === 'image/jpeg' ? '.jpg' : mimeType === 'image/webp' ? '.webp' : '.png';
-    const url = `${cleanBase}/api/media/${media.id}${ext}`;
+    const url = `${cleanBase}/api/media/${media.id}.jpg`;
 
     return NextResponse.json({
       success: true,
